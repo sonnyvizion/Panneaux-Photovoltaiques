@@ -1,0 +1,26 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# Next.js
+.next/
+out/
+build/
+
+# Sanity
+.sanity/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*

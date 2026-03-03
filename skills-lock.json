@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "skills": {
+    "sanity-best-practices": {
+      "source": "sanity-io/agent-toolkit",
+      "sourceType": "github",
+      "computedHash": "787f0c57fd310b50210c51ee19f13c21c117e3bf9522a1ba2bf460af0e2de24f"
+    },
+    "wireframe": {
+      "source": "markdown-viewer/skills",
+      "sourceType": "github",
+      "computedHash": "a7ee054830db3ba229dbec3e8c118cb21eb82f49f313adf88d87f1e385687724"
+    },
+    "wireframe-prototyping": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "computedHash": "0d77a322e554692dccdfb74d47179c6d8ee88c861482f8d82daeb662094e7a86"
+    }
+  }
+}
