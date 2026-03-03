@@ -22,6 +22,8 @@
 ```
 Accueil
 ├── Mon analyse (CTA principal — toujours visible)
+├── Simulateur                     ← Option 2 : /simulateur
+│   └── Simulateur Pro             ← Option 3 : /simulateur-pro
 ├── Rentabilité
 │   ├── Combien ça coûte ?
 │   ├── Les aides disponibles
@@ -47,7 +49,9 @@ Accueil
 | Page | Objectif | CTA |
 |---|---|---|
 | **Accueil** | Accrocher + qualifier + rassurer | → Mon analyse |
-| **Analyse personnalisée** | Formulaire multi-étapes | → Résultat / Contact expert |
+| **Analyse personnalisée** `/analyse` | Formulaire multi-étapes · contact humain | → Résultat / Contact expert |
+| **Simulateur** `/simulateur` | Outil calculateur · PDF auto · lead gen | → PDF par email / Expert |
+| **Simulateur Pro** `/simulateur-pro` | Devis semi-pro · tarifs réels · revente | → PDF devis / Installateur |
 | **Rentabilité** | Hub "combien je vais gagner ?" | → Mon analyse |
 | **Prix & aides** | Réduire la peur du coût | → Mon analyse |
 
