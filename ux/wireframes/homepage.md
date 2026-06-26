@@ -10,9 +10,9 @@
 | Attribut | Valeur |
 |---|---|
 | Page | Accueil `/` |
-| Objectif principal | Convaincre le propriétaire de faire son analyse personnalisée |
+| Objectif principal | Convaincre le propriétaire de faire son estimation personnalisée |
 | Question centrale | *"Les panneaux solaires sont-ils rentables pour votre maison ?"* |
-| CTA primaire | → `/analyse` |
+| CTA primaire | → `/simulateur` |
 | Persona | Propriétaire belge, 35-60 ans, curieux mais pas expert |
 
 ---
@@ -26,16 +26,16 @@
       │                                                         │
       ├─ Voit les chiffres (social proof) ──────── rassurance  │
       │                                                         ▼
-      ├─ Teste le mini-simulateur ──────► [résultat estimatif] ─► CTA analyse
+      ├─ Teste le mini-simulateur ──────► [résultat estimatif] ─► CTA estimation
       │
       ├─ Scrolle / veut comprendre
       │        │
-      │        ├─ "Pourquoi une analyse ?" → comprend la valeur
+      │        ├─ "Pourquoi une estimation ?" → comprend la valeur
       │        ├─ "Comment ça marche ?" → lève les objections
       │        ├─ Témoignages → preuve sociale
       │        └─ Aides par région → se sent concerné
       │
-      └─ CTA final ──────────────────────────────► [/analyse]
+      └─ CTA final ──────────────────────────────► [/simulateur]
 ```
 
 **Points de sortie alternatifs :**
@@ -51,7 +51,7 @@
 ┌────────────────────────────────┐
 │ HEADER  [sticky, hauteur fixe] │
 │                                │
-│ [LOGO]          [Mon analyse]  │
+│ [LOGO]         [Mon estimation]│
 │                   [bouton CTA] │
 └────────────────────────────────┘
 
@@ -63,36 +63,50 @@
 │  [IMAGE DE FOND ou illustration│
 │   maison belge + panneaux]     │
 │                                │
-│  ┌──────────────────────────┐  │
-│  │  H1 :                    │  │
-│  │  "Les panneaux solaires  │  │
-│  │   sont-ils rentables     │  │
-│  │   pour votre maison ?"   │  │
-│  └──────────────────────────┘  │
+│  H1 :                          │
+│  "Les panneaux solaires        │
+│   sont-ils rentables           │
+│   pour votre maison ?"         │
 │                                │
 │  [Sous-titre court, 1 ligne]   │
 │  "Estimation gratuite en       │
 │   3 minutes."                  │
 │                                │
 │  ┌──────────────────────────┐  │
-│  │  [CTA PRIMAIRE]          │  │
-│  │  Faire mon analyse →     │  │
+│  │  CARTE GLASS — AMORCE   │  │
+│  │                          │  │
+│  │  Votre code postal :     │  │
+│  │  ┌────────────────────┐  │  │
+│  │  │  ex. 1000, 4000…   │  │  │
+│  │  └────────────────────┘  │  │
+│  │  (région auto-détectée)  │  │
+│  │                          │  │
+│  │  [Mon estimation →]      │  │
+│  │  Ouvre /simulateur avec  │  │
+│  │  la région pré-remplie   │  │
 │  └──────────────────────────┘  │
 │                                │
 │  ✓ Gratuit  ✓ Sans engagement  │
-│  ✓ Résultat immédiat           │
+│  ✓ Vous parlez directement à   │
+│    l'équipe qui installe        │
 │                                │
 └────────────────────────────────┘
 
 ┌────────────────────────────────┐
-│  SECTION 2 — SOCIAL PROOF      │
+│  SECTION 2 — RÉASSURANCE       │
 │  ─────────────────────────── │
 │                                │
-│  ┌────────┐┌────────┐┌───────┐ │
-│  │ 2400+  ││  4.8   ││  89%  │ │
-│  │analyses││  / 5   ││rentab.│ │
-│  │réalis. ││ satisf.││ moy.  │ │
-│  └────────┘└────────┘└───────┘ │
+│  ┌──────┐┌──────┐┌─────┐┌────┐ │
+│  │2400+ ││ 4.8  ││ 89% ││Cert│ │
+│  │instal││ / 5  ││rent.││ifié│ │
+│  │réal. ││satis.││ moy.││Enphas│ │
+│  └──────┘└──────┘└─────┘└────┘ │
+│                                │
+│  [Badge Enphase — logo officiel│
+│   + "Installateur certifié"]   │
+│                                │
+│  Bruxelles & périphérie        │
+│  [Carte ou mention zone]       │
 │                                │
 └────────────────────────────────┘
 
@@ -101,8 +115,16 @@
 │  [fond contrasté]              │
 │  ─────────────────────────── │
 │                                │
-│  "En 3 questions, estimez      │
+│  "En 4 questions, estimez      │
 │   votre rentabilité"           │
+│                                │
+│  Je suis :                     │
+│  ┌──────────────────────────┐  │
+│  │  ○ Propriétaire          │  │
+│  │  ○ Locataire             │  │
+│  └──────────────────────────┘  │
+│  [Si locataire → message doux  │
+│   + suggestion de partager]    │
 │                                │
 │  Ma région :                   │
 │  ┌──────────────────────────┐  │
@@ -135,13 +157,14 @@
 │  ║ ~950 – 1 300 €/an        ║  │
 │  ║ d'économies estimées     ║  │
 │  ║                          ║  │
-│  ║ [Faire mon analyse →]    ║  │
+│  ║ [Faire mon estimation →] ║  │
 │  ╚══════════════════════════╝  │
 │                                │
 └────────────────────────────────┘
 
 ┌────────────────────────────────┐
-│  SECTION 4 — POURQUOI ANALYSE  │
+│  SECTION 4 — POURQUOI UNE      │
+│              ESTIMATION ?      │
 │  ─────────────────────────── │
 │                                │
 │  [H2] "Chaque maison est       │
@@ -169,20 +192,22 @@
 
 ┌────────────────────────────────┐
 │  SECTION 5 — CE QUE RÉVÈLE     │
-│              L'ANALYSE         │
+│        VOTRE ESTIMATION        │
 │  ─────────────────────────── │
 │                                │
 │  Liste verticale (mobile) :    │
 │                                │
 │  ✓  Économies annuelles        │
-│  ✓  Coût d'installation réel   │
+│     (fourchette personnalisée) │
+│  ✓  Budget d'investissement    │
+│     estimé                     │
 │  ✓  Aides auxquelles vous      │
 │     avez droit                 │
 │  ✓  Retour sur investissement  │
 │  ✓  Production estimée         │
 │                                │
 │  ┌──────────────────────────┐  │
-│  │  Faire mon analyse →     │  │
+│  │  Faire mon estimation →  │  │
 │  └──────────────────────────┘  │
 │                                │
 └────────────────────────────────┘
@@ -193,17 +218,18 @@
 │                                │
 │  [H2] "Comment ça marche ?"    │
 │                                │
-│  ①  Je réponds à 5 questions   │
-│     sur ma maison              │
+│  ①  Je renseigne ma maison     │
+│     en 4 questions             │
 │     [icône formulaire]         │
 │                                │
-│  ②  J'obtiens mon estimation   │
-│     personnalisée              │
+│  ②  Je reçois mon estimation   │
+│     personnalisée (fourchette) │
 │     [icône résultat]           │
 │                                │
-│  ③  Un expert me contacte      │
-│     (si je le souhaite)        │
-│     [icône personne]           │
+│  ③  Un expert analyse mon toit │
+│     et me donne le chiffrage   │
+│     précis — gratuit           │
+│     [icône personne / Enphase] │
 │                                │
 └────────────────────────────────┘
 
@@ -255,8 +281,12 @@
 │        solaire est fait        │
 │        pour vous ?"            │
 │                                │
+│  Vous parlez directement à     │
+│  l'équipe qui installe.        │
+│  Pas d'intermédiaire.          │
+│                                │
 │  ┌──────────────────────────┐  │
-│  │  Faire mon analyse →     │  │
+│  │  Faire mon estimation →  │  │
 │  └──────────────────────────┘  │
 │                                │
 │  Gratuit · Sans engagement     │
@@ -271,11 +301,11 @@
 │                                │
 │  Navigation      Régions       │
 │  Accueil         Bruxelles     │
-│  Analyse         Wallonie      │
-│  Rentabilité     Flandre       │
-│  Comprendre                    │
+│  Rentabilité     Wallonie      │
+│  Comprendre      Flandre       │
+│  Aides & primes                │
 │  Blog                          │
-│  FAQ                           │
+│  FAQ · Contact                 │
 │                                │
 │  ─────────────────────────── │
 │  © 2025 · Mentions légales     │
@@ -290,7 +320,7 @@
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │ HEADER [sticky · max-w-7xl · px-8]                               │
-│ [LOGO]   Rentabilité   Comprendre   Blog   FAQ   [Mon analyse ▶] │
+│ [LOGO]   Rentabilité   Comprendre   Blog   FAQ   [Mon estimation ▶] │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
@@ -309,34 +339,41 @@
 │  │   en 3 minutes."         │  │                              │ │
 │  │                          │  │                              │ │
 │  │  ┌──────────────────┐    │  │                              │ │
-│  │  │ Faire mon        │    │  │                              │ │
-│  │  │ analyse →        │    │  │                              │ │
+│  │  │ Code postal :    │    │  │                              │ │
+│  │  │ [__________]     │    │  │                              │ │
+│  │  │ Mon estimation → │    │  │                              │ │
 │  │  └──────────────────┘    │  │                              │ │
+│  │  (carte glass, région    │  │                              │ │
+│  │   auto-détectée)         │  │                              │ │
 │  │                          │  │                              │ │
 │  │  ✓ Gratuit               │  │                              │ │
 │  │  ✓ Sans engagement       │  │                              │ │
-│  │  ✓ Résultat immédiat     │  │                              │ │
+│  │  ✓ Parlez directement    │  │                              │ │
+│  │    à l'équipe installant │  │                              │ │
 │  └──────────────────────────┘  └──────────────────────────────┘ │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│ SOCIAL PROOF [3 colonnes centrées · gap-8]                       │
-│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐        │
-│  │   2 400+     │    │    4.8/5     │    │     89%      │        │
-│  │  analyses    │    │ satisfaction │    │  rentable    │        │
-│  │  réalisées   │    │              │    │  en moyenne  │        │
-│  └──────────────┘    └──────────────┘    └──────────────┘        │
+│ RÉASSURANCE [4 colonnes centrées · gap-8]                        │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌─────────┐  │
+│  │   2 400+     │ │    4.8/5     │ │     89%      │ │ Certifié│  │
+│  │  instal.     │ │ satisfaction │ │  rentable    │ │ Enphase │  │
+│  │  réalisées   │ │              │ │  en moyenne  │ │ [badge] │  │
+│  └──────────────┘ └──────────────┘ └──────────────┘ └─────────┘  │
+│                                                                  │
+│  [Mention : Bruxelles & périphérie — zone d'intervention]        │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
 │ MINI-SIMULATEUR [fond contrasté · full-width]                    │
 │                                                                  │
-│  [H2] "En 3 questions, estimez votre rentabilité"                │
+│  [H2] "En 4 questions, estimez votre rentabilité"                │
 │                                                                  │
-│  ┌─────────────────┐ ┌─────────────────┐ ┌─────────────────┐    │
-│  │  Ma région      │ │  Ma facture     │ │  Mon toit       │    │
-│  │  [ Wallonie ▼ ] │ │  [ ~200€/mois▼] │ │  [ Sud ▼      ] │    │
-│  └─────────────────┘ └─────────────────┘ └─────────────────┘    │
+│  ┌──────────────┐ ┌─────────────────┐ ┌──────────────────┐ ┌────────────┐  │
+│  │  Je suis     │ │  Ma région      │ │  Ma facture      │ │  Mon toit  │  │
+│  │  [Proprio ▼] │ │  [ Wallonie ▼ ] │ │  [ ~200€/mois ▼] │ │  [ Sud ▼ ] │  │
+│  └──────────────┘ └─────────────────┘ └──────────────────┘ └────────────┘  │
+│  [Si locataire sélectionné → message doux inline, bouton masqué]│
 │                                                                  │
 │              ┌────────────────────────────┐                      │
 │              │   Voir mon estimation →    │                      │
@@ -346,12 +383,12 @@
 │  ┌──────────────────────────────────────────────────────────┐    │
 │  │  Estimation pour votre profil :                          │    │
 │  │  ~950 – 1 300 €/an d'économies  ·  ROI : 7–10 ans       │    │
-│  │                      [Obtenir mon analyse complète →]    │    │
+│  │               [Obtenir mon estimation complète →]        │    │
 │  └──────────────────────────────────────────────────────────┘    │
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│ POURQUOI UNE ANALYSE [2 colonnes · col-6 / col-6]                │
+│ POURQUOI UNE ESTIMATION ? [2 colonnes · col-6 / col-6]           │
 │                                                                  │
 │  ┌───────────────────────────┐  ┌───────────────────────────┐   │
 │  │ TEXTE INTRO (col 1–5)     │  │ CARTES FACTEURS (col 6–12)│   │
@@ -372,14 +409,15 @@
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│ CE QUE RÉVÈLE L'ANALYSE [5 cartes · + CTA latéral]               │
+│ CE QUE RÉVÈLE VOTRE ESTIMATION [5 cartes · + CTA latéral]        │
 │                                                                  │
 │ ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐  ┌──────┐  │
-│ │✓ Économies│ │✓ Coût   │ │✓ Aides   │ │✓ ROI     │  │Faire │  │
-│ │  annuelles│ │  réel   │ │  droit   │ │  estimé  │  │ mon  │  │
-│ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │analys│  │
-│                                                       │e →   │  │
-│ ┌──────────┐                                          └──────┘  │
+│ │✓ Économies│ │✓ Budget  │ │✓ Aides   │ │✓ ROI     │  │Faire │  │
+│ │  annuelles│ │  estimé  │ │  droit   │ │  estimé  │  │ mon  │  │
+│ │(fourchette│ │(fourchett│ │          │ │          │  │estim.│  │
+│ └──────────┘ └──────────┘ └──────────┘ └──────────┘  │→     │  │
+│                                                       └──────┘  │
+│ ┌──────────┐                                                     │
 │ │✓ Productn│                                                     │
 │ │  estimée │                                                     │
 │ └──────────┘                                                     │
@@ -390,9 +428,12 @@
 │                                                                  │
 │   ┌────────────────┐      ┌────────────────┐     ┌────────────┐ │
 │   │  ①             │──── │  ②             │────│  ③         │ │
-│   │  Je réponds à  │      │  J'obtiens mon │     │  Un expert │ │
-│   │  5 questions   │      │  estimation    │     │  me contact│ │
-│   │  sur ma maison │      │  personnalisée │     │  (optionnel│ │
+│   │  Je renseigne  │      │  Je reçois mon │     │  Un expert │ │
+│   │  ma maison     │      │  estimation    │     │  analyse   │ │
+│   │  (4 questions) │      │  (fourchette)  │     │  mon toit  │ │
+│   │                │      │                │     │  → chiffre │ │
+│   │                │      │                │     │  précis    │ │
+│   │                │      │                │     │  gratuit   │ │
 │   └────────────────┘      └────────────────┘     └────────────┘ │
 └──────────────────────────────────────────────────────────────────┘
 
@@ -421,8 +462,11 @@
 │                                                                  │
 │          "Prêt à savoir si le solaire est fait pour vous ?"      │
 │                                                                  │
+│           Vous parlez directement à l'équipe qui installe.       │
+│                   Pas d'intermédiaire.                           │
+│                                                                  │
 │                  ┌────────────────────────────┐                  │
-│                  │  Faire mon analyse →       │                  │
+│                  │  Faire mon estimation →    │                  │
 │                  └────────────────────────────┘                  │
 │                     Gratuit · Sans engagement                    │
 └──────────────────────────────────────────────────────────────────┘
@@ -432,7 +476,7 @@
 │                                                                  │
 │  [Logo + tagline]  │  Navigation  │  Régions  │  Légal + Contact │
 │                    │  Accueil     │  Bruxelles│  Mentions légales│
-│                    │  Analyse     │  Wallonie │  Confidentialité │
+│                    │  Simulateur  │  Wallonie │  Confidentialité │
 │                    │  Rentabilité │  Flandre  │  Contact         │
 │                    │  Comprendre  │           │                  │
 │                    │  Blog / FAQ  │           │                  │
@@ -446,11 +490,20 @@
 ### Mini-simulateur
 | État | Comportement |
 |---|---|
-| **Initial** | 3 selects vides, bouton désactivé |
-| **Partiel** | Bouton activé dès les 3 champs remplis |
+| **Initial** | 4 selects vides, bouton désactivé |
+| **Locataire sélectionné** | Message doux inline ("Partagez avec votre propriétaire"), bouton masqué |
+| **Partiel** | Bouton activé dès les 4 champs remplis (propriétaire uniquement) |
 | **Loading** | Spinner inline sur le bouton (200ms) |
 | **Résultat** | Carte résultat animée sous le formulaire |
 | **Erreur réseau** | Message "Réessayer" non bloquant |
+
+### Carte glass hero (amorce)
+| État | Comportement |
+|---|---|
+| **Initial** | Champ code postal vide, bouton désactivé |
+| **CP saisi (4+ chiffres)** | Bouton activé, région détectée affichée sous le champ |
+| **Submit** | Ouvre `/simulateur` avec région pré-remplie dans le 1er volet |
+| **CP inconnu** | Message inline "Code postal non reconnu" sans blocage |
 
 ### Header (sticky)
 | État | Comportement |
@@ -469,8 +522,9 @@
 
 ## 6. Annotations d'interaction
 
-- **CTA primaire** → toujours présent (header sticky + hero + section 5 + CTA final)
-- **Mini-simulateur** → state géré côté client (React useState), résultat calculé localement
+- **CTA primaire** → toujours présent (header sticky + hero + section 5 + CTA final) — libellé : "Mon estimation" / "Faire mon estimation"
+- **Carte glass hero** → champ code postal, détection région côté client (table CP → région), ouvre `/simulateur` avec région pré-remplie
+- **Mini-simulateur** → state géré côté client (React useState), résultat calculé localement ; locataire → branche alternative sans bouton devis
 - **Tabs région** → client component léger, données depuis Sanity
 - **Témoignages** → carrousel sur mobile (swipe), 2-3 cartes fixes sur desktop
 - **Scroll** → `scroll-behavior: smooth` pour navigation intra-page
