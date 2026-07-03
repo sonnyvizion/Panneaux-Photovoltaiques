@@ -1332,6 +1332,14 @@ git add site/src/pages/design-system.astro
 git commit -m "feat: add internal design-system QA page"
 ```
 
+> **Amended after code review:** a statically-deployed internal QA page at
+> `/design-system` would otherwise be crawlable/indexable — added an optional
+> `noindex` prop to `BaseLayout.astro` (renders
+> `<meta name="robots" content="noindex, follow" />` when set) and passed
+> `noindex` from this page, so it stays out of search results without needing
+> a robots.txt entry. Fixed in commit
+> `fix: add noindex to internal design-system QA page`.
+
 ---
 
 ### Task 17: Final build check
