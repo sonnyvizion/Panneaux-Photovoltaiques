@@ -900,6 +900,11 @@ const items = [
   .nav--opaque .nav__link--active {
     background: var(--color-surface-warm);
   }
+
+  .nav__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
 </style>
 ```
 
@@ -944,6 +949,11 @@ import Button from './Button.astro';
     border-radius: var(--radius-pill);
     padding: var(--space-2);
     box-shadow: var(--shadow-soft);
+    transition: box-shadow 150ms ease;
+  }
+
+  .postal-form:focus-within {
+    box-shadow: var(--shadow-soft), 0 0 0 2px var(--color-accent);
   }
 
   .postal-form__input {
@@ -970,6 +980,13 @@ import Button from './Button.astro';
 git add site/src/components/PostalCodeForm.astro
 git commit -m "feat: add PostalCodeForm component (input + CTA combo pill)"
 ```
+
+> **Note on `outline: none` on `.postal-form__input`:** this is intentional, not
+> an accessibility regression — the default browser outline would look broken
+> clipped inside the pill shape. The `:focus-within` ring on the parent
+> `.postal-form` (added above) provides the required visible keyboard-focus
+> indicator instead (same reasoning as the Button/NavBar `:focus-visible` fixes
+> from Tasks 7 and 12).
 
 ---
 
