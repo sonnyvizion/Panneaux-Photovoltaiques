@@ -1,0 +1,99 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import Badge from '../components/Badge.astro';
+import Card from '../components/Card.astro';
+import Accordion from '../components/Accordion.astro';
+---
+
+<BaseLayout title="Design system — QA interne">
+  <main class="ds">
+    <section>
+      <h2>Typographie</h2>
+      <div class="ds__column">
+        <h1>H1 — Titre de page</h1>
+        <h2>H2 — Sous-titre de section</h2>
+        <h3>H3 — Sous-titre mineur</h3>
+        <p>Corps de texte en Circular Std Book, pour vérifier la lisibilité et l'interligne 1.6.</p>
+        <p class="ds__muted">Texte secondaire (--color-text-muted), taille --font-size-small.</p>
+        <p class="ds__mono">3 240 € / an — Geist Mono 500</p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Boutons</h2>
+      <div class="ds__row">
+        <Button variant="primary">Action principale</Button>
+        <Button variant="secondary">Action secondaire</Button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Badges</h2>
+      <div class="ds__row ds__row--dark">
+        <Badge variant="glass">Gratuit</Badge>
+        <Badge variant="solid">Sans engagement</Badge>
+      </div>
+    </section>
+
+    <section>
+      <h2>Carte</h2>
+      <div class="ds__row">
+        <Card>
+          <h3>Titre de carte</h3>
+          <p>Contenu de démonstration pour vérifier le radius, l'ombre et le padding.</p>
+        </Card>
+      </div>
+    </section>
+
+    <section>
+      <h2>Accordéon</h2>
+      <Accordion question="Est-ce que ça marche sans JavaScript ?">
+        Oui — c'est un élément natif <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>.
+      </Accordion>
+      <Accordion question="Deuxième question de test">
+        Contenu de la deuxième réponse, pour vérifier l'empilement de plusieurs accordéons.
+      </Accordion>
+    </section>
+  </main>
+</BaseLayout>
+
+<style>
+  .ds {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: var(--space-9) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-9);
+  }
+
+  .ds__row {
+    display: flex;
+    gap: var(--space-5);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .ds__row--dark {
+    background: var(--color-surface-warm);
+    padding: var(--space-5);
+    border-radius: var(--radius-card);
+  }
+
+  .ds__column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .ds__muted {
+    color: var(--color-text-muted);
+    font-size: var(--font-size-small);
+  }
+
+  .ds__mono {
+    font-family: 'Geist Mono', monospace;
+    font-weight: 500;
+  }
+</style>
