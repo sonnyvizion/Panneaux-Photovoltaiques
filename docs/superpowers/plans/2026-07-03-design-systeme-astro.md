@@ -507,6 +507,15 @@ const Tag = href ? 'a' : 'button';
   .btn:active {
     opacity: 0.85;
   }
+
+  .btn:hover:not(:active) {
+    opacity: 0.9;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 </style>
 ```
 
@@ -516,6 +525,12 @@ const Tag = href ? 'a' : 'button';
 git add site/src/components/Button.astro
 git commit -m "feat: add Button component (primary split-button + secondary)"
 ```
+
+> **Amended after code review:** the original spec above only had `:active`;
+> a hover state and a `:focus-visible` outline were added in a follow-up
+> commit (`fix: add hover and focus-visible states to Button`) since keyboard
+> focus indicators are a real accessibility requirement (WCAG 2.4.7), not just
+> a nice-to-have.
 
 ---
 
