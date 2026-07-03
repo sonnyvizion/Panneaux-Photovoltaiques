@@ -8,7 +8,7 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 ---
 
 <div class="card">
-  {imageSrc && <img src={imageSrc} alt={imageAlt} class="card__image" />}
+  {imageSrc && <img src={imageSrc} alt={imageAlt} loading="lazy" class="card__image" />}
   <div class="card__body">
     <slot />
   </div>
