@@ -1,0 +1,128 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero/img_hero.jpg';
+import NavBar from './NavBar.astro';
+import PostalCodeForm from './PostalCodeForm.astro';
+import Badge from './Badge.astro';
+---
+
+<section id="hero" class="hero">
+  <Image
+    src={heroImage}
+    alt="Installation de panneaux solaires sur une toiture"
+    width={2560}
+    height={1479}
+    format="webp"
+    quality={75}
+    class="hero__image"
+  />
+  <div class="hero__overlay"></div>
+
+  <div class="hero__content">
+    <NavBar />
+
+    <div class="hero__copy">
+      <h1 class="hero__title">
+        Les panneaux solaires sont-ils rentables pour votre maison&nbsp;?
+      </h1>
+      <p class="hero__subtitle">
+        Production, coût, économies, primes de votre région&nbsp;: votre
+        estimation sur mesure, sans laisser vos coordonnées.
+      </p>
+
+      <PostalCodeForm />
+      <p class="hero__helper">
+        Pour adapter le calcul à votre région et vos primes.
+        <a href="/simulateur">En savoir plus&nbsp;?</a>
+      </p>
+
+      <div class="hero__reassurance">
+        <Badge variant="glass">Gratuit</Badge>
+        <Badge variant="glass">Sans engagement</Badge>
+        <Badge variant="glass">Résultats en 2 minutes</Badge>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--radius-card);
+  }
+
+  .hero__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--gradient-hero);
+    mix-blend-mode: soft-light;
+    opacity: 0.9;
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: var(--space-5);
+  }
+
+  .hero__copy {
+    margin: auto;
+    max-width: 720px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .hero__title {
+    color: #fff;
+    font-size: 40px;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero__subtitle {
+    color: #fff;
+    font-size: 18px;
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero__helper {
+    color: #fff;
+    font-size: 14px;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .hero__helper a {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .hero__reassurance {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .hero__title {
+      font-size: 56px;
+    }
+  }
+</style>
