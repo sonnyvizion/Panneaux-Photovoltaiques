@@ -1019,9 +1019,10 @@ import Badge from './Badge.astro';
     height={1479}
     format="webp"
     quality={75}
+    priority
     class="hero__image"
   />
-  <div class="hero__overlay"></div>
+  <div class="hero__overlay" aria-hidden="true"></div>
 
   <div class="hero__content">
     <NavBar />
@@ -1139,6 +1140,15 @@ import Badge from './Badge.astro';
 git add site/src/components/Hero.astro
 git commit -m "feat: add Hero component matching the client mockup"
 ```
+
+> **Amended after code review:** the `<Image>` above is missing `priority` in
+> this transcript's history — without it, Astro defaults to `loading="lazy"`,
+> which directly violates this project's own "lazy-load sauf hero" rule
+> (`stack.md`, `interactivite-seo.md`) since this image is the page's LCP
+> element. `priority` (sets `loading="eager"` + `fetchpriority="high"`) was
+> added, plus `aria-hidden="true"` on the decorative `.hero__overlay` div for
+> consistency with Badge's decorative-icon convention. Fixed in commit
+> `fix: eager-load hero image (LCP) and hide decorative overlay from a11y tree`.
 
 ---
 
