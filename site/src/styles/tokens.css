@@ -1,0 +1,55 @@
+:root {
+  /* Colors — design.md §1 */
+  --color-bg: #fffdf9;
+  --color-surface: #ffffff;
+  --color-surface-warm: #f6efe6;
+  --color-text: #241f1a;
+  --color-text-muted: #6e655b;
+  --color-border: #eae1d4;
+  --color-accent: #3fce96;
+  --gradient-hero: linear-gradient(135deg, #f0c7bc 0%, #f3d9b0 50%, #dccde8 100%);
+
+  /* Radius — design.md §3 */
+  --radius-pill: 9999px;
+  --radius-card: 24px;
+  --radius-small: 16px;
+
+  /* Shadow — design.md §3 */
+  --shadow-soft: 0 8px 24px rgba(80, 60, 40, 0.12);
+
+  /* Glass — design.md §3 */
+  --glass-bg: rgba(255, 253, 249, 0.55);
+  --glass-blur: 16px;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+
+  /* Spacing — design.md §4 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* Layout — design.md §4 */
+  --container-max: 1280px;
+
+  /* Typography scale — design.md §2 */
+  --font-size-display: 48px;
+  --font-size-h1: 36px;
+  --font-size-h2: 28px;
+  --font-size-h3: 20px;
+  --font-size-body: 16px;
+  --font-size-small: 14px;
+  --font-size-label: 16px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --font-size-display: 56px;
+    --font-size-h1: 40px;
+  }
+}
