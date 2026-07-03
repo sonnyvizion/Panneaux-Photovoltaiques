@@ -1,0 +1,39 @@
+---
+interface Props {
+  variant?: 'glass' | 'solid';
+}
+
+const { variant = 'solid' } = Astro.props;
+---
+
+<span class={`badge badge--${variant}`}>
+  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+    <path d="M2 6L4.5 8.5L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .badge--solid {
+    background: var(--color-surface-warm);
+    color: var(--color-text);
+  }
+
+  .badge--glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+    color: var(--color-text);
+  }
+</style>
