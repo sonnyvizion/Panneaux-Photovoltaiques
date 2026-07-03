@@ -1,0 +1,47 @@
+---
+import Button from './Button.astro';
+---
+
+<form class="postal-form" action="/simulateur" method="get">
+  <input
+    type="text"
+    name="cp"
+    placeholder="Votre code postal"
+    class="postal-form__input"
+    required
+  />
+  <Button type="submit">Je lance mon estimation</Button>
+</form>
+
+<style>
+  .postal-form {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border-radius: var(--radius-pill);
+    padding: var(--space-2);
+    box-shadow: var(--shadow-soft);
+    transition: box-shadow 150ms ease;
+  }
+
+  .postal-form:focus-within {
+    box-shadow: var(--shadow-soft), 0 0 0 2px var(--color-accent);
+  }
+
+  .postal-form__input {
+    border: none;
+    background: transparent;
+    padding: var(--space-3) var(--space-5);
+    font-family: 'Circular Std', system-ui, sans-serif;
+    font-size: 16px;
+    color: var(--color-text);
+    outline: none;
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .postal-form__input::placeholder {
+    color: var(--color-text-muted);
+  }
+</style>
