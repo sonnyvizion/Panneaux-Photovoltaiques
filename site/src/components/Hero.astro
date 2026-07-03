@@ -93,7 +93,7 @@ import Badge from './Badge.astro';
 
   .hero__title {
     color: #fff;
-    font-size: 40px;
+    font-size: var(--font-size-display);
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   }
 
@@ -119,11 +119,5 @@ import Badge from './Badge.astro';
     flex-wrap: wrap;
     gap: var(--space-3);
     justify-content: center;
-  }
-
-  @media (min-width: 768px) {
-    .hero__title {
-      font-size: 56px;
-    }
   }
 </style>

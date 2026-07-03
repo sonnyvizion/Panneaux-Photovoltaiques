@@ -14,6 +14,7 @@ const items = [
         <a
           href={item.href}
           class={`nav__link ${item.active ? 'nav__link--active' : ''}`}
+          aria-current={item.active ? 'page' : undefined}
         >
           {item.label}
         </a>
