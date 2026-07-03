@@ -61,4 +61,13 @@ const Tag = href ? 'a' : 'button';
   .btn:active {
     opacity: 0.85;
   }
+
+  .btn:hover:not(:active) {
+    opacity: 0.9;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 </style>
