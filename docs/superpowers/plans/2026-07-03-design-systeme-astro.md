@@ -474,7 +474,7 @@ const Tag = href ? 'a' : 'button';
     border-radius: var(--radius-pill);
     font-family: 'Circular Std', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 16px;
+    font-size: var(--font-size-label);
     text-decoration: none;
     cursor: pointer;
     border: none;
@@ -564,7 +564,7 @@ const { variant = 'solid' } = Astro.props;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-pill);
-    font-size: 14px;
+    font-size: var(--font-size-small);
     font-weight: 500;
   }
 
@@ -819,6 +819,7 @@ const items = [
         <a
           href={item.href}
           class={`nav__link ${item.active ? 'nav__link--active' : ''}`}
+          aria-current={item.active ? 'page' : undefined}
         >
           {item.label}
         </a>
@@ -920,6 +921,13 @@ git add site/src/components/NavBar.astro
 git commit -m "feat: add NavBar component with glass/opaque scroll state"
 ```
 
+> **Amended after final full-branch review:** added `aria-current="page"` to
+> the active nav link — it previously only had a visual `nav__link--active`
+> class with no semantic signal for screen readers. Fixed together with the
+> typography-token amendments in commit
+> `fix: reference typography tokens instead of hardcoded font-size values`
+> (see Task 7/8/13/14's notes).
+
 ---
 
 ### Task 13: PostalCodeForm component
@@ -966,7 +974,7 @@ import Button from './Button.astro';
     background: transparent;
     padding: var(--space-3) var(--space-5);
     font-family: 'Circular Std', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size-body);
     color: var(--color-text);
     outline: none;
     flex: 1;
@@ -1098,7 +1106,7 @@ import Badge from './Badge.astro';
 
   .hero__title {
     color: #fff;
-    font-size: 40px;
+    font-size: var(--font-size-display);
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   }
 
@@ -1125,14 +1133,20 @@ import Badge from './Badge.astro';
     gap: var(--space-3);
     justify-content: center;
   }
-
-  @media (min-width: 768px) {
-    .hero__title {
-      font-size: 56px;
-    }
-  }
 </style>
 ```
+
+> **Amended after final full-branch review:** `.hero__title` hardcoded
+> `font-size: 40px` (mobile), which both bypassed `--font-size-display`
+> (tokens.css) AND contradicted `design.md`'s own "Hero / display: 48–56px"
+> spec. Switched to `var(--font-size-display)`, which resolves to 48px
+> mobile / 56px desktop via its own `@media (min-width: 768px)` rule already
+> in `tokens.css` — the component-level `@media` override became redundant
+> and was removed. Same review also found Button, Badge, and
+> PostalCodeForm's input hardcoding `font-size` values that happened to
+> match a token instead of referencing it (silent-drift risk) — all four
+> fixed together in commit
+> `fix: reference typography tokens instead of hardcoded font-size values`.
 
 - [ ] **Step 2: Commit**
 
