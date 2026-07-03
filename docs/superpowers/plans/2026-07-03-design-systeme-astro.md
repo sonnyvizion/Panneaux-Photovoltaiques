@@ -610,7 +610,7 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 ---
 
 <div class="card">
-  {imageSrc && <img src={imageSrc} alt={imageAlt} class="card__image" />}
+  {imageSrc && <img src={imageSrc} alt={imageAlt} loading="lazy" class="card__image" />}
   <div class="card__body">
     <slot />
   </div>
@@ -642,6 +642,11 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 git add site/src/components/Card.astro
 git commit -m "feat: add Card component"
 ```
+
+> **Amended after code review:** `loading="lazy"` was added to the `<img>` per
+> `interactivite-seo.md`'s "lazy-load sauf hero" rule — Card is never used in
+> the hero (which uses `astro:assets`' `<Image>` directly), so it should
+> always lazy-load (fixed in commit `fix: add loading=lazy to Card image`).
 
 ---
 
