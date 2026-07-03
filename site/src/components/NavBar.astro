@@ -1,0 +1,108 @@
+---
+const items = [
+  { label: 'Comprendre', href: '/', active: true },
+  { label: 'Rentabilité & Prix', href: '/rentabilite-prix', active: false },
+  { label: 'Aides & primes', href: '/aides-primes', active: false },
+  { label: 'Installation', href: '/installation', active: false },
+];
+---
+
+<nav id="site-nav" class="nav nav--glass">
+  <ul class="nav__list">
+    {items.map((item) => (
+      <li>
+        <a
+          href={item.href}
+          class={`nav__link ${item.active ? 'nav__link--active' : ''}`}
+        >
+          {item.label}
+        </a>
+      </li>
+    ))}
+  </ul>
+</nav>
+
+<script>
+  import { isNavOverHero } from '../scripts/navScrollState';
+
+  const hero = document.querySelector('#hero');
+  const nav = document.querySelector('#site-nav');
+
+  if (hero && nav) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        nav.classList.toggle('nav--glass', isNavOverHero(entry));
+        nav.classList.toggle('nav--opaque', !isNavOverHero(entry));
+      },
+      { threshold: 0 },
+    );
+    observer.observe(hero);
+  }
+</script>
+
+<style>
+  .nav {
+    position: sticky;
+    top: var(--space-5);
+    z-index: 10;
+    max-width: fit-content;
+    margin: 0 auto;
+    border-radius: var(--radius-pill);
+    padding: var(--space-2);
+    transition:
+      background 200ms ease,
+      box-shadow 200ms ease;
+  }
+
+  .nav--glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: var(--glass-border);
+  }
+
+  .nav--opaque {
+    background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid transparent;
+  }
+
+  .nav__list {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__link {
+    display: inline-block;
+    padding: var(--space-3) var(--space-5);
+    border-radius: var(--radius-pill);
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+  }
+
+  .nav--opaque .nav__link {
+    color: var(--color-text-muted);
+    text-shadow: none;
+  }
+
+  .nav__link--active {
+    background: rgba(255, 253, 249, 0.7);
+    color: var(--color-text);
+    text-shadow: none;
+  }
+
+  .nav--opaque .nav__link--active {
+    background: var(--color-surface-warm);
+  }
+
+  .nav__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+</style>
