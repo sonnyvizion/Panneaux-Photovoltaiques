@@ -1,5 +1,7 @@
 ---
 import '@fontsource/geist-mono/500.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
 import '../styles/tokens.css';
 import '../styles/fonts.css';
 import '../styles/global.css';
@@ -23,5 +25,9 @@ const { title, noindex = false } = Astro.props;
 	</head>
 	<body>
 		<slot />
+		<script>
+			import { initSmoothScroll } from '../scripts/smoothScroll';
+			initSmoothScroll();
+		</script>
 	</body>
 </html>

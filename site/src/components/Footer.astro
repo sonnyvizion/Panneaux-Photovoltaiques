@@ -1,0 +1,217 @@
+---
+import Logo from './Logo.astro';
+import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES } from '../data/site';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <Logo size="footer" />
+      <p class="footer__tagline">
+        L'équipe qui installe, pas un comparateur de devis
+      </p>
+    </div>
+
+    {/* Plan de site complet — profondeur SEO (architecture.md, bloc 8) */}
+    <nav class="footer__columns" aria-label="Plan du site">
+      {PILLARS.map((pillar) => (
+        <div class="footer__column">
+          {/* Pas de <h2> ici : 4 titres de colonne de footer pollueraient le
+              plan de titres de la page (règle d'or #1, SEO d'abord). Le repère
+              structurel est porté par le <nav aria-label>. */}
+          <p class="footer__column-title">{pillar.label}</p>
+          <ul class="footer__list">
+            {pillar.links.map((link) => (
+              <li><a class="footer__link" href={link.href}>{link.label}</a></li>
+            ))}
+            <li>
+              <a class="footer__link footer__link--all" href={pillar.href}>
+                Voir tout <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      ))}
+    </nav>
+
+    <nav class="footer__utility" aria-label="Liens transverses">
+      <ul class="footer__utility-list">
+        {UTILITY_LINKS.map((link) => (
+          <li><a class="footer__link" href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="footer__legal">
+      <p class="footer__copyright">
+        © {year} Belgreen
+        {LEGAL_LINKS.map((link) => (
+          <>
+            <span aria-hidden="true"> · </span>
+            <a class="footer__link" href={link.href}>{link.label}</a>
+          </>
+        ))}
+      </p>
+      <ul class="footer__locales">
+        {LOCALES.map((locale, index) => (
+          <li>
+            <a
+              class={`footer__link ${index === 0 ? 'is-active' : ''}`}
+              href={locale.href}
+              lang={locale.label.toLowerCase()}
+            >
+              {locale.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Figma : le footer est en ink/800, pas ink/900. */
+  .footer {
+    background: var(--color-ink-800);
+    color: var(--color-white-clear);
+    padding: var(--section-padding-block) var(--container-padding);
+  }
+
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--container-max);
+    margin-inline: auto;
+  }
+
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer__tagline {
+    margin: 0;
+    max-width: var(--width-section-intro);
+    opacity: 0.6;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .footer__columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4) var(--space-3);
+  }
+
+  .footer__column-title {
+    margin: 0 0 var(--space-3);
+    opacity: 0.6;
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .footer__list,
+  .footer__utility-list,
+  .footer__locales {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__list {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer__utility-list {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .footer__locales {
+    gap: var(--space-2);
+  }
+
+  .footer__link {
+    color: var(--color-white-clear);
+    text-decoration: none;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .footer__link:hover {
+    text-decoration: underline;
+  }
+
+  /* « Voir tout → » : souligné et atténué (Figma opacity 60). */
+  .footer__link--all {
+    display: inline-block;
+    padding-block: var(--space-3);
+    opacity: 0.6;
+    text-decoration: underline;
+  }
+
+  .footer__utility-list .footer__link {
+    opacity: 0.6;
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .footer__locales .footer__link.is-active {
+    color: var(--color-white-clear);
+  }
+
+  .footer__locales .footer__link:not(.is-active) {
+    color: var(--color-shade-strong);
+  }
+
+  .footer__link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+
+  .footer__utility,
+  .footer__legal {
+    padding-top: var(--space-4);
+    border-top: var(--border-width) solid var(--color-ink-700);
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .footer__copyright {
+    margin: 0;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  @media (min-width: 768px) {
+    .footer__columns {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

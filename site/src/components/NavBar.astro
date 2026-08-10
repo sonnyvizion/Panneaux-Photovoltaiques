@@ -1,74 +1,319 @@
 ---
-const items = [
-  { label: 'Comprendre', href: '/', active: true },
-  { label: 'Rentabilité & Prix', href: '/rentabilite-prix', active: false },
-  { label: 'Aides & primes', href: '/aides-primes', active: false },
-  { label: 'Installation', href: '/installation', active: false },
-];
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import { PHONE, REGIONS, LOCALES, PRIMARY_CTA, PILLARS } from '../data/site';
+
+interface Props {
+  /** Page courante, pour l'état actif. */
+  current?: string;
+}
+
+const { current = '/' } = Astro.props;
 ---
 
-<nav id="site-nav" class="nav nav--glass">
-  <ul class="nav__list">
-    {items.map((item) => (
-      <li>
-        <a
-          href={item.href}
-          class={`nav__link ${item.active ? 'nav__link--active' : ''}`}
-          aria-current={item.active ? 'page' : undefined}
-        >
-          {item.label}
-        </a>
-      </li>
-    ))}
-  </ul>
-</nav>
+<header id="site-header" class="header header--over-hero">
+  {/* Rangée utilitaire — tél · région · langue (nav.md).
+      Le dégradé porte sur cette bande seule, pas sur la rangée de nav. */}
+  <div class="header__utility-bar">
+  <div class="header__utility">
+    <a class="header__utility-item" href={PHONE.href}>
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M3 2h3l1.5 3.5-2 1.2a9 9 0 004.8 4.8l1.2-2L15 11v3a1 1 0 01-1 1A11.5 11.5 0 012 3a1 1 0 011-1z"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linejoin="round"
+        />
+      </svg>
+      {PHONE.label}
+    </a>
+
+    <span class="header__utility-sep" aria-hidden="true">·</span>
+
+    <label class="header__utility-item header__region">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+        <path
+          d="M8 14s5-4.2 5-8A5 5 0 003 6c0 3.8 5 8 5 8z"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linejoin="round"
+        />
+        <circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.3" />
+      </svg>
+      <span class="visually-hidden">Votre région</span>
+      <select class="header__region-select" name="region">
+        {REGIONS.map((region) => (
+          <option value={region.href}>{region.label}</option>
+        ))}
+      </select>
+    </label>
+
+    <span class="header__utility-sep" aria-hidden="true">·</span>
+
+    <ul class="header__locales">
+      {LOCALES.map((locale, index) => (
+        <li>
+          <a
+            class={`header__utility-item ${index === 0 ? 'is-active' : ''}`}
+            href={locale.href}
+            lang={locale.label.toLowerCase()}
+          >
+            {locale.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+  </div>
+
+  {/* Rangée principale — logo · piliers · CTA unique (règle d'or #2) */}
+  <div class="header__main">
+    <div class="header__brand">
+      <Logo size="header" />
+    </div>
+
+    <nav class="header__nav" aria-label="Navigation principale">
+      <ul class="header__list">
+        {PILLARS.map((pillar) => (
+          <li>
+            <a
+              href={pillar.href}
+              class={`header__link ${current === pillar.href ? 'is-active' : ''}`}
+              aria-current={current === pillar.href ? 'page' : undefined}
+            >
+              {pillar.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="header__actions">
+      {/* Masqué tant que le CTA du hero est à l'écran : deux CTA identiques
+          visibles en même temps se cannibalisent (règle d'or #2). */}
+      <div class="header__cta">
+        <Button variant="primary" href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</Button>
+      </div>
+      <button
+        type="button"
+        class="header__burger"
+        aria-expanded="false"
+        aria-controls="header-panel"
+      >
+        <span class="visually-hidden">Ouvrir le menu</span>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  {/* Panneau mobile. Il porte aussi le CTA : sur un écran étroit, logo +
+      bouton + burger ne tiennent pas sur une ligne (règle d'or #6, mobile
+      d'abord — mieux vaut un CTA à un tap qu'une rangée qui déborde). */}
+  <div class="header__panel" id="header-panel" hidden>
+    <ul class="header__panel-list">
+      {PILLARS.map((pillar) => (
+        <li>
+          <a href={pillar.href} class="header__panel-link">{pillar.label}</a>
+        </li>
+      ))}
+    </ul>
+    <div class="header__panel-cta">
+      <Button variant="primary" href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</Button>
+    </div>
+  </div>
+</header>
 
 <script>
-  import { isNavOverHero } from '../scripts/navScrollState';
+  import {
+    getScrollDirection,
+    isNavOverHero,
+    shouldHideNav,
+    type ScrollDirection,
+  } from '../scripts/navScrollState';
 
   const hero = document.querySelector('#hero');
-  const nav = document.querySelector('#site-nav');
+  const header = document.querySelector('#site-header');
 
-  if (hero && nav) {
+  if (hero && header) {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        nav.classList.toggle('nav--glass', isNavOverHero(entry));
-        nav.classList.toggle('nav--opaque', !isNavOverHero(entry));
+        const overHero = isNavOverHero(entry);
+        header.classList.toggle('header--over-hero', overHero);
+        header.classList.toggle('header--opaque', !overHero);
       },
       { threshold: 0 },
     );
     observer.observe(hero);
   }
+
+  // Le CTA du header prend le relais dès que celui du hero sort de l'écran.
+  const heroCta = document.querySelector('#hero-cta');
+
+  if (header) {
+    if (heroCta) {
+      const ctaObserver = new IntersectionObserver(
+        ([entry]) => {
+          header.classList.toggle('header--cta-visible', !entry.isIntersecting);
+        },
+        { threshold: 0 },
+      );
+      ctaObserver.observe(heroCta);
+    } else {
+      // Pages sans hero : rien ne prend le relais, le CTA reste visible.
+      header.classList.add('header--cta-visible');
+    }
+  }
+
+  // Repli de la nav au défilement descendant, réapparition à la remontée.
+  if (header) {
+    let previousY = window.scrollY;
+    let direction: ScrollDirection = 'up';
+    let ticking = false;
+
+    const update = () => {
+      const currentY = window.scrollY;
+      direction = getScrollDirection(previousY, currentY, direction);
+      header.classList.toggle('header--nav-hidden', shouldHideNav(direction, currentY));
+      previousY = currentY;
+      ticking = false;
+    };
+
+    window.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+  }
+
+  const burger = document.querySelector('.header__burger');
+  const panel = document.querySelector('#header-panel');
+
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    panel?.toggleAttribute('hidden', open);
+  });
 </script>
 
 <style>
-  .nav {
-    position: sticky;
-    top: var(--space-5);
+  /* .visually-hidden vit dans global.css (utilitaire partagé). */
+  /* Hors flux dans les deux états, sinon le header rogne la hauteur dans
+     laquelle le hero centre son contenu (Figma le pose en absolu à top 0).
+     Au-dessus du hero : absolu, il défile avec lui. Une fois le hero passé :
+     fixe, pour conserver la nav à deux états de design.md §3. */
+  .header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
-    max-width: fit-content;
-    margin: 0 auto;
-    border-radius: var(--radius-pill);
-    padding: var(--space-2);
-    transition:
-      background 200ms ease,
-      box-shadow 200ms ease;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding-bottom: var(--space-2);
+    transition: background var(--duration-slow) var(--easing-default);
   }
 
-  .nav--glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: var(--glass-border);
+  /* Bande pleine largeur qui porte le dégradé — la rangée de nav en dessous
+     reste transparente (relevé Figma : `accessoires_bar` seule est habillée). */
+  .header__utility-bar {
+    padding-block: var(--space-2);
   }
 
-  .nav--opaque {
-    background: var(--color-surface);
-    box-shadow: var(--shadow-soft);
-    border: 1px solid transparent;
+  .header--over-hero .header__utility-bar {
+    background: var(--overlay-utility-bar);
   }
 
-  .nav__list {
+  .header--over-hero {
+    color: var(--color-text-inverted);
+  }
+
+  /* État détaché : rien ne subsiste que la pilule de nav et le CTA, qui
+     flottent au-dessus du contenu. Pas de barre pleine largeur, donc pas de
+     fond ni de filet — les deux éléments portent leur propre habillage. */
+  .header--opaque {
+    position: fixed;
+    color: var(--color-text-primary);
+    /* La bande utilitaire ne compense plus le haut : on rétablit l'écart. */
+    padding-block: var(--space-3);
+  }
+
+  .header--opaque .header__utility-bar {
+    display: none;
+  }
+
+  /* Masqué mais conservé dans le flux : le logo tient la colonne de gauche,
+     sans quoi la pilule de nav se décalerait au changement d'état. */
+  .header--opaque .header__brand {
+    visibility: hidden;
+  }
+
+  .header__utility,
+  .header__main {
+    max-width: var(--container-max);
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: var(--container-padding);
+  }
+
+  /* Figma : bande dégradée en tête de hero, gap 32 sur desktop. Sur mobile
+     l'écart est resserré et la rangée peut passer à la ligne, sinon les cinq
+     éléments débordent de la largeur de l'écran. */
+  .header__utility {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-3);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-utility-size);
+    font-weight: var(--font-weight-regular);
+    letter-spacing: var(--text-body-nav-tracking);
+  }
+
+  .header--over-hero .header__utility {
+    opacity: var(--opacity-hover);
+  }
+
+  .header__utility-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-12);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .header__utility-item.is-active {
+    opacity: 1;
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  .header__utility-sep {
+    opacity: var(--opacity-active);
+  }
+
+  .header__region-select {
+    appearance: none;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  /* Les options héritent du fond système : forcer une couleur lisible. */
+  .header__region-select option {
+    color: var(--color-text-primary);
+  }
+
+  .header__locales {
     display: flex;
     gap: var(--space-2);
     list-style: none;
@@ -76,34 +321,184 @@ const items = [
     padding: 0;
   }
 
-  .nav__link {
-    display: inline-block;
-    padding: var(--space-3) var(--space-5);
+  .header__main {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .header__nav {
+    display: none;
+  }
+
+  .header__list {
+    display: flex;
+    gap: var(--pad-button-start);
+    list-style: none;
+    margin: 0;
+    padding: var(--pad-badge) var(--pad-button-start);
     border-radius: var(--radius-pill);
-    color: #fff;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    background: var(--bg-glass-fill-nav);
+    backdrop-filter: blur(var(--bg-glass-blur-pill));
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-pill));
+  }
+
+  .header--opaque .header__list {
+    background: var(--color-white-clear);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-color: transparent;
+  }
+
+  .header__link {
+    display: inline-block;
+    padding: var(--space-2) var(--space-3);
+    margin: calc(var(--space-2) * -1) calc(var(--space-3) * -1);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-primary);
     text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    white-space: nowrap;
   }
 
-  .nav--opaque .nav__link {
-    color: var(--color-text-muted);
-    text-shadow: none;
+  .header__link.is-active {
+    background: var(--bg-glass-fill-strong);
   }
 
-  .nav__link--active {
-    background: rgba(255, 253, 249, 0.7);
-    color: var(--color-text);
-    text-shadow: none;
+  .header--opaque .header__link.is-active {
+    background: var(--color-white-primary);
   }
 
-  .nav--opaque .nav__link--active {
-    background: var(--color-surface-warm);
+  .header__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
-  .nav__link:focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 2px;
+  /* Le CTA n'apparaît qu'une fois celui du hero dépassé, puis reste. */
+  .header__cta {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(calc(var(--space-2) * -1));
+    transition:
+      opacity var(--duration-medium) var(--easing-default),
+      transform var(--duration-medium) var(--easing-default),
+      visibility var(--duration-medium) var(--easing-default);
+  }
+
+  .header--cta-visible .header__cta {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  /* Repli de la nav : seule la pilule de liens se retire, la rangée
+     utilitaire et le CTA restent en place. */
+  .header__nav {
+    transition:
+      opacity var(--duration-medium) var(--easing-default),
+      transform var(--duration-medium) var(--easing-default);
+  }
+
+  .header--nav-hidden .header__nav {
+    opacity: 0;
+    transform: translateY(calc(var(--space-24) * -1));
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .header__cta,
+    .header__nav {
+      transform: none;
+    }
+  }
+
+  .header__burger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size-button-icon);
+    height: var(--size-button-icon);
+    border-radius: var(--radius-pill);
+    border: none;
+    cursor: pointer;
+    background: var(--bg-glass-fill);
+    backdrop-filter: blur(var(--bg-glass-blur));
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur));
+    color: var(--color-text-primary);
+  }
+
+  .header__panel {
+    background: var(--color-white-primary);
+    border-radius: var(--radius-3);
+    padding: var(--space-2);
+  }
+
+  .header__panel-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header__panel-link {
+    display: block;
+    padding: var(--space-3);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .header__panel-list li:last-child .header__panel-link {
+    border-bottom: none;
+  }
+
+  .header__panel-cta {
+    display: flex;
+    padding: var(--space-3);
+  }
+
+  /* Sous 768px, le CTA vit dans le panneau : le garder dans la rangée
+     ferait déborder logo + bouton + burger hors de l'écran. */
+  @media (max-width: 767px) {
+    .header__cta {
+      display: none;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .header__utility {
+      flex-wrap: nowrap;
+      gap: var(--space-4);
+    }
+
+    .header__panel-cta {
+      display: none;
+    }
+  }
+
+  .header__link:focus-visible,
+  .header__utility-item:focus-visible,
+  .header__burger:focus-visible,
+  .header__panel-link:focus-visible {
+    outline: var(--focus-ring-width) solid currentColor;
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  @media (min-width: 1024px) {
+    .header__nav {
+      display: block;
+    }
+
+    .header__burger,
+    .header__panel {
+      display: none;
+    }
   }
 </style>

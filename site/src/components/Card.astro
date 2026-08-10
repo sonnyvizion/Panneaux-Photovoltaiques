@@ -15,20 +15,22 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 </div>
 
 <style>
+  /* Pas d'ombre portée dans le système : la carte se détache du fond par un
+     filet. Fond et page partagent --color-white-primary. */
   .card {
-    background: var(--color-surface);
-    border-radius: var(--radius-card);
-    box-shadow: var(--shadow-soft);
+    background: var(--color-white-primary);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-4);
     overflow: hidden;
   }
 
   .card__image {
     width: 100%;
     height: auto;
-    border-radius: var(--radius-card) var(--radius-card) 0 0;
+    border-radius: var(--radius-4) var(--radius-4) 0 0;
   }
 
   .card__body {
-    padding: var(--space-5);
+    padding: var(--space-24);
   }
 </style>

@@ -11,11 +11,12 @@ import Accordion from '../components/Accordion.astro';
     <section>
       <h2>Typographie</h2>
       <div class="ds__column">
-        <h1>H1 — Titre de page</h1>
-        <h2>H2 — Sous-titre de section</h2>
-        <h3>H3 — Sous-titre mineur</h3>
-        <p>Corps de texte en Circular Std Book, pour vérifier la lisibilité et l'interligne 1.6.</p>
-        <p class="ds__muted">Texte secondaire (--color-text-muted), taille --font-size-small.</p>
+        <h1>H1 — Titre de page (Circular Std Medium 44)</h1>
+        <h2>H2 — Sous-titre de section (Circular Std Book 44)</h2>
+        <h3>H3 — Sous-titre mineur (Circular Std Medium 22)</h3>
+        <h4>H4 — Titre de bloc (Circular Std Medium 26)</h4>
+        <p>Corps de texte en Inter Medium 16/20, pour vérifier la lisibilité.</p>
+        <p class="ds__muted">Texte secondaire (--color-text-muted), taille --text-body-nav-size.</p>
         <p class="ds__mono">3 240 € / an — Geist Mono 500</p>
       </div>
     </section>
@@ -41,7 +42,7 @@ import Accordion from '../components/Accordion.astro';
       <div class="ds__row">
         <Card>
           <h3>Titre de carte</h3>
-          <p>Contenu de démonstration pour vérifier le radius, l'ombre et le padding.</p>
+          <p>Contenu de démonstration pour vérifier le radius, le filet et le padding.</p>
         </Card>
       </div>
     </section>
@@ -62,38 +63,38 @@ import Accordion from '../components/Accordion.astro';
   .ds {
     max-width: var(--container-max);
     margin: 0 auto;
-    padding: var(--space-9) var(--space-5);
+    padding: var(--space-96) var(--space-24);
     display: flex;
     flex-direction: column;
-    gap: var(--space-9);
+    gap: var(--space-96);
   }
 
   .ds__row {
     display: flex;
-    gap: var(--space-5);
+    gap: var(--space-24);
     align-items: center;
     flex-wrap: wrap;
   }
 
   .ds__row--dark {
-    background: var(--color-surface-warm);
-    padding: var(--space-5);
-    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+    padding: var(--space-24);
+    border-radius: var(--radius-4);
   }
 
   .ds__column {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .ds__muted {
     color: var(--color-text-muted);
-    font-size: var(--font-size-small);
+    font-size: var(--text-body-nav-size);
   }
 
   .ds__mono {
-    font-family: 'Geist Mono', monospace;
-    font-weight: 500;
+    font-family: var(--font-family-mono);
+    font-weight: var(--font-weight-medium);
   }
 </style>

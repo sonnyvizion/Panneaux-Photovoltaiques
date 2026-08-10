@@ -1,20 +1,33 @@
 ---
+/**
+ * Bouton pilule avec pastille flèche greffée à droite — motif signature repris
+ * sur tous les CTA (design.md §5).
+ *
+ * primary   : pilule verte, pastille sombre  → CTA principal
+ * ink       : pilule sombre, pastille verte  → CTA sur fond clair coloré (lime, vert)
+ * secondary : pilule contour, sans pastille  → action de second rang
+ *
+ * Chaque variante ne fait que poser 4 couleurs (fond, texte, pastille, flèche)
+ * et leurs 4 équivalents survolés. Toute l'animation vit ensuite dans une seule
+ * règle commune, ce qui garantit un comportement identique sur tous les CTA.
+ */
 interface Props {
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'ink' | 'secondary';
   href?: string;
   type?: 'button' | 'submit';
 }
 
 const { variant = 'primary', href, type = 'button' } = Astro.props;
 const Tag = href ? 'a' : 'button';
+const hasIcon = variant !== 'secondary';
 ---
 
 <Tag class={`btn btn--${variant}`} href={href} type={href ? undefined : type}>
   <span class="btn__label"><slot /></span>
-  {variant === 'primary' && (
+  {hasIcon && (
     <span class="btn__icon" aria-hidden="true">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-        <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="var(--color-bg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <svg class="btn__arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
       </svg>
     </span>
   )}
@@ -24,50 +37,151 @@ const Tag = href ? 'a' : 'button';
   .btn {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--gap-button);
     border-radius: var(--radius-pill);
-    font-family: 'Circular Std', system-ui, sans-serif;
-    font-weight: 500;
-    font-size: var(--font-size-label);
+    font-family: var(--text-button-family);
+    font-size: var(--text-button-size);
+    font-weight: var(--text-button-weight);
+    line-height: var(--text-button-line-height);
+    letter-spacing: var(--text-button-tracking);
     text-decoration: none;
     cursor: pointer;
     border: none;
-    padding: var(--space-2) var(--space-2) var(--space-2) var(--space-5);
-    transition: opacity 150ms ease;
+    white-space: nowrap;
+    padding: var(--pad-button-edge) var(--pad-button-edge) var(--pad-button-edge)
+      var(--pad-button-start);
+
+    background: var(--btn-bg);
+    color: var(--btn-fg);
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      color var(--duration-fast) var(--easing-default);
   }
+
+  /* --- Palettes par variante : 4 couleurs au repos, 4 au survol --- */
 
   .btn--primary {
-    background: var(--color-accent);
-    color: var(--color-text);
+    --btn-bg: var(--color-main-green);
+    --btn-fg: var(--color-text-primary);
+    --btn-badge-bg: var(--color-text-primary);
+    --btn-badge-fg: var(--color-white-primary);
+
+    --btn-bg-active: var(--color-text-primary);
+    --btn-fg-active: var(--color-white-primary);
+    --btn-badge-bg-active: var(--color-white-primary);
+    --btn-badge-fg-active: var(--color-text-primary);
   }
 
+  .btn--ink {
+    --btn-bg: var(--color-ink-900);
+    --btn-fg: var(--color-text-inverted);
+    --btn-badge-bg: var(--color-main-green);
+    --btn-badge-fg: var(--color-text-primary);
+
+    --btn-bg-active: var(--color-main-green);
+    --btn-fg-active: var(--color-text-primary);
+    --btn-badge-bg-active: var(--color-white-primary);
+    --btn-badge-fg-active: var(--color-text-primary);
+  }
+
+  /* Sans pastille : seule la pilule s'inverse, le motif reste cohérent. */
   .btn--secondary {
-    background: transparent;
-    border: 1px solid var(--color-border);
-    color: var(--color-text);
-    padding: var(--space-3) var(--space-5);
+    --btn-bg: transparent;
+    --btn-fg: var(--color-text-primary);
+    --btn-bg-active: var(--color-text-primary);
+    --btn-fg-active: var(--color-white-primary);
+
+    border: var(--border-width) solid var(--color-shade-grey);
+    padding: var(--space-12) var(--pad-button-start);
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      color var(--duration-fast) var(--easing-default),
+      border-color var(--duration-fast) var(--easing-default);
   }
 
   .btn__icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: var(--size-button-icon);
+    height: var(--size-button-icon);
     border-radius: var(--radius-pill);
-    background: var(--color-text);
+    flex-shrink: 0;
+    background: var(--btn-badge-bg);
+    color: var(--btn-badge-fg);
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      color var(--duration-fast) var(--easing-default);
   }
 
+  .btn__arrow {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+
+  /* --- État actif ---
+     `:focus-visible` est volontairement isolé dans ses propres règles : un
+     sélecteur inconnu du navigateur invalide TOUTE la liste où il figure, ce
+     qui supprimerait aussi le survol. Groupé, un seul navigateur sans support
+     tuait l'effet en entier.
+
+     `:active` accompagne `:hover` — règle d'or #6, pas d'interaction au survol
+     seul : l'effet doit exister au clavier et au doigt. */
+  .btn:hover,
   .btn:active {
-    opacity: 0.85;
-  }
-
-  .btn:hover:not(:active) {
-    opacity: 0.9;
+    background: var(--btn-bg-active);
+    color: var(--btn-fg-active);
   }
 
   .btn:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    background: var(--btn-bg-active);
+    color: var(--btn-fg-active);
+  }
+
+  .btn--secondary:hover,
+  .btn--secondary:active {
+    border-color: var(--btn-bg-active);
+  }
+
+  .btn--secondary:focus-visible {
+    border-color: var(--btn-bg-active);
+  }
+
+  .btn:hover .btn__icon,
+  .btn:active .btn__icon {
+    background: var(--btn-badge-bg-active);
+    color: var(--btn-badge-fg-active);
+  }
+
+  .btn:focus-visible .btn__icon {
+    background: var(--btn-badge-bg-active);
+    color: var(--btn-badge-fg-active);
+  }
+
+  /* La flèche se lève à 45°, la pastille ne bouge pas. */
+  .btn:hover .btn__arrow,
+  .btn:active .btn__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .btn:focus-visible .btn__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .btn:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* L'inversion de couleur porte le message à elle seule : on retire le
+     mouvement, pas le retour visuel. */
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover .btn__arrow,
+    .btn:active .btn__arrow {
+      transform: none;
+    }
+
+    .btn:focus-visible .btn__arrow {
+      transform: none;
+    }
   }
 </style>

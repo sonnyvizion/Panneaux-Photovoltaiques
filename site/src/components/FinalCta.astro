@@ -1,0 +1,93 @@
+---
+import Button from './Button.astro';
+
+/** Dernière relance vers le simulateur pour qui a tout scrollé (architecture.md). */
+---
+
+<section class="final-cta">
+  <div class="final-cta__card">
+    <p class="final-cta__overline">Passez à l'action</p>
+    <h2 class="final-cta__title">Prêt à savoir si le solaire est fait pour vous&nbsp;?</h2>
+    <p class="final-cta__text">
+      Vous parlez directement à l'équipe qui installe. Pas d'intermédiaire.
+      Pas de revente de données.
+    </p>
+    <div class="final-cta__action">
+      <Button variant="ink" href="/simulateur">Faire mon estimation</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final-cta {
+    padding: 0 var(--container-padding) var(--section-padding-block);
+    background: var(--color-shade-grey);
+  }
+
+  .final-cta__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-main-green);
+    color: var(--color-text-primary);
+  }
+
+  .final-cta__overline {
+    margin: 0;
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+
+  .final-cta__title {
+    margin: 0;
+    max-width: var(--width-section-intro);
+  }
+
+  /* Figma pose du display-little (Circular Book 22) : passé en texte courant,
+     comme la carte équipe et la réponse FAQ. */
+  .final-cta__text {
+    margin: 0;
+    max-width: var(--width-section-intro);
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .final-cta__action {
+    margin-top: var(--space-3);
+  }
+
+  @media (min-width: 1024px) {
+    .final-cta__card {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      column-gap: var(--space-4);
+      padding: var(--space-4) var(--space-4);
+    }
+
+    .final-cta__overline,
+    .final-cta__title,
+    .final-cta__text {
+      grid-column: 1;
+    }
+
+    .final-cta__action {
+      grid-column: 2;
+      grid-row: 1 / -1;
+      margin-top: 0;
+    }
+  }
+</style>

@@ -1,0 +1,64 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/brand/Belgreen-logo.webp';
+
+/**
+ * Logotype Belgreen : bloc complet (pictogramme soleil + nom), fourni par le
+ * client. Ses couleurs sont dans le fichier — il n'y a donc plus de variante
+ * claire/sombre, le vert et le jaune tiennent sur les deux fonds du site.
+ *
+ * La taille se pilote par la hauteur, la largeur suit le ratio 500×95.
+ */
+interface Props {
+  href?: string;
+  /** Hauteur du bloc : `header` en tête de page, `footer` un peu plus discret. */
+  size?: 'header' | 'footer';
+}
+
+const { href = '/', size = 'header' } = Astro.props;
+---
+
+<a class={`logo logo--${size}`} href={href}>
+  <Image
+    src={logo}
+    alt="Belgreen"
+    widths={[175, 350, 500]}
+    sizes="175px"
+    quality={90}
+    loading="eager"
+    class="logo__image"
+  />
+</a>
+
+<style>
+  /* `inline-block` et non `inline-flex` : en contexte flex, le `width: auto`
+     d'une image se résout sur sa taille intrinsèque (500px) au lieu de suivre
+     son ratio, et la hauteur imposée l'écrasait. Hors flex, la largeur se
+     déduit correctement du ratio 500×95. */
+  .logo {
+    display: inline-block;
+    line-height: 0;
+    text-decoration: none;
+  }
+
+  .logo__image {
+    display: block;
+    height: var(--size-logo);
+    width: auto;
+    max-width: 100%;
+  }
+
+  .logo--header {
+    --size-logo: var(--size-logo-header);
+  }
+
+  .logo--footer {
+    --size-logo: var(--size-logo-footer);
+  }
+
+  .logo:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+</style>

@@ -1,0 +1,157 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Button from './Button.astro';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+
+/** Valeurs relevées au dev mode Figma (nœud 356:431). */
+const steps = [
+  {
+    title: 'Je renseigne ma maison',
+    detail: 'Code postal · consommation · orientation du toit en 2 minutes',
+    image: 'Vue 3D d’un quartier / toiture',
+    tone: 'photo',
+  },
+  {
+    title: 'Je reçois mon estimation personnalisée',
+    detail: "Fourchette d'économies · budget estimé · aides de ma région · ROI",
+    tone: 'light',
+  },
+  {
+    title: 'Un expert analyse mon toit, gratuitement',
+    detail: 'Rendez-vous direct avec l’installateur · chiffrage précis · sans engagement',
+    image: 'Ingénieur avec casque de chantier',
+    tone: 'photo',
+  },
+] as const;
+---
+
+<Section tone="grey">
+  <SectionHeading
+    overline="Le processus"
+    overlineTone="tertiary"
+    title="Comment ça marche&nbsp;?"
+    intro="Trois étapes, sans engagement, du code postal jusqu'à la visite d'un installateur."
+  />
+
+  <ol class="steps">
+    {steps.map((step, index) => (
+      <li class={`steps__item steps__item--${step.tone}`}>
+        {step.image && (
+          <>
+            <div class="steps__media">
+              <ImagePlaceholder label={step.image} ratio="3 / 4" />
+            </div>
+            <div class="steps__veil" aria-hidden="true"></div>
+          </>
+        )}
+        <div class="steps__body">
+          <p class="steps__number" aria-hidden="true">{index + 1}</p>
+          <h3 class="steps__title">{step.title}</h3>
+          <p class="steps__detail">{step.detail}</p>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <div class="steps__cta">
+    <Button variant="ink" href="/simulateur">Commencer mon estimation</Button>
+  </div>
+</Section>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-12) var(--gap-step);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .steps__item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: var(--radius-3);
+    padding: var(--pad-step-block) var(--space-24);
+    min-height: var(--height-step);
+  }
+
+  .steps__item--light {
+    background: var(--color-white-clear);
+    color: var(--color-ink-900);
+  }
+
+  .steps__media,
+  .steps__veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .steps__media :global(.placeholder) {
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* Dégradé bas : décolle le texte de la photo sans ombre portée. */
+  .steps__veil {
+    background: var(--overlay-step);
+  }
+
+  .steps__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    text-align: center;
+  }
+
+  .steps__item--photo .steps__body {
+    color: var(--color-text-inverted);
+  }
+
+  .steps__number {
+    margin: 0 0 auto;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-step-number);
+    font-weight: var(--text-display-mid-weight);
+    line-height: var(--text-display-mid-line-height);
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .steps__title {
+    margin: 0;
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+  }
+
+  .steps__detail {
+    margin: 0;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .steps__cta {
+    display: flex;
+    justify-content: center;
+  }
+
+  @media (min-width: 768px) {
+    .steps {
+      grid-template-columns: repeat(3, 1fr);
+      max-width: var(--width-steps);
+      margin-inline: auto;
+      width: 100%;
+    }
+  }
+</style>

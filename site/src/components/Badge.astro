@@ -1,15 +1,24 @@
 ---
+/**
+ * Pastille de réassurance.
+ * Gabarit relevé au dev mode Figma (nœud 356:368) : pas de pictogramme sur la
+ * variante verre du hero — l'icône reste disponible en option pour les usages
+ * sur fond clair.
+ */
 interface Props {
   variant?: 'glass' | 'solid';
+  icon?: boolean;
 }
 
-const { variant = 'solid' } = Astro.props;
+const { variant = 'solid', icon = false } = Astro.props;
 ---
 
 <span class={`badge badge--${variant}`}>
-  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-    <path d="M2 6L4.5 8.5L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-  </svg>
+  {icon && (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 6L4.5 8.5L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  )}
   <slot />
 </span>
 
@@ -17,23 +26,25 @@ const { variant = 'solid' } = Astro.props;
   .badge {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
+    padding: var(--pad-pill-block) var(--pad-pill-inline);
     border-radius: var(--radius-pill);
-    font-size: var(--font-size-small);
-    font-weight: 500;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
   }
 
   .badge--solid {
-    background: var(--color-surface-warm);
-    color: var(--color-text);
+    background: var(--color-white-clear);
+    color: var(--color-text-primary);
   }
 
   .badge--glass {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--glass-blur));
-    -webkit-backdrop-filter: blur(var(--glass-blur));
-    border: var(--glass-border);
-    color: var(--color-text);
+    background: var(--bg-glass-fill-pill);
+    backdrop-filter: blur(var(--bg-glass-blur-pill));
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-pill));
+    color: var(--color-text-inverted);
   }
 </style>

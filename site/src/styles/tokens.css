@@ -1,55 +1,412 @@
+/* =============================================================================
+   tokens.css — Source unique de vérité des valeurs de design
+   =============================================================================
+
+   Généré depuis Figma « Panneaux Voltaïqies », node 356:349
+   https://www.figma.com/design/b78qIBZ4vtqHB1lwa7TLbg/?node-id=356-349
+   via MCP Figma `get_variable_defs` — 2026-08-07.
+
+   RÈGLE DU PROJET : aucune valeur de design en dur ailleurs dans le code.
+   Couleur, taille, graisse, interlignage, espacement, rayon — tout passe par
+   une custom property définie ici.
+
+   Nommage : le nom Figma est conservé tel quel, `/` et `_` → `-`, en minuscules.
+   Ex. Figma `main/green` → `--color-main-green`, `body_sm` → `--text-body-sm-*`.
+
+   Deux blocs :
+     1..5  TOKENS FIGMA      — valeurs lues dans le fichier, ne pas modifier à
+                               la main. Une exception documentée : `body-light`
+                               et `body-sm` sont volontairement allégés (§3).
+     6     EXTENSIONS PROJET — valeurs absentes de Figma (paliers d'espacement
+                               complémentaires, grille, mouvement, dimensions de
+                               composant). À remplacer dès que Figma les publie.
+
+   ⚠️ Aucune ombre dans ce système — ni portée (`--shadow-*`) ni de texte
+   (`--text-shadow-*`), c'est volontaire. La lisibilité sur photo passe par le
+   voile sombre (§6), la profondeur par le verre (§5) et les aplats de couleur.
+
+   ⚠️ L'échelle d'espacement a été renumérotée pour suivre Figma :
+   `--space-3` vaut désormais 16px (et non 12px). Les paliers hors Figma sont
+   nommés par leur valeur (`--space-12`, `--space-24`…) pour lever l'ambiguïté.
+   ========================================================================== */
+
 :root {
-  /* Colors — design.md §1 */
-  --color-bg: #fffdf9;
-  --color-surface: #ffffff;
-  --color-surface-warm: #f6efe6;
-  --color-text: #241f1a;
-  --color-text-muted: #6e655b;
-  --color-border: #eae1d4;
-  --color-accent: #3fce96;
-  --gradient-hero: linear-gradient(135deg, #f0c7bc 0%, #f3d9b0 50%, #dccde8 100%);
+  /* ==========================================================================
+     1. COULEURS — primitives
+     ========================================================================== */
 
-  /* Radius — design.md §3 */
-  --radius-pill: 9999px;
-  --radius-card: 24px;
-  --radius-small: 16px;
+  --color-ink-900: #191c1b;
+  --color-ink-800: #2a2f2d;
+  --color-ink-700: #4c5250;
 
-  /* Shadow — design.md §3 */
-  --shadow-soft: 0 8px 24px rgba(80, 60, 40, 0.12);
+  --color-shade-grey: #eaecec;
+  --color-shade-strong: #a4acac;
 
-  /* Glass — design.md §3 */
-  --glass-bg: rgba(255, 253, 249, 0.55);
-  --glass-blur: 16px;
-  --glass-border: 1px solid rgba(255, 255, 255, 0.4);
+  --color-white-primary: #fffefc;
+  --color-white-clear: #f0f8f5;
 
-  /* Spacing — design.md §4 */
+  --color-main-green: #65ebc1;
+  --color-highlight-primary: #e0ff58;
+
+  /* Gris du texte de substitution des champs (relevé Figma, hors variables). */
+  --color-input-placeholder: #757575;
+
+  /* ==========================================================================
+     2. COULEURS — alias sémantiques
+     Valeurs identiques aux primitives dans Figma : modélisées en référence
+     plutôt qu'en doublon. Utiliser CES tokens dans les composants.
+     ========================================================================== */
+
+  --color-text-primary: var(--color-ink-900);        /* #191c1b */
+  --color-text-secondary: var(--color-ink-800);      /* #2a2f2d */
+  --color-text-tertiary: var(--color-ink-700);       /* #4c5250 */
+  --color-text-muted: var(--color-shade-strong);     /* #a4acac */
+  --color-text-inverted: var(--color-white-primary); /* #fffefc */
+
+  /* ==========================================================================
+     3. TYPOGRAPHIE
+     --------------------------------------------------------------------------
+     Circular Std → titres, display, boutons, overline
+     Inter        → corps de texte, nav, marker
+
+     Interlignage : Figma renvoie soit des px, soit un ratio (1 = 100 %).
+     Reproduit tel quel.
+
+     Interlettrage : Figma renvoie un nombre sans unité, interprété en POURCENT
+     (converti en `em`) — la même valeur `-2` s'applique à du 44px comme à du
+     14px, ce qui exclut une lecture en px. ⚠️ à confirmer côté Figma.
+     ========================================================================== */
+
+  /* --- Familles --- */
+  --font-family-circular: "Circular Std", system-ui, -apple-system, sans-serif;
+  --font-family-inter: "Inter", system-ui, -apple-system, sans-serif;
+
+  /* Geist Mono — hors Figma, réservé aux chiffres clés du simulateur
+     (design.md §2). */
+  --font-family-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Alias d'usage (préférer ceux-ci dans les composants) */
+  --font-family-display: var(--font-family-circular);
+  --font-family-body: var(--font-family-inter);
+
+  /* --- Graisses ---
+     ⚠️ Circular Std « Book » = 450 dans Figma ; le @font-face Book est déclaré
+     en `font-weight: 400 450` dans fonts.css pour couvrir la plage. */
+  --font-weight-regular: 400; /* Inter Regular — hors styles Figma nommés */
+  --font-weight-book: 450;
+  --font-weight-medium: 500;
+
+  /* --- H1 — Circular Std Medium 44/1, -2 % --- */
+  --text-h1-family: var(--font-family-display);
+  --text-h1-size: 32px; /* → 44px dès 768px (voir bas de fichier) */
+  --text-h1-weight: var(--font-weight-medium);
+  --text-h1-line-height: 1;
+  --text-h1-tracking: -0.02em;
+
+  /* --- H2 — Figma : Circular Std Book 44/46, -5 %
+     ⚠️ ÉCART ASSUMÉ : ramené à 40px pour créer une hiérarchie avec le H1 resté
+     à 44px — dans Figma les deux sont à 44 et se confondent. L'interlignage
+     suit à 42px pour conserver le rapport serré d'origine (1,045).
+     Décision projet du 2026-08-10. --- */
+  --text-h2-family: var(--font-family-display);
+  --text-h2-size: 28px;  /* → 40px dès 768px */
+  --text-h2-weight: var(--font-weight-book);
+  --text-h2-line-height: 30px; /* → 42px dès 768px */
+  --text-h2-tracking: -0.05em;
+
+  /* --- H3 — Figma : Circular Std Medium 22/26, -2 %
+     ⚠️ ÉCART ASSUMÉ : ramené à 20/24, dans la continuité de l'allègement du
+     texte courant (décision projet du 2026-08-10). --- */
+  --text-h3-family: var(--font-family-display);
+  --text-h3-size: 20px;
+  --text-h3-weight: var(--font-weight-medium);
+  --text-h3-line-height: 24px;
+  --text-h3-tracking: -0.02em;
+
+  /* --- H4 — Circular Std Medium 26/30, -2 % --- */
+  --text-h4-family: var(--font-family-display);
+  --text-h4-size: 26px;
+  --text-h4-weight: var(--font-weight-medium);
+  --text-h4-line-height: 30px;
+  --text-h4-tracking: -0.02em;
+
+  /* --- display-mid — Circular Std Book 44/1, -2 % --- */
+  --text-display-mid-family: var(--font-family-display);
+  --text-display-mid-size: 44px;
+  --text-display-mid-weight: var(--font-weight-book);
+  --text-display-mid-line-height: 1;
+  --text-display-mid-tracking: -0.02em;
+
+  /* --- display-little — Circular Std Book 22/24, -2 % --- */
+  --text-display-little-family: var(--font-family-display);
+  --text-display-little-size: 22px;
+  --text-display-little-weight: var(--font-weight-book);
+  --text-display-little-line-height: 24px;
+  --text-display-little-tracking: -0.02em;
+
+  /* --- overline — Circular Std Medium 18/20, -2 % --- */
+  --text-overline-family: var(--font-family-display);
+  --text-overline-size: 18px;
+  --text-overline-weight: var(--font-weight-medium);
+  --text-overline-line-height: 20px;
+  --text-overline-tracking: -0.02em;
+
+  /* --- button — Circular Std Medium 16/100 %, -2 % --- */
+  --text-button-family: var(--font-family-display);
+  --text-button-size: 16px;
+  --text-button-weight: var(--font-weight-medium);
+  --text-button-line-height: 1;
+  --text-button-tracking: -0.02em;
+
+  /* --- body-light — Figma : Inter Medium 18/22, -2 %
+     ⚠️ ÉCART ASSUMÉ : allégé en Regular 16px. Aucun style Figma n'est en
+     Regular, ce qui rend tout le texte courant gras et surdimensionné.
+     Décision projet du 2026-08-10 — ne pas « recorriger » vers Figma sans
+     en reparler. Les styles de titre, eux, restent fidèles. --- */
+  --text-body-light-family: var(--font-family-body);
+  --text-body-light-size: 16px;
+  --text-body-light-weight: var(--font-weight-regular);
+  --text-body-light-line-height: 22px;
+  --text-body-light-tracking: -0.02em;
+
+  /* --- body-sm — Figma : Inter Medium 16/20, 0
+     ⚠️ ÉCART ASSUMÉ : allégé en Regular 15px (même décision). --- */
+  --text-body-sm-family: var(--font-family-body);
+  --text-body-sm-size: 15px;
+  --text-body-sm-weight: var(--font-weight-regular);
+  --text-body-sm-line-height: 20px;
+  --text-body-sm-tracking: 0;
+
+  /* --- body-nav — Inter Medium 14/100 %, -2 % --- */
+  --text-body-nav-family: var(--font-family-body);
+  --text-body-nav-size: 14px;
+  --text-body-nav-weight: var(--font-weight-medium);
+  --text-body-nav-line-height: 1;
+  --text-body-nav-tracking: -0.02em;
+
+  /* --- marker — Inter Medium 14/18, +5 % (label espacé) --- */
+  --text-marker-family: var(--font-family-body);
+  --text-marker-size: 14px;
+  --text-marker-weight: var(--font-weight-medium);
+  --text-marker-line-height: 18px;
+  --text-marker-tracking: 0.05em;
+
+  /* ==========================================================================
+     4. ESPACEMENT & RAYONS DE BORDURE
+     Une seule échelle pour les deux. Figma publie 4 paliers : 4 · 8 · 16 · 32.
+     Les paliers complémentaires sont en §6, nommés par leur valeur.
+     ========================================================================== */
+
   --space-1: 4px;
   --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --space-8: 64px;
-  --space-9: 96px;
-  --space-10: 128px;
+  --space-3: 16px;
+  --space-4: 32px;
 
-  /* Layout — design.md §4 */
+  /* Les rayons reprennent l'échelle d'espacement — pas d'échelle séparée. */
+  --radius-1: var(--space-1); /* 4px  */
+  --radius-2: var(--space-2); /* 8px  */
+  --radius-3: var(--space-3); /* 16px */
+  --radius-4: var(--space-4); /* 32px */
+
+  /* Pilule complète — hors échelle (boutons, nav, badges, tags).
+     design.md §3 « pilule partout, décision confirmée ». */
+  --radius-pill: 9999px;
+
+  /* Rayons relevés au dev mode Figma sur le nœud 356:349. Hors échelle : la
+     maquette utilise trois rayons distincts selon la taille du bloc. */
+  --radius-card: 18px;  /* cartes standard : stats, piliers, FAQ fermée */
+  --radius-panel: 25px; /* grands blocs : équipe, témoignages, FAQ ouverte, CTA */
+  --radius-hero: 25px;  /* coins bas du hero uniquement */
+
+  /* ==========================================================================
+     5. EFFETS — verre (bg/glass)
+     Figma : Effect(BACKGROUND_BLUR, radius 15) + Effect(GLASS, radius 25).
+     L'effet GLASS (réfraction Figma) n'a pas d'équivalent CSS ; sa valeur est
+     conservée pour référence, seul le flou est applicable.
+     ⚠️ Garde-fou perf : backdrop-filter réservé aux éléments au-dessus du pli,
+     jamais répété dans une grille de cartes.
+     ========================================================================== */
+
+  --bg-glass-blur: 15px;
+  --bg-glass-refraction: 25px; /* référence Figma, non applicable en CSS */
+
+  /* ==========================================================================
+     6. EXTENSIONS PROJET — NON issues de Figma
+     Valeurs reprises de `design.md` ou imposées par le code existant.
+     À remplacer par les tokens Figma dès qu'ils existent.
+     ========================================================================== */
+
+  /* --- Paliers d'espacement absents de Figma (design.md §4) ---
+     Nommés par leur valeur pour ne pas entrer en collision avec l'index Figma. */
+  --space-12: 12px;
+  --space-24: 24px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-96: 96px;
+  --space-128: 128px;
+
+  /* --- Habillage verre : Figma ne publie que le flou, pas le fond ni le filet.
+     Les fonds ci-dessous sont relevés au dev mode (nœud 356:354), le flou varie
+     selon l'élément — il n'y a pas UN verre mais trois dosages. --- */
+  --bg-glass-fill: rgba(255, 254, 252, 0.55);
+  --bg-glass-fill-strong: rgba(255, 254, 252, 0.7); /* item de nav actif */
+  --bg-glass-fill-form: rgba(255, 254, 252, 0.8);   /* champ code postal */
+  --bg-glass-fill-pill: rgba(246, 246, 246, 0.35);  /* pastilles de réassurance */
+  --bg-glass-fill-nav: rgba(250, 254, 255, 0.2);    /* barre de navigation */
+  --bg-glass-blur-form: 7.5px;
+  --bg-glass-blur-pill: 5px;
+  --bg-glass-border: 1px solid rgba(255, 255, 255, 0.4);
+
+  /* --- Voiles sombres posés sur les photos (relevés Figma) --- */
+  --overlay-hero: rgba(0, 0, 0, 0.25);
+  --overlay-photo: rgba(0, 0, 0, 0.2);
+  /* Dégradé bas des cartes-étapes, pour décoller le texte de la photo. */
+  --overlay-step: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 1) 11.269%,
+    rgba(102, 102, 102, 0) 75.944%
+  );
+  /* Voile dégradé de la barre utilitaire du hero. */
+  --overlay-utility-bar: linear-gradient(
+    to right,
+    rgba(33, 43, 56, 0.35),
+    rgba(91, 121, 158, 0)
+  );
+
+  /* --- Rythme vertical, relevé au dev mode Figma (nœud 356:349) ---
+     Mobile-first : ces valeurs sont les valeurs mobiles, la media query en bas
+     du fichier passe aux valeurs desktop de la maquette. */
+  --section-padding-block: var(--space-48); /* → 80px desktop */
+  --section-gap: var(--space-4);             /* en-tête → contenu, → 46px desktop */
+  --block-gap: var(--space-48);              /* entre sous-blocs, → 80px desktop */
+
+  /* --- Grille & conteneur --- */
   --container-max: 1280px;
+  --container-padding: var(--space-24); /* → 60px desktop (Figma px-[60px]) */
+  --width-section-intro: 550px;         /* largeur des chapô de section (Figma) */
+  /* ⚠️ Les custom properties ne sont PAS utilisables dans une règle @media
+     (limitation CSS, pas un oubli). Ces tokens servent de référence pour les
+     calculs JS et la documentation ; les @media des composants répètent donc
+     les valeurs littérales. Toute modification ici doit être répercutée à la
+     main : `grep -rn "min-width:" src/`. */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
 
-  /* Typography scale — design.md §2 */
-  --font-size-display: 48px;
-  --font-size-h1: 36px;
-  --font-size-h2: 28px;
-  --font-size-h3: 20px;
-  --font-size-body: 16px;
-  --font-size-small: 14px;
-  --font-size-label: 16px;
+  /* --- Épaisseur de filet --- */
+  --border-width: 1px;
+
+  /* --- Dimensions de composant --- */
+  /* Dimensions relevées au dev mode Figma (nœud 356:349). */
+  --size-button-icon: 32px; /* pastille flèche des boutons */
+  --size-arrow-badge: 32px; /* pastille flèche des liens de carte */
+  --size-certif-logo: 44px; /* logo Enphase de la pastille de certification */
+  --size-logo-header: 26px; /* logotype Belgreen en tête de page, → 33px */
+  --size-logo-footer: 28px;
+  --text-utility-size: 11px; /* rangée utilitaire du header, sous body-nav */
+  --text-step-number: 66px; /* chiffre des étapes « Comment ça marche » */
+  --size-star: 18px;        /* étoile des témoignages */
+  --size-icon-sm: 14px;
+  --size-icon-xs: 12px;
+  --width-input-min: 160px;
+  --width-hero-copy: 662px;
+
+  /* --- Gabarits relevés au dev mode Figma (nœud 356:349) ---
+     Largeurs et hauteurs propres à la maquette desktop, appliquées seulement
+     au-delà de 1024px. Elles ne décrivent pas une échelle : ce sont les mesures
+     exactes des blocs. */
+  /* Gabarit du hero (nœud 356:354) */
+  --height-hero: 100svh; /* → 788px dès 768px */
+  --gap-hero: var(--space-24);  /* entre bloc texte et bloc simulateur, → 44px */
+  --gap-hero-simu: 12px;        /* entre le champ et sa légende */
+  --width-h1: 662px;
+  --width-hero-subtitle: 531px;
+  --width-hero-helper: 440px;
+  --width-cta-simu: 456px;
+  --height-cta-simu: 52px;
+  --pad-h1: 10px;
+  /* Pastilles : Figma les pose en absolu à top 706 sur 788 de haut.
+     788 − 706 − 29 (hauteur de pastille) = 53px depuis le bas. */
+  --hero-pills-bottom: 53px;
+  /* Amplitude de la parallaxe du fond : la photo est agrandie de ce débord en
+     haut et en bas, puis parcourt exactement cette course. Elle couvre donc le
+     hero d'un bout à l'autre du défilement, sans jamais laisser de bande vide. */
+  --hero-parallax-shift: 48px;
+  --pad-form-start: 12px;
+  --pad-form-end: 3px;
+  --pad-form-block: 4px;
+  --gap-form: var(--space-2); /* → 40px dès 768px */
+  --radius-form: 100px;
+  --opacity-subtitle: 0.95;
+
+  /* Pastilles de réassurance du hero */
+  --pad-pill-inline: 18px;
+  --pad-pill-block: 6px;
+
+  /* Bouton pilule (nœud 264:16) */
+  --pad-button-start: 18px; /* → 25px dès 768px */
+  --pad-button-edge: 6px;
+  --gap-button: var(--space-12); /* → 18px dès 768px */
+
+  --pad-card: 20px;         /* padding intérieur des cartes standard */
+  --pad-badge: 15px;        /* padding de la pastille de certification */
+  --pad-card-lg: 35px;      /* padding horizontal des grandes cartes */
+  --pad-card-lg-block: 25px;
+  --pad-team-card: 40px;
+  --pad-step-block: 45px;
+  --pad-team-copy: 50px;
+  --gap-step: 15px;
+
+  --width-team-card: 437px;
+  --height-team-card: 443px;
+  --height-team-frame: 669px;
+  --width-pillar-image: 195px;
+  --radius-pillar-image: 19px;
+  --height-rea-block: 263px; /* hauteur de la rangée Réassurance */
+  --height-rating: 72px;     /* carte « 4.8/5 » */
+  --width-faq: 636px;
+  --width-steps: 914px;
+  --height-step: 433px;
+  --width-progress-step: 55px;
+  --height-progress-step: 3px;
+
+  /* --- Mouvement (design.md §6) --- */
+  --duration-fast: 150ms;
+  --duration-medium: 250ms;
+  --duration-slow: 200ms;
+  --easing-default: ease;
+
+  /* --- Opacités d'état --- */
+  --opacity-hover: 0.9;
+  --opacity-active: 0.85;
+  --opacity-hero-overlay: 0.9;
+
+  /* --- Focus --- */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
 }
 
+/* Rythme vertical élargi sur desktop (design.md §4 : 96–128px desktop,
+   48–64px mobile). Seuls les tokens de rythme changent — mobile-first. */
 @media (min-width: 768px) {
   :root {
-    --font-size-display: 56px;
-    --font-size-h1: 40px;
+    --section-padding-block: 80px;
+    --section-gap: 46px;
+    --block-gap: 80px;
+    --container-padding: 60px;
+
+    /* Valeurs de la maquette desktop. En dessous, les versions réduites
+       définies plus haut évitent les débordements horizontaux : la maquette
+       fournie ne couvre que le 1280. */
+    --text-h1-size: 44px;
+    --text-h2-size: 40px;
+    --text-h2-line-height: 42px;
+    --height-hero: 788px;
+    --gap-hero: 44px;
+    --gap-form: 40px;
+    --pad-button-start: 25px;
+    --gap-button: 18px;
+    --size-logo-header: 33px;
   }
 }

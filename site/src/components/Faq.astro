@@ -1,0 +1,82 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Accordion from './Accordion.astro';
+
+/**
+ * FAQ de la home. Les réponses vivent dans le HTML (règle d'or #1) et sont
+ * balisées FAQPage pour la longue traîne — le balisage est généré depuis le même
+ * tableau que l'affichage, il ne peut donc pas diverger du texte visible.
+ */
+const faq = [
+  {
+    question: 'Le photovoltaïque est-il vraiment rentable pour ma maison ?',
+    answer:
+      "Dans la majorité des cas en Belgique, oui — mais le délai d'amortissement dépend de votre consommation, de l'orientation de votre toit et des primes de votre région. Le simulateur vous donne une fourchette en deux minutes, sans laisser vos coordonnées.",
+    open: false,
+  },
+  {
+    question: 'Revendez-vous mes données à des installateurs partenaires ?',
+    answer:
+      "Non. Belgreen/Belectric n'est pas un comparateur de devis : nous ne revendons ni ne partageons vos données avec des installateurs tiers. Quand vous demandez une estimation, c'est directement notre équipe — celle qui viendra poser vos panneaux — qui vous contacte. Personne d'autre n'a accès à vos coordonnées.",
+    open: true,
+  },
+  {
+    question: 'Quelles aides puis-je obtenir dans ma région ?',
+    answer:
+      "Les aides diffèrent fortement entre la Wallonie, Bruxelles et la Flandre, et évoluent chaque année. Le simulateur applique automatiquement le régime de votre région à partir de votre code postal.",
+    open: false,
+  },
+  {
+    question: 'Le simulateur est-il vraiment gratuit et sans engagement ?',
+    answer:
+      "Oui. Le calcul est gratuit et ne demande aucune coordonnée. Vous ne nous laissez vos informations que si vous décidez vous-même de demander une étude personnalisée.",
+    open: false,
+  },
+];
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faq.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+---
+
+<Section tone="grey" id="faq">
+  <SectionHeading
+    overline="Avant de vous lancer"
+    overlineTone="tertiary"
+    title="Questions fréquentes"
+    intro="Les questions qu'on nous pose le plus souvent, avant même de faire une simulation."
+  />
+
+  <div class="faq">
+    {faq.map((item) => (
+      <Accordion question={item.question} variant="card" open={item.open} name="faq">
+        {item.answer}
+      </Accordion>
+    ))}
+  </div>
+</Section>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />
+
+<style>
+  .faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .faq {
+      max-width: var(--width-faq);
+      margin-inline: auto;
+    }
+  }
+</style>

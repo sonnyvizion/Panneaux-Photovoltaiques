@@ -1,16 +1,31 @@
 ---
+/**
+ * Accordéon natif <details>/<summary> — fonctionne sans JavaScript.
+ *
+ * line : séparateur pleine largeur (défaut du site, design.md §5)
+ * card : boîte arrondie qui passe en sombre à l'ouverture (FAQ de la home)
+ */
 interface Props {
   question: string;
+  variant?: 'line' | 'card';
+  open?: boolean;
+  /**
+   * Nom de groupe. Deux accordéons qui le partagent deviennent exclusifs :
+   * ouvrir l'un referme l'autre. C'est natif — aucun JavaScript.
+   * Sans support (navigateurs antérieurs à fin 2023), l'attribut est ignoré et
+   * les accordéons restent simplement indépendants.
+   */
+  name?: string;
 }
 
-const { question } = Astro.props;
+const { question, variant = 'line', open = false, name } = Astro.props;
 ---
 
-<details class="accordion">
+<details class={`accordion accordion--${variant}`} open={open} name={name}>
   <summary class="accordion__summary">
     <span>{question}</span>
     <svg class="accordion__chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
-      <path d="M3 5L7 9L11 5" stroke="var(--color-text)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
     </svg>
   </summary>
   <div class="accordion__content">
@@ -20,25 +35,35 @@ const { question } = Astro.props;
 
 <style>
   .accordion {
-    border-bottom: 1px solid var(--color-border);
-    padding: var(--space-4) 0;
+    color: var(--color-text-primary);
   }
 
   .accordion__summary {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: var(--space-3);
     cursor: pointer;
     list-style: none;
-    font-weight: 500;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
   }
 
   .accordion__summary::-webkit-details-marker {
     display: none;
   }
 
+  .accordion__summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+
   .accordion__chevron {
-    transition: transform 250ms ease;
+    transition: transform var(--duration-medium) var(--easing-default);
     flex-shrink: 0;
   }
 
@@ -48,6 +73,56 @@ const { question } = Astro.props;
 
   .accordion__content {
     padding-top: var(--space-3);
-    color: var(--color-text-muted);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* --- variante ligne --- */
+  .accordion--line {
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+    padding: var(--space-3) 0;
+  }
+
+  /* --- variante carte (relevé dev mode Figma, nœud 441:402) --- */
+  .accordion--card {
+    padding: var(--space-24) var(--pad-card-lg);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    transition:
+      background var(--duration-medium) var(--easing-default),
+      border-radius var(--duration-medium) var(--easing-default);
+  }
+
+  .accordion--card .accordion__summary {
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+  }
+
+  .accordion--card[open] {
+    padding: var(--pad-card-lg-block) var(--pad-card-lg);
+    border-radius: var(--radius-panel);
+    background: var(--color-ink-800);
+    color: var(--color-text-inverted);
+  }
+
+  /* Figma pose du display-little (Circular Book 22) : trop gros pour une
+     réponse de cette longueur — passé en texte courant. */
+  .accordion--card[open] .accordion__content {
+    padding-top: var(--space-64);
+    color: var(--color-text-inverted);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .accordion--card[open] .accordion__summary:focus-visible {
+    outline-color: var(--color-main-green);
   }
 </style>

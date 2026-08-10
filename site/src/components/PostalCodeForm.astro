@@ -1,12 +1,23 @@
 ---
 import Button from './Button.astro';
+
+/**
+ * Amorce du simulateur : un seul champ, aucun calcul ici.
+ * Le bouton ouvre /simulateur avec le code postal (règle d'or #3).
+ * Gabarit relevé au dev mode Figma (nœud 356:360).
+ */
 ---
 
-<form class="postal-form" action="/simulateur" method="get">
+{/* #hero-cta : repère observé par le header pour révéler son propre CTA. */}
+<form id="hero-cta" class="postal-form" action="/simulateur" method="get">
+  <label class="visually-hidden" for="cp">Votre code postal</label>
   <input
+    id="cp"
     type="text"
     name="cp"
-    placeholder="Votre code postal"
+    inputmode="numeric"
+    autocomplete="postal-code"
+    placeholder="Entrez votre code postal"
     class="postal-form__input"
     required
   />
@@ -14,34 +25,44 @@ import Button from './Button.astro';
 </form>
 
 <style>
+  /* Pas d'ombre portée : le champ se détache par contraste sur la photo. */
   .postal-form {
     display: flex;
     align-items: center;
-    gap: var(--space-2);
-    background: var(--color-surface);
-    border-radius: var(--radius-pill);
-    padding: var(--space-2);
-    box-shadow: var(--shadow-soft);
-    transition: box-shadow 150ms ease;
+    justify-content: space-between;
+    gap: var(--gap-form);
+    width: 100%;
+    max-width: var(--width-cta-simu);
+    height: var(--height-cta-simu);
+    padding: var(--pad-form-block) var(--pad-form-end) var(--pad-form-block)
+      var(--pad-form-start);
+    border-radius: var(--radius-form);
+    background: var(--bg-glass-fill-form);
+    backdrop-filter: blur(var(--bg-glass-blur-form));
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-form));
+    outline: var(--focus-ring-width) solid transparent;
+    transition: outline-color var(--duration-fast) var(--easing-default);
   }
 
   .postal-form:focus-within {
-    box-shadow: var(--shadow-soft), 0 0 0 2px var(--color-accent);
+    outline-color: var(--color-main-green);
   }
 
   .postal-form__input {
+    flex: 1;
+    min-width: 0;
     border: none;
     background: transparent;
-    padding: var(--space-3) var(--space-5);
-    font-family: 'Circular Std', system-ui, sans-serif;
-    font-size: var(--font-size-body);
-    color: var(--color-text);
+    padding: 0;
     outline: none;
-    flex: 1;
-    min-width: 160px;
+    color: var(--color-text-primary);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--font-weight-book);
+    letter-spacing: var(--text-body-nav-tracking);
   }
 
   .postal-form__input::placeholder {
-    color: var(--color-text-muted);
+    color: var(--color-input-placeholder);
   }
 </style>

@@ -1,0 +1,47 @@
+---
+/**
+ * Conteneur de section : rythme vertical et largeur max homogènes.
+ * `tone` pilote le fond — clair par défaut, « muted » pour les sections
+ * alternées (design.md : pas de sections sombres, le contraste vient des nuances).
+ */
+interface Props {
+  /** default = white/primary · muted = white/clear · grey = shade/grey (Figma) */
+  tone?: 'default' | 'muted' | 'grey';
+  id?: string;
+  /** Retire le conteneur centré pour les sections pleine largeur (bande photo). */
+  bleed?: boolean;
+}
+
+const { tone = 'default', id, bleed = false } = Astro.props;
+---
+
+<section class={`section section--${tone}`} id={id}>
+  {bleed ? <slot /> : <div class="section__inner"><slot /></div>}
+</section>
+
+<style>
+  .section {
+    padding-block: var(--section-padding-block);
+  }
+
+  .section--default {
+    background: var(--color-white-primary);
+  }
+
+  .section--muted {
+    background: var(--color-white-clear);
+  }
+
+  .section--grey {
+    background: var(--color-shade-grey);
+  }
+
+  .section__inner {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding-inline: var(--container-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap);
+  }
+</style>

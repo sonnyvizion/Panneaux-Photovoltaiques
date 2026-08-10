@@ -10,44 +10,106 @@ body {
   padding: 0;
 }
 
+/* Corps de texte en Inter (Figma), titres en Circular Std. */
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-family: 'Circular Std', system-ui, sans-serif;
-  font-weight: 400;
-  line-height: 1.6;
+  background: var(--color-white-primary);
+  color: var(--color-text-primary);
+  font-family: var(--text-body-sm-family);
+  font-size: var(--text-body-sm-size);
+  font-weight: var(--text-body-sm-weight);
+  line-height: var(--text-body-sm-line-height);
+  letter-spacing: var(--text-body-sm-tracking);
   -webkit-font-smoothing: antialiased;
 }
 
 h1,
 h2,
-h3 {
-  font-weight: 700;
-  line-height: 1.15;
+h3,
+h4 {
   margin: 0;
 }
 
 h1 {
-  font-size: var(--font-size-h1);
+  font-family: var(--text-h1-family);
+  font-size: var(--text-h1-size);
+  font-weight: var(--text-h1-weight);
+  line-height: var(--text-h1-line-height);
+  letter-spacing: var(--text-h1-tracking);
 }
 
 h2 {
-  font-size: var(--font-size-h2);
-  font-weight: 500;
+  font-family: var(--text-h2-family);
+  font-size: var(--text-h2-size);
+  font-weight: var(--text-h2-weight);
+  line-height: var(--text-h2-line-height);
+  letter-spacing: var(--text-h2-tracking);
 }
 
 h3 {
-  font-size: var(--font-size-h3);
-  font-weight: 500;
+  font-family: var(--text-h3-family);
+  font-size: var(--text-h3-size);
+  font-weight: var(--text-h3-weight);
+  line-height: var(--text-h3-line-height);
+  letter-spacing: var(--text-h3-tracking);
+}
+
+h4 {
+  font-family: var(--text-h4-family);
+  font-size: var(--text-h4-size);
+  font-weight: var(--text-h4-weight);
+  line-height: var(--text-h4-line-height);
+  letter-spacing: var(--text-h4-tracking);
 }
 
 p {
   margin: 0;
 }
 
+/* Texte réservé aux lecteurs d'écran. Les 1px ne sont pas des valeurs de
+   design mais l'idiome standard de masquage accessible. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 img {
   max-width: 100%;
   display: block;
+}
+
+/* Défilement fluide (Lenis) — reprise de `lenis/dist/lenis.css`.
+   Recopié ici plutôt qu'importé : la bibliothèque n'est chargée qu'en desktop,
+   par import dynamique, et un import dynamique de CSS n'émet aucun asset au
+   build. Ces règles sont inertes tant que la classe `lenis` est absente. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
 }
 
 @media (prefers-reduced-motion: reduce) {

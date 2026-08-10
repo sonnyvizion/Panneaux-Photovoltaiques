@@ -6,10 +6,13 @@
   font-display: swap;
 }
 
+/* Book couvre la plage 400–450 : Figma déclare le style « Book » en 450
+   (--font-weight-book), le fichier woff2 est un 400. Sans cette plage, le
+   navigateur synthétiserait une graisse intermédiaire. */
 @font-face {
   font-family: 'Circular Std';
   src: url('/fonts/circular-std/CircularStd-Book.woff2') format('woff2');
-  font-weight: 400;
+  font-weight: 400 450;
   font-style: normal;
   font-display: swap;
 }
@@ -17,7 +20,7 @@
 @font-face {
   font-family: 'Circular Std';
   src: url('/fonts/circular-std/CircularStd-BookItalic.woff2') format('woff2');
-  font-weight: 400;
+  font-weight: 400 450;
   font-style: italic;
   font-display: swap;
 }

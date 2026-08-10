@@ -1,0 +1,182 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+
+/**
+ * ⚠️ Avis de démonstration repris de la maquette.
+ * Les avis réels et géolocalisés sont listés dans « À compléter » du CLAUDE.md.
+ * Ne pas mettre en ligne tels quels : un faux avis client est un risque légal.
+ *
+ * Valeurs relevées au dev mode Figma (nœud 356:455).
+ */
+const testimonials = [
+  {
+    name: 'Marie V.',
+    city: 'Ixelles',
+    quote:
+      "Résultat reçu en 2 minutes, l'équipe a pris rendez-vous rapidement. Très professionnel.",
+    rating: 5,
+  },
+  {
+    name: 'Thomas D.',
+    city: 'Waterloo',
+    quote:
+      "J'étais sceptique mais l'estimation était proche du devis final. Rentabilisé en 8 ans.",
+    rating: 5,
+  },
+  {
+    name: 'Sophie L.',
+    city: 'Namur',
+    quote:
+      "Pas de démarchage, pas d'intermédiaire : j'ai eu mon devis directement par l'équipe qui a posé les panneaux.",
+    rating: 4,
+  },
+];
+---
+
+<Section>
+  <SectionHeading
+    overline="Témoignages"
+    title="Ils nous ont fait confiance"
+    intro="Des propriétaires belges qui ont testé le simulateur, puis rencontré l'équipe qui a posé leurs panneaux."
+  />
+
+  <div class="testimonials__wrapper">
+    <ul class="testimonials">
+      {testimonials.map((item) => (
+        <li class="testimonials__item">
+          <figure class="testimonials__figure">
+            <figcaption class="testimonials__author">
+              <span class="testimonials__name">{item.name}</span>
+              <span class="testimonials__city">{item.city}</span>
+            </figcaption>
+            <blockquote class="testimonials__quote">«&nbsp;{item.quote}&nbsp;»</blockquote>
+            <p class="testimonials__rating">
+              <span class="visually-hidden">{item.rating} étoiles sur 5</span>
+              <span aria-hidden="true">{'★'.repeat(item.rating)}{'☆'.repeat(5 - item.rating)}</span>
+            </p>
+          </figure>
+        </li>
+      ))}
+    </ul>
+
+    {/* Repère de progression décoratif : le défilement est natif (scroll-snap),
+        cet indicateur ne suit pas la position — il reproduit la maquette. */}
+    <div class="testimonials__progress" aria-hidden="true">
+      <span class="testimonials__progress-step is-active"></span>
+      <span class="testimonials__progress-step"></span>
+      <span class="testimonials__progress-step"></span>
+    </div>
+  </div>
+</Section>
+
+<style>
+  /* `min-width: 0` sur les deux niveaux : sans lui, un élément flex refuse de
+     descendre sous la taille de son contenu, et les 882px du rail de cartes
+     s'échappent dans la page au lieu de défiler dans leur propre conteneur. */
+  .testimonials__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* Défilement horizontal natif sur mobile — pas de carrousel JS
+     (règle d'or #5 : interactif = accent, pas défaut). */
+  .testimonials {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 85%;
+    gap: var(--space-24);
+    list-style: none;
+    margin: 0;
+    padding: 0 0 var(--space-2);
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+  }
+
+  .testimonials__item {
+    scroll-snap-align: start;
+  }
+
+  .testimonials__figure {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-24);
+    height: 100%;
+    margin: 0;
+    padding: var(--space-24);
+    border-radius: var(--radius-panel);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .testimonials__author {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    color: var(--color-ink-700);
+  }
+
+  .testimonials__name {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .testimonials__city {
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .testimonials__quote {
+    margin: 0;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .testimonials__rating {
+    margin: 0;
+    text-align: end;
+    font-size: var(--size-star);
+    line-height: var(--text-h1-line-height);
+  }
+
+  .testimonials__progress {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .testimonials__progress-step {
+    width: var(--width-progress-step);
+    height: var(--height-progress-step);
+    border-radius: var(--radius-pill);
+    background: var(--color-ink-700);
+    opacity: 0.35;
+  }
+
+  .testimonials__progress-step.is-active {
+    background: var(--color-ink-900);
+    opacity: 1;
+  }
+
+  @media (min-width: 768px) {
+    .testimonials {
+      grid-auto-flow: row;
+      grid-template-columns: repeat(3, 1fr);
+      overflow-x: visible;
+      scroll-snap-type: none;
+    }
+  }
+</style>

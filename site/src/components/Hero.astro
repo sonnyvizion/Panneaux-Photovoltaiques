@@ -1,17 +1,24 @@
 ---
 import { Image } from 'astro:assets';
-import heroImage from '../assets/hero/img_hero.jpg';
+import heroImage from '../assets/hero/hero.webp';
 import NavBar from './NavBar.astro';
 import PostalCodeForm from './PostalCodeForm.astro';
 import Badge from './Badge.astro';
+
+/** Gabarit relevé au dev mode Figma (nœud 356:354). */
 ---
 
 <section id="hero" class="hero">
+  {/* Image LCP : `priority` la sort du lazy-loading et la précharge.
+      `widths` + `sizes` pour le srcset ; `width` plafonne le fichier de repli,
+      sinon Astro sert l'original 4608px (762 Ko) en `src`. Pas de `height` :
+      le ratio d'origine est conservé, le cadrage est fait par object-fit. */}
   <Image
     src={heroImage}
-    alt="Installation de panneaux solaires sur une toiture"
+    alt="Maison contemporaine à bardage sombre équipée de panneaux solaires en toiture, dans un environnement boisé"
     width={2560}
-    height={1479}
+    widths={[768, 1280, 1920, 2560]}
+    sizes="100vw"
     format="webp"
     quality={75}
     priority
@@ -19,105 +26,181 @@ import Badge from './Badge.astro';
   />
   <div class="hero__overlay" aria-hidden="true"></div>
 
-  <div class="hero__content">
-    <NavBar />
+  <NavBar />
 
-    <div class="hero__copy">
-      <h1 class="hero__title">
-        Les panneaux solaires sont-ils rentables pour votre maison&nbsp;?
-      </h1>
-      <p class="hero__subtitle">
-        Production, coût, économies, primes de votre région&nbsp;: votre
-        estimation sur mesure, sans laisser vos coordonnées.
-      </p>
-
-      <PostalCodeForm />
-      <p class="hero__helper">
-        Pour adapter le calcul à votre région et vos primes.
-        <a href="/simulateur">En savoir plus&nbsp;?</a>
-      </p>
-
-      <div class="hero__reassurance">
-        <Badge variant="glass">Gratuit</Badge>
-        <Badge variant="glass">Sans engagement</Badge>
-        <Badge variant="glass">Résultats en 2 minutes</Badge>
+  {/* Seuls ces deux blocs sont dans le flux : ils se centrent dans les 788px.
+      Barre utilitaire et pastilles sont hors flux, comme dans Figma. */}
+  <div class="hero__text">
+      {/* Pas de mot accentué : le dev mode ne colore aucun span du H1. */}
+      <div class="hero__title-wrap">
+        <h1 class="hero__title">
+          Les panneaux solaires sont-ils rentables pour votre maison&nbsp;?
+        </h1>
       </div>
-    </div>
+    <p class="hero__subtitle">
+      Production, coût, économies, primes de votre région&nbsp;:<br />
+      votre estimation sur mesure, sans laisser vos coordonnées.
+    </p>
+  </div>
+
+  <div class="hero__simu">
+    <PostalCodeForm />
+    {/* Seul « En savoir plus ? » est cliquable : le reste est une précision,
+        pas une destination. Un lien qui n'englobe que sa cible est aussi plus
+        clair à l'annonce vocale. */}
+    <p class="hero__helper">
+      Pour adapter le calcul à votre région et vos primes.<br />
+      <a href="/simulateur">En savoir plus&nbsp;?</a>
+    </p>
+  </div>
+
+  <div class="hero__reassurance">
+    <Badge variant="glass">Sans engagement</Badge>
+    <Badge variant="glass">Gratuit</Badge>
+    <Badge variant="glass">Résultat en 2 min</Badge>
   </div>
 </section>
 
 <style>
+  /* Figma : hauteur 788px, seuls les coins BAS sont arrondis (25px). */
   .hero {
     position: relative;
-    min-height: 100vh;
+    min-height: var(--height-hero);
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap-hero);
     overflow: hidden;
-    border-radius: var(--radius-card);
+    border-end-start-radius: var(--radius-hero);
+    border-end-end-radius: var(--radius-hero);
+    /* Réserve de quoi ne pas percuter la barre et les pastilles hors flux
+       quand le contenu s'allonge sur petit écran. */
+    padding-block: var(--space-96) var(--space-96);
   }
 
   .hero__image {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
+  /* Parallaxe du fond — CSS seul, sans écouteur de défilement.
+     `animation-timeline: scroll()` est piloté par le compositeur : rien ne
+     tourne sur le fil principal, l'INP n'est pas touché. Là où ce n'est pas
+     supporté, `@supports` laisse simplement l'image fixe : aucune dégradation.
+     Neutralisé si l'utilisateur demande moins de mouvement. */
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .hero__image {
+        top: calc(var(--hero-parallax-shift) * -1);
+        height: calc(100% + var(--hero-parallax-shift) * 2);
+        animation: hero-parallax linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 var(--height-hero);
+      }
+
+      @keyframes hero-parallax {
+        from {
+          transform: translateY(calc(var(--hero-parallax-shift) * -1));
+        }
+        to {
+          transform: translateY(var(--hero-parallax-shift));
+        }
+      }
+    }
+  }
+
+  /* Figma : voile noir uni à 25 %, pas le dégradé coloré de design.md. */
   .hero__overlay {
     position: absolute;
     inset: 0;
-    background: var(--gradient-hero);
-    mix-blend-mode: soft-light;
-    opacity: 0.9;
+    background: var(--overlay-hero);
   }
 
-  .hero__content {
+  .hero__text,
+  .hero__simu {
     position: relative;
     z-index: 1;
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: var(--space-5);
+    width: 100%;
+    padding-inline: var(--container-padding);
   }
 
-  .hero__copy {
-    margin: auto;
-    max-width: 720px;
-    text-align: center;
+  .hero__text {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-5);
+    text-align: center;
+  }
+
+  .hero__title-wrap {
+    padding: var(--pad-h1);
   }
 
   .hero__title {
-    color: #fff;
-    font-size: var(--font-size-display);
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+    max-width: var(--width-h1);
+    margin: 0;
+    color: var(--color-white-clear);
+    font-family: var(--text-h1-family);
+    font-size: var(--text-h1-size);
+    font-weight: var(--text-h1-weight);
+    line-height: var(--text-h1-line-height);
+    letter-spacing: var(--text-h1-tracking);
   }
 
   .hero__subtitle {
-    color: #fff;
-    font-size: 18px;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+    max-width: var(--width-hero-subtitle);
+    margin: 0;
+    opacity: var(--opacity-subtitle);
+    color: var(--color-shade-grey);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .hero__simu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-hero-simu);
   }
 
   .hero__helper {
-    color: #fff;
-    font-size: 14px;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    max-width: var(--width-hero-helper);
+    margin: 0;
+    text-align: center;
+    /* Le texte n'est plus dans le lien : il lui faut sa propre couleur, sinon
+       il hériterait du noir du corps de page et disparaîtrait sur la photo. */
+    color: var(--color-text-inverted);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
   }
 
   .hero__helper a {
-    color: #fff;
+    color: var(--color-text-inverted);
     text-decoration: underline;
   }
 
+  /* Hors flux : sinon elles rognent la hauteur dans laquelle le texte se centre. */
   .hero__reassurance {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: var(--hero-pills-bottom);
+    z-index: 1;
     display: flex;
     flex-wrap: wrap;
-    gap: var(--space-3);
+    gap: var(--space-24);
     justify-content: center;
+    padding-inline: var(--container-padding);
   }
 </style>

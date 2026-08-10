@@ -1,19 +1,25 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Hero from '../components/Hero.astro';
+import Reassurance from '../components/Reassurance.astro';
+import DirectTeam from '../components/DirectTeam.astro';
+import Pillars from '../components/Pillars.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import Footer from '../components/Footer.astro';
 ---
 
 <BaseLayout title="Panneaux solaires en Belgique — estimation gratuite">
+  {/* Ordre des blocs figé par architecture.md § « La home (épurée) ». */}
   <Hero />
-  <section class="placeholder">
-    <p>Le reste du site (contenu, simulateur, FAQ) arrive dans une prochaine itération.</p>
-  </section>
+  <Reassurance />
+  <DirectTeam />
+  <Pillars />
+  <HowItWorks />
+  <Testimonials />
+  <Faq />
+  <FinalCta />
+  <Footer />
 </BaseLayout>
-
-<style>
-  .placeholder {
-    padding: var(--space-9) var(--space-5);
-    text-align: center;
-    color: var(--color-text-muted);
-  }
-</style>
