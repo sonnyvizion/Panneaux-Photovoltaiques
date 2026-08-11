@@ -52,7 +52,9 @@ import teamImage from '../assets/team/team_hero.webp';
 <style>
   .direct {
     background: var(--color-white-primary);
-    padding: var(--space-12) var(--container-padding);
+    /* Même rythme vertical que les sections : cette bande s'intercale entre
+       deux d'entre elles, un écart plus court la ferait paraître collée. */
+    padding: var(--section-padding-block) var(--container-padding);
   }
 
   /* Bloc arrondi cadré sur le conteneur. Le rayon vit ici, pas sur le voile :
@@ -104,7 +106,7 @@ import teamImage from '../assets/team/team_hero.webp';
     line-height: var(--text-marker-line-height);
     letter-spacing: var(--text-marker-tracking);
     text-transform: uppercase;
-    color: var(--color-shade-strong);
+    color: var(--color-text-inverted);
   }
 
   .direct__title {

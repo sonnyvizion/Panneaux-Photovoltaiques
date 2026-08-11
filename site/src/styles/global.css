@@ -66,9 +66,16 @@ p {
 }
 
 /* Texte réservé aux lecteurs d'écran. Les 1px ne sont pas des valeurs de
-   design mais l'idiome standard de masquage accessible. */
+   design mais l'idiome standard de masquage accessible.
+
+   ⚠️ PAS de `position: absolute`, volontairement. Sans ancêtre positionné, un
+   élément absolu prend la racine du document pour bloc conteneur : il échappe
+   alors au découpage de toute zone défilante qui le contient, et étire la page
+   jusqu'à sa position dans le rail. C'est ce qui provoquait un défilement
+   horizontal de 2700px sur la home, via les mentions « 5 étoiles sur 5 » des
+   témoignages. En restant dans le flux, l'élément est toujours détouré. */
 .visually-hidden {
-  position: absolute;
+  display: inline-block;
   width: 1px;
   height: 1px;
   overflow: hidden;

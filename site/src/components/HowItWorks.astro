@@ -1,15 +1,18 @@
 ---
+import { Image } from 'astro:assets';
 import Section from './Section.astro';
 import SectionHeading from './SectionHeading.astro';
 import Button from './Button.astro';
-import ImagePlaceholder from './ImagePlaceholder.astro';
+import maisonImage from '../assets/steps/maison_home.webp';
+import expertImage from '../assets/steps/expert_home.webp';
 
 /** Valeurs relevées au dev mode Figma (nœud 356:431). */
 const steps = [
   {
     title: 'Je renseigne ma maison',
     detail: 'Code postal · consommation · orientation du toit en 2 minutes',
-    image: 'Vue 3D d’un quartier / toiture',
+    image: maisonImage,
+    alt: 'Maquette 3D d’un quartier résidentiel, une maison repérée par une épingle',
     tone: 'photo',
   },
   {
@@ -20,7 +23,8 @@ const steps = [
   {
     title: 'Un expert analyse mon toit, gratuitement',
     detail: 'Rendez-vous direct avec l’installateur · chiffrage précis · sans engagement',
-    image: 'Ingénieur avec casque de chantier',
+    image: expertImage,
+    alt: 'Expert en casque de chantier observant une toiture, tablette à la main',
     tone: 'photo',
   },
 ] as const;
@@ -39,9 +43,15 @@ const steps = [
       <li class={`steps__item steps__item--${step.tone}`}>
         {step.image && (
           <>
-            <div class="steps__media">
-              <ImagePlaceholder label={step.image} ratio="3 / 4" />
-            </div>
+            <Image
+              src={step.image}
+              alt={step.alt}
+              widths={[400, 800, 1448]}
+              sizes="(min-width: 768px) 33vw, 100vw"
+              quality={75}
+              loading="lazy"
+              class="steps__media"
+            />
             <div class="steps__veil" aria-hidden="true"></div>
           </>
         )}
@@ -93,9 +103,10 @@ const steps = [
     z-index: -1;
   }
 
-  .steps__media :global(.placeholder) {
+  .steps__media {
+    width: 100%;
     height: 100%;
-    border-radius: 0;
+    object-fit: cover;
   }
 
   /* Dégradé bas : décolle le texte de la photo sans ombre portée. */

@@ -66,14 +66,24 @@ import Button from './Button.astro';
   }
 
   .final-cta__action {
+    display: flex;
+    justify-content: flex-end;
     margin-top: var(--space-3);
   }
 
   @media (min-width: 1024px) {
+    /* `align-items: start` plutôt que `center` : le texte se cale en haut, le
+       bouton descend seul en pied de carte via son `align-self`. Avec un
+       centrage global, il restait à mi-hauteur. */
+    /* Les trois lignes sont déclarées explicitement : sans elles, la grille
+       n'a que des lignes implicites et `grid-row: 1 / -1` ne s'étend sur rien
+       — `-1` ne désigne que la fin de la grille explicite. Le bouton restait
+       collé à la première ligne. */
     .final-cta__card {
       display: grid;
       grid-template-columns: 1fr auto;
-      align-items: center;
+      grid-template-rows: auto auto auto;
+      align-items: start;
       column-gap: var(--space-4);
       padding: var(--space-4) var(--space-4);
     }
@@ -84,9 +94,12 @@ import Button from './Button.astro';
       grid-column: 1;
     }
 
+    /* Bas à droite, comme dans Figma (nœud 356:500 : items-end + justify-end). */
     .final-cta__action {
       grid-column: 2;
       grid-row: 1 / -1;
+      align-self: end;
+      justify-self: end;
       margin-top: 0;
     }
   }

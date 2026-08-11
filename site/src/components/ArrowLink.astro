@@ -14,7 +14,7 @@ const { href, variant = 'lime' } = Astro.props;
 <a class={`arrow-link arrow-link--${variant}`} href={href}>
   <span class="arrow-link__label"><slot /></span>
   <span class="arrow-link__badge" aria-hidden="true">
-    <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
+    <svg class="arrow-link__arrow" width="12" height="12" viewBox="0 0 14 14" fill="none">
       <path
         d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5"
         stroke="currentColor"
@@ -66,8 +66,38 @@ const { href, variant = 'lime' } = Astro.props;
     color: var(--color-text-inverted);
   }
 
+  /* Même geste que sur les CTA : la flèche se lève à 45°. La classe n'est pas
+     scopée par hasard — la carte parente la pilote aussi au survol. */
+  .arrow-link__arrow {
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+
   .arrow-link:hover {
     opacity: var(--opacity-hover);
+  }
+
+  .arrow-link:hover .arrow-link__arrow,
+  .arrow-link:active .arrow-link__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .arrow-link:focus-visible .arrow-link__arrow {
+    transform: rotate(-45deg);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arrow-link__arrow {
+      transition: none;
+    }
+
+    .arrow-link:hover .arrow-link__arrow,
+    .arrow-link:active .arrow-link__arrow {
+      transform: none;
+    }
+
+    .arrow-link:focus-visible .arrow-link__arrow {
+      transform: none;
+    }
   }
 
   .arrow-link:focus-visible {

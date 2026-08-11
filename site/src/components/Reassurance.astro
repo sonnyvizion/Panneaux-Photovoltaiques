@@ -11,7 +11,8 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
     overline="Réassurances"
     title="Une équipe "
     highlight="certifiée"
-    titleEnd=", des toits qui le prouvent"
+    titleEnd=","
+    titleLine2="des toits qui le prouvent"
     intro="Plus de 2 400 installations réalisées en Belgique, par une équipe qui connaît vos toits et vos primes régionales."
   />
 
@@ -44,7 +45,9 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
 
     <div class="reassurance__stat">
       <div class="reassurance__numbers">
-        <p class="reassurance__figure">2400+</p>
+        <p class="reassurance__figure">
+          <span class="reassurance__count" data-count-to="2400">2400</span>+
+        </p>
         <p class="reassurance__figure-label">installations réalisées</p>
       </div>
       <p class="reassurance__text">
@@ -56,7 +59,9 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
     <div class="reassurance__side">
       <div class="reassurance__stat reassurance__stat--accent">
         <div class="reassurance__numbers">
-          <p class="reassurance__figure">89&nbsp;%</p>
+          <p class="reassurance__figure">
+            <span class="reassurance__count" data-count-to="89">89</span>&nbsp;%
+          </p>
           <p class="reassurance__figure-label">
             de nos clients rentabilisés en moins de 10 ans
           </p>
@@ -65,12 +70,58 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
       </div>
 
       <div class="reassurance__rating">
-        <p class="reassurance__rating-score">4.8/5</p>
+        <p class="reassurance__rating-score">
+          <span class="reassurance__count" data-count-to="4.8" data-count-decimals="1">4.8</span>/5
+        </p>
         <p class="reassurance__rating-label">Satisfaction client</p>
       </div>
     </div>
   </div>
 </Section>
+
+<script>
+  import { formatCount, getCountValue } from '../scripts/countUp';
+
+  /** Durée de la montée. Assez longue pour se voir, assez courte pour ne pas retenir. */
+  const COUNT_DURATION = 1400;
+
+  const counts = Array.from(document.querySelectorAll('.reassurance__count'));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (counts.length && !reduced.matches && 'IntersectionObserver' in window) {
+    const run = (el) => {
+      const to = Number(el.dataset.countTo);
+      const decimals = Number(el.dataset.countDecimals ?? 0);
+      if (!Number.isFinite(to)) return;
+
+      // La largeur finale est figée avant de repartir de zéro : sinon la carte
+      // se réagence à chaque chiffre gagné, et c'est du décalage de mise en page.
+      el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / COUNT_DURATION, 1);
+        el.textContent = formatCount(getCountValue(to, progress), decimals);
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          // Une seule fois : un chiffre qui remonte à chaque passage lasse.
+          observer.unobserve(entry.target);
+          run(entry.target);
+        });
+      },
+      { threshold: 0.4 },
+    );
+
+    counts.forEach((el) => observer.observe(el));
+  }
+</script>
 
 <style>
   .reassurance {
@@ -164,6 +215,13 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
     flex-direction: column;
   }
 
+  .reassurance__count {
+    display: inline-block;
+    /* Chiffres de largeur constante : sans ça, le nombre tremble à chaque
+       image pendant la montée. */
+    font-variant-numeric: tabular-nums;
+  }
+
   .reassurance__figure {
     margin: 0;
     font-family: var(--text-display-mid-family);
@@ -175,6 +233,9 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
 
   .reassurance__figure-label {
     margin: 0;
+    /* Figma cale cette légende sur 253px : elle passe à la ligne avant le bord
+       de la carte au lieu de s'étirer sur toute la largeur. */
+    max-width: var(--width-figure-label);
     font-family: var(--text-overline-family);
     font-size: var(--text-overline-size);
     font-weight: var(--text-overline-weight);

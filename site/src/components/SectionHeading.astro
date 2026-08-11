@@ -14,6 +14,9 @@ interface Props {
   highlight?: string;
   /** Suite du titre après le mot accentué. */
   titleEnd?: string;
+  /** Seconde ligne, forcée après un retour. Sert quand la maquette impose la
+      coupure au lieu de la laisser au navigateur. */
+  titleLine2?: string;
   intro?: string;
   align?: 'center' | 'start';
   /** Le surtitre alterne entre deux gris selon le fond (relevé Figma). */
@@ -25,6 +28,7 @@ const {
   title,
   highlight,
   titleEnd,
+  titleLine2,
   intro,
   align = 'center',
   overlineTone = 'muted',
@@ -34,7 +38,12 @@ const {
 <header class={`heading heading--${align} heading--overline-${overlineTone}`}>
   <p class="heading__overline">{overline}</p>
   <h2 class="heading__title">
-    {title}{highlight && <span class="heading__highlight">{highlight}</span>}{titleEnd}
+    {title}{highlight && <span class="heading__highlight">{highlight}</span>}{titleEnd}{titleLine2 && (
+      <>
+        <br />
+        {titleLine2}
+      </>
+    )}
   </h2>
   {intro && <p class="heading__intro">{intro}</p>}
 </header>
@@ -84,9 +93,12 @@ const {
     color: var(--color-shade-strong);
   }
 
+  /* 16px entre le titre et le chapô. L'écart de la pile vaut 8px et sert au
+     couple surtitre/titre : on n'ajoute ici que le complément, pour ne pas
+     desserrer aussi le surtitre. */
   .heading__intro {
     max-width: var(--width-section-intro);
-    margin: 0;
+    margin: calc(var(--space-3) - var(--space-2)) 0 0;
     color: var(--color-text-tertiary);
     font-family: var(--text-body-light-family);
     font-size: var(--text-body-light-size);

@@ -250,10 +250,14 @@
      selon l'élément — il n'y a pas UN verre mais trois dosages. --- */
   --bg-glass-fill: rgba(255, 254, 252, 0.55);
   --bg-glass-fill-strong: rgba(255, 254, 252, 0.7); /* item de nav actif */
-  --bg-glass-fill-form: rgba(255, 254, 252, 0.8);   /* champ code postal */
+  /* Champ code postal. Figma pose 0.8 : posé sur un ciel clair l'effet se lit,
+     mais sur la photo sombre du hero il ne reste rien à flouter. Descendu à
+     0.62 pour que le verre existe vraiment, en gardant un fond assez couvrant
+     pour le contraste du texte saisi. */
+  --bg-glass-fill-form: rgba(255, 254, 252, 0.62);
   --bg-glass-fill-pill: rgba(246, 246, 246, 0.35);  /* pastilles de réassurance */
   --bg-glass-fill-nav: rgba(250, 254, 255, 0.2);    /* barre de navigation */
-  --bg-glass-blur-form: 7.5px;
+  --bg-glass-blur-form: 12px; /* Figma : 7.5px — remonté, invisible en dessous */
   --bg-glass-blur-pill: 5px;
   --bg-glass-border: 1px solid rgba(255, 255, 255, 0.4);
 
@@ -276,12 +280,14 @@
   /* --- Rythme vertical, relevé au dev mode Figma (nœud 356:349) ---
      Mobile-first : ces valeurs sont les valeurs mobiles, la media query en bas
      du fichier passe aux valeurs desktop de la maquette. */
-  --section-padding-block: var(--space-48); /* → 80px desktop */
-  --section-gap: var(--space-4);             /* en-tête → contenu, → 46px desktop */
-  --block-gap: var(--space-48);              /* entre sous-blocs, → 80px desktop */
+  --section-padding-block: var(--space-64); /* → 120px desktop */
+  --section-gap: var(--space-4);             /* en-tête → contenu, → 56px desktop */
+  --block-gap: var(--space-64);              /* entre sous-blocs, → 120px desktop */
 
   /* --- Grille & conteneur --- */
-  --container-max: 1280px;
+  /* Figma est dessiné sur 1280 : c'est la largeur du canevas, pas une limite
+     voulue. Élargi à 1440 pour respirer sur les écrans courants. */
+  --container-max: 1440px;
   --container-padding: var(--space-24); /* → 60px desktop (Figma px-[60px]) */
   --width-section-intro: 550px;         /* largeur des chapô de section (Figma) */
   /* ⚠️ Les custom properties ne sont PAS utilisables dans une règle @media
@@ -317,7 +323,15 @@
      au-delà de 1024px. Elles ne décrivent pas une échelle : ce sont les mesures
      exactes des blocs. */
   /* Gabarit du hero (nœud 356:354) */
-  --height-hero: 100svh; /* → 788px dès 768px */
+  /* Retrait de la carte du hero. Nul sur mobile — le hero y reprend toute la
+     largeur, seuls ses coins bas sont arrondis. La carte détachée ne vaut qu'à
+     partir de 768px (13px, plus bas dans le fichier). */
+  --hero-inset: 0px;
+  /* Marge propre du header : le complément de celle que la carte du hero
+     apporte déjà, pour que son contenu tombe sur la marge des sections. */
+  --header-inline-pad: calc(var(--container-padding) - var(--hero-inset));
+  /* Le hero est une carte détachée : sa hauteur retranche ses propres marges. */
+  --height-hero: calc(100svh - var(--hero-inset) * 2); /* → 860px dès 768px */
   --gap-hero: var(--space-24);  /* entre bloc texte et bloc simulateur, → 44px */
   --gap-hero-simu: 12px;        /* entre le champ et sa légende */
   --width-h1: 662px;
@@ -338,7 +352,6 @@
   --pad-form-block: 4px;
   --gap-form: var(--space-2); /* → 40px dès 768px */
   --radius-form: 100px;
-  --opacity-subtitle: 0.95;
 
   /* Pastilles de réassurance du hero */
   --pad-pill-inline: 18px;
@@ -348,6 +361,8 @@
   --pad-button-start: 18px; /* → 25px dès 768px */
   --pad-button-edge: 6px;
   --gap-button: var(--space-12); /* → 18px dès 768px */
+  --duration-roll: 420ms;    /* roulement du libellé des CTA */
+  --btn-label-lift: 115%;    /* course du libellé, au-delà du cadre de coupe */
 
   --pad-card: 20px;         /* padding intérieur des cartes standard */
   --pad-badge: 15px;        /* padding de la pastille de certification */
@@ -361,9 +376,11 @@
   --width-team-card: 437px;
   --height-team-card: 443px;
   --height-team-frame: 669px;
+  --height-pillars: 274px; /* conteneur gris des piliers (Figma 356:416) */
   --width-pillar-image: 195px;
   --radius-pillar-image: 19px;
   --height-rea-block: 263px; /* hauteur de la rangée Réassurance */
+  --width-figure-label: 253px; /* légende sous un chiffre clé (Figma 356:404) */
   --height-rating: 72px;     /* carte « 4.8/5 » */
   --width-faq: 636px;
   --width-steps: 914px;
@@ -376,6 +393,9 @@
   --duration-medium: 250ms;
   --duration-slow: 200ms;
   --easing-default: ease;
+  /* Léger dépassement (~7 %) puis retour : donne un rebond discret sans
+     caricature. Réservé aux ouvertures, jamais aux fermetures. */
+  --easing-bounce: cubic-bezier(0.34, 1.28, 0.64, 1);
 
   /* --- Opacités d'état --- */
   --opacity-hover: 0.9;
@@ -391,9 +411,13 @@
    48–64px mobile). Seuls les tokens de rythme changent — mobile-first. */
 @media (min-width: 768px) {
   :root {
-    --section-padding-block: 80px;
-    --section-gap: 46px;
-    --block-gap: 80px;
+    /* Rythme vertical : Figma pose 80px, sous la fourchette 96–128 de
+       design.md §4. Calé sur 96, le bas de cette fourchette — 120 aérait trop.
+       Soit 192px entre deux blocs. */
+    --hero-inset: 13px;
+    --section-padding-block: 96px;
+    --section-gap: 48px;
+    --block-gap: 96px;
     --container-padding: 60px;
 
     /* Valeurs de la maquette desktop. En dessous, les versions réduites
@@ -402,7 +426,7 @@
     --text-h1-size: 44px;
     --text-h2-size: 40px;
     --text-h2-line-height: 42px;
-    --height-hero: 788px;
+    --height-hero: 860px;
     --gap-hero: 44px;
     --gap-form: 40px;
     --pad-button-start: 25px;

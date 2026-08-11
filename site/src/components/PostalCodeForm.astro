@@ -38,6 +38,9 @@ import Button from './Button.astro';
       var(--pad-form-start);
     border-radius: var(--radius-form);
     background: var(--bg-glass-fill-form);
+    /* Le filet clair est ce qui signe l'effet verre : sans lui, un fond
+       translucide passe pour un aplat. Recette design.md §3. */
+    border: var(--bg-glass-border);
     backdrop-filter: blur(var(--bg-glass-blur-form));
     -webkit-backdrop-filter: blur(var(--bg-glass-blur-form));
     outline: var(--focus-ring-width) solid transparent;

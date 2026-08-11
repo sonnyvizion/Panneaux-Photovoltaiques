@@ -15,13 +15,30 @@ interface Props {
 const { tone = 'default', id, bleed = false } = Astro.props;
 ---
 
-<section class={`section section--${tone}`} id={id}>
+<section class={`section section--${tone} ${bleed ? "section--bleed" : ""}`} id={id}>
   {bleed ? <slot /> : <div class="section__inner"><slot /></div>}
 </section>
 
 <style>
+  /* La marge latérale est posée ici, hors de la largeur max : le contenu fait
+     donc `--container-max` plein, comme le bloc équipe, le footer et le CTA
+     final. Placée sur `__inner`, elle se serait déduite de la largeur max et
+     les sections auraient été plus étroites que ces trois blocs. */
   .section {
     padding-block: var(--section-padding-block);
+    padding-inline: var(--container-padding);
+  }
+
+  /* En pleine largeur, la section ne pose aucune marge : c'est au contenu de
+     gérer son propre alignement — utile pour un rail qui doit défiler d'un
+     bord à l'autre de l'écran.
+     Elle reprend en revanche le rythme vertical de `__inner`, qu'elle
+     remplace : sans lui, l'en-tête collait au contenu. */
+  .section--bleed {
+    padding-inline: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap);
   }
 
   .section--default {
@@ -39,7 +56,6 @@ const { tone = 'default', id, bleed = false } = Astro.props;
   .section__inner {
     max-width: var(--container-max);
     margin-inline: auto;
-    padding-inline: var(--container-padding);
     display: flex;
     flex-direction: column;
     gap: var(--section-gap);

@@ -3,13 +3,12 @@
  * Bouton pilule avec pastille flèche greffée à droite — motif signature repris
  * sur tous les CTA (design.md §5).
  *
- * primary   : pilule verte, pastille sombre  → CTA principal
- * ink       : pilule sombre, pastille verte  → CTA sur fond clair coloré (lime, vert)
- * secondary : pilule contour, sans pastille  → action de second rang
+ * primary   : pilule verte   → CTA principal
+ * ink       : pilule sombre  → CTA sur fond clair coloré (lime, vert)
+ * secondary : pilule contour, sans pastille → action de second rang
  *
- * Chaque variante ne fait que poser 4 couleurs (fond, texte, pastille, flèche)
- * et leurs 4 équivalents survolés. Toute l'animation vit ensuite dans une seule
- * règle commune, ce qui garantit un comportement identique sur tous les CTA.
+ * La pastille est identique partout et ne bouge pas au survol : fond blanc,
+ * flèche sombre. Seule la pilule change de couleur, et le libellé roule.
  */
 interface Props {
   variant?: 'primary' | 'ink' | 'secondary';
@@ -23,7 +22,10 @@ const hasIcon = variant !== 'secondary';
 ---
 
 <Tag class={`btn btn--${variant}`} href={href} type={href ? undefined : type}>
-  <span class="btn__label"><slot /></span>
+  {/* Deux niveaux : le cadre coupe, la ligne se déplace à l'intérieur. */}
+  <span class="btn__label">
+    <span class="btn__label-line"><slot /></span>
+  </span>
   {hasIcon && (
     <span class="btn__icon" aria-hidden="true">
       <svg class="btn__arrow" width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -58,33 +60,26 @@ const hasIcon = variant !== 'secondary';
       color var(--duration-fast) var(--easing-default);
   }
 
-  /* --- Palettes par variante : 4 couleurs au repos, 4 au survol --- */
+  /* --- Palettes : seule la pilule s'inverse au survol --- */
 
   .btn--primary {
     --btn-bg: var(--color-main-green);
     --btn-fg: var(--color-text-primary);
-    --btn-badge-bg: var(--color-text-primary);
-    --btn-badge-fg: var(--color-white-primary);
-
     --btn-bg-active: var(--color-text-primary);
     --btn-fg-active: var(--color-white-primary);
-    --btn-badge-bg-active: var(--color-white-primary);
-    --btn-badge-fg-active: var(--color-text-primary);
   }
 
+  /* Cette variante ne change pas de couleur au survol : elle se pose sur des
+     fonds déjà colorés — carte lime de l'équipe, section grise du processus,
+     carte verte du CTA final. Un basculement vers le vert s'y confondrait avec
+     le fond. Seuls le roulement du libellé et la flèche marquent le survol. */
   .btn--ink {
     --btn-bg: var(--color-ink-900);
     --btn-fg: var(--color-text-inverted);
-    --btn-badge-bg: var(--color-main-green);
-    --btn-badge-fg: var(--color-text-primary);
-
-    --btn-bg-active: var(--color-main-green);
-    --btn-fg-active: var(--color-text-primary);
-    --btn-badge-bg-active: var(--color-white-primary);
-    --btn-badge-fg-active: var(--color-text-primary);
+    --btn-bg-active: var(--color-ink-900);
+    --btn-fg-active: var(--color-text-inverted);
   }
 
-  /* Sans pastille : seule la pilule s'inverse, le motif reste cohérent. */
   .btn--secondary {
     --btn-bg: transparent;
     --btn-fg: var(--color-text-primary);
@@ -99,6 +94,23 @@ const hasIcon = variant !== 'secondary';
       border-color var(--duration-fast) var(--easing-default);
   }
 
+  /* --- Libellé : cadre de coupe + ligne mobile --- */
+
+  .btn__label {
+    display: block;
+    overflow: hidden;
+    /* Figma pose `leading-[normal]` sur le libellé du bouton, et non le
+       rapport 1 du style `button`. Nécessaire ici : à 1, le cadre de coupe
+       rognerait les jambages des lettres p, q et j. */
+    line-height: normal;
+  }
+
+  .btn__label-line {
+    display: block;
+  }
+
+  /* --- Pastille : identique au repos et au survol --- */
+
   .btn__icon {
     display: flex;
     align-items: center;
@@ -107,11 +119,8 @@ const hasIcon = variant !== 'secondary';
     height: var(--size-button-icon);
     border-radius: var(--radius-pill);
     flex-shrink: 0;
-    background: var(--btn-badge-bg);
-    color: var(--btn-badge-fg);
-    transition:
-      background-color var(--duration-fast) var(--easing-default),
-      color var(--duration-fast) var(--easing-default);
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
   }
 
   .btn__arrow {
@@ -119,10 +128,9 @@ const hasIcon = variant !== 'secondary';
   }
 
   /* --- État actif ---
-     `:focus-visible` est volontairement isolé dans ses propres règles : un
-     sélecteur inconnu du navigateur invalide TOUTE la liste où il figure, ce
-     qui supprimerait aussi le survol. Groupé, un seul navigateur sans support
-     tuait l'effet en entier.
+     `:focus-visible` est isolé dans ses propres règles : un sélecteur inconnu
+     du navigateur invalide TOUTE la liste où il figure, ce qui supprimerait
+     aussi le survol.
 
      `:active` accompagne `:hover` — règle d'or #6, pas d'interaction au survol
      seul : l'effet doit exister au clavier et au doigt. */
@@ -146,18 +154,6 @@ const hasIcon = variant !== 'secondary';
     border-color: var(--btn-bg-active);
   }
 
-  .btn:hover .btn__icon,
-  .btn:active .btn__icon {
-    background: var(--btn-badge-bg-active);
-    color: var(--btn-badge-fg-active);
-  }
-
-  .btn:focus-visible .btn__icon {
-    background: var(--btn-badge-bg-active);
-    color: var(--btn-badge-fg-active);
-  }
-
-  /* La flèche se lève à 45°, la pastille ne bouge pas. */
   .btn:hover .btn__arrow,
   .btn:active .btn__arrow {
     transform: rotate(-45deg);
@@ -167,9 +163,33 @@ const hasIcon = variant !== 'secondary';
     transform: rotate(-45deg);
   }
 
-  .btn:focus-visible {
-    outline: var(--focus-ring-width) solid var(--color-main-green);
-    outline-offset: var(--focus-ring-offset);
+  /* Le libellé sort par le haut, réapparaît par le bas et se repose avec un
+     léger dépassement. Une seule ligne suffit : le saut du haut vers le bas se
+     fait hors du cadre, à mi-parcours, donc invisible. */
+  @keyframes btn-label-roll {
+    0% {
+      transform: translateY(0);
+      animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    }
+    49.9% {
+      transform: translateY(calc(var(--btn-label-lift) * -1));
+    }
+    50% {
+      transform: translateY(var(--btn-label-lift));
+      animation-timing-function: var(--easing-bounce);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  .btn:hover .btn__label-line,
+  .btn:active .btn__label-line {
+    animation: btn-label-roll var(--duration-roll);
+  }
+
+  .btn:focus-visible .btn__label-line {
+    animation: btn-label-roll var(--duration-roll);
   }
 
   /* L'inversion de couleur porte le message à elle seule : on retire le
@@ -182,6 +202,12 @@ const hasIcon = variant !== 'secondary';
 
     .btn:focus-visible .btn__arrow {
       transform: none;
+    }
+
+    .btn:hover .btn__label-line,
+    .btn:active .btn__label-line,
+    .btn:focus-visible .btn__label-line {
+      animation: none;
     }
   }
 </style>

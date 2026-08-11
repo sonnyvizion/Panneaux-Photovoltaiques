@@ -62,9 +62,12 @@ import Badge from './Badge.astro';
 </section>
 
 <style>
-  /* Figma : hauteur 788px, seuls les coins BAS sont arrondis (25px). */
+  /* Mobile : pleine largeur, seuls les coins bas sont arrondis, comme Figma.
+     À partir de 768px le hero devient une carte détachée (voir plus bas).
+     Pas de marge basse : la section suivante apporte déjà son propre rythme. */
   .hero {
     position: relative;
+    margin: var(--hero-inset) var(--hero-inset) 0;
     min-height: var(--height-hero);
     display: flex;
     flex-direction: column;
@@ -77,6 +80,13 @@ import Badge from './Badge.astro';
     /* Réserve de quoi ne pas percuter la barre et les pastilles hors flux
        quand le contenu s'allonge sur petit écran. */
     padding-block: var(--space-96) var(--space-96);
+  }
+
+  /* Carte détachée dès 768px : le retrait ouvre les quatre coins. */
+  @media (min-width: 768px) {
+    .hero {
+      border-radius: var(--radius-hero);
+    }
   }
 
   .hero__image {
@@ -155,8 +165,9 @@ import Badge from './Badge.astro';
   .hero__subtitle {
     max-width: var(--width-hero-subtitle);
     margin: 0;
-    opacity: var(--opacity-subtitle);
-    color: var(--color-shade-grey);
+    /* Figma pose 95 % d'opacité sur un gris clair : le cumul des deux
+       affaiblissait trop le sous-titre sur la photo. Plein blanc, sans voile. */
+    color: var(--color-text-inverted);
     font-family: var(--text-body-light-family);
     font-size: var(--text-body-light-size);
     font-weight: var(--text-body-light-weight);
