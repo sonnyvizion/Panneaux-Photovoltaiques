@@ -57,7 +57,8 @@ const hasIcon = variant !== 'secondary';
     color: var(--btn-fg);
     transition:
       background-color var(--duration-fast) var(--easing-default),
-      color var(--duration-fast) var(--easing-default);
+      color var(--duration-fast) var(--easing-default),
+      transform var(--duration-fast) var(--easing-default);
   }
 
   /* --- Palettes : seule la pilule s'inverse au survol --- */
@@ -134,15 +135,19 @@ const hasIcon = variant !== 'secondary';
 
      `:active` accompagne `:hover` — règle d'or #6, pas d'interaction au survol
      seul : l'effet doit exister au clavier et au doigt. */
+  /* L'enfoncement se lit sur le bouton entier : le libellé et la pastille
+     suivent, comme une vraie pression. */
   .btn:hover,
   .btn:active {
     background: var(--btn-bg-active);
     color: var(--btn-fg-active);
+    transform: scale(var(--btn-press-scale));
   }
 
   .btn:focus-visible {
     background: var(--btn-bg-active);
     color: var(--btn-fg-active);
+    transform: scale(var(--btn-press-scale));
   }
 
   .btn--secondary:hover,
@@ -195,6 +200,12 @@ const hasIcon = variant !== 'secondary';
   /* L'inversion de couleur porte le message à elle seule : on retire le
      mouvement, pas le retour visuel. */
   @media (prefers-reduced-motion: reduce) {
+    .btn:hover,
+    .btn:active,
+    .btn:focus-visible {
+      transform: none;
+    }
+
     .btn:hover .btn__arrow,
     .btn:active .btn__arrow {
       transform: none;

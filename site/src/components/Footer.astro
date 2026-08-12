@@ -96,7 +96,7 @@ const year = new Date().getFullYear();
   .footer__tagline {
     margin: 0;
     max-width: var(--width-section-intro);
-    opacity: 0.6;
+    opacity: var(--opacity-muted);
     font-family: var(--text-body-light-family);
     font-size: var(--text-body-light-size);
     font-weight: var(--text-body-light-weight);
@@ -112,11 +112,11 @@ const year = new Date().getFullYear();
 
   .footer__column-title {
     margin: 0 0 var(--space-3);
-    opacity: 0.6;
+    opacity: var(--opacity-muted);
     font-family: var(--text-display-little-family);
     font-size: var(--text-display-little-size);
     font-weight: var(--text-display-little-weight);
-    line-height: var(--text-h3-line-height);
+    line-height: var(--text-h4-line-height);
     letter-spacing: var(--text-display-little-tracking);
   }
 
@@ -152,24 +152,50 @@ const year = new Date().getFullYear();
     line-height: var(--text-body-sm-line-height);
   }
 
-  .footer__link:hover {
-    text-decoration: underline;
+  .footer__link {
+    transition: opacity var(--duration-slow) var(--easing-default);
+  }
+
+  /* Les zones sensibles se touchent : l'écart de 8px entre deux liens était un
+     angle mort où plus aucun n'était survolé, donc toute la colonne revenait au
+     blanc le temps du passage. Le padding comble l'écart, la marge négative le
+     reprend pour que la mise en page ne bouge pas. */
+  .footer__list .footer__link {
+    display: block;
+    padding-block: calc(var(--space-2) / 2);
+    margin-block: calc(var(--space-2) / -2);
+  }
+
+  /* Mise en retrait des voisins : survoler un lien d'une colonne atténue les
+     autres de CETTE colonne, au niveau du gris des titres. Au repos, aucun
+     n'est atténué — la règle ne s'active que si un lien est effectivement
+     survolé, `:has` évitant de réagir au survol des espaces entre eux.
+     Sans support de `:has`, rien ne s'atténue : dégradation sans conséquence. */
+  .footer__list:has(.footer__link:hover) .footer__link:not(:hover) {
+    opacity: var(--opacity-muted);
+  }
+
+  .footer__list .footer__link:hover {
+    opacity: 1;
   }
 
   /* « Voir tout → » : souligné et atténué (Figma opacity 60). */
   .footer__link--all {
     display: inline-block;
     padding-block: var(--space-3);
-    opacity: 0.6;
+    opacity: var(--opacity-muted);
     text-decoration: underline;
   }
 
+  /* Rangée transverse : Figma la pose en Circular Book 22, à égalité avec les
+     titres de colonnes. Ramenée à 18px — ce sont des liens, pas des titres, et
+     ils ne doivent pas peser autant. Famille et graisse inchangées. */
   .footer__utility-list .footer__link {
-    opacity: 0.6;
+    opacity: var(--opacity-muted);
     font-family: var(--text-display-little-family);
-    font-size: var(--text-display-little-size);
+    font-size: var(--text-overline-size);
     font-weight: var(--text-display-little-weight);
-    line-height: var(--text-h3-line-height);
+    line-height: var(--text-overline-line-height);
     letter-spacing: var(--text-display-little-tracking);
   }
 

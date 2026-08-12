@@ -114,20 +114,25 @@
   --text-h2-line-height: 30px; /* → 42px dès 768px */
   --text-h2-tracking: -0.05em;
 
-  /* --- H3 — Figma : Circular Std Medium 22/26, -2 %
-     ⚠️ ÉCART ASSUMÉ : ramené à 20/24, dans la continuité de l'allègement du
-     texte courant (décision projet du 2026-08-10). --- */
+  /* --- H3 — Circular Std Medium 26/30, -2 %
+     ⚠️ RENOMMAGE : c'est le style nommé `h4` dans Figma. Les deux ont été
+     échangés ici, Figma nommant `h4` un style PLUS GRAND que son `h3` — une
+     échelle dont les noms contredisaient les tailles. Le lien avec le fichier
+     source est conservé par ce commentaire. --- */
   --text-h3-family: var(--font-family-display);
-  --text-h3-size: 20px;
+  --text-h3-size: 26px;
   --text-h3-weight: var(--font-weight-medium);
-  --text-h3-line-height: 24px;
+  --text-h3-line-height: 30px;
   --text-h3-tracking: -0.02em;
 
-  /* --- H4 — Circular Std Medium 26/30, -2 % --- */
+  /* --- H4 — Figma : style `h3`, Circular Std Medium 22/26, -2 %
+     ⚠️ RENOMMAGE : voir H3 ci-dessus.
+     ⚠️ ÉCART ASSUMÉ : ramené à 20/24, dans la continuité de l'allègement du
+     texte courant (décision projet du 2026-08-10). --- */
   --text-h4-family: var(--font-family-display);
-  --text-h4-size: 26px;
+  --text-h4-size: 20px;
   --text-h4-weight: var(--font-weight-medium);
-  --text-h4-line-height: 30px;
+  --text-h4-line-height: 24px;
   --text-h4-tracking: -0.02em;
 
   /* --- display-mid — Circular Std Book 44/1, -2 % --- */
@@ -216,7 +221,6 @@
      maquette utilise trois rayons distincts selon la taille du bloc. */
   --radius-card: 18px;  /* cartes standard : stats, piliers, FAQ fermée */
   --radius-panel: 25px; /* grands blocs : équipe, témoignages, FAQ ouverte, CTA */
-  --radius-hero: 25px;  /* coins bas du hero uniquement */
 
   /* ==========================================================================
      5. EFFETS — verre (bg/glass)
@@ -228,7 +232,6 @@
      ========================================================================== */
 
   --bg-glass-blur: 15px;
-  --bg-glass-refraction: 25px; /* référence Figma, non applicable en CSS */
 
   /* ==========================================================================
      6. EXTENSIONS PROJET — NON issues de Figma
@@ -240,7 +243,7 @@
      Nommés par leur valeur pour ne pas entrer en collision avec l'index Figma. */
   --space-12: 12px;
   --space-24: 24px;
-  --space-48: 48px;
+  --space-48: 48px; /* palier de l'échelle, non utilisé à ce jour */
   --space-64: 64px;
   --space-96: 96px;
   --space-128: 128px;
@@ -270,19 +273,18 @@
     rgba(0, 0, 0, 1) 11.269%,
     rgba(102, 102, 102, 0) 75.944%
   );
-  /* Voile dégradé de la barre utilitaire du hero. */
-  --overlay-utility-bar: linear-gradient(
-    to right,
-    rgba(33, 43, 56, 0.35),
-    rgba(91, 121, 158, 0)
-  );
 
   /* --- Rythme vertical, relevé au dev mode Figma (nœud 356:349) ---
      Mobile-first : ces valeurs sont les valeurs mobiles, la media query en bas
      du fichier passe aux valeurs desktop de la maquette. */
-  --section-padding-block: var(--space-64); /* → 120px desktop */
-  --section-gap: var(--space-4);             /* en-tête → contenu, → 56px desktop */
-  --block-gap: var(--space-64);              /* entre sous-blocs, → 120px desktop */
+  /* `--block-gap` est la valeur qui se VOIT : l'écart entre deux blocs. La
+     marge de section en est la moitié, puisque deux sections voisines posent
+     chacune la leur et qu'elles s'additionnent. Régler la marge directement
+     revenait à piloter la moitié du résultat, d'où l'impression d'un rythme
+     deux fois trop large. */
+  --block-gap: var(--space-96);
+  --section-padding-block: calc(var(--block-gap) / 2);
+  --section-gap: var(--space-4); /* en-tête → contenu, → 48px desktop */
 
   /* --- Grille & conteneur --- */
   /* Figma est dessiné sur 1280 : c'est la largeur du canevas, pas une limite
@@ -310,28 +312,27 @@
   --size-certif-logo: 44px; /* logo Enphase de la pastille de certification */
   --size-logo-header: 26px; /* logotype Belgreen en tête de page, → 33px */
   --size-logo-footer: 28px;
-  --text-utility-size: 11px; /* rangée utilitaire du header, sous body-nav */
+  --text-utility-size: 14px; /* rangée utilitaire du header, sous body-nav */
   --text-step-number: 66px; /* chiffre des étapes « Comment ça marche » */
   --size-star: 18px;        /* étoile des témoignages */
-  --size-icon-sm: 14px;
-  --size-icon-xs: 12px;
-  --width-input-min: 160px;
-  --width-hero-copy: 662px;
 
   /* --- Gabarits relevés au dev mode Figma (nœud 356:349) ---
      Largeurs et hauteurs propres à la maquette desktop, appliquées seulement
      au-delà de 1024px. Elles ne décrivent pas une échelle : ce sont les mesures
      exactes des blocs. */
   /* Gabarit du hero (nœud 356:354) */
-  /* Retrait de la carte du hero. Nul sur mobile — le hero y reprend toute la
-     largeur, seuls ses coins bas sont arrondis. La carte détachée ne vaut qu'à
-     partir de 768px (13px, plus bas dans le fichier). */
-  --hero-inset: 0px;
+  /* Retrait de la carte du hero, identique sur ses quatre côtés. Le hero est
+     une carte détachée à toutes les tailles : 10px sur mobile, 13px dès 768px
+     (plus bas dans le fichier). */
+  --hero-inset: 10px;
   /* Marge propre du header : le complément de celle que la carte du hero
      apporte déjà, pour que son contenu tombe sur la marge des sections. */
   --header-inline-pad: calc(var(--container-padding) - var(--hero-inset));
-  /* Le hero est une carte détachée : sa hauteur retranche ses propres marges. */
-  --height-hero: calc(100svh - var(--hero-inset) * 2); /* → 860px dès 768px */
+  /* Le hero occupe la hauteur de l'écran, marges comprises : on retranche donc
+     les DEUX, pour un retrait identique en haut et en bas. `svh` et non `vh` —
+     sur mobile, `vh` compte la barre d'URL rétractée et le bas du hero
+     passerait sous l'écran. */
+  --height-hero: calc(100svh - var(--hero-inset) * 2);
   --gap-hero: var(--space-24);  /* entre bloc texte et bloc simulateur, → 44px */
   --gap-hero-simu: 12px;        /* entre le champ et sa légende */
   --width-h1: 662px;
@@ -351,7 +352,6 @@
   --pad-form-end: 3px;
   --pad-form-block: 4px;
   --gap-form: var(--space-2); /* → 40px dès 768px */
-  --radius-form: 100px;
 
   /* Pastilles de réassurance du hero */
   --pad-pill-inline: 18px;
@@ -361,7 +361,11 @@
   --pad-button-start: 18px; /* → 25px dès 768px */
   --pad-button-edge: 6px;
   --gap-button: var(--space-12); /* → 18px dès 768px */
-  --duration-roll: 420ms;    /* roulement du libellé des CTA */
+  --duration-roll: 240ms;    /* roulement du libellé des CTA */
+  --btn-press-scale: 0.97;   /* léger enfoncement du bouton au survol */
+  /* Montée des blocs à l'entrée. design.md §6 prescrit 8px — trop discret pour
+     se lire, porté à 32px. Écart assumé. */
+  --reveal-rise: 40px;
   --btn-label-lift: 115%;    /* course du libellé, au-delà du cadre de coupe */
 
   --pad-card: 20px;         /* padding intérieur des cartes standard */
@@ -378,7 +382,6 @@
   --height-team-frame: 669px;
   --height-pillars: 274px; /* conteneur gris des piliers (Figma 356:416) */
   --width-pillar-image: 195px;
-  --radius-pillar-image: 19px;
   --height-rea-block: 263px; /* hauteur de la rangée Réassurance */
   --width-figure-label: 253px; /* légende sous un chiffre clé (Figma 356:404) */
   --height-rating: 72px;     /* carte « 4.8/5 » */
@@ -391,16 +394,16 @@
   /* --- Mouvement (design.md §6) --- */
   --duration-fast: 150ms;
   --duration-medium: 250ms;
-  --duration-slow: 200ms;
+  --duration-slow: 400ms;    /* fondus croisés, où un geste rapide doit rester lisible */
   --easing-default: ease;
   /* Léger dépassement (~7 %) puis retour : donne un rebond discret sans
      caricature. Réservé aux ouvertures, jamais aux fermetures. */
   --easing-bounce: cubic-bezier(0.34, 1.28, 0.64, 1);
 
   /* --- Opacités d'état --- */
+  --opacity-muted: 0.6;      /* texte secondaire du footer, liens en retrait */
   --opacity-hover: 0.9;
   --opacity-active: 0.85;
-  --opacity-hero-overlay: 0.9;
 
   /* --- Focus --- */
   --focus-ring-width: 2px;
@@ -415,9 +418,8 @@
        design.md §4. Calé sur 96, le bas de cette fourchette — 120 aérait trop.
        Soit 192px entre deux blocs. */
     --hero-inset: 13px;
-    --section-padding-block: 96px;
+    --block-gap: 144px;
     --section-gap: 48px;
-    --block-gap: 96px;
     --container-padding: 60px;
 
     /* Valeurs de la maquette desktop. En dessous, les versions réduites
@@ -426,7 +428,6 @@
     --text-h1-size: 44px;
     --text-h2-size: 40px;
     --text-h2-line-height: 42px;
-    --height-hero: 860px;
     --gap-hero: 44px;
     --gap-form: 40px;
     --pad-button-start: 25px;

@@ -62,12 +62,12 @@ import Badge from './Badge.astro';
 </section>
 
 <style>
-  /* Mobile : pleine largeur, seuls les coins bas sont arrondis, comme Figma.
-     À partir de 768px le hero devient une carte détachée (voir plus bas).
-     Pas de marge basse : la section suivante apporte déjà son propre rythme. */
+  /* Carte détachée à toutes les tailles : retrait identique sur les quatre
+     côtés, et rayon sur les quatre coins. Figma la dessine pleine largeur avec
+     les coins bas seulement — écart assumé. */
   .hero {
     position: relative;
-    margin: var(--hero-inset) var(--hero-inset) 0;
+    margin: var(--hero-inset);
     min-height: var(--height-hero);
     display: flex;
     flex-direction: column;
@@ -75,18 +75,10 @@ import Badge from './Badge.astro';
     justify-content: center;
     gap: var(--gap-hero);
     overflow: hidden;
-    border-end-start-radius: var(--radius-hero);
-    border-end-end-radius: var(--radius-hero);
+    border-radius: var(--radius-panel);
     /* Réserve de quoi ne pas percuter la barre et les pastilles hors flux
        quand le contenu s'allonge sur petit écran. */
     padding-block: var(--space-96) var(--space-96);
-  }
-
-  /* Carte détachée dès 768px : le retrait ouvre les quatre coins. */
-  @media (min-width: 768px) {
-    .hero {
-      border-radius: var(--radius-hero);
-    }
   }
 
   .hero__image {
@@ -109,7 +101,14 @@ import Badge from './Badge.astro';
       .hero__image {
         top: calc(var(--hero-parallax-shift) * -1);
         height: calc(100% + var(--hero-parallax-shift) * 2);
-        animation: hero-parallax linear both;
+        /* Propriétés détaillées, jamais le raccourci `animation` : le
+           minifieur y replie `animation-timeline`, que Chrome n'accepte pas
+           encore dans le raccourci — la déclaration devient invalide et la
+           parallaxe ne part jamais. */
+        animation-name: hero-parallax;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
         animation-timeline: scroll(root block);
         animation-range: 0 var(--height-hero);
       }

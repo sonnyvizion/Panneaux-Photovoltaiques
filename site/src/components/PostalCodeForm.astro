@@ -36,19 +36,22 @@ import Button from './Button.astro';
     height: var(--height-cta-simu);
     padding: var(--pad-form-block) var(--pad-form-end) var(--pad-form-block)
       var(--pad-form-start);
-    border-radius: var(--radius-form);
+    border-radius: var(--radius-pill);
     background: var(--bg-glass-fill-form);
     /* Le filet clair est ce qui signe l'effet verre : sans lui, un fond
        translucide passe pour un aplat. Recette design.md §3. */
     border: var(--bg-glass-border);
     backdrop-filter: blur(var(--bg-glass-blur-form));
     -webkit-backdrop-filter: blur(var(--bg-glass-blur-form));
-    outline: var(--focus-ring-width) solid transparent;
-    transition: outline-color var(--duration-fast) var(--easing-default);
+    transition: border-color var(--duration-fast) var(--easing-default);
   }
 
+  /* Repère de focus discret : le filet de verre passe au blanc plein au lieu
+     de l'anneau vert, jugé trop visible pendant la saisie. Il en faut un —
+     l'`input` a son propre `outline: none`, sans quoi rien ne signalerait où
+     l'on écrit au clavier. */
   .postal-form:focus-within {
-    outline-color: var(--color-main-green);
+    border-color: var(--color-white-primary);
   }
 
   .postal-form__input {

@@ -63,7 +63,7 @@ const cards = [
     intro="Quatre thèmes pour comprendre le photovoltaïque avant de passer à l'estimation."
   />
 
-  <ul class="pillars">
+  <ul class="pillars reveal">
     {cards.map((card, index) => (
       <li class={`pillars__item ${index === 0 ? 'is-open' : ''}`}>
         <div class="pillars__body">
@@ -260,7 +260,7 @@ const cards = [
       height: 100%;
       width: var(--width-pillar-image);
       object-fit: cover;
-      border-radius: var(--radius-pillar-image);
+      border-radius: var(--radius-card);
     }
   }
 

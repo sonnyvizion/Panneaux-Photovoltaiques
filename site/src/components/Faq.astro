@@ -54,7 +54,7 @@ const faqSchema = {
     intro="Les questions qu'on nous pose le plus souvent, avant même de faire une simulation."
   />
 
-  <div class="faq">
+  <div class="faq reveal">
     {faq.map((item) => (
       <Accordion question={item.question} variant="card" open={item.open} name="faq">
         {item.answer}

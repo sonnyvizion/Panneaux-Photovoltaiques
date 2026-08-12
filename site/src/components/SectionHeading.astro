@@ -35,7 +35,7 @@ const {
 } = Astro.props;
 ---
 
-<header class={`heading heading--${align} heading--overline-${overlineTone}`}>
+<header class={`heading reveal heading--${align} heading--overline-${overlineTone}`}>
   <p class="heading__overline">{overline}</p>
   <h2 class="heading__title">
     {title}{highlight && <span class="heading__highlight">{highlight}</span>}{titleEnd}{titleLine2 && (
@@ -49,7 +49,10 @@ const {
 </header>
 
 <style>
+  /* Le texte se révèle de plus loin que les blocs qui le suivent : c'est lui
+     qu'on lit en premier, l'apparition doit s'y voir davantage. */
   .heading {
+    --reveal-rise: 64px;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);

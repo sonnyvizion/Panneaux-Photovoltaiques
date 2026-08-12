@@ -38,7 +38,7 @@ const steps = [
     intro="Trois étapes, sans engagement, du code postal jusqu'à la visite d'un installateur."
   />
 
-  <ol class="steps">
+  <ol class="steps reveal">
     {steps.map((step, index) => (
       <li class={`steps__item steps__item--${step.tone}`}>
         {step.image && (
@@ -136,11 +136,11 @@ const steps = [
 
   .steps__title {
     margin: 0;
-    font-family: var(--text-h3-family);
-    font-size: var(--text-h3-size);
-    font-weight: var(--text-h3-weight);
-    line-height: var(--text-h3-line-height);
-    letter-spacing: var(--text-h3-tracking);
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
   }
 
   .steps__detail {

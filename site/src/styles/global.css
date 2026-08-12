@@ -119,6 +119,48 @@ html.lenis body {
   transition-behavior: allow-discrete;
 }
 
+/* Apparition à l'entrée dans l'écran — fondu + légère montée (design.md §6).
+
+   Timeline de vue : aucun JavaScript, aucun observateur, l'animation est
+   portée par le compositeur. `@supports` la rend inoffensive là où ce n'est
+   pas supporté — le bloc reste simplement visible, jamais masqué.
+
+   Volontairement PAS de flou : c'est la propriété la plus coûteuse des trois
+   et elle dégrade la lisibilité du texte pendant le mouvement. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      /* Propriétés détaillées, jamais le raccourci `animation` : le minifieur
+         y replie `animation-timeline`, or Chrome n'accepte pas encore la
+         timeline dans le raccourci — la déclaration entière devient invalide
+         et l'animation ne part pas. */
+      animation-name: reveal-rise;
+      animation-duration: auto;
+      /* Décélération : le bloc arrive vite puis se pose, au lieu d'accompagner
+         le défilement à vitesse constante jusqu'au dernier pixel. */
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* La course se compte en `cover`, pas en `entry` : `entry` ne dure que la
+         hauteur de l'élément, donc un titre montait ses 64px en une centaine
+         de pixels de défilement — presque la vitesse de la page, ce qui se lit
+         comme un bond. Étalée sur `cover`, la montée devient une dérive. */
+      animation-range: entry 15% cover 32%;
+    }
+
+    @keyframes reveal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(var(--reveal-rise));
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

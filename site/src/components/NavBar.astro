@@ -12,8 +12,8 @@ const { current = '/' } = Astro.props;
 ---
 
 <header id="site-header" class="header header--over-hero">
-  {/* Rangée utilitaire — tél · région · langue (nav.md).
-      Le dégradé porte sur cette bande seule, pas sur la rangée de nav. */}
+  {/* Rangée utilitaire — tél à gauche, région et langue à droite (nav.md).
+      Pas de fond : le texte se pose directement sur la photo du hero. */}
   <div class="header__utility-bar">
   <div class="header__utility">
     <a class="header__utility-item" href={PHONE.href}>
@@ -28,9 +28,10 @@ const { current = '/' } = Astro.props;
       {PHONE.label}
     </a>
 
-    <span class="header__utility-sep" aria-hidden="true">·</span>
-
-    <label class="header__utility-item header__region">
+    {/* Groupées à droite : la bande occupe ainsi toute sa largeur au lieu de
+        laisser les deux tiers droits vides. */}
+    <div class="header__utility-end">
+      <label class="header__utility-item header__region">
       <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
         <path
           d="M8 14s5-4.2 5-8A5 5 0 003 6c0 3.8 5 8 5 8z"
@@ -41,28 +42,27 @@ const { current = '/' } = Astro.props;
         <circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.3" />
       </svg>
       <span class="visually-hidden">Votre région</span>
-      <select class="header__region-select" name="region">
-        {REGIONS.map((region) => (
-          <option value={region.href}>{region.label}</option>
-        ))}
-      </select>
-    </label>
+        <select class="header__region-select" name="region">
+          {REGIONS.map((region) => (
+            <option value={region.href}>{region.label}</option>
+          ))}
+        </select>
+      </label>
 
-    <span class="header__utility-sep" aria-hidden="true">·</span>
-
-    <ul class="header__locales">
+      <ul class="header__locales">
       {LOCALES.map((locale, index) => (
         <li>
           <a
             class={`header__utility-item ${index === 0 ? 'is-active' : ''}`}
             href={locale.href}
             lang={locale.label.toLowerCase()}
-          >
-            {locale.label}
-          </a>
-        </li>
-      ))}
-    </ul>
+            >
+              {locale.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
   </div>
 
@@ -218,23 +218,16 @@ const { current = '/' } = Astro.props;
     gap: var(--space-2);
     padding-bottom: var(--space-2);
     padding-inline: var(--header-inline-pad);
-    transition: background var(--duration-slow) var(--easing-default);
+    transition: background var(--duration-medium) var(--easing-default);
   }
 
   /* Bande pleine largeur qui porte le dégradé — la rangée de nav en dessous
      reste transparente (relevé Figma : `accessoires_bar` seule est habillée). */
-  /* Le dégradé doit couvrir toute la largeur de la carte du hero : la bande
-     ressort de la marge du header, puis la rétablit à l'intérieur pour que son
-     contenu reste aligné sur les sections. Sans ce débord, le dégradé était
-     coupé de chaque côté. */
+  /* Plus de fond : le dégradé était le seul du site depuis que le hero est
+     passé au voile uni, et sur un ciel bleu-gris il ne se lisait pas comme une
+     bande — juste comme une salissure. Le texte se pose sur la photo. */
   .header__utility-bar {
     padding-block: var(--space-2);
-    margin-inline: calc(var(--header-inline-pad) * -1);
-    padding-inline: var(--header-inline-pad);
-  }
-
-  .header--over-hero .header__utility-bar {
-    background: var(--overlay-utility-bar);
   }
 
   .header--over-hero {
@@ -274,9 +267,12 @@ const { current = '/' } = Astro.props;
   /* Figma : bande dégradée en tête de hero, gap 32 sur desktop. Sur mobile
      l'écart est resserré et la rangée peut passer à la ligne, sinon les cinq
      éléments débordent de la largeur de l'écran. */
+  /* Téléphone à gauche, région et langue poussées à droite : la rangée occupe
+     toute sa largeur, au lieu de tasser trois éléments dans le premier tiers. */
   .header__utility {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     flex-wrap: wrap;
     gap: var(--space-2) var(--space-3);
     font-family: var(--text-body-nav-family);
@@ -303,9 +299,12 @@ const { current = '/' } = Astro.props;
     text-underline-offset: var(--space-1);
   }
 
-  .header__utility-sep {
-    opacity: var(--opacity-active);
+  /* La langue non sélectionnée s'efface : le soulignement seul, à 14px, ne
+     suffisait pas à distinguer les deux. Même gris de retrait que le footer. */
+  .header__locales .header__utility-item:not(.is-active) {
+    opacity: var(--opacity-muted);
   }
+
 
   .header__region-select {
     appearance: none;
@@ -320,6 +319,12 @@ const { current = '/' } = Astro.props;
   /* Les options héritent du fond système : forcer une couleur lisible. */
   .header__region-select option {
     color: var(--color-text-primary);
+  }
+
+  .header__utility-end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
   }
 
   .header__locales {

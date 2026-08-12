@@ -91,7 +91,7 @@ const PROGRESS_SEGMENTS = 3;
     />
   </div>
 
-  <div class="testimonials__wrapper">
+  <div class="testimonials__wrapper reveal">
     {/* `tabindex` : une zone défilante doit être atteignable au clavier, sans
         quoi son contenu devient inaccessible sans souris. */}
     <ul
@@ -280,6 +280,11 @@ const PROGRESS_SEGMENTS = 3;
     /* Les cartes s'accrochent sur la gouttière, pas sur le bord de l'écran. */
     scroll-padding-inline: var(--gutter);
     overscroll-behavior-x: contain;
+    /* Explicitement `auto` en vertical. `data-lenis-prevent` fait poser à Lenis
+       un `overscroll-behavior: contain` en raccourci, donc sur les DEUX axes :
+       le rail absorbait alors la molette verticale sans la transmettre à la
+       page, qui restait bloquée dès qu'on le survolait. */
+    overscroll-behavior-y: auto;
     /* La barre native ferait doublon avec l'indicateur de la maquette. */
     scrollbar-width: none;
   }
@@ -401,10 +406,12 @@ const PROGRESS_SEGMENTS = 3;
       scroll-snap-align: none;
     }
 
+    /* Pas de `scroll-snap-stop: always` : il retenait le rail à CHAQUE lot, si
+       bien qu'un geste de retour un peu ample se faisait accrocher trois fois
+       avant d'arriver. L'accroche reste `mandatory`, donc le rail se pose
+       toujours net sur un lot — il peut simplement en traverser plusieurs. */
     .testimonials__item:nth-child(3n + 1) {
       scroll-snap-align: start;
-      /* Interdit d'enjamber un lot d'un seul geste. */
-      scroll-snap-stop: always;
     }
 
     /* Deux gouttières entre deux lots. Un lot occupe exactement la largeur
