@@ -1,19 +1,44 @@
 ---
 import Button from './Button.astro';
+import type { ContentLink } from '../data/content';
 
-/** Dernière relance vers le simulateur pour qui a tout scrollé (architecture.md). */
+/**
+ * Dernière relance vers le simulateur pour qui a tout scrollé
+ * (architecture.md). Sur une page de contenu, l'accroche est contextualisée au
+ * sujet lu — jamais un CTA générique (règle d'or : la boucle contenu ↔
+ * simulateur, `pages-contenu.md`).
+ */
+interface Props {
+  overline?: string;
+  title: string;
+  text?: string;
+  cta?: ContentLink;
+  /**
+   * Fond de la bande qui porte la carte verte. Gris sur la home, où le bloc
+   * prolonge la FAQ grise ; blanc sur les pages de contenu, dont la FAQ est
+   * déjà blanche (Figma 466:1492).
+   */
+  tone?: 'grey' | 'default';
+}
+
+const {
+  overline = "Passez à l'action",
+  title,
+  text = "Vous parlez directement à l'équipe qui installe. Pas d'intermédiaire. Pas de revente de données.",
+  cta = { label: 'Faire mon estimation', href: '/simulateur' },
+  tone = 'grey',
+} = Astro.props;
 ---
 
-<section class="final-cta">
+<section class={`final-cta final-cta--${tone}`}>
   <div class="final-cta__card reveal">
-    <p class="final-cta__overline">Passez à l'action</p>
-    <h2 class="final-cta__title">Prêt à savoir si le solaire est fait pour vous&nbsp;?</h2>
-    <p class="final-cta__text">
-      Vous parlez directement à l'équipe qui installe. Pas d'intermédiaire.
-      Pas de revente de données.
-    </p>
+    <p class="final-cta__overline">{overline}</p>
+    {/* Interpolation simple, jamais `set:html` : ce texte viendra de Sanity.
+        Les espaces insécables sont écrits en U+00A0 dans les données. */}
+    <h2 class="final-cta__title">{title}</h2>
+    <p class="final-cta__text">{text}</p>
     <div class="final-cta__action">
-      <Button variant="ink" href="/simulateur">Faire mon estimation</Button>
+      <Button variant="ink" href={cta.href}>{cta.label}</Button>
     </div>
   </div>
 </section>
@@ -21,7 +46,20 @@ import Button from './Button.astro';
 <style>
   .final-cta {
     padding: 0 var(--container-padding) var(--section-padding-block);
+  }
+
+  .final-cta--grey {
     background: var(--color-shade-grey);
+  }
+
+  /* ⚠️ Sur fond blanc, la bande pose AUSSI sa marge haute.
+     Le `padding-top: 0` ci-dessus n'a de sens que sur la home : la carte verte
+     y prolonge une FAQ grise, et le gris continu masque l'absence d'écart. Sur
+     une page de contenu, la FAQ est blanche comme la bande — le joint ne valait
+     alors que la moitié du rythme et la page se terminait serrée. */
+  .final-cta--default {
+    padding-top: var(--section-padding-block);
+    background: var(--color-white-primary);
   }
 
   .final-cta__card {
@@ -59,16 +97,27 @@ import Button from './Button.astro';
     max-width: var(--width-section-intro);
     color: var(--color-text-secondary);
     font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
+    font-size: var(--text-body-sm-size);
     font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
+    line-height: var(--text-body-sm-line-height);
     letter-spacing: var(--text-body-light-tracking);
   }
 
+  /* Aligné à gauche sur mobile (Figma 466:1961), à droite en pied de carte dès
+     1024px. Le bouton suit le fer du texte tant que la carte est une colonne ;
+     il ne passe de l'autre côté que quand elle devient une grille à deux
+     colonnes et que le texte lui laisse la place. */
   .final-cta__action {
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
     margin-top: var(--space-3);
+  }
+
+  @media (min-width: 768px) {
+    .final-cta__text {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
   }
 
   @media (min-width: 1024px) {

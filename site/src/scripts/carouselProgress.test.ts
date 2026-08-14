@@ -3,6 +3,7 @@ import {
   getNextSegment,
   getProgressIndex,
   getSegmentTarget,
+  shouldYieldToPage,
 } from './carouselProgress';
 
 describe('getNextSegment', () => {
@@ -62,5 +63,26 @@ describe('getProgressIndex', () => {
 
   it('handles a single segment', () => {
     expect(getProgressIndex(500, 3000, 1000, 1)).toBe(0);
+  });
+});
+
+describe('shouldYieldToPage', () => {
+  it('laisse passer le geste vertical pur : il n\'accroche pas le rail', () => {
+    expect(shouldYieldToPage(0, 120)).toBe(false);
+    expect(shouldYieldToPage(0, -120)).toBe(false);
+  });
+
+  it('rend la main à la page sur un geste oblique dominé par la verticale', () => {
+    expect(shouldYieldToPage(25, 120)).toBe(true);
+    expect(shouldYieldToPage(-8, -90)).toBe(true);
+  });
+
+  it('laisse le geste franchement horizontal au rail', () => {
+    expect(shouldYieldToPage(250, 0)).toBe(false);
+    expect(shouldYieldToPage(120, 30)).toBe(false);
+  });
+
+  it('tranche en faveur du rail quand les deux axes sont à égalité', () => {
+    expect(shouldYieldToPage(100, 100)).toBe(false);
   });
 });

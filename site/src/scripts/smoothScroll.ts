@@ -11,6 +11,21 @@
  * Lenis pilote le défilement réel de la fenêtre : `window.scrollY`, les
  * IntersectionObserver et l'ancrage du header continuent de fonctionner.
  */
+/** Le peu de l'API Lenis dont les défileurs imbriqués ont besoin. */
+interface SmoothScroll {
+  targetScroll: number;
+  scrollTo(target: number, options?: Record<string, unknown>): void;
+}
+
+/* Exposée aux défileurs imbriqués qui doivent rendre un geste à la page : leur
+   laisser appeler `window.scrollBy` désynchroniserait Lenis, qui repartirait de
+   sa propre position au geste suivant. Voir le rail des avis. */
+let instance: SmoothScroll | null = null;
+
+export function getSmoothScroll(): SmoothScroll | null {
+  return instance;
+}
+
 export function shouldEnableSmoothScroll(
   matches: (query: string) => boolean,
 ): boolean {
@@ -28,6 +43,7 @@ export async function initSmoothScroll(): Promise<void> {
   const { default: Lenis } = await import('lenis');
 
   const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+  instance = lenis as unknown as SmoothScroll;
 
   const raf = (time: number) => {
     lenis.raf(time);

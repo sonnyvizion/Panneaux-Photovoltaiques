@@ -11,11 +11,11 @@ import Accordion from '../components/Accordion.astro';
     <section>
       <h2>Typographie</h2>
       <div class="ds__column">
-        <h1>H1 — Titre de page (Circular Std Medium 44)</h1>
-        <h2>H2 — Sous-titre de section (Circular Std Book 44)</h2>
-        <h3>H3 — Sous-titre mineur (Circular Std Medium 22)</h3>
-        <h4>H4 — Titre de bloc (Circular Std Medium 26)</h4>
-        <p>Corps de texte en Inter Medium 16/20, pour vérifier la lisibilité.</p>
+        <h1>H1 — Titre de page (Circular Std Book 450, 32 → 60px, interlignage 0,88)</h1>
+        <h2>H2 — Sous-titre de section (Circular Std Book 450, 28 → 48/50)</h2>
+        <h3>H3 — Sous-titre mineur (Circular Std Medium 500, 26/30)</h3>
+        <h4>H4 — Titre de bloc (Circular Std Medium 500, 20/24)</h4>
+        <p>Corps de texte en Inter Regular 400, 16/22, pour vérifier la lisibilité.</p>
         <p class="ds__muted">Texte secondaire (--color-text-muted), taille --text-body-nav-size.</p>
         <p class="ds__mono">3 240 € / an — Geist Mono 500</p>
       </div>
@@ -27,13 +27,30 @@ import Accordion from '../components/Accordion.astro';
         <Button variant="primary">Action principale</Button>
         <Button variant="secondary">Action secondaire</Button>
       </div>
+      {/* La variante sombre se pose sur des fonds déjà colorés : la montrer sur
+          blanc ne dirait rien de son usage réel. */}
+      <div class="ds__row ds__row--lime">
+        <Button variant="ink">Action sur fond coloré</Button>
+      </div>
     </section>
 
     <section>
       <h2>Badges</h2>
-      <div class="ds__row ds__row--dark">
-        <Badge variant="glass">Gratuit</Badge>
+      {/* La variante verre a un texte BLANC : sur fond clair elle était
+          illisible ici, alors qu'elle ne se pose jamais que sur photo. */}
+      <div class="ds__row ds__row--photo">
+        <Badge variant="glass" dot>Gratuit</Badge>
+        <Badge variant="glass">Sans le point</Badge>
+      </div>
+      <div class="ds__row">
         <Badge variant="solid">Sans engagement</Badge>
+        <Badge variant="solid" icon>Avec pictogramme</Badge>
+      </div>
+      {/* Gabarit des pages de contenu : la pastille y porte une phrase, pas un
+          mot — d'où un padding et un corps de texte plus généreux. */}
+      <div class="ds__column">
+        <Badge variant="lime" size="lg" block>Rentabilité &amp; Prix — étiquette de pilier</Badge>
+        <Badge variant="grey" size="lg">Note qui annonce un module interactif.</Badge>
       </div>
     </section>
 
@@ -48,13 +65,73 @@ import Accordion from '../components/Accordion.astro';
     </section>
 
     <section>
-      <h2>Accordéon</h2>
+      <h2>Mouvement</h2>
+      <div class="ds__column">
+        {/* Une liste plutôt qu'un paragraphe : les espaces qui bordent un
+            `<code>` en milieu de phrase sautent à la minification du HTML. */}
+        <ul class="ds__list">
+          <li>
+            <code>--easing-bounce</code> — dépassement d'environ 7 %, réservé au
+            roulement du libellé des boutons. Ailleurs, il claque.
+          </li>
+          <li>
+            <code>--easing-expand</code> — aucun dépassement, mouvement réparti
+            du début à la fin. Ouverture des piliers, sur
+            <code>--duration-expand</code>, 560 ms.
+          </li>
+          <li><code>--easing-default</code> — tout le reste.</li>
+        </ul>
+        <p class="ds__muted">
+          Survolez les piliers de la page d'accueil pour juger le second : il n'y
+          a pas de démonstration isolée ici, l'effet dépend de la largeur réelle
+          des cartes.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>Accordéon — variante ligne</h2>
       <Accordion question="Est-ce que ça marche sans JavaScript ?">
         Oui — c'est un élément natif <code>&lt;details&gt;</code>/<code>&lt;summary&gt;</code>.
       </Accordion>
       <Accordion question="Deuxième question de test">
         Contenu de la deuxième réponse, pour vérifier l'empilement de plusieurs accordéons.
       </Accordion>
+    </section>
+
+    <section>
+      <h2>Accordéon — variante carte</h2>
+      {/* Deux tons d'ouverture, et un fond de fermeture qui dépend de la
+          surface porteuse. Les montrer côte à côte est le seul moyen de vérifier
+          qu'un fermé se détache toujours de son fond : c'est ce couple-là qui se
+          casse quand on change le ton d'une section. */}
+      <p class="ds__muted">
+        Sur une section grise : fermé en blanc. Ouverture en encre — les FAQ.
+      </p>
+      <div class="ds__row--grey">
+        <Accordion question="Fermé sur fond gris" variant="card" closedTone="white" name="ds-ink">
+          Réponse de démonstration.
+        </Accordion>
+        <Accordion question="Ouvert en encre" variant="card" closedTone="white" openTone="ink" open name="ds-ink">
+          Réponse de démonstration, sur l'aplat sombre.
+        </Accordion>
+      </div>
+
+      <p class="ds__muted">
+        Sur une section blanche : fermé en gris. Posé dans un panneau blanc :
+        aucun fond, seul l'ouvert pose son aplat lime — « Creuser le sujet ».
+      </p>
+      <div class="ds__row--panel">
+        <Accordion question="Fermé sur fond blanc" variant="card" closedTone="grey" name="ds-lime">
+          Réponse de démonstration.
+        </Accordion>
+        <Accordion question="Fermé sans fond" variant="card" closedTone="none" name="ds-lime">
+          Réponse de démonstration.
+        </Accordion>
+        <Accordion question="Ouvert en lime" variant="card" closedTone="none" openTone="lime" open name="ds-lime">
+          Réponse de démonstration, sur l'aplat d'accent.
+        </Accordion>
+      </div>
     </section>
   </main>
 </BaseLayout>
@@ -76,16 +153,55 @@ import Accordion from '../components/Accordion.astro';
     flex-wrap: wrap;
   }
 
-  .ds__row--dark {
-    background: var(--color-white-clear);
+  /* Aplat sombre en guise de photo : le verre ne se juge pas sur du blanc. */
+  .ds__row--photo {
+    background: var(--color-ink-800);
     padding: var(--space-24);
     border-radius: var(--radius-4);
+  }
+
+  .ds__row--lime {
+    background: var(--color-highlight-primary);
+    padding: var(--space-24);
+    border-radius: var(--radius-4);
+  }
+
+  /* Les deux surfaces sur lesquelles la variante carte se pose réellement.
+     Sur un fond neutre, le ton de fermeture ne se jugerait pas. */
+  .ds__row--grey,
+  .ds__row--panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    padding: var(--space-24);
+    border-radius: var(--radius-panel);
+  }
+
+  .ds__row--grey {
+    background: var(--color-shade-grey);
+  }
+
+  .ds__row--panel {
+    background: var(--color-white-primary);
+    border: var(--border-width) solid var(--color-shade-grey);
   }
 
   .ds__column {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+  }
+
+  .ds__list {
+    margin: 0;
+    padding-inline-start: var(--space-24);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
   }
 
   .ds__muted {

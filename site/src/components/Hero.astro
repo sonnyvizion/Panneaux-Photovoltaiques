@@ -1,11 +1,23 @@
 ---
 import { Image } from 'astro:assets';
 import heroImage from '../assets/hero/hero.webp';
-import NavBar from './NavBar.astro';
 import PostalCodeForm from './PostalCodeForm.astro';
 import Badge from './Badge.astro';
 
 /** Gabarit relevé au dev mode Figma (nœud 356:354). */
+
+/* Arguments repris du positionnement : pas d'intermédiaire, pas de revente de
+   données, certification Enphase, couverture des trois régions. */
+const reassurances = [
+  'Sans engagement',
+  'Gratuit',
+  'Résultat en 2 min',
+  'Sans intermédiaire',
+  'Vos données ne sont pas revendues',
+  'Installateur certifié Enphase',
+  'Primes de votre région incluses',
+  'Wallonie · Bruxelles · Flandre',
+];
 ---
 
 <section id="hero" class="hero">
@@ -20,13 +32,17 @@ import Badge from './Badge.astro';
     widths={[768, 1280, 1920, 2560]}
     sizes="100vw"
     format="webp"
-    quality={75}
+    {/* 85 et non 75 : c'est le LCP, la plus grande surface photographique de la
+        page, et elle s'affiche à 0,91× de la densité Retina. Le détail
+        photographique s'y voit — ailleurs, 75 suffit. */}
+    quality={85}
     priority
     class="hero__image"
   />
   <div class="hero__overlay" aria-hidden="true"></div>
 
-  <NavBar />
+  {/* La nav vit dans BaseLayout et se pose ici en absolu : `#hero` reste son
+      repère d'observation pour basculer entre transparent et détaché. */}
 
   {/* Seuls ces deux blocs sont dans le flux : ils se centrent dans les 788px.
       Barre utilitaire et pastilles sont hors flux, comme dans Figma. */}
@@ -54,10 +70,21 @@ import Badge from './Badge.astro';
     </p>
   </div>
 
+  {/* Deux groupes identiques bout à bout : quand le premier a défilé de sa
+      propre largeur, le second occupe exactement sa place — la boucle est
+      invisible. Le second est un doublon décoratif, retiré aux lecteurs
+      d'écran, qui n'entendent donc la liste qu'une fois. */}
   <div class="hero__reassurance">
-    <Badge variant="glass">Sans engagement</Badge>
-    <Badge variant="glass">Gratuit</Badge>
-    <Badge variant="glass">Résultat en 2 min</Badge>
+    <ul class="marquee__group">
+      {reassurances.map((mot) => (
+        <li><Badge variant="glass" dot>{mot}</Badge></li>
+      ))}
+    </ul>
+    <ul class="marquee__group" aria-hidden="true">
+      {reassurances.map((mot) => (
+        <li><Badge variant="glass" dot>{mot}</Badge></li>
+      ))}
+    </ul>
   </div>
 </section>
 
@@ -89,6 +116,7 @@ import Badge from './Badge.astro';
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: var(--hero-image-focus);
   }
 
   /* Parallaxe du fond — CSS seul, sans écouteur de défilement.
@@ -124,6 +152,32 @@ import Badge from './Badge.astro';
     }
   }
 
+  /* Cadrage constant à partir du desktop.
+     En `object-fit: cover` seul, le recadrage suit le rapport du cadre : à 1920
+     l'image s'affichait à 0,41× et on n'en voyait que 64 % en hauteur, à 1280
+     elle tombait à 0,27× et se dévoilait presque entièrement — la maison y
+     paraissait deux fois plus petite. Ici c'est la hauteur qui commande : la
+     largeur suit le ratio de la source et déborde de chaque côté, donc
+     l'échelle ne dépend plus de la largeur de l'écran. `max-width: none` lève
+     le plafond global posé sur les images, sans quoi le débord est impossible.
+     `min-width` reprend la main sur les écrans très larges, où la largeur
+     redevient la contrainte. `translate` recentre le débord : il se compose
+     avec le `transform` de la parallaxe au lieu de l'écraser.
+     Le mobile garde le cadrage plein cadre : un tel débord latéral y couperait
+     la maison. */
+  @media (min-width: 768px) {
+    .hero__image {
+      left: 50%;
+      right: auto;
+      translate: -50% 0;
+      width: auto;
+      min-width: 100%;
+      max-width: none;
+      height: var(--hero-image-zoom);
+    }
+
+  }
+
   /* Figma : voile noir uni à 25 %, pas le dégradé coloré de design.md. */
   .hero__overlay {
     position: absolute;
@@ -152,6 +206,7 @@ import Badge from './Badge.astro';
 
   .hero__title {
     max-width: var(--width-h1);
+    width: 100%;
     margin: 0;
     color: var(--color-white-clear);
     font-family: var(--text-h1-family);
@@ -163,6 +218,7 @@ import Badge from './Badge.astro';
 
   .hero__subtitle {
     max-width: var(--width-hero-subtitle);
+    width: 100%;
     margin: 0;
     /* Figma pose 95 % d'opacité sur un gris clair : le cumul des deux
        affaiblissait trop le sous-titre sur la photo. Plein blanc, sans voile. */
@@ -183,6 +239,7 @@ import Badge from './Badge.astro';
 
   .hero__helper {
     max-width: var(--width-hero-helper);
+    width: 100%;
     margin: 0;
     text-align: center;
     /* Le texte n'est plus dans le lien : il lui faut sa propre couleur, sinon
@@ -200,17 +257,148 @@ import Badge from './Badge.astro';
     text-decoration: underline;
   }
 
-  /* Hors flux : sinon elles rognent la hauteur dans laquelle le texte se centre. */
+  @media (min-width: 768px) {
+    .hero__helper {
+      font-size: var(--text-utility-size);
+      line-height: var(--text-body-sm-line-height);
+    }
+  }
+
+  @media (max-width: 479px) {
+    .hero {
+      justify-content: flex-start;
+      gap: var(--space-3);
+      padding-block: clamp(250px, 34svh, 320px)
+        calc(var(--hero-pills-bottom) + var(--space-64));
+    }
+
+    .hero__title-wrap {
+      padding-inline: 0;
+    }
+
+    .hero__title {
+      font-size: var(--text-h1-mobile-compact-size);
+      line-height: var(--text-h1-mobile-compact-line-height);
+      letter-spacing: 0;
+    }
+
+    .hero__subtitle,
+    .hero__helper {
+      font-size: var(--text-body-sm-size);
+      line-height: var(--text-body-sm-line-height);
+    }
+
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      width: 100vw;
+      margin: 0;
+      min-height: 100svh;
+      border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+      padding-top: clamp(250px, 34svh, 320px);
+      padding-bottom: calc(var(--hero-pills-bottom) + var(--space-64));
+    }
+
+    .hero__image {
+      object-position: 50% 42%;
+    }
+
+    .hero__text,
+    .hero__simu {
+      transform: none;
+    }
+
+    .hero__reassurance {
+      bottom: var(--space-64);
+    }
+  }
+
+  /* Hors flux : sinon elles rognent la hauteur dans laquelle le texte se centre.
+     Fondu latéral par masque. Il impose de renoncer au `backdrop-filter` sur
+     les pastilles : un masque crée un « backdrop root » et le flou n'aurait
+     plus rien à flouter. Posé sur la pastille il ne l'atténuerait pas, et une
+     opacité les ferait s'effacer sur place au lieu de défiler. Les deux effets
+     sont exclusifs — arbitrage retenu : le fondu.
+     `left`/`right` à 0 avec une largeur explicite et `margin-inline: auto`
+     centrent la bande dans la carte. */
   .hero__reassurance {
     position: absolute;
     left: 0;
     right: 0;
+    width: var(--width-marquee);
+    margin-inline: auto;
     bottom: var(--hero-pills-bottom);
     z-index: 1;
     display: flex;
-    flex-wrap: wrap;
+    overflow: hidden;
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent
+    );
+  }
+
+  .marquee__group {
+    display: flex;
+    align-items: center;
     gap: var(--space-24);
-    justify-content: center;
-    padding-inline: var(--container-padding);
+    /* Le pas de séparation entre les deux groupes doit valoir celui qui sépare
+       deux pastilles, sinon la boucle se voit au raccord. */
+    padding: 0 var(--space-24) 0 0;
+    margin: 0;
+    list-style: none;
+    /* Aucune compression : chaque groupe garde sa largeur réelle, condition
+       pour que le décalage de 100 % retombe juste. */
+    flex-shrink: 0;
+    animation: marquee-scroll var(--duration-marquee) linear infinite;
+  }
+
+  @keyframes marquee-scroll {
+    to {
+      transform: translateX(-100%);
+    }
+  }
+
+  /* Confort de lecture : le défilé s'arrête sous le curseur. */
+  .hero__reassurance:hover .marquee__group {
+    animation-play-state: paused;
+  }
+
+  /* Sans mouvement : on retombe sur la rangée centrée d'origine, le doublon
+     n'ayant plus de raison d'être. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero__reassurance {
+      justify-content: center;
+      padding-inline: var(--container-padding);
+    }
+
+    .marquee__group {
+      flex-wrap: wrap;
+      justify-content: center;
+      flex-shrink: 1;
+      padding: 0;
+      animation: none;
+    }
+
+    .marquee__group[aria-hidden='true'] {
+      display: none;
+    }
+  }
+
+
+  /* Préfixe `-webkit-` isolé et placé en fin de bloc : dans la même règle, ou
+     dans une règle adjacente au même sélecteur, le minifieur n'en garde qu'une
+     des deux et le masque disparaîtrait du build de production. */
+  .hero__reassurance {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--marquee-fade),
+      #000 calc(100% - var(--marquee-fade)),
+      transparent
+    );
   }
 </style>

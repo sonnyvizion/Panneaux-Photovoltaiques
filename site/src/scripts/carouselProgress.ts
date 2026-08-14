@@ -45,3 +45,18 @@ export function getSegmentTarget(
   const target = Math.round((index * itemCount) / segments);
   return Math.min(Math.max(target, 0), itemCount - 1);
 }
+
+/**
+ * Le rail doit-il rendre le geste à la page ?
+ *
+ * Chrome attribue un geste entier au premier défileur qu'il accroche. Un
+ * mouvement de trackpad légèrement oblique est happé par le rail, qui ne
+ * défile pas verticalement : la composante verticale est jetée et la page se
+ * fige. On ne reprend la main que sur les gestes obliques dominés par la
+ * verticale — un geste vertical pur n'accroche rien et fonctionne déjà, un
+ * geste franchement horizontal appartient au rail.
+ */
+export function shouldYieldToPage(deltaX: number, deltaY: number): boolean {
+  if (deltaX === 0) return false;
+  return Math.abs(deltaY) > Math.abs(deltaX);
+}

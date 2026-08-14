@@ -210,13 +210,17 @@ const cards = [
       --open: 0;
       /* Rebond à l'ouverture seulement : la courbe est lue sur l'état
          d'arrivée, donc la remplacer dans les règles « ouvert » suffit.
-         Une carte qui se referme en dépassant ferait un à-coup. */
+         Une carte qui se referme en dépassant ferait un à-coup.
+         C'est l'IMAGE qui portait le rebond visible, pas la carte : le
+         conteneur flex absorbe le dépassement de `flex-grow` (0,0 % mesuré),
+         tandis que la largeur de l'image le montrait en entier. La courbe
+         retenue ne dépasse plus du tout. */
       --ease-expand: var(--easing-default);
       flex-grow: calc(1 + var(--open) * 1.2);
       flex-basis: 0;
       min-width: 0;
       overflow: hidden;
-      transition: flex-grow var(--duration-medium) var(--ease-expand);
+      transition: flex-grow var(--duration-expand) var(--ease-expand);
     }
 
     /* La carte ouverte porte `is-open`. Le script la déplace au survol et l'y
@@ -224,7 +228,7 @@ const cards = [
        pas tenir. La première la porte au rendu, sans attendre le JS. */
     .pillars__item.is-open {
       --open: 1;
-      --ease-expand: var(--easing-bounce);
+      --ease-expand: var(--easing-expand);
     }
 
     /* Repli de sécurité sans JavaScript : le survol ouvre quand même, l'ouverture
@@ -232,18 +236,22 @@ const cards = [
        Règle séparée du sélecteur de classe — l'une ne doit pas dépendre de l'autre. */
     .pillars__item:hover {
       --open: 1;
-      --ease-expand: var(--easing-bounce);
+      --ease-expand: var(--easing-expand);
     }
 
     /* Le texte n'apparaît qu'une fois la carte élargie : sinon on le voit se
-       recomposer ligne à ligne pendant l'animation de largeur.
-       Le délai suit `--open`, donc il ne joue qu'à l'ouverture — à la
-       fermeture il vaut 0 et le texte s'efface aussitôt, avant que le
+       recomposer pendant l'animation de largeur. Le paragraphe garde ses deux
+       lignes, mais sa largeur gagne encore une dizaine de pixels sur la fin, ce
+       qui suffit à déplacer les mots — dix largeurs traversées à l'écran quand
+       le délai était plus court que le déploiement.
+       Le délai vaut donc EXACTEMENT la durée du déploiement, et doit le suivre
+       si elle change. Il suit aussi `--open`, donc il ne joue qu'à l'ouverture :
+       à la fermeture il vaut 0 et le texte s'efface aussitôt, avant que le
        rétrécissement ne le fasse re-répartir. */
     .pillars__text {
       opacity: var(--open);
-      transition: opacity var(--duration-fast) var(--easing-default)
-        calc(var(--open) * var(--duration-medium));
+      transition: opacity var(--duration-slow) var(--easing-expand)
+        calc(var(--open) * var(--duration-expand));
     }
 
     .pillars__media {
@@ -252,8 +260,8 @@ const cards = [
       width: calc(var(--open) * var(--width-pillar-image));
       opacity: var(--open);
       transition:
-        width var(--duration-medium) var(--ease-expand),
-        opacity var(--duration-medium) var(--easing-default);
+        width var(--duration-expand) var(--ease-expand),
+        opacity var(--duration-slow) var(--easing-expand);
     }
 
     .pillars__image {

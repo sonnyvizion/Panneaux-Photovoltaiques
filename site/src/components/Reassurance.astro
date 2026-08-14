@@ -126,7 +126,7 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
 <style>
   .reassurance {
     display: grid;
-    gap: var(--space-3);
+    gap: var(--space-2);
     grid-template-columns: 1fr;
   }
 
@@ -246,38 +246,40 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
   .reassurance__text {
     margin: 0;
     font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
+    font-size: var(--text-body-sm-size);
     font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
+    line-height: var(--text-body-sm-line-height);
     letter-spacing: var(--text-body-light-tracking);
   }
 
   .reassurance__side {
     display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-2);
   }
 
   .reassurance__rating {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: var(--space-3);
     padding: var(--pad-card);
     border-radius: var(--radius-card);
     background: var(--color-ink-900);
-    height: var(--height-rating);
-    flex-shrink: 0;
+    min-height: var(--height-rating);
+    flex: 1;
     color: var(--color-white-clear);
   }
 
   .reassurance__rating-score {
     margin: 0;
-    font-family: var(--text-display-little-family);
-    font-size: var(--text-display-little-size);
-    font-weight: var(--text-display-little-weight);
-    line-height: var(--text-display-little-line-height);
-    letter-spacing: var(--text-display-little-tracking);
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-display-mid-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: var(--text-display-mid-line-height);
+    letter-spacing: var(--text-display-mid-tracking);
   }
 
   .reassurance__rating-label {
@@ -297,6 +299,31 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
 
     .reassurance__photo {
       min-height: 0;
+    }
+
+    .reassurance__text {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+
+    .reassurance__side {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .reassurance__rating {
+      flex-direction: row;
+      justify-content: space-between;
+      flex: 0 0 auto;
+      height: var(--height-rating);
+    }
+
+    .reassurance__rating-score {
+      font-family: var(--text-display-little-family);
+      font-size: var(--text-display-little-size);
+      font-weight: var(--text-display-little-weight);
+      line-height: var(--text-display-little-line-height);
+      letter-spacing: var(--text-display-little-tracking);
     }
   }
 </style>

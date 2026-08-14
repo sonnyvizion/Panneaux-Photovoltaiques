@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+
+/**
+ * Placeholder de Phase 1. Elle existe pour deux raisons :
+ *  — le cluster confiance du header y renvoie, et un lien du header ne doit
+ *    jamais tomber sur un 404 (règle d'or #1) ;
+ *  — c'est la page témoin du header SANS hero, celle qui vérifie que la nav
+ *    fonctionne ailleurs que sur la home.
+ *
+ * ⚠️ `noindex` tant que le contenu réel n'est pas écrit — à retirer à la
+ * rédaction. Le contenu attendu est décrit dans architecture.md
+ * (§ Pages transverses) : l'histoire du client, l'équipe, les installateurs,
+ * la certification Enphase.
+ */
+---
+
+<BaseLayout title="À propos — Belgreen" noindex>
+  <Section>
+    <h1>À propos</h1>
+    <p>Page en cours de rédaction.</p>
+  </Section>
+</BaseLayout>

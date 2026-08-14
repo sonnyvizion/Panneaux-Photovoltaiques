@@ -96,11 +96,14 @@
   --font-weight-book: 450;
   --font-weight-medium: 500;
 
-  /* --- H1 — Circular Std Medium 44/1, -2 % --- */
+  /* --- H1 — Figma : Circular Std Medium 44/1, -2 %
+     ⚠️ ÉCART ASSUMÉ : Book 450 au lieu de Medium 500, et interlignage 0,95.
+     À 60px sur trois lignes, le Medium à interlignage 1 formait un pavé trop
+     massif en tête de page. --- */
   --text-h1-family: var(--font-family-display);
-  --text-h1-size: 32px; /* → 44px dès 768px (voir bas de fichier) */
-  --text-h1-weight: var(--font-weight-medium);
-  --text-h1-line-height: 1;
+  --text-h1-size: 32px; /* → 60px dès 768px (voir bas de fichier) */
+  --text-h1-weight: var(--font-weight-book);
+  --text-h1-line-height: 0.88;
   --text-h1-tracking: -0.02em;
 
   /* --- H2 — Figma : Circular Std Book 44/46, -5 %
@@ -148,6 +151,62 @@
   --text-display-little-weight: var(--font-weight-book);
   --text-display-little-line-height: 24px;
   --text-display-little-tracking: -0.02em;
+
+  /* --- big-text — Circular Std Book 36/0,96, -2 %
+     Le grand paragraphe centré qui suit le hero d'une page de contenu
+     (Figma 466:1365). C'est la « réponse développée » du gabarit
+     `pages-contenu.md` : ni un titre, ni du corps de texte.
+     La maquette téléphone (nœud 466:1828) publie sa propre valeur : 22/1,03.
+     Ce n'est pas une réduction proportionnelle du desktop — l'interlignage s'y
+     desserre légèrement (0,96 → 1,03), sans quoi une phrase de dix lignes sur
+     un écran de 390 devient un pavé illisible. --- */
+  --text-big-text-family: var(--font-family-display);
+  --text-big-text-size: 22px; /* → 36px dès 768px */
+  --text-big-text-weight: var(--font-weight-book);
+  --text-big-text-line-height: 1.03; /* → 0,96 dès 768px */
+  --text-big-text-tracking: -0.02em;
+
+  /* --- body-bull — Circular Std Book 18/20, -2 %
+     Texte courant des cartes de la maquette page (Figma 466:1424, 466:1433…).
+     Distinct de `body-light` : c'est du Circular, pas de l'Inter — la maquette
+     passe au display dès qu'un texte vit DANS une carte colorée.
+     ⚠️ ÉCART ASSUMÉ : 16/20 au lieu de 18/20, même allègement que `body-light`
+     et `body-sm` (décision projet du 2026-08-10). --- */
+  --text-body-bull-family: var(--font-family-display);
+  --text-body-bull-size: 16px;
+  --text-body-bull-weight: var(--font-weight-book);
+  --text-body-bull-line-height: 20px;
+  --text-body-bull-tracking: -0.02em;
+
+  /* --- h3-m — Circular Std Medium 16/16, -2 %
+     Style MOBILE de Figma (nœud 466:1886), pas une réduction inventée : la
+     maquette téléphone publie ses propres styles pour les titres de carte, qui
+     y sont nettement plus petits que leur équivalent desktop (`h4`, 20/24).
+     Ils cohabitent parce que sur mobile les cartes tiennent à deux ou trois de
+     front — un titre de 20px y passerait à trois lignes. --- */
+  --text-h3-m-family: var(--font-family-display);
+  --text-h3-m-size: 16px;
+  --text-h3-m-weight: var(--font-weight-medium);
+  --text-h3-m-line-height: 16px;
+  --text-h3-m-tracking: -0.02em;
+
+  /* --- petit_p-m — Inter Regular 14/16, -2 %
+     Style MOBILE de Figma (nœud 466:1887). ⚠️ Il change de FAMILLE par rapport
+     au desktop : le texte des cartes y est en Circular (`body-bull`), il repasse
+     en Inter sur mobile. Ce n'est pas une incohérence de la maquette — à 14px,
+     le Circular Book perd sa lisibilité en petit corps. --- */
+  --text-petit-p-m-family: var(--font-family-body);
+  --text-petit-p-m-size: 14px;
+  --text-petit-p-m-weight: var(--font-weight-regular);
+  --text-petit-p-m-line-height: 16px;
+  --text-petit-p-m-tracking: -0.02em;
+
+  /* --- H1 de page de contenu — relevé sur le hero de la maquette page pilier
+     (Figma 466:1354, nœud aplati : mesuré sur le rendu).
+     Le H1 y vit DANS une carte de verre de 609px, pas en pleine largeur sur
+     une photo : les 60px du hero de la home y donneraient six lignes. --- */
+  --text-h1-page-size: 26px; /* → 32px dès 768px */
+  --text-h1-page-line-height: 1.19;
 
   /* --- overline — Circular Std Medium 18/20, -2 % --- */
   --text-overline-family: var(--font-family-display);
@@ -252,17 +311,62 @@
      Les fonds ci-dessous sont relevés au dev mode (nœud 356:354), le flou varie
      selon l'élément — il n'y a pas UN verre mais trois dosages. --- */
   --bg-glass-fill: rgba(255, 254, 252, 0.55);
-  --bg-glass-fill-strong: rgba(255, 254, 252, 0.7); /* item de nav actif */
+  /* Voile de survol de la nav, sur le hero. A d'abord servi à marquer l'item
+     actif ; celui-ci est passé au lime d'accent, et ce voile désigne désormais
+     l'entrée SURVOLÉE — deux rôles, deux objets. Voir `--bg-pill-hover`. */
+  --bg-glass-fill-strong: rgba(255, 254, 252, 0.7);
   /* Champ code postal. Figma pose 0.8 : posé sur un ciel clair l'effet se lit,
      mais sur la photo sombre du hero il ne reste rien à flouter. Descendu à
      0.62 pour que le verre existe vraiment, en gardant un fond assez couvrant
      pour le contraste du texte saisi. */
   --bg-glass-fill-form: rgba(255, 254, 252, 0.62);
-  --bg-glass-fill-pill: rgba(246, 246, 246, 0.35);  /* pastilles de réassurance */
+  /* Pastilles de réassurance. Voile clair et texte blanc, comme dans Figma.
+     ⚠️ 2,31:1 mesuré sur la photo du hero, sous le seuil AA — voir la note dans
+     Badge.astro. Monter l'opacité de ce voile n'y change presque rien : c'est
+     l'écart de luminosité entre le blanc et un fond clair qui manque, pas la
+     netteté du fond. */
+  --bg-glass-fill-pill: rgba(246, 246, 246, 0.5);
   --bg-glass-fill-nav: rgba(250, 254, 255, 0.2);    /* barre de navigation */
   --bg-glass-blur-form: 12px; /* Figma : 7.5px — remonté, invisible en dessous */
-  --bg-glass-blur-pill: 5px;
+  /* Pilule de navigation. Valeur relevée dans Figma. Elle partageait autrefois
+     son token avec les pastilles de réassurance : quand celles-ci ont vu leur
+     flou monter de 5 à 22px, la nav a suivi sans que personne l'ait demandé.
+     Les pastilles n'ont plus de flou du tout (voir §3 de design.md), ce token
+     est donc rendu à son seul usage réel. */
+  --bg-glass-blur-nav: 5px;
+  /* Pilule détachée du hero. Le dosage du hero (0.2 / 5px) y est intenable :
+     sur la photo il n'a qu'un ciel à voiler, alors qu'en défilement il passe
+     sur du texte et des cartes, qui transparaissaient à travers les libellés.
+     Plus de fond ET plus de flou — c'est ce qu'il faut pour effacer du texte
+     derrière, pas seulement l'adoucir. */
+  --bg-glass-fill-nav-detached: rgba(250, 254, 255, 0.6);
+  --bg-glass-blur-nav-detached: 14px;
+  /* Méga-menus et panneau mobile. Le dosage le plus couvrant du système : ces
+     surfaces portent jusqu'à neuf liens et se posent sur du contenu dense. En
+     dessous, le texte du dessous se lit à travers celui du menu. */
+  --bg-glass-fill-menu: rgba(255, 254, 252, 0.75);
+  --bg-glass-blur-menu: 24px;
+  /* --- Voile de survol de la nav ---
+     La pilule qui suit le curseur. Deux dosages, pour la même raison que le
+     verre : ce qui marque sur une photo ne marque plus sur du blanc.
+     Sur le hero, la barre compose ~#909FAB et le voile clair ~#DEE1E4 — franc.
+     Détachée, la barre compose #FCFEFE : un voile blanc y donnerait #FEFEFC,
+     soit un écart nul. Seul un assombrissement peut y marquer quelque chose,
+     d'où l'ink — il compose ~#EEF0F0, un chip gris clair net. */
+  --bg-pill-hover: var(--bg-glass-fill-strong);
+  --bg-pill-hover-detached: rgba(25, 28, 27, 0.07);
   --bg-glass-border: 1px solid rgba(255, 255, 255, 0.4);
+
+  /* Filet du CTA vert. Le système n'a pas d'ombre (voir l'en-tête) : sur le
+     verre clair du hero, le vert plein n'avait pas de bord net. Dérivé du vert
+     principal plutôt que posé en dur, pour suivre toute retouche de la teinte.
+     91 % : le bord se perçoit sans se lire comme une bordure. Plus bas, le
+     trait durcit et cerne le bouton. */
+  --color-main-green-edge: color-mix(
+    in oklab,
+    var(--color-main-green) 91%,
+    var(--color-ink-900)
+  );
 
   /* --- Voiles sombres posés sur les photos (relevés Figma) --- */
   --overlay-hero: rgba(0, 0, 0, 0.25);
@@ -282,7 +386,11 @@
      chacune la leur et qu'elles s'additionnent. Régler la marge directement
      revenait à piloter la moitié du résultat, d'où l'impression d'un rythme
      deux fois trop large. */
-  --block-gap: var(--space-96);
+  /* 128 et non 96 : sur mobile les blocs s'enchaînent sans repère latéral —
+     pas de colonne, pas de marge visible — et c'est le seul écart vertical qui
+     dit « nouveau sujet ». À 96px il ne le disait pas assez. 128 est le haut de
+     la fourchette mobile de design.md §4, pas un dépassement. */
+  --block-gap: var(--space-128);
   --section-padding-block: calc(var(--block-gap) / 2);
   --section-gap: var(--space-4); /* en-tête → contenu, → 48px desktop */
 
@@ -290,8 +398,12 @@
   /* Figma est dessiné sur 1280 : c'est la largeur du canevas, pas une limite
      voulue. Élargi à 1440 pour respirer sur les écrans courants. */
   --container-max: 1440px;
-  --container-padding: var(--space-24); /* → 60px desktop (Figma px-[60px]) */
+  --container-padding: var(--space-3); /* → 60px desktop (Figma px-[60px]) */
   --width-section-intro: 550px;         /* largeur des chapô de section (Figma) */
+  /* Colonne de méga-menu. Calée sur le plus long libellé de l'arborescence
+     (« Amortissement / retour sur investissement ») pour que les quatre menus
+     s'alignent au lieu de se redimensionner d'un pilier à l'autre. */
+  --width-nav-column: 208px;
   /* ⚠️ Les custom properties ne sont PAS utilisables dans une règle @media
      (limitation CSS, pas un oubli). Ces tokens servent de référence pour les
      calculs JS et la documentation ; les @media des composants répètent donc
@@ -313,6 +425,9 @@
   --size-logo-header: 26px; /* logotype Belgreen en tête de page, → 33px */
   --size-logo-footer: 28px;
   --text-utility-size: 14px; /* rangée utilitaire du header, sous body-nav */
+  --text-utility-mobile-size: 13px;
+  --text-h1-mobile-compact-size: 30px;
+  --text-h1-mobile-compact-line-height: 0.94;
   --text-step-number: 66px; /* chiffre des étapes « Comment ça marche » */
   --size-star: 18px;        /* étoile des témoignages */
 
@@ -335,19 +450,48 @@
   --height-hero: calc(100svh - var(--hero-inset) * 2);
   --gap-hero: var(--space-24);  /* entre bloc texte et bloc simulateur, → 44px */
   --gap-hero-simu: 12px;        /* entre le champ et sa légende */
-  --width-h1: 662px;
+  /* 662px était la valeur Figma quand le H1 faisait 44px ; à 60px le titre
+     retombait sur trois lignes. 800px le tient sur deux — il en occupe 764,
+     le reste absorbe la variation de longueur en néerlandais. */
+  --width-h1: 800px;
   --width-hero-subtitle: 531px;
   --width-hero-helper: 440px;
   --width-cta-simu: 456px;
   --height-cta-simu: 52px;
   --pad-h1: 10px;
-  /* Pastilles : Figma les pose en absolu à top 706 sur 788 de haut.
-     788 − 706 − 29 (hauteur de pastille) = 53px depuis le bas. */
-  --hero-pills-bottom: 53px;
+  /* Pastilles : Figma les pose en absolu à top 706 sur 788 de haut, soit
+     788 − 706 − 29 (hauteur de pastille) = 53px depuis le bas. Remonté à 100
+     pour dégager le bord bas de la carte, écart assumé avec la maquette. */
+  --hero-pills-bottom: 100px;
+  /* Pastille ronde en tête de badge : assez petite pour rester un repère, pas
+     une puce de liste. */
+  --size-badge-dot: 6px;
+  /* Défilé des pastilles du hero. La durée porte sur un groupe entier : elle
+     fixe donc la vitesse, la largeur du groupe étant constante. */
+  --duration-marquee: 60s;
+  /* Fondu latéral du défilé, posé sur la bande. */
+  --marquee-fade: 32px;
+  /* Pleine largeur sur mobile : à 65 %, la bande ne ferait plus que 240px et le
+     fondu en mangerait la moitié. */
+  --width-marquee: 100%;
   /* Amplitude de la parallaxe du fond : la photo est agrandie de ce débord en
      haut et en bas, puis parcourt exactement cette course. Elle couvre donc le
      hero d'un bout à l'autre du défilement, sans jamais laisser de bande vide. */
   --hero-parallax-shift: 48px;
+  /* Cadrage du hero : l'image est toujours 56 % plus haute que son cadre, donc
+     la part visible reste constante quelle que soit la largeur de l'écran. En
+     `object-fit: cover` seul, un écran étroit dévoilait presque toute la photo
+     (96 % à 1280) et la maison y paraissait deux fois plus petite qu'à 1920.
+     175 % reproduit l'échelle obtenue à 1920 (0,41×), qui sert de référence. */
+  --hero-image-zoom: 175%;
+  /* Cadrage de la photo du hero. Ancré en HAUT, pas centré : depuis que le hero
+     fait 100svh, le cadre est bien plus large que haut, `cover` rogne donc en
+     hauteur — et un ancrage centré remontait la maison jusqu'à poser la toiture
+     sombre derrière le H1. Ancrée en haut, la photo garde le ciel derrière le
+     titre et le sous-titre, la maison reprenant le bas du cadre.
+     Sans effet sur mobile, où le cadre est plus haut que large : `cover` y rogne
+     en largeur et la composante verticale n'a rien à décaler. */
+  --hero-image-focus: 50% 0%;
   --pad-form-start: 12px;
   --pad-form-end: 3px;
   --pad-form-block: 4px;
@@ -357,16 +501,36 @@
   --pad-pill-inline: 18px;
   --pad-pill-block: 6px;
 
+  /* --- Chips de la barre de navigation ---
+     Une entrée de nav porte un padding horizontal ET une marge négative égale :
+     son chip (le lime de la page courante, le voile de survol) est donc plus
+     large que la place qu'elle occupe dans la mise en page. Deux chips voisins
+     ne se touchent que si l'écart de mise en page dépasse DEUX fois ce padding.
+
+     ⚠️ L'écart est donc DÉRIVÉ, jamais posé en dur : avec un padding de 16px et
+     un écart de 25px, les chips se mordaient de 7px. Ça ne se voyait pas tant
+     qu'un seul chip était visible à la fois ; les deux pilules l'ont révélé.
+     Toucher au padding sans recalculer l'écart ramènerait le défaut. */
+  --pad-nav-chip: var(--space-12);  /* 12px de part et d'autre du libellé */
+  --gap-nav-chip: var(--space-2);   /* l'air voulu ENTRE deux chips → 8px */
+
   /* Bouton pilule (nœud 264:16) */
   --pad-button-start: 18px; /* → 25px dès 768px */
   --pad-button-edge: 6px;
   --gap-button: var(--space-12); /* → 18px dès 768px */
-  --duration-roll: 240ms;    /* roulement du libellé des CTA */
+  --duration-roll: 240ms;    /* roulement des libellés — CTA et liens de menu */
   --btn-press-scale: 0.97;   /* léger enfoncement du bouton au survol */
+  /* Échelle de départ du CTA du header quand il prend le relais de celui du
+     hero. Assez creusé pour que le bouton ARRIVE au lieu de simplement
+     paraître, assez peu pour ne pas se lire comme un rebond — le système n'en
+     veut pas hors du libellé des boutons (voir §6). */
+  --cta-enter-scale: 0.96;
   /* Montée des blocs à l'entrée. design.md §6 prescrit 8px — trop discret pour
      se lire, porté à 32px. Écart assumé. */
   --reveal-rise: 40px;
-  --btn-label-lift: 115%;    /* course du libellé, au-delà du cadre de coupe */
+  /* Course du libellé, au-delà du cadre de coupe. Sans préfixe `btn-` : le
+     roulement sert aussi les liens des méga-menus (`@keyframes label-roll`). */
+  --label-roll-lift: 115%;
 
   --pad-card: 20px;         /* padding intérieur des cartes standard */
   --pad-badge: 15px;        /* padding de la pastille de certification */
@@ -391,14 +555,124 @@
   --width-progress-step: 55px;
   --height-progress-step: 3px;
 
+  /* --- Gabarit des pages de contenu (Figma « page pilier », nœud 466:1352) ---
+     Ces valeurs servent les ~55 pages des 4 piliers, pas la home. */
+
+  /* Hero de page : carte photo encartée, badge et carte de verre alignés à
+     gauche. Le retrait (32px) est celui de Figma, plus généreux que le
+     `--hero-inset` de la home : ce hero n'est pas plein écran, il est encarté
+     dans le flux de la page. */
+  --page-hero-inset: var(--space-3); /* → 32px dès 768px */
+  /* Hauteur du cadre, les deux relevées dans Figma (707 mobile, 722 desktop).
+     Elle est POSÉE et non déduite du contenu : c'est elle qui réserve la part
+     de photo visible au-dessus de la carte. Sans elle, le cadre se réduit à la
+     hauteur de la carte et la photo — qui porte le sujet de la page —
+     disparaît presque entièrement. */
+  --height-page-hero-mobile: 707px;
+  --height-page-hero: 722px;
+  --width-page-hero-card: 609px;
+  --gap-page-hero-badge: 18px; /* entre la pastille et la carte de verre */
+  /* Retrait DROIT du couple pastille + carte, sur mobile (Figma 466:1818 : la
+     carte fait 318px sur 390, calée à gauche). Elle ne va volontairement pas
+     jusqu'au bord : c'est ce déséquilibre qui laisse voir la photo et empêche
+     le bloc de se lire comme un bandeau. Un retrait fixe plutôt qu'un
+     pourcentage — la maquette pose une distance au bord, pas une proportion. */
+  --page-hero-inset-end: 56px;
+
+  /* Grand paragraphe centré + sa pastille de note (Figma 466:1364). */
+  --width-lead: 815px;
+  --pad-note-inline: var(--pad-card-lg-block); /* 25px */
+  --pad-note-block: 15px;
+
+  /* Cartes de « L'essentiel » (Figma 466:1406 desktop, 466:1869 mobile).
+     ⚠️ Les cartes NE S'EMPILENT PAS sur mobile : la maquette téléphone garde
+     les trois chiffres de front et les deux conditions côte à côte. C'est ce
+     qui permet de comparer les fourchettes d'un coup d'œil — empilées, il
+     faudrait faire défiler pour opposer 3 kWc et 10 kWc, et la comparaison,
+     qui est tout l'objet du bloc, disparaîtrait. D'où des paddings, un rayon et
+     une typographie propres au mobile plutôt qu'un changement de grille. */
+  --gap-cards: var(--space-2); /* → 20px dès 768px */
+  --radius-figure-card: var(--radius-3); /* 16px → 25px dès 768px */
+  --pad-figure-inline: var(--space-2); /* 8px → 20px dès 768px */
+  --pad-figure-block: var(--pad-card); /* 20px, identique aux deux tailles */
+  /* Sur-libellé « à partir de ». ⚠️ Change de famille entre mobile (Inter
+     Medium 12) et desktop (Circular Book 16) — relevé tel quel dans Figma. */
+  --text-figure-prefix-family: var(--font-family-body);
+  --text-figure-prefix-size: 12px;
+  --text-figure-prefix-weight: var(--font-weight-medium);
+  --text-figure-prefix-line-height: 16px;
+  /* 20 → 24 dès 360px → 44 (display-mid) dès 768px.
+     Le palier des 360px n'existe que pour ce montant : à 24px, « 11 500 € »
+     mesure 85px pour une carte qui n'en fait que 75 sur un écran de 320, et le
+     texte sortait de son aplat. La maquette mobile est dessinée sur 390, où les
+     24px passent — c'est en dessous qu'il faut redescendre. */
+  --text-figure-value-size: 20px;
+  --height-figure-card: 158px;
+  /* Hauteur intérieure de la carte chiffre. Elle est POSÉE et non déduite :
+     c'est elle qui pousse le libellé en haut et la valeur en bas
+     (`justify-content: space-between`), et qui garantit que les trois cartes
+     alignent leurs valeurs même quand un libellé passe à deux lignes. */
+  --height-figure-body: 118px;
+
+  /* Bloc « Creuser le sujet » (Figma 466:1451). */
+  --width-deep-dive-panel: 523px;
+  --height-deep-dive: 636px;
+
+  /* --- Widget « Puissance installée » (Figma 466:1368, nœud aplati :
+     mesuré sur le rendu). Bande photo pleine largeur, panneau de verre. --- */
+  --height-power-band: 666px;
+  --width-power-panel: 768px;
+  --pad-power-panel: var(--pad-card-lg-block); /* 25px */
+  --height-power-track: 8px;
+  --size-power-knob: 22px;
+  --height-power-gauge: 12px;
+  /* Les trois tuiles de résultat restent de front sur mobile (Figma 466:1831) :
+     leur intérêt est de se comparer. La valeur descend donc à 18px — en dessous
+     elle cesse d'être un chiffre-clé, au-dessus « 5 400 kWh » déborde de sa
+     tuile sur un écran de 320px. */
+  --text-power-value-size: 18px; /* → 44px (display-mid) dès 768px */
+
   /* --- Mouvement (design.md §6) --- */
   --duration-fast: 150ms;
   --duration-medium: 250ms;
   --duration-slow: 400ms;    /* fondus croisés, où un geste rapide doit rester lisible */
+  /* Ouverture des piliers. Hors de l'échelle courante, et volontairement : à
+     250ms le déploiement était perçu comme brusque quelle que soit la courbe.
+     Au-delà d'une demi-seconde, le mouvement se donne le temps de s'installer
+     — c'est la durée qui fait le registre, autant que la courbe. */
+  --duration-expand: 560ms;
   --easing-default: ease;
   /* Léger dépassement (~7 %) puis retour : donne un rebond discret sans
      caricature. Réservé aux ouvertures, jamais aux fermetures. */
   --easing-bounce: cubic-bezier(0.34, 1.28, 0.64, 1);
+  /* Ouverture des piliers. AUCUN dépassement, contrairement à
+     `--easing-bounce` — un rebond, même réduit à 0,4 %, se lisait encore comme
+     un à-coup. Et départ progressif : une courbe très chargée au départ (type
+     ease-out-expo) abattait 71 % du trajet dans le premier quart du temps puis
+     rampait, ce qui claquait autant qu'un rebond malgré une durée doublée. Ici
+     le mouvement est réparti — il s'installe, puis se pose.
+     Distinct de `--easing-bounce`, qui reste au libellé du bouton. */
+  --easing-expand: cubic-bezier(0.4, 0.05, 0.2, 1);
+
+  /* --- Pilule de nav qui suit le survol ---
+     Deux courbes, une par bord de la pilule. Le bord qui va DANS le sens du
+     déplacement prend `lead`, l'autre `trail`. C'est l'écart entre les deux qui
+     produit l'allongement en cours de trajet : les rapprocher l'atténue, les
+     écarter l'accentue. Il n'y a aucune image-clé « milieu » à régler.
+
+     ⚠️ `--easing-bounce` n'est PAS réutilisé ici, bien qu'il rebondisse aussi :
+     il reste réservé au libellé des boutons (voir plus haut). Le constat qui l'y
+     cantonne — « un rebond, même réduit à 0,4 %, se lisait comme un à-coup » —
+     portait sur l'accordéon des piliers, un grand bloc qui se déplie. Une
+     pilule de 100px qui glisse n'est pas le même objet. */
+  --duration-pill: 420ms;
+  /* Bord avant : part vite, dépasse d'environ 4 % puis se pose. Volontairement
+     en deçà des ~7 % de `--easing-bounce` — c'est ce qui sépare « subtil » de
+     « marqué ». */
+  --easing-pill-lead: cubic-bezier(0.34, 1.12, 0.64, 1);
+  /* Bord arrière : départ retenu, rattrape sur la fin. Aucun dépassement, sans
+     quoi les deux bords rebondiraient et l'étirement se lirait comme un flottement. */
+  --easing-pill-trail: cubic-bezier(0.55, 0, 0.35, 1);
 
   /* --- Opacités d'état --- */
   --opacity-muted: 0.6;      /* texte secondaire du footer, liens en retrait */
@@ -410,10 +684,26 @@
   --focus-ring-offset: 2px;
 }
 
+/* Palier de 360px — le seul du système, et il ne sert qu'à une valeur.
+   Les maquettes téléphone sont dessinées sur 390 ; en dessous, le montant des
+   cartes de « L'essentiel » déborde de son aplat (voir le token). Un palier
+   plutôt qu'un rétrécissement continu : le corps du chiffre doit rester une
+   valeur choisie, pas le produit d'un calcul. */
+@media (min-width: 360px) {
+  :root {
+    --text-figure-value-size: 24px;
+  }
+}
+
 /* Rythme vertical élargi sur desktop (design.md §4 : 96–128px desktop,
    48–64px mobile). Seuls les tokens de rythme changent — mobile-first. */
 @media (min-width: 768px) {
   :root {
+    --marquee-fade: 64px;
+    /* Bande resserrée de 35 % : en pleine largeur, elle concurrençait le titre.
+       Le fondu adoucit la coupe à ses deux extrémités. */
+    --width-marquee: 65%;
+
     /* Rythme vertical : Figma pose 80px, sous la fourchette 96–128 de
        design.md §4. Calé sur 96, le bas de cette fourchette — 120 aérait trop.
        Soit 192px entre deux blocs. */
@@ -425,9 +715,28 @@
     /* Valeurs de la maquette desktop. En dessous, les versions réduites
        définies plus haut évitent les débordements horizontaux : la maquette
        fournie ne couvre que le 1280. */
-    --text-h1-size: 44px;
-    --text-h2-size: 40px;
-    --text-h2-line-height: 42px;
+    /* Échelle de titres relevée sur la référence Aeline (H1 60, H2 48) et
+       transposée : on garde notre rapport d'interlignage serré plutôt que le
+       leur, plus aéré. Le H1 monte avec le H2, sans quoi le H2 le dépasserait. */
+    --text-h1-size: 60px;
+    --text-h2-size: 48px;
+    --text-h2-line-height: 50px;
+    --text-h1-page-size: 32px;
+    --text-big-text-size: 36px;
+    --text-big-text-line-height: 0.96;
+    --page-hero-inset: var(--space-4);
+
+    /* Gabarit des cartes de « L'essentiel » : la grille ne change pas entre
+       mobile et desktop, seules ces valeurs le font. */
+    --gap-cards: var(--pad-card); /* 20px */
+    --radius-figure-card: var(--radius-panel); /* 25px */
+    --pad-figure-inline: var(--pad-card); /* 20px */
+    --text-figure-prefix-family: var(--font-family-display);
+    --text-figure-prefix-size: var(--text-body-bull-size);
+    --text-figure-prefix-weight: var(--font-weight-book);
+    --text-figure-prefix-line-height: var(--text-body-bull-line-height);
+    --text-figure-value-size: var(--text-display-mid-size);
+    --text-power-value-size: var(--text-display-mid-size);
     --gap-hero: 44px;
     --gap-form: 40px;
     --pad-button-start: 25px;

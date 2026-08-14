@@ -5,13 +5,24 @@ import '@fontsource/inter/500.css';
 import '../styles/tokens.css';
 import '../styles/fonts.css';
 import '../styles/global.css';
+import NavBar from '../components/NavBar.astro';
+import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
   noindex?: boolean;
+  /**
+   * La page ouvre sur un hero photo, sur lequel la nav se pose en transparence.
+   * Faux partout ailleurs : le header prend alors son état détaché dès le rendu.
+   *
+   * Header et footer vivent ici et non dans les pages : la nav était rendue à
+   * l'intérieur de `Hero`, ce qui interdisait toute navigation sur les ~54
+   * autres pages du sitemap.
+   */
+  transparentHeader?: boolean;
 }
 
-const { title, noindex = false } = Astro.props;
+const { title, noindex = false, transparentHeader = false } = Astro.props;
 ---
 
 <html lang="fr">
@@ -24,10 +35,14 @@ const { title, noindex = false } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<NavBar overHero={transparentHeader} />
 		<slot />
+		<Footer />
 		<script>
 			import { initSmoothScroll } from '../scripts/smoothScroll';
+			import { initRegion } from '../scripts/regionLinks';
 			initSmoothScroll();
+			initRegion(document);
 		</script>
 	</body>
 </html>

@@ -14,14 +14,26 @@ interface Props {
   variant?: 'primary' | 'ink' | 'secondary';
   href?: string;
   type?: 'button' | 'submit';
+  /**
+   * Le libellé peut passer à la ligne.
+   *
+   * Réservé aux boutons qui remplissent une colonne étroite — les ponts de
+   * « L'essentiel » sur téléphone, où « Voir les aides de ma région » dépasse à
+   * lui seul la largeur disponible à 320px. La maquette mobile le pose ainsi
+   * (Figma 466:1898, libellé sur deux lignes).
+   *
+   * Par défaut le libellé reste d'un bloc : un CTA de barre de navigation qui se
+   * casse en deux perd sa forme de pilule.
+   */
+  wrap?: boolean;
 }
 
-const { variant = 'primary', href, type = 'button' } = Astro.props;
+const { variant = 'primary', href, type = 'button', wrap = false } = Astro.props;
 const Tag = href ? 'a' : 'button';
 const hasIcon = variant !== 'secondary';
 ---
 
-<Tag class={`btn btn--${variant}`} href={href} type={href ? undefined : type}>
+<Tag class={`btn btn--${variant} ${wrap ? 'btn--wrap' : ''}`} href={href} type={href ? undefined : type}>
   {/* Deux niveaux : le cadre coupe, la ligne se déplace à l'intérieur. */}
   <span class="btn__label">
     <span class="btn__label-line"><slot /></span>
@@ -55,7 +67,14 @@ const hasIcon = variant !== 'secondary';
 
     background: var(--btn-bg);
     color: var(--btn-fg);
+    /* Filet, et non une ombre : le système n'en a aucune. `outline` plutôt que
+       `border` — une bordure élargirait le bouton de 2px et rognerait le champ
+       du formulaire du hero, dont la largeur est contrainte. Décalage négatif
+       pour que le trait tombe DANS la pilule et en épouse le rayon. */
+    outline: var(--border-width) solid var(--btn-edge, transparent);
+    outline-offset: calc(-1 * var(--border-width));
     transition:
+      outline-color var(--duration-fast) var(--easing-default),
       background-color var(--duration-fast) var(--easing-default),
       color var(--duration-fast) var(--easing-default),
       transform var(--duration-fast) var(--easing-default);
@@ -63,7 +82,12 @@ const hasIcon = variant !== 'secondary';
 
   /* --- Palettes : seule la pilule s'inverse au survol --- */
 
+  /* Seule variante à en avoir besoin : le vert plein se pose sur des fonds
+     clairs — verre du hero, blanc des sections — où son bord se dissout. Les
+     variantes sombres se détachent d'elles-mêmes, et `secondary` a déjà un
+     contour. */
   .btn--primary {
+    --btn-edge: var(--color-main-green-edge);
     --btn-bg: var(--color-main-green);
     --btn-fg: var(--color-text-primary);
     --btn-bg-active: var(--color-text-primary);
@@ -106,8 +130,27 @@ const hasIcon = variant !== 'secondary';
     line-height: normal;
   }
 
+  .btn--primary .btn__label {
+    flex: 1;
+    text-align: center;
+  }
+
   .btn__label-line {
     display: block;
+  }
+
+  /* Le roulement reste intact sur deux lignes : la course vaut 115 % de la
+     HAUTEUR de la ligne, qui grandit avec elle — c'est tout le bloc qui monte,
+     pas la première ligne seule. Le cadre de coupe suit de même. */
+  .btn--wrap {
+    white-space: normal;
+  }
+
+  /* Sans cela, la pilule garderait la largeur de son libellé au lieu de
+     remplir la colonne — et un libellé qui a le droit de se casser mais pas de
+     place où le faire ne se casse jamais. */
+  .btn--wrap .btn__label {
+    flex: 1;
   }
 
   /* --- Pastille : identique au repos et au survol --- */
@@ -139,12 +182,16 @@ const hasIcon = variant !== 'secondary';
      suivent, comme une vraie pression. */
   .btn:hover,
   .btn:active {
+    /* La pilule passe au sombre : elle se détache seule, le filet n'a plus
+       lieu d'être. */
+    --btn-edge: transparent;
     background: var(--btn-bg-active);
     color: var(--btn-fg-active);
     transform: scale(var(--btn-press-scale));
   }
 
   .btn:focus-visible {
+    --btn-edge: transparent;
     background: var(--btn-bg-active);
     color: var(--btn-fg-active);
     transform: scale(var(--btn-press-scale));
@@ -168,33 +215,36 @@ const hasIcon = variant !== 'secondary';
     transform: rotate(-45deg);
   }
 
-  /* Le libellé sort par le haut, réapparaît par le bas et se repose avec un
-     léger dépassement. Une seule ligne suffit : le saut du haut vers le bas se
-     fait hors du cadre, à mi-parcours, donc invisible. */
-  @keyframes btn-label-roll {
-    0% {
-      transform: translateY(0);
-      animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
-    }
-    49.9% {
-      transform: translateY(calc(var(--btn-label-lift) * -1));
-    }
-    50% {
-      transform: translateY(var(--btn-label-lift));
-      animation-timing-function: var(--easing-bounce);
-    }
-    100% {
-      transform: translateY(0);
-    }
-  }
-
+  /* `label-roll` vit dans global.css : le même geste sert les liens des
+     méga-menus. Le cadre de coupe et `line-height: normal` sont posés plus haut
+     sur `.btn__label`, c'est ce que l'animation attend de son appelant. */
   .btn:hover .btn__label-line,
   .btn:active .btn__label-line {
-    animation: btn-label-roll var(--duration-roll);
+    animation: label-roll var(--duration-roll);
   }
 
   .btn:focus-visible .btn__label-line {
-    animation: btn-label-roll var(--duration-roll);
+    animation: label-roll var(--duration-roll);
+  }
+
+  @media (max-width: 767px) {
+    .btn:hover,
+    .btn:active,
+    .btn:focus-visible {
+      transform: none;
+    }
+
+    .btn:hover .btn__arrow,
+    .btn:active .btn__arrow,
+    .btn:focus-visible .btn__arrow {
+      transform: none;
+    }
+
+    .btn:hover .btn__label-line,
+    .btn:active .btn__label-line,
+    .btn:focus-visible .btn__label-line {
+      animation: none;
+    }
   }
 
   /* L'inversion de couleur porte le message à elle seule : on retire le

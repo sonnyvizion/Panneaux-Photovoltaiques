@@ -1,32 +1,67 @@
 ---
 import Logo from './Logo.astro';
 import Button from './Button.astro';
-import { PHONE, REGIONS, LOCALES, PRIMARY_CTA, PILLARS } from '../data/site';
+import {
+  PHONE,
+  REGIONS,
+  LOCALES,
+  PRIMARY_CTA,
+  PILLARS,
+  HOME_LINK,
+  TRUST_LINKS,
+  publishedGroups,
+} from '../data/site';
 
 interface Props {
-  /** Page courante, pour l'état actif. */
-  current?: string;
+  /**
+   * La nav se pose sur la photo du hero. Faux sur toute page sans hero : le
+   * header prend alors son état détaché DÈS LE RENDU — sinon texte blanc sur
+   * fond blanc jusqu'au premier tick de JavaScript, et un header hors flux qui
+   * recouvre le début du contenu.
+   */
+  overHero?: boolean;
 }
 
-const { current = '/' } = Astro.props;
+const { overHero = false } = Astro.props;
+
+/**
+ * État actif dérivé de l'URL plutôt que passé en prop : le sitemap compte ~55
+ * pages, aucune ne doit avoir à se déclarer elle-même.
+ */
+const path = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
+
+const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pillar) }));
 ---
 
-<header id="site-header" class="header header--over-hero">
-  {/* Rangée utilitaire — tél à gauche, région et langue à droite (nav.md).
-      Pas de fond : le texte se pose directement sur la photo du hero. */}
+<header
+  id="site-header"
+  class:list={['header', overHero ? 'header--over-hero' : 'header--opaque']}
+  data-over-hero={overHero ? '' : undefined}
+>
+  {/* Rangée utilitaire — tél et liens de confiance à gauche, région et langue à
+      droite (nav.md). Pas de fond : le texte se pose directement sur la photo. */}
   <div class="header__utility-bar">
   <div class="header__utility">
-    <a class="header__utility-item" href={PHONE.href}>
-      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-        <path
-          d="M3 2h3l1.5 3.5-2 1.2a9 9 0 004.8 4.8l1.2-2L15 11v3a1 1 0 01-1 1A11.5 11.5 0 012 3a1 1 0 011-1z"
-          stroke="currentColor"
-          stroke-width="1.3"
-          stroke-linejoin="round"
-        />
-      </svg>
-      {PHONE.label}
-    </a>
+    <div class="header__utility-start">
+      <a class="header__utility-item" href={PHONE.href}>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M3 2h3l1.5 3.5-2 1.2a9 9 0 004.8 4.8l1.2-2L15 11v3a1 1 0 01-1 1A11.5 11.5 0 012 3a1 1 0 011-1z"
+            stroke="currentColor"
+            stroke-width="1.3"
+            stroke-linejoin="round"
+          />
+        </svg>
+        {PHONE.label}
+      </a>
+
+      {/* Le cluster confiance vivait ici ; il est descendu dans le pied des
+          méga-menus. `design.md` justifie cette rangée à TROIS items —
+          téléphone à gauche, région et langue à droite — et elle en portait six,
+          ce qui la rendait lourde en tête de hero. */}
+    </div>
 
     {/* Groupées à droite : la bande occupe ainsi toute sa largeur au lieu de
         laisser les deux tiers droits vides. */}
@@ -42,11 +77,22 @@ const { current = '/' } = Astro.props;
         <circle cx="8" cy="6" r="1.6" stroke="currentColor" stroke-width="1.3" />
       </svg>
       <span class="visually-hidden">Votre région</span>
-        <select class="header__region-select" name="region">
-          {REGIONS.map((region) => (
-            <option value={region.href}>{region.label}</option>
-          ))}
-        </select>
+        {/* Chevron greffé au champ : sans lui, un `select` dépouillé de son
+            habillage natif (appearance: none) se lit comme du texte mort. Il
+            est groupé avec le champ dans un conteneur à part, pour ne pas
+            hériter de l'écart large qui sépare l'icône de lieu du libellé. */}
+        <span class="header__region-control">
+          {/* `data-region-select` : point d'accroche de scripts/regionLinks.ts,
+              qui propage la région dans tous les liens vers /simulateur. */}
+          <select class="header__region-select" name="region" data-region-select>
+            {REGIONS.map((region) => (
+              <option value={region.value}>{region.label}</option>
+            ))}
+          </select>
+          <svg class="header__region-chevron" width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
       </label>
 
       <ul class="header__locales">
@@ -66,7 +112,7 @@ const { current = '/' } = Astro.props;
   </div>
   </div>
 
-  {/* Rangée principale — logo · piliers · CTA unique (règle d'or #2) */}
+  {/* Rangée principale — logo · Accueil + 4 piliers · CTA unique (règle d'or #2) */}
   <div class="header__main">
     <div class="header__brand">
       <Logo size="header" />
@@ -74,15 +120,154 @@ const { current = '/' } = Astro.props;
 
     <nav class="header__nav" aria-label="Navigation principale">
       <ul class="header__list">
-        {PILLARS.map((pillar) => (
-          <li>
-            <a
-              href={pillar.href}
-              class={`header__link ${current === pillar.href ? 'is-active' : ''}`}
-              aria-current={current === pillar.href ? 'page' : undefined}
-            >
-              {pillar.label}
-            </a>
+        {/* Pilule mobile. <li> et non <span> : un <ul> n'accepte pas d'autre
+            enfant. Hors flux, donc invisible pour le flex. `aria-hidden` : c'est
+            une décoration, la page courante est déjà annoncée par
+            `aria-current="page"` sur son lien. */}
+        <li class="header__pill" aria-hidden="true"></li>
+
+        {/* Coquille partagée des méga-menus : c'est ELLE qui porte le verre,
+            le rayon et le filet, pas les panneaux. Elle ne disparaît pas quand
+            on passe d'un pilier à l'autre — seule sa hauteur se déplace, et le
+            contenu change dedans.
+
+            Même motif que la pilule de survol : un élément décoratif que le
+            script dimensionne. Sans JavaScript, elle reste vide et invisible,
+            et chaque panneau garde son propre fond. */}
+        <li class="header__menu-shell" aria-hidden="true"></li>
+
+        <li>
+          <a
+            href={HOME_LINK.href}
+            class:list={['header__link', { 'is-active': isActive(HOME_LINK.href) }]}
+            aria-current={isActive(HOME_LINK.href) ? 'page' : undefined}
+          >
+            {HOME_LINK.label}
+          </a>
+        </li>
+
+        {pillars.map((pillar) => (
+          <li class="header__item">
+            {/* <details name> : l'exclusivité des menus est NATIVE — ouvrir
+                l'un referme l'autre, sans JavaScript. Même mécanisme que
+                Accordion.astro. Sans support (navigateurs d'avant fin 2023),
+                les menus deviennent simplement indépendants.
+
+                Le <summary> n'est pas un lien : la page du pilier est reprise
+                en tête du panneau (« Vue d'ensemble »), et reste liée depuis le
+                footer. C'est le prix du <details> natif — clavier et clic
+                gratuits, aucune machine à états à écrire.
+
+                ⚠️ Le <details> ne contient QUE son résumé : le panneau est son
+                FRÈRE, pas son enfant. Tant qu'il était dedans, il passait de
+                « non rendu » à « rendu » à chaque ouverture — or une transition
+                exige une valeur de départ à l'état rendu, qui n'existait donc
+                pas. Sa hauteur sautait au lieu de glisser, et son contenu
+                paraissait avant la coquille. Rendu en permanence et simplement
+                masqué, il redevient transitionnable.
+
+                C'est le motif ARIA canonique du disclosure : un déclencheur,
+                puis le contenu qu'il pilote juste après, dans l'ordre de
+                lecture. */}
+            <details class="header__menu" name="header-menu">
+              <summary
+                class:list={['header__link', 'header__summary', { 'is-active': isActive(pillar.href) }]}
+              >
+                {/* Pas de chevron : la barre reste au libellé nu. L'affordance
+                    passe par le survol, et le <summary> annonce de lui-même son
+                    état déplié aux lecteurs d'écran — rien n'est perdu côté
+                    accessibilité. Le panneau mobile, lui, le garde : sans
+                    survol, c'est sa seule marque de dépliage. */}
+                {pillar.label}
+              </summary>
+            </details>
+
+            {/* Le panneau DÉCOUPE à la silhouette de la coquille, l'enveloppe
+                garde sa hauteur naturelle. C'est elle que le script mesure, et
+                c'est ce découpage qui empêche le contenu de paraître avant que
+                la coquille l'ait atteint.
+
+                Les liens y sont bâtis comme ceux de Button.astro là où ils
+                roulent : le cadre coupe, la ligne se déplace, la flèche reste
+                dehors et se lève. */}
+            <div class="header__panel-menu">
+                <div class="header__panel-inner">
+                <a class="header__overview" href={pillar.href}>
+                  <span class="header__roll-frame">
+                    <span class="header__roll">Vue d'ensemble</span>
+                  </span>
+                  <span class="header__arrow" aria-hidden="true">→</span>
+                </a>
+
+                {/* Conditionnel, et pas seulement par élégance : un conteneur
+                    vide reste un item flex, qui consomme les DEUX écarts qui
+                    l'encadrent. Tant que les sous-pages ne sont pas publiées,
+                    trois piliers sur quatre n'ont aucun groupe — le panneau se
+                    creusait d'une trentaine de pixels pour rien. */}
+                {pillar.groups.length > 0 && (
+                <div class="header__groups">
+                  {pillar.groups.map((group) => (
+                    <div class="header__group">
+                      {group.label && <p class="header__group-title">{group.label}</p>}
+                      <ul class="header__group-list">
+                        {group.links.map((link) => (
+                          <li>
+                            <a class="header__group-link" href={link.href}>{link.label}</a>
+                          </li>
+                        ))}
+                      </ul>
+                      {group.ramp && (
+                        /* data-region-lock : cette rampe porte LA région de sa
+                           colonne, pas celle du sélecteur. regionLinks.ts ne
+                           doit pas l'écraser — c'est le seul endroit du site où
+                           la région est certaine au moment du clic (nav.md). */
+                        <a class="header__ramp" href={group.ramp.href} data-region-lock>
+                          <span class="header__roll-frame">
+                            <span class="header__roll">{group.ramp.label}</span>
+                          </span>
+                          <span class="header__arrow" aria-hidden="true">→</span>
+                        </a>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                )}
+
+                {/* Pied de panneau, rendu quel que soit le pilier : il porte le
+                    cluster confiance, qui encombrait la rangée utilitaire du
+                    hero. Celle-ci est justifiée à trois items (design.md) et en
+                    portait six.
+
+                    Inconditionnel, donc, alors que la rampe ne l'est pas —
+                    « Aides & primes » n'en a pas, ses colonnes portant chacune
+                    la leur, par région. Le filet et le retrait sont ici et non
+                    sur la rampe, sans quoi ce panneau perdrait son pied.
+
+                    Les trois liens se répètent d'un panneau à l'autre, sans
+                    conséquence : un seul est visible à la fois, et ils restent
+                    ainsi joignables quel que soit le pilier ouvert. */}
+                <div class="header__panel-foot">
+                  {pillar.ramp && (
+                    <a class="header__ramp" href={pillar.ramp.href}>
+                      <span class="header__roll-frame">
+                        <span class="header__roll">{pillar.ramp.label}</span>
+                      </span>
+                      <span class="header__arrow" aria-hidden="true">→</span>
+                    </a>
+                  )}
+
+                  {/* Classe distincte de `header__panel-trust`, qui appartient au
+                      panneau mobile et porte son propre filet et son padding. */}
+                  <ul class="header__foot-trust">
+                    {TRUST_LINKS.filter((link) => link.published).map((link) => (
+                      <li>
+                        <a class="header__group-link" href={link.href}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
           </li>
         ))}
       </ul>
@@ -100,27 +285,144 @@ const { current = '/' } = Astro.props;
         aria-expanded="false"
         aria-controls="header-panel"
       >
-        <span class="visually-hidden">Ouvrir le menu</span>
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        {/* Le libellé change avec l'état : le panneau couvrant tout l'écran,
+            « Ouvrir » serait faux une fois ouvert. Le script le met à jour en
+            même temps qu'`aria-expanded`. */}
+        <span class="visually-hidden" data-burger-label>Ouvrir le menu</span>
+        <svg class="header__burger-icon header__burger-icon--open" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
           <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        {/* Une croix quand le panneau est plein écran : un burger n'y dit plus
+            comment revenir en arrière. */}
+        <svg class="header__burger-icon header__burger-icon--close" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
         </svg>
       </button>
     </div>
   </div>
 
-  {/* Panneau mobile. Il porte aussi le CTA : sur un écran étroit, logo +
-      bouton + burger ne tiennent pas sur une ligne (règle d'or #6, mobile
-      d'abord — mieux vaut un CTA à un tap qu'une rangée qui déborde). */}
-  <div class="header__panel" id="header-panel" hidden>
+  {/* Panneau mobile. Il porte aussi le CTA et le cluster confiance : sur un
+      écran étroit, logo + bouton + burger ne tiennent pas sur une ligne, et la
+      rangée utilitaire ne peut pas porter six éléments (règle d'or #6). */}
+  {/* Plus d'attribut `hidden` : le panneau est rendu en permanence et masqué en
+      `visibility`, ce qui rend son apparition transitionnable. Même leçon que
+      les méga-menus — un élément qui passe de « non rendu » à « rendu » n'a pas
+      d'état de départ, donc pas de transition. */}
+  <div class="header__panel" id="header-panel">
     <ul class="header__panel-list">
-      {PILLARS.map((pillar) => (
+      <li>
+        <a href={HOME_LINK.href} class="header__panel-link">{HOME_LINK.label}</a>
+      </li>
+
+      {pillars.map((pillar) => (
         <li>
-          <a href={pillar.href} class="header__panel-link">{pillar.label}</a>
+          {/* Accordéons, pas de glissement : tout reste à un tap, aucun état de
+              navigation à tenir. Nom de groupe distinct de celui du desktop —
+              les deux jeux de <details> coexistent dans le DOM. */}
+          <details class="header__panel-menu-item" name="header-panel-menu">
+            <summary class="header__panel-link header__panel-summary">
+              {pillar.label}
+              <svg class="header__chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+
+            {/* Même structure de roulement que le desktop. Rien ne s'y déclenche
+                au doigt, faute de survol — mais les deux panneaux affichent la
+                même arborescence et ne doivent pas diverger de balisage. */}
+            <div class="header__panel-content">
+              <a class="header__panel-sublink header__panel-sublink--all" href={pillar.href}>
+                <span class="header__roll-frame">
+                  <span class="header__roll">Vue d'ensemble</span>
+                </span>
+                <span class="header__arrow" aria-hidden="true">→</span>
+              </a>
+              {pillar.groups.map((group) => (
+                <div class="header__panel-group">
+                  {group.label && <p class="header__group-title">{group.label}</p>}
+                  <ul class="header__group-list">
+                    {group.links.map((link) => (
+                      <li>
+                        <a class="header__panel-sublink" href={link.href}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                  {group.ramp && (
+                    <a class="header__ramp" href={group.ramp.href} data-region-lock>
+                      <span class="header__roll-frame">
+                        <span class="header__roll">{group.ramp.label}</span>
+                      </span>
+                      <span class="header__arrow" aria-hidden="true">→</span>
+                    </a>
+                  )}
+                </div>
+              ))}
+              {pillar.ramp && (
+                <a class="header__ramp" href={pillar.ramp.href}>
+                  <span class="header__roll-frame">
+                    <span class="header__roll">{pillar.ramp.label}</span>
+                  </span>
+                  <span class="header__arrow" aria-hidden="true">→</span>
+                </a>
+              )}
+            </div>
+          </details>
         </li>
       ))}
     </ul>
+
+    {/* Le CTA suit immédiatement le dernier pilier : il clôt la navigation,
+        au lieu d'attendre au-delà des liens de service. */}
     <div class="header__panel-cta">
       <Button variant="primary" href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</Button>
+    </div>
+
+    {/* Bas de panneau : liens de service et préférences, repoussés en bas.
+        Nom distinct de `header__panel-foot`, qui est le pied des méga-menus
+        desktop — ils ne partagent pas la même mise en page. */}
+    <div class="header__panel-bottom">
+      {/* `header__panel-link` et non `-sublink` : ce sont des rangées pleine
+          largeur, comme les piliers au-dessus, pas des liens secondaires. La
+          classe porte déjà le padding et le filet — rien à redéfinir. */}
+      <ul class="header__panel-trust">
+        {TRUST_LINKS.filter((link) => link.published).map((link) => (
+          <li><a class="header__panel-link" href={link.href}>{link.label}</a></li>
+        ))}
+        <li><a class="header__panel-link" href={PHONE.href}>{PHONE.label}</a></li>
+      </ul>
+
+      {/* La rangée utilitaire n'existe plus sur mobile : c'est ici qu'on choisit
+          sa région et sa langue. Le sélecteur de région était jusqu'ici
+          introuvable sous 480px, où la rangée le masquait. */}
+      <div class="header__panel-prefs">
+        <label class="header__panel-region">
+          <span class="visually-hidden">Votre région</span>
+          {/* Second point d'accroche de regionLinks.ts, qui synchronise les deux
+              sélecteurs — celui de la rangée existe toujours dans le DOM. */}
+          <select class="header__region-select" name="region-mobile" data-region-select>
+            {REGIONS.map((region) => (
+              <option value={region.value}>{region.label}</option>
+            ))}
+          </select>
+          <svg class="header__region-chevron" width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+            <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </label>
+
+        <ul class="header__panel-locales">
+          {LOCALES.map((locale, index) => (
+            <li>
+              <a
+                class:list={['header__panel-locale', { 'is-active': index === 0 }]}
+                href={locale.href}
+                lang={locale.label.toLowerCase()}
+              >
+                {locale.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   </div>
 </header>
@@ -132,38 +434,118 @@ const { current = '/' } = Astro.props;
     shouldHideNav,
     type ScrollDirection,
   } from '../scripts/navScrollState';
+  import { initNavPill } from '../scripts/navPill';
+
+  const navList = document.querySelector<HTMLElement>('.header__list');
+  if (navList) initNavPill(navList);
 
   const hero = document.querySelector('#hero');
   const header = document.querySelector('#site-header');
 
-  if (hero && header) {
+  // L'observer ne tourne que sur les pages qui ont un hero ET une nav déclarée
+  // au-dessus de lui. Ailleurs, l'état détaché posé au rendu reste le bon.
+  if (hero && header?.hasAttribute('data-over-hero')) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         const overHero = isNavOverHero(entry);
         header.classList.toggle('header--over-hero', overHero);
         header.classList.toggle('header--opaque', !overHero);
+
+        /* ⚠️ Le CTA paraît sur LE MÊME signal que le détachement, et surtout
+           pas plus tôt. Il était auparavant piloté par un observateur distinct,
+           braqué sur le formulaire du hero — lequel sort de l'écran bien avant
+           le hero entier. Dans cet intervalle le header est encore en
+           `absolute` au sommet du document, donc hors écran : le fondu se
+           jouait en entier sans que personne le voie, puis le header surgissait
+           en fixe avec le bouton déjà à pleine opacité. Aucune courbe ni durée
+           ne pouvait rattraper ça.
+
+           La règle d'or #2 (un seul CTA) reste tenue, et même plus strictement
+           qu'avant : le hero est intégralement sorti, son propre CTA avec. */
+        header.classList.toggle('header--cta-visible', !overHero);
       },
       { threshold: 0 },
     );
     observer.observe(hero);
+  } else if (header) {
+    // Pages sans hero : le header est détaché dès le rendu, rien ne prend le
+    // relais du CTA — il reste visible.
+    header.classList.add('header--cta-visible');
   }
 
-  // Le CTA du header prend le relais dès que celui du hero sort de l'écran.
-  const heroCta = document.querySelector('#hero-cta');
+  const menus = Array.from(
+    document.querySelectorAll<HTMLDetailsElement>('.header__menu'),
+  );
+  const anyMenuOpen = () => menus.some((menu) => menu.open);
+  const closeMenus = () => menus.forEach((menu) => { menu.open = false; });
 
-  if (header) {
-    if (heroCta) {
-      const ctaObserver = new IntersectionObserver(
-        ([entry]) => {
-          header.classList.toggle('header--cta-visible', !entry.isIntersecting);
-        },
-        { threshold: 0 },
-      );
-      ctaObserver.observe(heroCta);
-    } else {
-      // Pages sans hero : rien ne prend le relais, le CTA reste visible.
-      header.classList.add('header--cta-visible');
+  /* La coquille suit l'attribut `open` plutôt que les gestes qui l'ouvrent.
+     Un MutationObserver attrape ainsi TOUS les chemins — survol, clic, clavier,
+     Échap, fermeture au défilement, clic extérieur — sans avoir à greffer une
+     ligne dans chacun. Un seul point de vérité, impossible à oublier. */
+  const shell = document.querySelector<HTMLElement>('.header__menu-shell');
+  const menuList = document.querySelector<HTMLElement>('.header__list');
+
+  if (shell && menuList && menus.length > 0) {
+    // Le décor ne passe à la coquille que si le script tourne : sans lui,
+    // chaque panneau garde son propre fond (comme la pilule lime).
+    menuList.classList.add('has-shell');
+
+    const syncShell = () => {
+      const open = menus.find((menu) => menu.open);
+      if (!open) {
+        shell.classList.remove('is-open');
+        /* ⚠️ Remise à zéro, sinon la hauteur du dernier menu SURVIT à la
+           fermeture. Le panneau suivant se rendrait alors déjà découpé à cette
+           hauteur — donc son contenu visible d'emblée — pendant que la coquille,
+           elle, repartirait bien de zéro. C'est exactement l'inversion qu'on
+           cherche à supprimer, et elle ne se voyait qu'à partir de la DEUXIÈME
+           ouverture, la variable n'existant pas encore à la première. */
+        menuList.style.setProperty('--menu-shell-h', '0px');
+        return;
+      }
+
+      // L'ENVELOPPE, jamais le panneau : celui-ci est découpé à la hauteur
+      // qu'on s'apprête à calculer, le mesurer reviendrait à lire notre propre
+      // sortie. L'enveloppe, elle, garde sa hauteur naturelle quoi qu'il
+      // arrive au parent qui la rogne.
+      // Cherché depuis l'ENTRÉE et non depuis le <details> : le panneau en est
+      // désormais le frère, pas l'enfant.
+      const item = open.closest<HTMLElement>('.header__item');
+      const inner = item?.querySelector<HTMLElement>('.header__panel-inner');
+      const panel = item?.querySelector<HTMLElement>('.header__panel-menu');
+      if (!inner || !panel) return;
+
+      /* Le panneau vient d'être révélé par le <details>. Sans lecture forcée,
+         le navigateur peut fondre sa mise en style initiale avec celle qui
+         suit : il n'y aurait alors PAS de valeur de départ, donc pas de
+         transition, et le panneau sauterait à sa hauteur pendant que la
+         coquille, elle, grandirait. Même parade que `placeInstantly` dans
+         navPill.ts. */
+      void panel.offsetHeight;
+
+      // Mesuré à l'instant : l'enveloppe vient d'être rendue, sa hauteur est
+      // donc exacte, et elle change avec la largeur de la fenêtre (les colonnes
+      // se replient). Pas de cache à invalider.
+      // Posé sur la LISTE et non sur la coquille : les panneaux sont ses frères,
+      // pas ses descendants, et ne pourraient pas hériter d'elle. Or ils en ont
+      // besoin eux aussi — c'est cette hauteur qui les découpe.
+      menuList.style.setProperty('--menu-shell-h', `${inner.offsetHeight}px`);
+      shell.classList.add('is-open');
+    };
+
+    const observer = new MutationObserver(syncShell);
+    for (const menu of menus) {
+      observer.observe(menu, { attributes: true, attributeFilter: ['open'] });
     }
+
+    window.addEventListener(
+      'resize',
+      () => {
+        if (anyMenuOpen()) syncShell();
+      },
+      { passive: true },
+    );
   }
 
   // Repli de la nav au défilement descendant, réapparition à la remontée.
@@ -175,7 +557,10 @@ const { current = '/' } = Astro.props;
     const update = () => {
       const currentY = window.scrollY;
       direction = getScrollDirection(previousY, currentY, direction);
-      header.classList.toggle('header--nav-hidden', shouldHideNav(direction, currentY));
+      header.classList.toggle(
+        'header--nav-hidden',
+        shouldHideNav(direction, currentY, anyMenuOpen()),
+      );
       previousY = currentY;
       ticking = false;
     };
@@ -183,6 +568,9 @@ const { current = '/' } = Astro.props;
     window.addEventListener(
       'scroll',
       () => {
+        // Un méga-menu ouvert n'a plus de sens une fois le contenu déplacé
+        // sous lui : on referme plutôt que de le laisser flotter.
+        if (anyMenuOpen()) closeMenus();
         if (ticking) return;
         ticking = true;
         requestAnimationFrame(update);
@@ -191,27 +579,103 @@ const { current = '/' } = Astro.props;
     );
   }
 
+  // Ouverture au survol — pointeur fin UNIQUEMENT (règle d'or #6 : jamais
+  // d'interaction au survol seul). Le clic et le clavier passent par le
+  // comportement natif de <details>, qui fonctionne sans ce script.
+  const finePointer = window.matchMedia('(pointer: fine)');
+
+  for (const menu of menus) {
+    menu.addEventListener('pointerenter', () => {
+      if (!finePointer.matches) return;
+      closeMenus();
+      menu.open = true;
+    });
+  }
+
+  /* La fermeture est portée par la NAV entière, et non par chaque menu — c'est
+     ce qui supprime le saut d'un panneau à l'autre. Posée sur le menu, elle se
+     déclenchait dès l'écart entre deux entrées : le premier se refermait avant
+     que le second ne s'ouvre, et la coquille s'effondrait entre les deux.
+
+     `pointerleave` suit le DOM et non la géométrie : le panneau et son pont de
+     survol étant des descendants de la nav, y descendre ne la quitte pas. */
+  const nav = document.querySelector('.header__nav');
+
+  nav?.addEventListener('pointerleave', () => {
+    if (!finePointer.matches) return;
+    closeMenus();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape' || !anyMenuOpen()) return;
+    // Le focus est peut-être dans le panneau que l'on referme : on le ramène
+    // sur l'entrée qui l'ouvrait, sinon il retombe sur le <body> et la
+    // tabulation repart du haut de la page.
+    // Remonté à l'ENTRÉE : le panneau est frère du <details>, pas son enfant,
+    // donc un focus posé dedans ne trouverait plus le résumé par ce chemin.
+    const summary = document.activeElement?.closest('.header__item')?.querySelector('summary');
+    closeMenus();
+    if (summary instanceof HTMLElement) summary.focus();
+  });
+
+  // Sortir du menu à la tabulation le referme. Sans ça, un menu ouvert au
+  // clavier reste ouvert derrière le reste de la navigation.
+  document.addEventListener('focusout', () => {
+    // Le focus n'a pas encore atteint sa cible au moment de l'événement.
+    requestAnimationFrame(() => {
+      if (!anyMenuOpen()) return;
+      // Test porté sur la NAV, comme la fermeture au survol : viser
+      // `.header__menu` refermerait le menu dès qu'on tabule DANS son panneau,
+      // qui n'en est plus un descendant.
+      if (!document.activeElement?.closest('.header__nav')) closeMenus();
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (target instanceof Node && !header?.contains(target)) closeMenus();
+  });
+
   const burger = document.querySelector('.header__burger');
   const panel = document.querySelector('#header-panel');
 
+  const burgerLabel = burger?.querySelector('[data-burger-label]');
+
+  const setPanel = (open: boolean) => {
+    if (!burger || !panel) return;
+    burger.setAttribute('aria-expanded', String(open));
+    panel.classList.toggle('is-open', open);
+    if (burgerLabel) burgerLabel.textContent = open ? 'Fermer le menu' : 'Ouvrir le menu';
+    // Le panneau couvre l'écran : sans ce verrou, la page continue de défiler
+    // derrière lui et on la retrouve ailleurs en refermant.
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
   burger?.addEventListener('click', () => {
-    const open = burger.getAttribute('aria-expanded') === 'true';
-    burger.setAttribute('aria-expanded', String(!open));
-    panel?.toggleAttribute('hidden', open);
+    setPanel(burger.getAttribute('aria-expanded') !== 'true');
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Escape') return;
+    if (burger?.getAttribute('aria-expanded') !== 'true') return;
+    setPanel(false);
+    burger.focus();
+  });
+
+  // Repasser en desktop pendant que le panneau est ouvert le fait disparaître
+  // par `display: none` — mais le verrou de défilement, lui, resterait posé.
+  window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+    if (event.matches) setPanel(false);
   });
 </script>
 
 <style>
   /* .visually-hidden vit dans global.css (utilitaire partagé). */
-  /* Hors flux dans les deux états, sinon le header rogne la hauteur dans
-     laquelle le hero centre son contenu (Figma le pose en absolu à top 0).
-     Au-dessus du hero : absolu, il défile avec lui. Une fois le hero passé :
-     fixe, pour conserver la nav à deux états de design.md §3. */
+  /* Au-dessus du hero : hors flux et absolu, il défile avec lui — sinon le
+     header rogne la hauteur dans laquelle le hero centre son contenu (Figma le
+     pose en absolu à top 0). Sur une page sans hero, il reprend le flux : voir
+     `.header--opaque` plus bas. */
   .header {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -221,24 +685,41 @@ const { current = '/' } = Astro.props;
     transition: background var(--duration-medium) var(--easing-default);
   }
 
-  /* Bande pleine largeur qui porte le dégradé — la rangée de nav en dessous
-     reste transparente (relevé Figma : `accessoires_bar` seule est habillée). */
-  /* Plus de fond : le dégradé était le seul du site depuis que le hero est
-     passé au voile uni, et sur un ciel bleu-gris il ne se lisait pas comme une
-     bande — juste comme une salissure. Le texte se pose sur la photo. */
-  .header__utility-bar {
-    padding-block: var(--space-2);
+  /* Calé sur la CARTE du hero, pas sur la page. Le hero est posé en
+     `margin: var(--hero-inset)` : il commence 13px à l'intérieur du bord
+     d'écran. Tant que la nav vivait dans le hero, `top: 0` se résolvait sur lui ;
+     depuis qu'elle est dans le layout, elle se résout sur le document et
+     démarrait 13px trop haut, sur le fond blanc de la page.
+
+     C'est aussi ce que suppose `--header-inline-pad`, qui vaut
+     `--container-padding` MOINS `--hero-inset` : cette soustraction n'a de sens
+     que si l'inset est fourni par ailleurs. Il l'est ici. Les 60px de Figma
+     tombent juste, verticalement comme horizontalement. */
+  .header--over-hero {
+    position: absolute;
+    top: var(--hero-inset);
+    left: var(--hero-inset);
+    right: var(--hero-inset);
+    color: var(--color-text-inverted);
   }
 
-  .header--over-hero {
-    color: var(--color-text-inverted);
+  /* Bande pleine largeur qui portait le dégradé — supprimé : il était le seul
+     du site depuis que le hero est passé au voile uni, et sur un ciel bleu-gris
+     il ne se lisait pas comme une bande, juste comme une salissure. */
+  .header__utility-bar {
+    padding-block: var(--space-2);
   }
 
   /* État détaché : rien ne subsiste que la pilule de nav et le CTA, qui
      flottent au-dessus du contenu. Pas de barre pleine largeur, donc pas de
      fond ni de filet — les deux éléments portent leur propre habillage. */
+  /* Sur une page sans hero, `sticky` et non `fixed` : le header occupe sa place
+     en haut du flux (rien ne passe dessous au chargement) puis colle au
+     défilement. `fixed` est réservé au cas où il se détache d'un hero, où il
+     était déjà hors flux. */
   .header--opaque {
-    position: fixed;
+    position: sticky;
+    top: 0;
     color: var(--color-text-primary);
     /* Détaché du hero, il couvre toute la largeur : il reprend la marge que la
        carte du hero lui fournissait. */
@@ -247,13 +728,23 @@ const { current = '/' } = Astro.props;
     padding-block: var(--space-3);
   }
 
+  /* Détaché d'un hero : il était absolu dans le hero, il repasse en fixe. Un
+     `sticky` ne collerait pas — son ancêtre a déjà défilé hors de l'écran. */
+  [data-over-hero].header--opaque {
+    position: fixed;
+    left: 0;
+    right: 0;
+  }
+
   .header--opaque .header__utility-bar {
     display: none;
   }
 
   /* Masqué mais conservé dans le flux : le logo tient la colonne de gauche,
-     sans quoi la pilule de nav se décalerait au changement d'état. */
-  .header--opaque .header__brand {
+     sans quoi la pilule de nav se décalerait au changement d'état.
+     Uniquement quand le header vient du hero — sur une page sans hero, le logo
+     est le seul repère de marque en haut d'écran, il doit rester visible. */
+  [data-over-hero].header--opaque .header__brand {
     visibility: hidden;
   }
 
@@ -264,11 +755,10 @@ const { current = '/' } = Astro.props;
     margin-inline: auto;
   }
 
-  /* Figma : bande dégradée en tête de hero, gap 32 sur desktop. Sur mobile
-     l'écart est resserré et la rangée peut passer à la ligne, sinon les cinq
-     éléments débordent de la largeur de l'écran. */
-  /* Téléphone à gauche, région et langue poussées à droite : la rangée occupe
-     toute sa largeur, au lieu de tasser trois éléments dans le premier tiers. */
+  /* Téléphone et liens de confiance à gauche, région et langue poussées à
+     droite : la rangée occupe toute sa largeur au lieu de tasser ses éléments
+     dans le premier tiers. Sur mobile l'écart est resserré et la rangée peut
+     passer à la ligne, sinon elle déborde de la largeur de l'écran. */
   .header__utility {
     display: flex;
     align-items: center;
@@ -283,6 +773,13 @@ const { current = '/' } = Astro.props;
 
   .header--over-hero .header__utility {
     opacity: var(--opacity-hover);
+  }
+
+  .header__utility-start,
+  .header__utility-end {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
   }
 
   .header__utility-item {
@@ -305,6 +802,17 @@ const { current = '/' } = Astro.props;
     opacity: var(--opacity-muted);
   }
 
+  /* Le libellé entier est la cible : cliquer l'icône de lieu ou le chevron
+     déplie la liste, pas seulement les quelques caractères du nom de région. */
+  .header__region {
+    cursor: pointer;
+  }
+
+  .header__region-control {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
 
   .header__region-select {
     appearance: none;
@@ -314,17 +822,35 @@ const { current = '/' } = Astro.props;
     font: inherit;
     cursor: pointer;
     padding: 0;
+    /* Le soulignement au survol reprend le vocabulaire de la rangée, où il
+       marque déjà la langue active. La rangée porte une opacité de groupe :
+       un enfant ne peut pas la dépasser, l'affordance ne peut donc pas passer
+       par un éclaircissement au survol. */
+    text-decoration: underline transparent;
+    text-underline-offset: var(--space-1);
+    transition: text-decoration-color var(--duration-fast) var(--easing-default);
+  }
+
+  .header__region:hover .header__region-select {
+    text-decoration-color: currentColor;
+  }
+
+  .header__region-chevron {
+    flex-shrink: 0;
+  }
+
+  /* C'est le `select` qui reçoit le focus, jamais le `label` : la règle
+     `.header__utility-item:focus-visible` plus bas ne l'attraperait pas. On
+     cercle le groupe entier, chevron compris. */
+  .header__region-control:has(.header__region-select:focus-visible) {
+    outline: var(--focus-ring-width) solid currentColor;
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
   }
 
   /* Les options héritent du fond système : forcer une couleur lisible. */
   .header__region-select option {
     color: var(--color-text-primary);
-  }
-
-  .header__utility-end {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
   }
 
   .header__locales {
@@ -344,32 +870,405 @@ const { current = '/' } = Astro.props;
 
   .header__nav {
     display: none;
+    /* Ancre du pont de survol (plus bas). N'affecte pas les méga-menus, qui se
+       résolvent sur `.header__list`, plus proche d'eux. */
+    position: relative;
   }
 
   .header__list {
+    position: relative;
     display: flex;
-    gap: var(--pad-button-start);
+    align-items: center;
+    /* Écart DÉRIVÉ du padding des chips, jamais posé en dur : un chip déborde
+       de `--pad-nav-chip` de chaque côté de sa place en mise en page, il faut
+       donc deux fois cette valeur avant de pouvoir compter le moindre air.
+       Posé en dur, deux chips voisins se mordaient de 7px. */
+    gap: calc(var(--pad-nav-chip) * 2 + var(--gap-nav-chip));
     list-style: none;
     margin: 0;
     padding: var(--pad-badge) var(--pad-button-start);
-    border-radius: var(--radius-pill);
-    background: var(--bg-glass-fill-nav);
-    backdrop-filter: blur(var(--bg-glass-blur-pill));
-    -webkit-backdrop-filter: blur(var(--bg-glass-blur-pill));
   }
 
-  .header--opaque .header__list {
-    background: var(--color-white-clear);
+  /* ⚠️ Le verre de la pilule vit sur cette couche, et NON sur `.header__list`.
+     Un `backdrop-filter` crée un « backdrop root » : ses descendants ne voient
+     plus la page derrière, seulement un conteneur transparent (design.md, 2ᵉ
+     piège). Porté par le <ul>, il aurait donc annulé le verre des méga-menus,
+     qui sont ses descendants — ils auraient flouté du vide.
+     En pseudo-élément, le flou couvre la pilule sans être l'ancêtre de quoi que
+     ce soit. Ne pas le remonter sur `.header__list`. */
+  .header__list::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: var(--radius-pill);
+    background: var(--bg-glass-fill-nav);
+    backdrop-filter: blur(var(--bg-glass-blur-nav));
+    transition:
+      background var(--duration-medium) var(--easing-default),
+      backdrop-filter var(--duration-medium) var(--easing-default);
+  }
+
+  /* Empilement dans la pilule de verre, dans cet ordre :
+       ::after (verre) 0 → .header__pill 1 → les entrées 2.
+
+     ⚠️ PAS de `position: relative` ici, et c'est délibéré : ces <li> sont des
+     items flex, et `z-index` s'y applique même en `position: static` (spec
+     Flexbox §5.4 — les items flex peignent comme des blocs inline mais honorent
+     `z-index`). Les positionner ferait d'eux le bloc conteneur des méga-menus,
+     qui se recaleraient sur l'entrée au lieu de la barre et perdraient leur
+     largeur. L'empilement, lui, ne change pas. */
+  .header__list > li {
+    z-index: 2;
+  }
+
+  /* --- Voile de survol (la pilule mobile) ---
+     Deux objets, deux rôles : le lime de `.is-active` dit « vous êtes ici » et
+     ne bouge jamais ; ce voile dit « vous pointez ici » et suit le curseur.
+
+     Il vit en `z-index: 1`, sous les entrées (`z-index: 2`) : le lime étant
+     OPAQUE, le voile passe dessous. Survoler l'entrée courante le masque
+     entièrement, et le croiser en cours de trajet aussi — aucune superposition
+     à gérer, la pile s'en charge.
+
+     Posé en `left`/`right` et NON en `transform: scaleX()`, à contre-courant
+     du réflexe compositeur : un scaleX déforme le `border-radius`, et les
+     extrémités arrondies deviennent des ellipses pendant l'étirement — ça se
+     voit sur un aplat de couleur. L'élément est hors flux et sans enfant : le
+     coût de mise en page se limite à lui-même.
+
+     Les deux bords ont des courbes DIFFÉRENTES : celui qui va dans le sens du
+     déplacement part vite et dépasse, l'autre traîne puis rattrape. Ce décalage
+     est tout l'allongement — aucune image-clé intermédiaire n'est calculée. */
+  .header__list > li.header__pill {
+    position: absolute;
+    z-index: 1;
+    /* Les quatre bords sont MESURÉS par le script, jamais recalculés ici : la
+       hauteur visible d'une entrée dépend du jeu entre le padding de cette
+       liste et la marge négative des liens. Une valeur en dur se décalerait à
+       la première retouche de l'un des deux. */
+    top: var(--pill-top, 0);
+    bottom: var(--pill-bottom, 0);
+    left: var(--pill-left, 0);
+    right: var(--pill-right, 100%);
+    border-radius: var(--radius-pill);
+    background: var(--bg-pill-hover);
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      left var(--duration-pill) var(--easing-pill-trail),
+      right var(--duration-pill) var(--easing-pill-lead),
+      opacity var(--duration-medium) var(--easing-default);
+  }
+
+  /* Vers la gauche, les rôles s'inversent : c'est le bord GAUCHE qui mène. */
+  .header__list > li.header__pill[data-dir='left'] {
+    transition:
+      left var(--duration-pill) var(--easing-pill-lead),
+      right var(--duration-pill) var(--easing-pill-trail),
+      opacity var(--duration-medium) var(--easing-default);
+  }
+
+  /* Détachée, la barre compose #FCFEFE : le voile clair y donnerait #FEFEFC —
+     un écart nul, donc rien de visible. Seul un assombrissement peut marquer
+     une surface déjà quasi blanche. Même logique que le verre, qui a lui aussi
+     un dosage par état. */
+  .header--opaque .header__list > li.header__pill {
+    background: var(--bg-pill-hover-detached);
+  }
+
+  .header__list > li.header__pill.is-visible {
+    opacity: 1;
+  }
+
+  /* Pose sans voyage : naissance sur l'entrée survolée quand la page n'a pas
+     d'entrée courante, et repositionnement au redimensionnement. */
+  .header__list > li.header__pill.is-instant {
+    transition: none;
+  }
+
+  /* --- Coquille partagée des méga-menus ---
+     Elle occupe exactement la place des panneaux et porte leur décor. Comme
+     elle n'est jamais démontée, passer d'un pilier à l'autre ne referme rien :
+     seule sa hauteur se déplace, d'où la continuité. */
+  .header__list > li.header__menu-shell {
+    position: absolute;
+    z-index: 1;
+    top: calc(100% + var(--space-3));
+    left: 0;
+    right: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    border-radius: var(--radius-3);
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+    /* `--easing-expand` et non `--easing-bounce` : une hauteur qui dépasse sa
+       cible se lit comme un bug, pas comme un rebond.
+       La coquille MÈNE le geste — le contenu la suit après (voir plus bas). */
+    transition:
+      height var(--duration-medium) var(--easing-expand),
+      opacity var(--duration-medium) var(--easing-default);
+  }
+
+  .header__list > li.header__menu-shell.is-open {
+    height: var(--menu-shell-h, 0);
+    opacity: 1;
+  }
+
+  /* Le décor passe à la coquille ; le panneau devient une boîte de DÉCOUPE,
+     calée sur la même hauteur et la même transition qu'elle.
+
+     C'est ce qui met l'apparition dans le bon ordre : le contenu est à sa
+     hauteur définitive dès l'ouverture, alors que la coquille y arrive
+     progressivement. Sans découpe, son bas pendait hors du verre pendant toute
+     la croissance — on voyait le contenu avant le panneau. Découpé, il ne PEUT
+     plus déborder : il se révèle à mesure que la coquille grandit.
+
+     `border: 0` et non `border-color: transparent` : en `box-sizing:border-box`,
+     un filet de 1px rognerait l'enveloppe de 2px. Le filet est de toute façon
+     porté par la coquille ici. */
+  .header__list.has-shell .header__panel-menu {
+    background: none;
     backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    border-color: transparent;
+    border: 0;
+    height: var(--menu-shell-h, 0);
+    overflow: hidden;
+    transition:
+      height var(--duration-medium) var(--easing-expand),
+      visibility 0s linear var(--panel-hide-delay);
+  }
+
+  /* Une ANIMATION, pas une transition : le contenu d'un <details> qui s'ouvre
+     passe de « non rendu » à « rendu », et une transition ne part pas dans ce
+     cas. Une animation, si — elle rejoue à chaque révélation. */
+  @keyframes menu-content-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--space-2));
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* Plus aucun retard : c'est la découpe qui met l'apparition dans l'ordre, et
+     elle le fait sans temps mort. Le retard précédent ne masquait que le début
+     du débordement — au moment où le contenu paraissait, la coquille n'était
+     qu'aux quatre cinquièmes et le bas dépassait encore.
+
+     Le fondu ne sert donc plus qu'au changement de pilier, où deux hauteurs
+     voisines ne laisseraient rien voir de la révélation. */
+  .header__list.has-shell .header__item:has(.header__menu[open]) .header__panel-inner {
+    animation: menu-content-in var(--duration-medium) var(--easing-expand);
+  }
+
+  /* Détachée du hero, la pilule reste en verre — elle passe simplement sur du
+     contenu au lieu d'une photo, ce qui demande un dosage plus couvrant. */
+  .header--opaque .header__list::after {
+    background: var(--bg-glass-fill-nav-detached);
+    backdrop-filter: blur(var(--bg-glass-blur-nav-detached));
+    border: var(--bg-glass-border);
+  }
+
+  /* --- Le filet a deux états, comme les fonds ---
+     Sur la photo, le filet blanc translucide SIGNE le verre : sans lui, un fond
+     translucide se lit comme un aplat. Une fois détaché, il n'a plus rien à
+     trancher — composé sur une section blanche il donne #FFFEFD, invisible, et
+     la surface entière disparaît dans la page. `design.md` prescrit alors le
+     filet gris : « le filet (--color-shade-grey) — cartes, nav détachée ».
+
+     Les quatre surfaces de verre de la nav sont traitées ensemble : les séparer
+     ferait diverger celle qu'on oublierait de mettre à jour.
+
+     `border-color` et NON `border` : la largeur du filet ne doit pas changer
+     d'un état à l'autre. La hauteur de la coquille est mesurée en JavaScript —
+     un pixel de bordure en plus se propagerait à la mesure. */
+  .header--opaque .header__list > li.header__menu-shell,
+  .header--opaque .header__panel-menu,
+  .header--opaque .header__panel,
+  .header--opaque .header__list::after {
+    border-color: var(--color-shade-grey);
   }
 
   .header__link {
-    display: inline-block;
-    padding: var(--space-2) var(--space-3);
-    margin: calc(var(--space-2) * -1) calc(var(--space-3) * -1);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    /* La marge négative annule le padding horizontal : le chip est plus large
+       que la place occupée, sans écarter les libellés d'autant. C'est ce qui
+       oblige `.header__list` à dériver son écart de `--pad-nav-chip`. */
+    padding: var(--space-2) var(--pad-nav-chip);
+    margin: calc(var(--space-2) * -1) calc(var(--pad-nav-chip) * -1);
     border-radius: var(--radius-pill);
+    /* Hérité, jamais figé : le texte suit l'état du header — blanc sur la photo
+       du hero, foncé une fois la pilule détachée. C'est déjà la bascule de la
+       rangée utilitaire au-dessus. Le blanc n'est PAS tenable en détaché : le
+       verre y compose un fond quasi blanc (#FCFEFE), soit 1,0:1. */
+    color: inherit;
+    text-decoration: none;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    white-space: nowrap;
+    /* Le passage du blanc au foncé accompagne l'arrivée de la pilule. Sans
+       transition, l'entrée quittée reprendrait le blanc d'un coup alors que la
+       pilule est encore à moitié dessus. */
+    transition: color var(--duration-medium) var(--easing-default);
+  }
+
+  /* Chip de la page courante : le lime d'accent du système, en aplat plein.
+     Il ne suit PAS les deux états de la pilule — un repère de position doit
+     rester le même partout, et c'est l'aplat franc qui le détache d'un fond
+     translucide.
+
+     Le texte y est forcé en foncé, donc en exception à la couleur héritée : le
+     lime est très clair (luminance ~.85), le blanc de la nav y ferait 1,15:1.
+     En foncé, 14:1. */
+  .header__link.is-active {
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  /* L'entrée SURVOLÉE, posée par le script — distincte de l'entrée courante.
+     Elle porte le voile clair, sur lequel le blanc hérité du hero ferait ~1,2:1.
+     Aucune garde « script démarré » n'est nécessaire : sans JavaScript, la
+     classe n'est jamais posée et la règle reste inerte. */
+  .header__link.is-lit {
+    color: var(--color-text-primary);
+  }
+
+  /* --- Méga-menus (desktop) --- */
+
+  .header__summary {
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .header__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Seul le panneau mobile porte encore un chevron : la barre est au libellé nu.
+     La règle de rotation visait `.header__summary`, donc le desktop, et le
+     chevron mobile n'a jamais tourné — elle est repointée sur lui plutôt que
+     supprimée, pour rejoindre `Accordion.astro` qui fait pivoter le sien. */
+  .header__chevron {
+    flex-shrink: 0;
+    transition: transform var(--duration-medium) var(--easing-default);
+  }
+
+  details[open] > .header__panel-summary .header__chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Carte de la largeur de la BARRE, ancrée sous elle — et non sous l'entrée
+     survolée. `left`/`right` à 0 se résolvent sur `.header__list`, seul ancêtre
+     positionné : d'où le retrait de `position: relative` sur les <li> plus haut.
+     `top: 100%` désigne donc le bas de la pilule, et non celui du <li>, qui est
+     inséré de `--pad-badge` à l'intérieur — l'écart était jusqu'ici de 1px.
+
+     Elle ne prend jamais la page : une bande pleine largeur paraîtrait orpheline
+     une fois le header détaché du hero, où la pilule flotte seule (nav.md).
+
+     Verre au dosage le plus couvrant du système : neuf liens posés sur du
+     contenu dense ne pardonnent pas un voile trop léger. Le filet clair est ce
+     qui signe l'effet — sans lui, un fond translucide se lit comme un aplat
+     (design.md). Aucune ombre : le système n'en a pas. */
+  /* Rendu en permanence, seulement masqué : c'est ce qui rend ses transitions
+     fiables. `visibility` et non `display` — elle sort l'élément de l'ordre de
+     tabulation et de l'arbre d'accessibilité, donc les liens d'un menu fermé
+     restent injoignables, mais elle laisse l'élément rendu.
+
+     Le retard au masquage est ce qui laisse la fermeture se jouer : la
+     visibilité ne bascule qu'une fois la hauteur revenue à zéro. À l'ouverture,
+     aucun retard — sans quoi le panneau paraîtrait après coup. */
+  .header__panel-menu {
+    position: absolute;
+    top: calc(100% + var(--space-3));
+    left: 0;
+    right: 0;
+    z-index: 1;
+    visibility: hidden;
+    /* Le retard passe par une variable, et non par `transition-delay` : la
+       règle `has-shell` plus bas repose son propre raccourci `transition`, qui
+       écraserait un délai posé à part selon l'ordre des règles. Une variable
+       obéit à la cascade quelle que soit la déclaration gagnante. */
+    --panel-hide-delay: var(--duration-medium);
+    transition: visibility 0s linear var(--panel-hide-delay);
+    /* Même rayon que le panneau mobile : les deux cessent de diverger.
+       Ce décor n'est servi QUE sans JavaScript — dès que la coquille prend le
+       relais, `has-shell` l'efface (plus bas). */
+    border-radius: var(--radius-3);
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+    color: var(--color-text-primary);
+  }
+
+  .header__item:has(.header__menu[open]) .header__panel-menu {
+    visibility: visible;
+    --panel-hide-delay: 0s;
+  }
+
+  /* ⚠️ Tant qu'UN menu est ouvert, le panneau sortant s'efface SANS retard.
+     Les panneaux étant rendus en permanence et posés au même endroit, le retard
+     les faisait cohabiter : le nouveau paraissait pendant que l'ancien
+     s'attardait, et les deux jeux de liens se superposaient. Le sortant ne
+     rétrécissait même pas — `--menu-shell-h` étant partagé, il adoptait
+     aussitôt la hauteur de l'entrant.
+
+     Le retard ne sert donc qu'à la fermeture COMPLÈTE, son seul cas utile :
+     laisser le rétrécissement se voir avant la disparition. */
+  .header__list:has(.header__menu[open]) .header__panel-menu {
+    --panel-hide-delay: 0s;
+  }
+
+  /* La mise en page vit dans l'enveloppe, pas dans le panneau : celui-ci n'est
+     plus qu'une boîte de découpe dès que la coquille prend le relais, et sa
+     hauteur ne doit donc rien devoir à son contenu. */
+  .header__panel-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-12);
+    padding: var(--pad-card-lg);
+  }
+
+  /* Pont de survol : sans lui, le menu se referme dès que le pointeur quitte la
+     barre, avant d'avoir atteint la carte.
+
+     Porté par la NAV et non par le panneau, pour deux raisons. Le panneau
+     découpe désormais son contenu (`overflow: hidden`), ce qui rognerait un
+     pseudo-élément débordant vers le haut. Et la fermeture étant elle-même
+     posée sur la nav, étendre SA zone de survol est le geste juste.
+
+     Sa hauteur redevient du même coup l'écart visible — 16px. Accroché au
+     panneau, il devait remonter jusqu'au libellé en traversant le padding de la
+     barre, d'où un calcul à trois termes qui s'était déjà désynchronisé une fois.
+
+     Inerte tant qu'aucun menu n'est ouvert : sinon il intercepterait les clics
+     sur le contenu de la page, sous la barre. */
+  .header__nav::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    height: var(--space-3);
+    pointer-events: none;
+  }
+
+  .header__nav:has(.header__menu[open])::after {
+    pointer-events: auto;
+  }
+
+  .header__overview {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    align-self: flex-start;
     color: var(--color-text-primary);
     text-decoration: none;
     font-family: var(--text-body-nav-family);
@@ -379,12 +1278,192 @@ const { current = '/' } = Astro.props;
     white-space: nowrap;
   }
 
-  .header__link.is-active {
-    background: var(--bg-glass-fill-strong);
+  /* Grille et non rangée flex : la carte étant bornée à la largeur de la barre,
+     les colonnes doivent pouvoir passer à la ligne. « Comprendre » en compte 4,
+     « Installation » 3 — elles déborderaient sur une seule rangée. La carte
+     devient donc plus haute que large, c'est le prix de la largeur fixée. */
+  .header__groups {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(var(--width-nav-column), 1fr));
+    gap: var(--space-4);
   }
 
-  .header--opaque .header__link.is-active {
-    background: var(--color-white-primary);
+  .header__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Même style de texte que les liens : la hiérarchie passe par la couleur et
+     les majuscules, pas par une seconde police. Attelait auparavant la famille
+     d'`overline` (Circular) à la taille d'`utility` — un couple qui n'existe
+     nulle part ailleurs dans le système, le vrai `overline` étant en 18px. */
+  .header__group-title {
+    margin: 0;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    text-transform: uppercase;
+  }
+
+  /* Tout l'espacement vient de ce `gap`, plus de l'interligne : les liens
+     portent désormais `line-height: normal`, imposé par le cadre de coupe du
+     roulement. Un seul token à toucher pour resserrer ou aérer la colonne. */
+  .header__group-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* `--text-body-nav-*` et non `body-sm` : le panneau dépend de la barre, il
+     parle sa langue. Un seul style de texte dans toute la carte.
+
+     `line-height: normal` les tient serrés — tout l'espacement vient du `gap`
+     de la liste. Pas d'`overflow: hidden` : ces liens ne roulent pas, et il
+     rognait leur anneau de focus.
+
+     Zones de survol jointives, comme au footer : le `padding` comble l'écart de
+     la liste, la marge négative le reprend pour que rien ne bouge. Sans lui,
+     l'espace entre deux liens est un angle mort où plus aucun n'est survolé —
+     toute la colonne se rallume le temps du passage. */
+  .header__group-link,
+  .header__panel-sublink {
+    display: block;
+    line-height: normal;
+    padding-block: calc(var(--space-1) / 2);
+    margin-block: calc(var(--space-1) / -2);
+    /* `secondary` et non `primary` : le noir plein est laissé aux rampes et à
+       la vue d'ensemble, qui appellent à l'action. Trois tons se répondent
+       alors dans le panneau — rampes, liens, titres — sans qu'aucun ne change
+       de police. Contraste mesuré sur le panneau détaché : 13,5:1. */
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    /* Lent comme au footer : à 150ms, un balayage rapide de la colonne
+       clignote au lieu de fondre. */
+    transition: opacity var(--duration-slow) var(--easing-default);
+  }
+
+  /* Le roulement ne sert plus que les liens à flèche. */
+  .header__roll {
+    display: block;
+  }
+
+  .header__overview:hover .header__roll,
+  .header__ramp:hover .header__roll,
+  .header__panel-sublink--all:hover .header__roll {
+    animation: label-roll var(--duration-roll);
+  }
+
+  /* `:focus-visible` isolé : un sélecteur inconnu du navigateur invalide TOUTE
+     la liste où il figure, ce qui emporterait aussi le survol (Button.astro). */
+  .header__overview:focus-visible .header__roll,
+  .header__ramp:focus-visible .header__roll,
+  .header__panel-sublink--all:focus-visible .header__roll {
+    animation: label-roll var(--duration-roll);
+  }
+
+  /* Mise en retrait des voisins, comme au footer : survoler un lien atténue les
+     autres de SA colonne. Au repos, aucun n'est atténué. */
+  .header__group-list:has(a:hover) a:not(:hover) {
+    opacity: var(--opacity-muted);
+  }
+
+  .header__ramp {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    align-self: flex-start;
+    margin-top: var(--space-1);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    white-space: nowrap;
+  }
+
+  /* --- Liens soulignés à flèche : le texte roule, la flèche se lève ---
+
+     Le cadre de coupe est ici un span intérieur, et non le lien : la flèche
+     doit rester DEHORS, sinon elle roulerait avec le texte.
+
+     ⚠️ Le soulignement est posé sous la ligne de base, donc hors du cadre, qui
+     le rognerait. Le `padding-bottom` lui rend la place ; la marge négative la
+     reprend pour que rien ne se décale. Le texte entrant, à 115 %, reste très
+     en dessous de ces 4px : il n'apparaît pas dans la marge ainsi ouverte. */
+  .header__roll-frame {
+    display: block;
+    overflow: hidden;
+    line-height: normal;
+    padding-bottom: var(--space-1);
+    margin-bottom: calc(var(--space-1) * -1);
+  }
+
+  /* Le soulignement va sur la ligne animée, pas sur le lien : posé sur le lien,
+     le trait resterait immobile pendant que le texte roule au-dessus. */
+  .header__overview .header__roll,
+  .header__ramp .header__roll {
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  /* « Se lever » : rotate(-45deg), le geste d'ArrowLink et des CTA. Durée et
+     courbe reprises d'ArrowLink pour que le mouvement soit le même partout. */
+  .header__arrow {
+    display: inline-block;
+    flex-shrink: 0;
+    transition: transform var(--duration-medium) var(--easing-expand);
+  }
+
+  .header__overview:hover .header__arrow,
+  .header__ramp:hover .header__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .header__overview:focus-visible .header__arrow,
+  .header__ramp:focus-visible .header__arrow {
+    transform: rotate(-45deg);
+  }
+
+  /* Pied de panneau : la rampe à gauche, le cluster confiance à droite. Il porte
+     le filet séparateur, qui était auparavant sur la rampe `--wide` — celle-ci
+     n'existant pas sur « Aides & primes », ce panneau se retrouvait sans pied.
+
+     Pas de marge en plus : l'écart du panneau la fournit déjà au-dessus du
+     filet, et le `padding` la reprend en dessous. Le filet tombe ainsi à égale
+     distance de ce qui l'encadre. */
+  .header__panel-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-top: var(--space-12);
+    border-top: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  /* Poussé à droite même quand la rampe manque : `space-between` laisserait
+     alors le cluster seul, donc collé à gauche. */
+  .header__foot-trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0 0 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .header__panel-foot .header__ramp {
+    margin-top: 0;
   }
 
   .header__actions {
@@ -393,21 +1472,87 @@ const { current = '/' } = Astro.props;
     gap: var(--space-2);
   }
 
+  /* --- Mobile : le burger est épinglé, la rangée utilitaire disparaît ---
+     Le header mobile se réduit au logo et à ce bouton. Téléphone, région et
+     langues descendent dans le panneau, qui a la place de les traiter.
+
+     `fixed` et non `sticky` : le header est absolu au-dessus du hero, donc il
+     défile avec lui — un `sticky` n'aurait rien à quoi se raccrocher. Épinglé,
+     le bouton reste joignable où qu'on soit dans la page.
+
+     Au-dessus du panneau (`z-index` supérieur) : c'est lui qui le referme. */
+  @media (max-width: 1023px) {
+    .header__utility-bar {
+      display: none;
+    }
+
+    /* La rangée ENTIÈRE est épinglée, et non le seul bouton : logo et burger
+       restent ainsi dans le même flex, donc alignés sur leur CENTRE. Les
+       épingler séparément n'aurait aligné que leurs bords hauts, or ils n'ont
+       pas la même hauteur — 26px pour le logotype, 32px pour la pastille.
+
+       Elle passe au-dessus du panneau (z-index 30 contre 20) : le logo reste
+       visible menu déplié, et le burger peut refermer. */
+    .header__main {
+      position: fixed;
+      top: var(--container-padding);
+      left: var(--container-padding);
+      right: var(--container-padding);
+      width: auto;
+      z-index: 30;
+    }
+
+    /* Épinglée, la rangée ne réserve plus sa place dans le flux. Sur une page
+       sans hero le header est `sticky` : sans cette réserve, le contenu
+       remonterait sous le logo et le burger. Même calcul que le retrait haut du
+       panneau — les deux dégagent le même objet. */
+    .header {
+      min-height: calc(var(--container-padding) * 2 + var(--size-button-icon));
+    }
+
+    /* Le logo reste visible une fois détaché du hero. La règle qui le masque
+       sert à tenir la colonne de gauche du desktop, pour que la pilule de nav
+       ne se décale pas au changement d'état — or cette pilule n'existe pas ici,
+       et le logo doit accompagner le burger en permanence. */
+    [data-over-hero].header--opaque .header__brand {
+      visibility: visible;
+    }
+  }
+
   /* Le CTA n'apparaît qu'une fois celui du hero dépassé, puis reste. */
+  /* ⚠️ `visibility` est une propriété DISCRÈTE : mise en transition avec une
+     durée, elle bascule à 50 % du parcours. Le bouton restait donc masqué la
+     première moitié du fondu, puis surgissait d'un coup à mi-opacité — la
+     moitié de l'apparition n'était jamais vue. C'est ce qui la rendait sèche,
+     bien plus que la durée.
+
+     Elle passe donc en `0s`, avec un RETARD porté par une variable : nul à
+     l'apparition (le bouton est visible dès la première image, le fondu se voit
+     en entier), égal à la durée à la disparition (il reste visible le temps de
+     s'effacer). Même parade que le panneau des méga-menus.
+
+     `--easing-expand` plutôt que `ease` : la courbe du système qui répartit le
+     mouvement au lieu de le charger au départ, et sans dépassement. Sur
+     `--duration-slow`, le geste s'installe au lieu de claquer. */
   .header__cta {
     opacity: 0;
     visibility: hidden;
-    transform: translateY(calc(var(--space-2) * -1));
+    transform: translateY(calc(var(--space-2) * -1)) scale(var(--cta-enter-scale));
+    --cta-hide-delay: var(--duration-slow);
     transition:
-      opacity var(--duration-medium) var(--easing-default),
-      transform var(--duration-medium) var(--easing-default),
-      visibility var(--duration-medium) var(--easing-default);
+      opacity var(--duration-slow) var(--easing-expand),
+      transform var(--duration-slow) var(--easing-expand),
+      visibility 0s linear var(--cta-hide-delay);
   }
 
+  /* `translateY(0) scale(1)` et non `none` : deux listes de fonctions de même
+     forme s'interpolent terme à terme, ce qui est le chemin le plus court et le
+     plus régulier. */
   .header--cta-visible .header__cta {
     opacity: 1;
     visibility: visible;
-    transform: none;
+    transform: translateY(0) scale(1);
+    --cta-hide-delay: 0s;
   }
 
   /* Repli de la nav : seule la pilule de liens se retire, la rangée
@@ -424,10 +1569,45 @@ const { current = '/' } = Astro.props;
     pointer-events: none;
   }
 
+  /* Le bloc global de `global.css` ne réduit que durées et itérations : ce qui
+     est porté par `transform` doit être neutralisé ici, explicitement. */
   @media (prefers-reduced-motion: reduce) {
     .header__cta,
-    .header__nav {
+    .header__nav,
+    .header__chevron,
+    .header__arrow {
       transform: none;
+      transition: none;
+    }
+
+    .header__overview:hover .header__arrow,
+    .header__ramp:hover .header__arrow,
+    .header__panel-sublink--all:hover .header__arrow,
+    .header__overview:focus-visible .header__arrow,
+    .header__ramp:focus-visible .header__arrow,
+    .header__panel-sublink--all:focus-visible .header__arrow {
+      transform: none;
+    }
+
+    /* La mise en retrait des voisins signale encore le survol : on retire le
+       mouvement, pas le retour visuel. */
+    .header__roll {
+      animation: none !important;
+    }
+
+    /* La coquille change de taille sans transition, le contenu paraît sans
+       fondu : le menu reste parfaitement utilisable, il ne bouge simplement
+       plus. */
+    .header__list > li.header__menu-shell {
+      transition: none;
+    }
+
+    .header__list.has-shell .header__item:has(.header__menu[open]) .header__panel-inner {
+      animation: none;
+    }
+
+    .header__list.has-shell .header__panel-menu {
+      transition: none;
     }
   }
 
@@ -442,35 +1622,184 @@ const { current = '/' } = Astro.props;
     cursor: pointer;
     background: var(--bg-glass-fill);
     backdrop-filter: blur(var(--bg-glass-blur));
-    -webkit-backdrop-filter: blur(var(--bg-glass-blur));
     color: var(--color-text-primary);
   }
 
+  /* --- Panneau mobile --- */
+
+  /* Panneau plein écran. `100dvh` et non `100vh` : sur mobile, la barre d'URL
+     se rétracte au défilement et `vh` fige la hauteur d'avant, laissant une
+     bande morte en bas. */
   .header__panel {
-    background: var(--color-white-primary);
-    border-radius: var(--radius-3);
+    position: fixed;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
     padding: var(--space-2);
+    /* Le haut dégage la place du burger, qui reste épinglé PAR-DESSUS pour
+       pouvoir refermer. */
+    padding-top: calc(var(--container-padding) * 2 + var(--size-button-icon));
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    visibility: hidden;
+    opacity: 0;
+    --panel-hide-delay: var(--duration-medium);
+    transition:
+      opacity var(--duration-medium) var(--easing-expand),
+      visibility 0s linear var(--panel-hide-delay);
   }
 
-  .header__panel-list {
+  .header__panel.is-open {
+    visibility: visible;
+    opacity: 1;
+    --panel-hide-delay: 0s;
+  }
+
+  .header__panel-list,
+  .header__panel-trust {
     list-style: none;
     margin: 0;
     padding: 0;
   }
 
+  /* Même style que les sous-liens qu'elle chapeaute : les laisser en `body-sm`
+     alors que le reste du panneau est passé en `body-nav` aurait créé une
+     nouvelle disparate, à l'intérieur du panneau mobile cette fois. */
   .header__panel-link {
     display: block;
     padding: var(--space-3);
     color: var(--color-text-primary);
     text-decoration: none;
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-body-sm-size);
-    font-weight: var(--text-body-sm-weight);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
     border-bottom: var(--border-width) solid var(--color-shade-grey);
   }
 
-  .header__panel-list li:last-child .header__panel-link {
+  .header__panel-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .header__panel-summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .header__panel-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-3) var(--space-4);
+  }
+
+  .header__panel-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* Le soulignement descend sur la ligne animée, comme pour les rampes : posé
+     sur le lien, il resterait immobile pendant que le texte roule. */
+  .header__panel-sublink--all {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    text-decoration: none;
+  }
+
+  .header__panel-sublink--all .header__roll {
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  .header__panel-sublink--all:hover .header__arrow,
+  .header__panel-sublink--all:focus-visible .header__arrow {
+    transform: rotate(-45deg);
+  }
+
+  /* Les deux listes : la dernière rangée ne porte pas de filet, sinon il
+     doublerait celui du bloc suivant. */
+  .header__panel-list > li:last-child .header__panel-link,
+  .header__panel-trust > li:last-child .header__panel-link {
     border-bottom: none;
+  }
+
+  /* Aucune mise en page propre : ce sont les rangées qui portent leur padding
+     et leur filet, comme dans la liste des piliers. Un `gap` ou un `padding`
+     ici décollerait les rangées les unes des autres et casserait la continuité
+     des filets. Seul le trait du haut subsiste, pour marquer le passage du CTA
+     aux liens de service. */
+  .header__panel-trust {
+    border-top: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  /* Burger / croix : une seule des deux icônes est rendue, selon l'état déjà
+     porté par `aria-expanded`. Pas de classe supplémentaire à tenir en JS —
+     l'attribut d'accessibilité est la source de vérité. */
+  .header__burger-icon--close,
+  .header__burger[aria-expanded='true'] .header__burger-icon--open {
+    display: none;
+  }
+
+  .header__burger[aria-expanded='true'] .header__burger-icon--close {
+    display: block;
+  }
+
+  /* Préférences du panneau : région et langue, remontées ici depuis la rangée
+     utilitaire qui n'existe plus sur mobile. */
+  .header__panel-prefs {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-top: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .header__panel-region {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    cursor: pointer;
+    color: var(--color-text-primary);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+  }
+
+  .header__panel-locales {
+    display: flex;
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .header__panel-locale {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+  }
+
+  .header__panel-locale:not(.is-active) {
+    opacity: var(--opacity-muted);
+  }
+
+  .header__panel-locale.is-active {
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
   }
 
   .header__panel-cta {
@@ -478,11 +1807,67 @@ const { current = '/' } = Astro.props;
     padding: var(--space-3);
   }
 
+  /* ⚠️ Nom DISTINCT de `header__panel-foot`, qui appartient au pied des
+     méga-menus desktop et y vaut `display: flex` en rangée. Le pied mobile
+     avait hérité de cette rangée : ses deux blocs se retrouvaient côte à côte
+     au lieu de s'empiler.
+
+     La marge automatique est passée du CTA à ce bloc : c'est lui qui ferme
+     désormais le panneau, et elle pousse en bas ce qui la porte. Sur un écran
+     court le panneau défile, et le pied vient simplement à la suite. */
+  .header__panel-bottom {
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+  }
+
   /* Sous 768px, le CTA vit dans le panneau : le garder dans la rangée
      ferait déborder logo + bouton + burger hors de l'écran. */
   @media (max-width: 767px) {
     .header__cta {
       display: none;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .header {
+      gap: var(--space-1);
+      padding-bottom: var(--space-1);
+    }
+
+    .header__utility {
+      flex-wrap: nowrap;
+      gap: var(--space-2);
+      font-size: var(--text-utility-mobile-size);
+    }
+
+    .header__utility-start,
+    .header__utility-end {
+      gap: var(--space-2);
+      min-width: 0;
+    }
+
+    .header__utility-start {
+      flex: 1;
+    }
+
+    .header__utility-end {
+      flex-shrink: 0;
+    }
+
+    .header__region {
+      display: none;
+    }
+
+    .header__phone {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header__main {
+      gap: var(--space-2);
     }
   }
 
@@ -498,9 +1883,14 @@ const { current = '/' } = Astro.props;
   }
 
   .header__link:focus-visible,
+  .header__summary:focus-visible,
   .header__utility-item:focus-visible,
   .header__burger:focus-visible,
-  .header__panel-link:focus-visible {
+  .header__panel-link:focus-visible,
+  .header__group-link:focus-visible,
+  .header__panel-sublink:focus-visible,
+  .header__overview:focus-visible,
+  .header__ramp:focus-visible {
     outline: var(--focus-ring-width) solid currentColor;
     outline-offset: var(--focus-ring-offset);
   }
@@ -514,5 +1904,38 @@ const { current = '/' } = Astro.props;
     .header__panel {
       display: none;
     }
+  }
+
+  /* Préfixe `-webkit-` isolé dans sa propre règle. Dans la même règle, le
+     minifieur n'en garde qu'une des deux et le flou disparaissait de TOUT le
+     site en production — pastilles, nav et carte du code postal. Il refuse par
+     ailleurs de le générer lui-même, la valeur contenant un `var()` qu'il ne
+     sait pas analyser. Safari antérieur à 18 en a encore besoin. */
+  .header__list::after {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-nav));
+  }
+
+  .header--opaque .header__list::after {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-nav-detached));
+  }
+
+  .header__panel-menu {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+
+  .header__list > li.header__menu-shell {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+
+  .header__list.has-shell .header__panel-menu {
+    -webkit-backdrop-filter: none;
+  }
+
+  .header__panel {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+
+  .header__burger {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur));
   }
 </style>

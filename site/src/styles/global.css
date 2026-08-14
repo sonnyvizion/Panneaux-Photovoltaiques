@@ -161,6 +161,36 @@ html.lenis body {
   }
 }
 
+/* Roulement de libellé — geste partagé.
+   Le libellé sort par le haut, réapparaît par le bas et se repose avec un léger
+   dépassement. Une seule ligne suffit : le saut du haut vers le bas se fait hors
+   du cadre de coupe, à mi-parcours, donc invisible.
+
+   Défini ici et non dans un composant : il sert les CTA (`Button.astro`) ET les
+   liens des méga-menus (`NavBar.astro`). Astro ne renomme pas les keyframes, un
+   composant pourrait donc emprunter celles d'un autre — mais ce serait une
+   dépendance implicite, qui casserait au premier découpage du CSS.
+
+   L'appelant doit fournir le cadre : `overflow: hidden` sur le parent, la ligne
+   en `display: block`. ⚠️ Et `line-height: normal` sur ce cadre — à 1, il rogne
+   les jambages des p, q et j. */
+@keyframes label-roll {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  49.9% {
+    transform: translateY(calc(var(--label-roll-lift) * -1));
+  }
+  50% {
+    transform: translateY(var(--label-roll-lift));
+    animation-timing-function: var(--easing-bounce);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

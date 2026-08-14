@@ -49,10 +49,19 @@ const {
 </header>
 
 <style>
-  /* Le texte se révèle de plus loin que les blocs qui le suivent : c'est lui
-     qu'on lit en premier, l'apparition doit s'y voir davantage. */
+  /* Les en-têtes paraissent en FONDU SEUL, sans montée — contrairement aux
+     blocs qui les suivent, qui gardent la leur.
+
+     C'est du texte : le voir glisser oblige l'œil à le suivre avant de pouvoir
+     le lire, alors qu'une carte ou une grille supporte très bien d'arriver en
+     mouvement. Le fondu laisse le titre en place et lisible d'emblée.
+
+     Mise en œuvre par la course elle-même plutôt que par une seconde animation :
+     `reveal-rise` interpole `translateY(var(--reveal-rise))` vers l'identité, et
+     une course nulle ne laisse que l'opacité. Un seul token à poser, aucun
+     mécanisme dupliqué — et la montée revient en changeant cette seule valeur. */
   .heading {
-    --reveal-rise: 64px;
+    --reveal-rise: 0px;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);

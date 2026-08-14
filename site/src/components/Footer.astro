@@ -1,8 +1,19 @@
 ---
 import Logo from './Logo.astro';
-import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES } from '../data/site';
+import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES, publishedLinks } from '../data/site';
 
 const year = new Date().getFullYear();
+
+/**
+ * Le footer reste curé : 4 liens par pilier + « Voir tout ». Il ne reprend pas
+ * l'arborescence complète des méga-menus — 42 liens en bas de page ne servent
+ * ni le lecteur ni le maillage. `publishedLinks` garantit qu'il ne diverge
+ * jamais du header sur ce qui est liable.
+ */
+const columns = PILLARS.map((pillar) => ({
+  pillar,
+  links: publishedLinks(pillar).slice(0, 4),
+}));
 ---
 
 <footer class="footer">
@@ -16,14 +27,14 @@ const year = new Date().getFullYear();
 
     {/* Plan de site complet — profondeur SEO (architecture.md, bloc 8) */}
     <nav class="footer__columns" aria-label="Plan du site">
-      {PILLARS.map((pillar) => (
+      {columns.map(({ pillar, links }) => (
         <div class="footer__column">
           {/* Pas de <h2> ici : 4 titres de colonne de footer pollueraient le
               plan de titres de la page (règle d'or #1, SEO d'abord). Le repère
               structurel est porté par le <nav aria-label>. */}
           <p class="footer__column-title">{pillar.label}</p>
           <ul class="footer__list">
-            {pillar.links.map((link) => (
+            {links.map((link) => (
               <li><a class="footer__link" href={link.href}>{link.label}</a></li>
             ))}
             <li>

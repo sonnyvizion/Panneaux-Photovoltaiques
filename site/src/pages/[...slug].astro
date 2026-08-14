@@ -1,0 +1,65 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import { PILLARS, PRIMARY_CTA, type NavLink } from '../data/site';
+
+/**
+ * Chantier temporaire — à supprimer quand les pages réelles seront écrites.
+ *
+ * La nav ne montre que ce qui est marqué `published` (voir `site.ts`), mais un
+ * lien publié doit mener quelque part : sans cette route, la refonte de la nav
+ * livrerait des 404 dans le header, exactement ce que le drapeau doit empêcher.
+ *
+ * Elle génère un placeholder pour chaque destination annoncée qui n'a pas encore
+ * son fichier. La liste est DÉRIVÉE de `site.ts` : impossible qu'elle dérive de
+ * l'arborescence. Dès qu'une vraie page est créée, Astro lui donne la priorité
+ * sur cette route attrape-tout — il suffit de l'ajouter à `REAL_PAGES`.
+ *
+ * Toutes sont en `noindex` : une page vide indexée coûte plus cher qu'une page
+ * absente (règle d'or #1).
+ */
+
+export function getStaticPaths() {
+  /* Pages qui ont déjà leur propre fichier — à ne pas générer ici. Déclaré
+     dans la fonction : Astro isole `getStaticPaths`, qui ne voit pas les
+     constantes du frontmatter. */
+  const REAL_PAGES = [
+    '/',
+    '/a-propos',
+    '/realisations',
+    '/contact',
+    '/design-system',
+    '/rentabilite-prix',
+  ];
+
+  const destinations: NavLink[] = [
+    PRIMARY_CTA,
+    ...PILLARS.flatMap((pillar) => [
+      pillar,
+      ...pillar.groups.flatMap((group) => group.links.filter((link) => link.published)),
+    ]),
+  ];
+
+  const seen = new Set(REAL_PAGES);
+
+  return destinations
+    .filter((link) => {
+      if (seen.has(link.href)) return false;
+      seen.add(link.href);
+      return true;
+    })
+    .map((link) => ({
+      params: { slug: link.href.replace(/^\//, '') },
+      props: { label: link.label },
+    }));
+}
+
+const { label } = Astro.props;
+---
+
+<BaseLayout title={`${label} — Belgreen`} noindex>
+  <Section>
+    <h1>{label}</h1>
+    <p>Page en cours de rédaction.</p>
+  </Section>
+</BaseLayout>

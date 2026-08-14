@@ -24,12 +24,17 @@ export function getScrollDirection(
 /**
  * La nav se replie uniquement quand on descend, une fois le haut de page
  * quitté. Elle reste visible en haut de page et à chaque remontée.
+ *
+ * `menuOpen` la fige : une barre qui se replie en emportant un méga-menu
+ * ouvert se lit comme un bug, pas comme une économie de place.
  */
 export function shouldHideNav(
   direction: ScrollDirection,
   currentY: number,
+  menuOpen = false,
   revealOffset = 120,
 ): boolean {
+  if (menuOpen) return false;
   if (currentY <= revealOffset) return false;
   return direction === 'down';
 }

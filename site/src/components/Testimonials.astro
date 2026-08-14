@@ -99,7 +99,6 @@ const PROGRESS_SEGMENTS = 3;
       tabindex="0"
       role="region"
       aria-label="Avis de clients, faites défiler horizontalement"
-      data-lenis-prevent
     >
       {testimonials.map((item) => (
         <li class="testimonials__item">
@@ -141,7 +140,9 @@ const PROGRESS_SEGMENTS = 3;
     getNextSegment,
     getProgressIndex,
     getSegmentTarget,
+    shouldYieldToPage,
   } from '../scripts/carouselProgress';
+  import { getSmoothScroll } from '../scripts/smoothScroll';
 
   /** Cadence de l'avance automatique. */
   const AUTOPLAY_DELAY = 5000;
@@ -192,6 +193,72 @@ const PROGRESS_SEGMENTS = 3;
         behavior: reduced.matches ? 'auto' : 'smooth',
       });
     };
+
+    /* Course cumulée avant de changer de lot, et verrou le temps que le
+       défilement doux se pose. */
+    const WHEEL_STEP = 60;
+    const WHEEL_LOCK = 600;
+    let wheelTravel = 0;
+    let wheelLocked = false;
+
+    /* Deux corrections dans un même écouteur, non passif : `preventDefault`
+       est le seul moyen d'empêcher l'accrochage du geste par le rail.
+
+       1. Geste oblique, et seulement sans Lenis. Chrome attribue un geste
+          entier au premier défileur qu'il accroche : un mouvement de trackpad
+          légèrement de travers était happé par le rail, qui ne défile pas
+          verticalement, et la page se figeait. Lenis, lui, neutralise les
+          gestes avant qu'ils n'atteignent le rail — d'où le retrait de
+          `data-lenis-prevent`, qui n'existait que pour le défilement
+          horizontal natif, aujourd'hui remplacé par le pas-à-pas ci-dessous.
+
+       2. Geste horizontal. Les points d'accroche sont posés par lot, donc à
+          près de 1500px l'un de l'autre. En `mandatory`, tout geste qui ne
+          franchit pas la moitié de cet écart est ramené à son point de départ
+          — le rail paraissait bloqué. On traduit donc le geste en changement
+          de lot, en réutilisant le même `goTo` que les puces. Le défilement
+          reste natif, on ne fait que choisir la destination (règle d'or #5). */
+    rail.addEventListener(
+      'wheel',
+      (event) => {
+        if (shouldYieldToPage(event.deltaX, event.deltaY)) {
+          /* Quand Lenis tourne, il neutralise déjà tous les gestes de la page
+             et le rail ne peut pas les accrocher : ne rien faire ici, le
+             renvoyer à la main relançait son animation à chaque événement et
+             le défilement devenait deux fois plus lent au-dessus des avis. */
+          if (getSmoothScroll()) return;
+          event.preventDefault();
+          window.scrollBy(0, event.deltaY);
+          return;
+        }
+
+        // Geste vertical pur : il n'accroche rien, le natif fait déjà le bon
+        // travail.
+        if (event.deltaX === 0) return;
+
+        event.preventDefault();
+        if (wheelLocked) return;
+
+        wheelTravel += event.deltaX;
+        if (Math.abs(wheelTravel) < WHEEL_STEP) return;
+
+        const direction = wheelTravel > 0 ? 1 : -1;
+        wheelTravel = 0;
+        const next = Math.min(
+          Math.max(current + direction, 0),
+          steps.length - 1,
+        );
+        if (next === current) return;
+
+        stopAutoplay();
+        goTo(next);
+        wheelLocked = true;
+        window.setTimeout(() => {
+          wheelLocked = false;
+        }, WHEEL_LOCK);
+      },
+      { passive: false },
+    );
 
     rail.addEventListener(
       'scroll',
@@ -279,9 +346,17 @@ const PROGRESS_SEGMENTS = 3;
     scroll-snap-type: x mandatory;
     /* Les cartes s'accrochent sur la gouttière, pas sur le bord de l'écran. */
     scroll-padding-inline: var(--gutter);
+    /* Explicitement `hidden` : ne poser que `overflow-x: auto` force l'autre
+       axe hors de `visible`, et le rail devient un conteneur de défilement
+       VERTICAL de course nulle. Sur macOS, Chrome réserve son rebond élastique
+       au défileur le plus interne sous le curseur : la section montait puis
+       redescendait avant que la page ne reprenne la main. Rien ne dépasse en
+       hauteur, `hidden` ne rogne donc rien. */
+    overflow-y: hidden;
     overscroll-behavior-x: contain;
-    /* Explicitement `auto` en vertical. `data-lenis-prevent` fait poser à Lenis
-       un `overscroll-behavior: contain` en raccourci, donc sur les DEUX axes :
+    /* Sans objet depuis le retrait de `data-lenis-prevent`, conservé comme
+       garde-fou si l'attribut revenait : Lenis pose alors un
+       `overscroll-behavior: contain` en raccourci, donc sur les DEUX axes :
        le rail absorbait alors la molette verticale sans la transmettre à la
        page, qui restait bloquée dès qu'on le survolait. */
     overscroll-behavior-y: auto;
@@ -342,11 +417,11 @@ const PROGRESS_SEGMENTS = 3;
 
   .testimonials__quote {
     margin: 0;
-    font-family: var(--text-body-sm-family);
+    font-family: var(--text-body-light-family);
     font-size: var(--text-body-sm-size);
-    font-weight: var(--text-body-sm-weight);
+    font-weight: var(--text-body-light-weight);
     line-height: var(--text-body-sm-line-height);
-    letter-spacing: var(--text-body-sm-tracking);
+    letter-spacing: var(--text-body-light-tracking);
   }
 
   .testimonials__rating {
@@ -391,6 +466,11 @@ const PROGRESS_SEGMENTS = 3;
   }
 
   @media (min-width: 768px) {
+    .testimonials__quote {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+
     /* Trois cartes par écran, les deux écarts déduits pour qu'elles tombent
        juste : la quatrième commence exactement au bord, sans dépassement. */
     /* Trois cartes dans la zone de contenu : `100%` y désigne déjà la largeur

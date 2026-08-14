@@ -72,7 +72,7 @@ import teamImage from '../assets/team/team_hero.webp';
     border-radius: var(--radius-panel);
     overflow: hidden;
     isolation: isolate;
-    min-height: var(--space-128);
+    min-height: 75vh;
   }
 
   .direct__media,
@@ -154,10 +154,17 @@ import teamImage from '../assets/team/team_hero.webp';
   .direct__card-text {
     margin: 0;
     font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
+    font-size: var(--text-body-sm-size);
     font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
+    line-height: var(--text-body-sm-line-height);
     letter-spacing: var(--text-body-light-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .direct__card-text {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
   }
 
   @media (min-width: 1024px) {

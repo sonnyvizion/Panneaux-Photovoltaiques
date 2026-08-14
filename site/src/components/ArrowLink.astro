@@ -38,7 +38,7 @@ const { href, variant = 'lime' } = Astro.props;
     line-height: var(--text-body-sm-line-height);
     letter-spacing: var(--text-body-sm-tracking);
     color: var(--color-text-primary);
-    transition: opacity var(--duration-fast) var(--easing-default);
+    transition: opacity var(--duration-medium) var(--easing-expand);
   }
 
   .arrow-link__label {
@@ -69,7 +69,10 @@ const { href, variant = 'lime' } = Astro.props;
   /* Même geste que sur les CTA : la flèche se lève à 45°. La classe n'est pas
      scopée par hasard — la carte parente la pilote aussi au survol. */
   .arrow-link__arrow {
-    transition: transform var(--duration-fast) var(--easing-default);
+    /* Même registre que l'ouverture des piliers, seul endroit où ce composant
+       est utilisé : à 150ms en `ease`, le relevé de la flèche claquait au
+       milieu d'un déploiement devenu lent. */
+    transition: transform var(--duration-medium) var(--easing-expand);
   }
 
   .arrow-link:hover {
@@ -83,6 +86,26 @@ const { href, variant = 'lime' } = Astro.props;
 
   .arrow-link:focus-visible .arrow-link__arrow {
     transform: rotate(-45deg);
+  }
+
+  @media (max-width: 767px) {
+    .arrow-link {
+      transition: none;
+    }
+
+    .arrow-link:hover {
+      opacity: 1;
+    }
+
+    .arrow-link__arrow {
+      transition: none;
+    }
+
+    .arrow-link:hover .arrow-link__arrow,
+    .arrow-link:active .arrow-link__arrow,
+    .arrow-link:focus-visible .arrow-link__arrow {
+      transform: none;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {

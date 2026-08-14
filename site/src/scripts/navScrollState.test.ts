@@ -41,4 +41,12 @@ describe('shouldHideNav', () => {
     expect(shouldHideNav('down', 0)).toBe(false);
     expect(shouldHideNav('down', 120)).toBe(false);
   });
+
+  it('keeps the nav in place while a menu is open', () => {
+    expect(shouldHideNav('down', 500, true)).toBe(false);
+  });
+
+  it('hides again once the menu is closed', () => {
+    expect(shouldHideNav('down', 500, false)).toBe(true);
+  });
 });
