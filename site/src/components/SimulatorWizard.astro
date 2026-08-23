@@ -1,0 +1,248 @@
+---
+import Button from './Button.astro';
+import { progressLabel, type WizardKind, type WizardStep } from '../scripts/wizard';
+
+/**
+ * La coquille du parcours : le rail, la barre de progression, la navigation.
+ * Servie DEUX FOIS — les cinq questions, puis les cinq options d'affinage.
+ *
+ * ⚠️ LE GESTE EST EN CSS, PAS EN JS. `scroll-snap-type: x mandatory` sur le rail
+ * et `scroll-snap-stop: always` sur chaque étape : le swipe mobile ne coûte pas
+ * une ligne de script, et il se comporte comme le système, pas comme une
+ * imitation.
+ *
+ * ⚠️ SANS JAVASCRIPT, TOUT RESTE ATTEIGNABLE. « Suivant » est un lien d'ancre
+ * (`#etape-2`) : un fragment fait défiler son conteneur, y compris horizontal.
+ * Le script le promeut en bouton verrouillé tant que la question n'a pas de
+ * réponse. C'est la règle d'or #1 appliquée à un parcours : le contenu d'abord,
+ * l'amélioration ensuite.
+ *
+ * ⚠️ Les segments de la barre sont des LIENS, pas des points décoratifs : sans
+ * barre de défilement visible, ils sont le seul moyen de revenir en arrière à la
+ * souris. Le script neutralise ceux des étapes non encore atteintes — on revient
+ * sur ses pas, on ne saute pas des questions.
+ */
+interface Props {
+  kind: WizardKind;
+  steps: WizardStep[];
+  /** Ce que porte le bouton sur la dernière étape. */
+  finalLabel: string;
+  /** Libellé de la zone pour les lecteurs d'écran. */
+  label: string;
+}
+
+const { kind, steps, finalLabel, label } = Astro.props;
+const second = steps[1] ?? steps[0];
+---
+
+<div class="wizard" data-wizard={kind} data-wizard-final={finalLabel}>
+  {/* `tabindex` : une zone défilante doit rester atteignable au clavier. */}
+  <ol class="wizard__rail" data-wizard-rail tabindex="0" role="group" aria-label={label}>
+    <slot />
+  </ol>
+
+  {/* ⚠️ L'AVANCE D'ABORD, le repère ensuite. Le bouton se place immédiatement
+      sous la question : c'est le geste attendu, il ne doit pas se trouver
+      derrière la barre de progression, qui n'est qu'un repère. */}
+  {/* ⚠️ Deux VRAIS boutons du système, pas une pilule maison et un lien : même
+      pastille, même roulement du libellé, même inversion au survol. Le recul
+      prend la variante sombre et la flèche miroir — il se lit d'un coup d'œil
+      comme l'inverse de l'avance, sans lui faire concurrence en couleur.
+
+      Le libellé se réécrit dans `.btn__label-line`, jamais sur la pilule :
+      l'écraser effacerait la pastille et le cadre de coupe. */}
+  <div class="wizard__nav">
+    <Button variant="ink" back href={`#etape-${steps[0].id}`} data-wizard-prev hidden>
+      Précédent
+    </Button>
+    <Button wrap href={`#etape-${second.id}`} data-wizard-next>Suivant</Button>
+  </div>
+
+  <div class="wizard__footer">
+    <p class="wizard__count" data-wizard-count>{progressLabel(0, steps.length, kind)}</p>
+
+    <ol class="wizard__bar">
+      {steps.map((step, index) => (
+        <li class="wizard__bar-item">
+          <a
+            class="wizard__seg"
+            href={`#etape-${step.id}`}
+            data-wizard-seg={step.id}
+            aria-current={index === 0 ? 'step' : undefined}
+          >
+            <span class="visually-hidden">{step.label}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </div>
+</div>
+
+<style>
+  .wizard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* ⚠️ `display: flex` bat la règle `[hidden] { display: none }` du navigateur.
+     Sans cette remise à zéro, un parcours masqué reste visible. */
+  /* ⚠️ Le même piège, pour la troisième fois : `display: flex` l'emporte sur la
+     règle `[hidden] { display: none }` du navigateur. Ici c'était le segment de
+     l'étape « code postal » qui restait affiché alors que le compteur disait
+     déjà « sur 5 » — une barre à six traits pour cinq questions.
+     TOUT bloc qu'on masque ET qu'on met en flex doit figurer dans cette liste. */
+  .wizard[hidden],
+  .wizard__bar-item[hidden],
+  .wizard__seg[hidden],
+  .wizard__nav :global(.btn[hidden]) {
+    display: none;
+  }
+
+  .wizard__rail {
+    display: flex;
+    gap: var(--gap-cards);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    /* ⚠️ Explicitement `hidden` : poser `overflow-x: auto` seul force l'autre axe
+       hors de `visible`, et le rail devient un défileur VERTICAL de course nulle.
+       Sur macOS, Chrome réserve alors son rebond élastique à ce défileur interne
+       et la page se fige au survol. Piège déjà payé sur `Testimonials`. */
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    /* En raccourci, `contain` s'appliquerait aux DEUX axes et le rail avalerait
+       la molette verticale sans la rendre à la page. */
+    overscroll-behavior-y: auto;
+    /* La barre native ferait doublon avec l'indicateur. */
+    scrollbar-width: none;
+  }
+
+  .wizard__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .wizard__rail:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-card);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wizard__rail {
+      scroll-behavior: auto;
+    }
+  }
+
+  /* --- Le pied : compteur, barre, navigation --- */
+  .wizard__footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .wizard__count {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+  }
+
+  .wizard__bar {
+    display: flex;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .wizard__bar-item {
+    flex: 1;
+    display: flex;
+  }
+
+  /* La cible tactile fait 44 px de haut, le trait n'en fait que 4 : le repère
+     reste fin sans devenir impossible à viser au doigt. */
+  .wizard__seg {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    min-height: var(--size-wizard-hit);
+  }
+
+  .wizard__seg::before {
+    content: '';
+    flex: 1;
+    height: var(--height-wizard-seg);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  /* Étape franchie : le trait est plein. Étape courante : plein et accentué. */
+  .wizard__seg[data-done]::before {
+    background: var(--color-text-primary);
+  }
+
+  .wizard__seg[aria-current='step']::before {
+    background: var(--color-main-green);
+  }
+
+  /* Les étapes non atteintes ne sont pas des raccourcis. */
+  .wizard__seg[aria-disabled='true'] {
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .wizard__seg:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-pill);
+  }
+
+  .wizard__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .wizard__nav :global(.btn) {
+    transition: opacity var(--duration-fast) var(--easing-default);
+  }
+
+  /* L'avance est poussée à droite, le recul reste à gauche : quand « Précédent »
+     est masqué, l'avance garde sa place au lieu de glisser au centre. */
+  .wizard__nav :global([data-wizard-next]) {
+    margin-left: auto;
+  }
+
+  /* Verrouillé tant que la question n'a pas de réponse. `aria-disabled` et non
+     `disabled` : c'est un lien, et il doit rester annonçable. */
+  .wizard__nav :global(.btn[aria-disabled='true']) {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wizard__seg::before,
+    .wizard__nav :global(.btn) {
+      transition: none;
+    }
+  }
+
+  /* Sur téléphone l'avance prend la largeur restante : une pilule au libellé
+     court flotterait dans le vide à droite. Le recul, lui, garde sa taille —
+     deux boutons à parts égales donneraient autant de poids au retour en
+     arrière qu'à la progression. */
+  @media (max-width: 767px) {
+    .wizard__nav :global([data-wizard-next]) {
+      flex: 1;
+    }
+  }
+</style>

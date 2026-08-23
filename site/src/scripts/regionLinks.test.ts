@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { isSimulatorLink, withRegion } from './regionLinks';
+import {
+  isSimulatorLink,
+  regionFromPostalCode,
+  withRegion,
+} from './regionLinks';
 
 describe('withRegion', () => {
   it('adds the region to a bare simulator link', () => {
@@ -66,5 +70,29 @@ describe('isSimulatorLink', () => {
     expect(isSimulatorLink('/comprendre')).toBe(false);
     expect(isSimulatorLink('https://example.com/simulateur')).toBe(false);
     expect(isSimulatorLink('#faq')).toBe(false);
+  });
+});
+
+describe('regionFromPostalCode', () => {
+  it('range les préfixes belges dans les trois régions', () => {
+    expect(regionFromPostalCode('1000')).toBe('bruxelles');
+    expect(regionFromPostalCode('4000')).toBe('wallonie');
+    expect(regionFromPostalCode('7000')).toBe('wallonie');
+    expect(regionFromPostalCode('2000')).toBe('flandre');
+    expect(regionFromPostalCode('9000')).toBe('flandre');
+  });
+
+  /* Régression : `'4567'.includes('')` vaut `true`, donc une chaîne vide
+     renvoyait « wallonie ». Un code postal doit être quatre chiffres, point. */
+  it('refuse tout ce qui n’est pas quatre chiffres', () => {
+    expect(regionFromPostalCode('')).toBeNull();
+    expect(regionFromPostalCode('  ')).toBeNull();
+    expect(regionFromPostalCode('100')).toBeNull();
+    expect(regionFromPostalCode('10000')).toBeNull();
+    expect(regionFromPostalCode('abcd')).toBeNull();
+  });
+
+  it('tolère les espaces autour du code', () => {
+    expect(regionFromPostalCode(' 1050 ')).toBe('bruxelles');
   });
 });

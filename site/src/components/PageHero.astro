@@ -64,8 +64,14 @@ const { badge, title, answer, cta, image, imageAlt = '', placeholder } = Astro.p
       <Image
         src={image}
         alt={imageAlt}
-        width={1440}
-        widths={[640, 768, 1024, 1280, 1440]}
+        {/* ⚠️ L'échelle monte à 2560, comme le hero de la home — surtout pas
+            1440. Cette bande est en `sizes="100vw"` : sur un écran Retina de
+            1440px de large, le navigateur réclame ~2880px réels. Plafonnée à
+            1440, la plus grande variante disponible était étirée au double et
+            la photo paraissait pixellisée sur tous les portables récents.
+            Les sources livrées font 2560px : la matière existe. */}
+        width={2560}
+        widths={[768, 1280, 1920, 2560]}
         sizes="100vw"
         format="webp"
         quality={72}

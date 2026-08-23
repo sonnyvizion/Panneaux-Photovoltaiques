@@ -1,0 +1,151 @@
+import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+
+/**
+ * Contenu de la page « Installation en copropriété »
+ * (`/aides-primes/copropriete`).
+ *
+ * Page 1.11 du cahier de construction. Texte repris tel quel.
+ *
+ * Module : illustration statique (famille E) — le schéma du processus de
+ * décision en assemblée générale. L'image n'est pas encore livrée : le module
+ * porte un emplacement étiqueté, au nom conventionnel du cahier
+ * (`X.X-nom-page-module.jpg`).
+ *
+ * ⚠️ Le cahier note pour la FAQ « mêmes questions que ci-dessus, reformulées en
+ * Q/R courtes ». Les réponses ont donc été condensées depuis « Creuser le
+ * sujet » — c'est une reformulation, pas du contenu neuf.
+ */
+
+export const HERO = {
+  badge: 'Aides & Primes',
+  title: 'Installer des panneaux solaires en copropriété : comment ça se décide',
+  answer:
+    "Installer des panneaux solaires en copropriété est possible, mais nécessite l'accord de l'assemblée générale des copropriétaires — la toiture étant une partie commune.",
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+  imageAlt:
+    'Immeuble à appartements dont la toiture plate est équipée de panneaux solaires',
+} as const;
+
+export const LEAD = {
+  text: "Ce n'est pas plus compliqué qu'une autre rénovation de toiture, mais ça passe par une étape que les propriétaires individuels n'ont pas : convaincre l'assemblée.",
+  note: 'Le parcours de décision, en un coup d’œil.',
+} as const;
+
+export const MODULE = {
+  title: 'Du projet au vote en assemblée générale',
+  caption:
+    "La toiture est une partie commune : c'est l'assemblée générale qui autorise l'installation, et le règlement de copropriété qui fixe la majorité requise et la répartition de l'électricité produite.",
+  bridgeLabel: 'Chiffrez le projet avant d’en parler en AG',
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+  /* ⚠️ Image non livrée. Nommage conventionnel du cahier de construction. */
+  placeholder: '1.11-copropriete-module.jpg — schéma du processus de décision en assemblée générale',
+} as const;
+
+export const ESSENTIALS_COPY: SectionCopy = {
+  overline: 'En bref',
+  title: 'Les trois points à trancher',
+  intro: 'Ce qu’il faut savoir avant d’en parler en assemblée générale.',
+};
+
+export const FIGURES: Figure[] = [
+  {
+    label: 'Règlement de copropriété',
+    value: 'À vérifier',
+    note: 'il doit autoriser l’installation et la répartition',
+    tone: 'lime',
+  },
+  {
+    label: 'Permis d’urbanisme',
+    value: 'Pas requis',
+    note: 'si l’aspect extérieur n’est pas modifié visiblement',
+    tone: 'grey',
+  },
+  {
+    label: 'Répartition',
+    value: 'À définir',
+    note: 'entre copropriétaires participants',
+    tone: 'ink',
+  },
+];
+
+export const FACTS: Fact[] = [
+  {
+    title: 'Qui finance',
+    text: 'Typiquement, seuls les copropriétaires participants financent l’installation et se partagent la production.',
+  },
+  {
+    title: 'Le rôle du syndic',
+    text: 'C’est lui qui inscrit le point à l’ordre du jour et qui connaît la majorité requise par votre règlement.',
+  },
+];
+
+export const BRIDGES: Bridge[] = [
+  {
+    title: 'Combien coûte l’installation à répartir ?',
+    text: 'Un budget clair est le meilleur argument en assemblée générale.',
+    cta: { label: 'Voir les prix 2026', href: '/rentabilite-prix' },
+  },
+  {
+    title: 'Quelles aides pour un immeuble en Wallonie ?',
+    text: 'Prêt à taux 0 %, TVA réduite, tarif prosumer : les règles régionales s’appliquent aussi en copropriété.',
+    cta: { label: 'Voir les aides en Wallonie', href: '/aides-primes/wallonie' },
+  },
+];
+
+export const TOPICS_COPY: SectionCopy = {
+  overline: 'Pour aller plus loin',
+  title: 'Creuser le sujet',
+  intro: 'Les questions pratiques avant l’assemblée générale.',
+};
+
+export const TOPICS: TopicCard[] = [
+  {
+    title: 'Qui décide : l’unanimité ou une majorité suffit ?',
+    text: 'Ça dépend du règlement de copropriété et du type de décision (installation simple vs modification structurelle) — à vérifier avec le syndic.',
+    accent: true,
+  },
+  {
+    title: 'Comment répartir l’électricité produite ?',
+    text: 'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun — à définir en amont dans le règlement.',
+  },
+  {
+    title: 'Faut-il un permis d’urbanisme en copropriété ?',
+    text: "Les mêmes règles qu'ailleurs s'appliquent : pas de permis si l'aspect extérieur visible depuis la rue n'est pas modifié.",
+  },
+  {
+    title: 'Qui paie si tous les copropriétaires ne participent pas ?',
+    text: "Seuls les copropriétaires participants financent l'installation et se partagent l'électricité produite, typiquement.",
+  },
+];
+
+/* ⚠️ Reformulations courtes des quatre entrées ci-dessus — c'est ce que
+   demande le cahier pour cette page, pas des questions nouvelles. */
+export const FAQ: FaqItem[] = [
+  {
+    question: 'Qui décide en copropriété ?',
+    answer:
+      'L’assemblée générale. La majorité requise dépend de votre règlement de copropriété et de la nature des travaux — votre syndic peut la confirmer.',
+    open: true,
+  },
+  {
+    question: 'Comment répartir l’électricité produite ?',
+    answer:
+      'Du partage égal à une répartition proportionnelle à la participation financière : le modèle se fixe en amont, dans le règlement.',
+  },
+  {
+    question: 'Faut-il un permis d’urbanisme en copropriété ?',
+    answer:
+      'Pas si l’aspect extérieur visible depuis la rue reste inchangé — la règle est la même que pour une maison individuelle.',
+  },
+  {
+    question: 'Qui paie si tous les copropriétaires n’y participent pas ?',
+    answer:
+      'Les copropriétaires participants financent seuls l’installation et se partagent la production.',
+  },
+];
+
+export const FINAL_CTA = {
+  title: 'Discutons de votre projet en copropriété',
+  text: "On vous aide à préparer le dossier pour l'assemblée générale. Vous parlez directement à l'équipe qui installe.",
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+} as const;

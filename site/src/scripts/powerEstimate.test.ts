@@ -6,6 +6,7 @@ import {
   POWER_STEP,
   clampPower,
   estimate,
+  monthlyProduction,
   formatPower,
   powerRatio,
 } from './powerEstimate';
@@ -140,5 +141,37 @@ describe('powerRatio', () => {
     const ratio = powerRatio(POWER_DEFAULT);
     expect(ratio).toBeGreaterThan(0);
     expect(ratio).toBeLessThan(100);
+  });
+});
+
+describe('monthlyProduction', () => {
+  it('somme exactement à la production annuelle', () => {
+    for (const kwc of [POWER_MIN, POWER_DEFAULT, POWER_MAX]) {
+      const total = monthlyProduction(kwc).reduce((s, m) => s + m, 0);
+      expect(total).toBeCloseTo(estimate(kwc).production, 6);
+    }
+  });
+
+  it('rend douze mois, tous positifs', () => {
+    const months = monthlyProduction(POWER_DEFAULT);
+    expect(months).toHaveLength(12);
+    for (const m of months) expect(m).toBeGreaterThan(0);
+  });
+
+  /* Le repère sur lequel la courbe est calibrée : la page « Rendement &
+     production » annonce « 5 à 6 fois plus faible en décembre qu'en juillet ». */
+  it('respecte le rapport été/hiver publié par la page', () => {
+    const months = monthlyProduction(POWER_DEFAULT);
+    const ratio = months[6] / months[11];
+    expect(ratio).toBeGreaterThanOrEqual(5);
+    expect(ratio).toBeLessThanOrEqual(6);
+  });
+
+  it('culmine en été et creuse en hiver', () => {
+    const months = monthlyProduction(POWER_DEFAULT);
+    const peak = months.indexOf(Math.max(...months));
+    const trough = months.indexOf(Math.min(...months));
+    expect([5, 6]).toContain(peak);
+    expect([11, 0]).toContain(trough);
   });
 });

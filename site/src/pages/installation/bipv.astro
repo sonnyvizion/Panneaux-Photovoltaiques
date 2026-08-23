@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import FigureModule from '../../components/FigureModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.10-integre-toiture-bipv-hero.webp';
+import Coin from '../../assets/icons/bipv/coin.svg';
+import ChartLine from '../../assets/icons/bipv/chart-line.svg';
+import BuildingMonument from '../../assets/icons/bipv/building-monument.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-bipv';
+/**
+ * Page 2.10 — « BIPV ».
+ * ⚠️ Note dev du cahier non traitée ici (coefficient de prix BIPV du
+ * simulateur) : voir l'en-tête du fichier de données. Aucun montant n'est
+ * avancé sur cette page, précisément pour cette raison.
+ */
+---
+<BaseLayout title="BIPV : panneaux solaires intégrés à la toiture | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, ChartLine, BuildingMonument][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le BIPV." tone="grey" id="faq-bipv" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

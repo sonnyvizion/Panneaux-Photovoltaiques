@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import FigureModule from '../../components/FigureModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.14-balcon-hero.webp';
+import Key from '../../assets/icons/balcon/key.svg';
+import CalculatorIcon from '../../assets/icons/balcon/calculator.svg';
+import FileText from '../../assets/icons/balcon/file-text.svg';
+import Truck from '../../assets/icons/balcon/truck.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-balcon';
+
+/**
+ * Page 2.14 — « Balcon ».
+ *
+ * ⚠️ SEULE PAGE DU SITE QUI VISE LES LOCATAIRES. Le CTA du hero ne promet pas
+ * d'estimation — il descend vers les conditions. Le pont final est CONDITIONNEL
+ * (« si vous êtes propriétaire »), sur consigne du cahier : ce public n'est pas
+ * la cible du funnel devis. Voir l'en-tête du fichier de données.
+ *
+ * ⚠️ Le module reprend la photo du hero : l'illustration du kit n'est pas livrée.
+ */
+---
+<BaseLayout title="Panneau solaire de balcon : le kit plug & play | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} image={heroImage} />
+  <div id="essentiel-balcon">
+    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  </div>
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Key, CalculatorIcon, FileText, Truck][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les kits de balcon." tone="grey" id="faq-balcon" />
+  <FinalCta overline={FINAL_CTA.overline} title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

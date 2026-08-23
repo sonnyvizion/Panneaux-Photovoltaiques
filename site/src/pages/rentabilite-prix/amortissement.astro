@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import PaybackTimeline from '../../components/PaybackTimeline.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import ArrowsSplit from '../../assets/icons/amortissement-roi/arrows-split.svg';
+import MapPin from '../../assets/icons/amortissement-roi/map-pin.svg';
+import Flag from '../../assets/icons/amortissement-roi/flag.svg';
+import Coin from '../../assets/icons/amortissement-roi/coin.svg';
+import heroImage from '../../assets/pages/3.3-amortissement-roi-hero.webp';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TIMELINE, TIMELINE_COPY, TOPICS, TOPICS_COPY,
+} from '../../data/pages/rentabilite-amortissement';
+
+/**
+ * Page 3.3 — « Amortissement / ROI ».
+ *
+ * Seule instance de `PaybackTimeline` (famille H). La courbe se trace au
+ * défilement en CSS pur, sans entrée utilisateur : le module illustre le cas
+ * standard calculé au build, le simulateur reste le seul à calculer.
+ *
+ * ⚠️ Cette page ne contient AUCUN chiffre écrit à la main — ils viennent tous de
+ * `savings.ts`, qui dérive lui-même du prix, du tarif prosumer et des
+ * certificats verts déjà affichés ailleurs sur le site. Des tests vérifient que
+ * le résultat tombe dans les « 7 à 12 ans » annoncés par le texte.
+ */
+---
+<BaseLayout title="Amortissement panneaux solaires : combien d'années ? | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <PaybackTimeline
+    overline={TIMELINE_COPY.overline}
+    title={TIMELINE_COPY.title}
+    intro={TIMELINE_COPY.intro}
+    bridgeLabel={TIMELINE.bridgeLabel}
+    cta={TIMELINE.cta}
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [ArrowsSplit, MapPin, Flag, Coin][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la rentabilité." tone="default" id="faq-amortissement" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />
+</BaseLayout>

@@ -1,0 +1,26 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import LeadForm from '../components/LeadForm.astro';
+
+/**
+ * Écran G du brief — la sortie la moins engageante : l'e-mail seul.
+ *
+ * ⚠️ Aucun tri de profil ici, et c'est délibéré : c'est la porte qui reste
+ * ouverte au locataire comme à celui qui « se renseigne ». Demander un statut
+ * pour envoyer un PDF serait un filtrage sans objet.
+ */
+---
+
+<BaseLayout title="Recevoir mon estimation par e-mail — Belgreen" noindex>
+  <Section tone="grey">
+    <SectionHeading
+      overline="Garder votre estimation"
+      overlineTone="tertiary"
+      title="Recevez votre estimation par e-mail"
+      intro="Vos chiffres, envoyés en un message — pour les relire à tête reposée ou les partager. Une seule adresse suffit, et nous n’en faisons rien d’autre."
+    />
+    <LeadForm variant="rapport" submitLabel="Recevoir mon estimation" />
+  </Section>
+</BaseLayout>

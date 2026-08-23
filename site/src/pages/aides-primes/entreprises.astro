@@ -1,0 +1,39 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/1.10-guide-entreprises-hero.webp';
+import Receipt from '../../assets/icons/guide-entreprises/receipt.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/aides-primes-entreprises';
+
+/**
+ * Page 1.10 du cahier de construction — « Guide entreprises ».
+ *
+ * ⚠️ CONTENU FISCAL INCOMPLET, SUR DÉCISION EXPLICITE — voir l'en-tête de
+ * `data/pages/aides-primes-entreprises.ts`. Le cahier marque trois passages
+ * « [À VALIDER] » ; ils ne sont pas rendus plutôt qu'inventés. La page est en
+ * `hidden` dans `site.ts` : elle se visite, elle ne se liste pas encore.
+ *
+ * ⚠️ Le CTA de cette page est `/contact`, pas `/simulateur` : le simulateur est
+ * calibré sur le résidentiel, l'y envoyer produirait un chiffre faux. C'est le
+ * cahier qui fixe ce pont (« Parlons de votre projet professionnel »).
+ */
+const TOPIC_ICONS = [Receipt];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout title="Panneaux solaires pour entreprises en Belgique 2026 | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent côté professionnel." tone="grey" id="faq-entreprises" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

@@ -58,6 +58,21 @@ if (!sourceDir) {
   process.exit(1);
 }
 
+/**
+ * Le filtre `--only` s'arrête à la fin du numéro de page.
+ *
+ * ⚠️ Un `startsWith` nu ne suffit pas : `--only=1.1` attrapait aussi
+ * `1.10-guide-entreprises` et `1.11-copropriete`, et déposait donc dans le dépôt
+ * les photos de deux pages qui n'existent pas encore — précisément la fuite que
+ * ce drapeau sert à empêcher. Le préfixe ne vaut que s'il n'est pas suivi d'un
+ * chiffre ou d'un point.
+ */
+function matchesOnly(name) {
+  if (!name.startsWith(only)) return false;
+  const next = name[only.length];
+  return next === undefined || !/[\d.]/.test(next);
+}
+
 async function mtime(path) {
   try {
     return (await stat(path)).mtimeMs;
@@ -76,7 +91,7 @@ const entries = await readdir(sourceDir, { withFileTypes: true });
 const candidates = new Map();
 for (const entry of entries) {
   if (!entry.isFile()) continue;
-  if (only && !entry.name.startsWith(only)) continue;
+  if (only && !matchesOnly(entry.name)) continue;
   const ext = extname(entry.name).toLowerCase();
   const rank = SOURCE_EXTENSIONS.indexOf(ext);
   if (rank === -1) continue;

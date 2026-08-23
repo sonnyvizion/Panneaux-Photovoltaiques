@@ -1,6 +1,7 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import logo from '../assets/brand/Belgreen-logo.webp';
+import logoMobile from '../assets/brand/logo_mobile.png';
 
 /**
  * Logotype Belgreen : bloc complet (pictogramme soleil + nom), fourni par le
@@ -8,6 +9,15 @@ import logo from '../assets/brand/Belgreen-logo.webp';
  * claire/sombre, le vert et le jaune tiennent sur les deux fonds du site.
  *
  * La taille se pilote par la hauteur, la largeur suit le ratio 500×95.
+ *
+ * ⚠️ En tête de page ET sous 1024px, c'est le PICTOGRAMME SEUL qui est servi
+ * (`logo_mobile.png`, 34×33). Ce n'est pas qu'une affaire de goût : le bloc
+ * complet occupe ~175px de large, et la rangée mobile doit désormais loger
+ * burger + logo + téléphone + CTA. C'est ce troc — 175px contre 27px — qui rend
+ * la rangée de la maquette tenable jusqu'à 320px.
+ *
+ * Le pied de page garde le bloc complet : il a la largeur pour lui, et le nom
+ * de la marque doit figurer au moins une fois en toutes lettres sur la page.
  */
 interface Props {
   href?: string;
@@ -16,18 +26,44 @@ interface Props {
 }
 
 const { href = '/', size = 'header' } = Astro.props;
+
+/**
+ * `<picture>` plutôt que deux `<img>` masqués tour à tour : un `display: none`
+ * n'empêche pas le téléchargement, les deux logos partiraient sur chaque page.
+ * Ici le navigateur n'en récupère qu'un, celui que la requête média désigne.
+ *
+ * Trois largeurs pour couvrir les écrans 1× à 3× — le pictogramme est rendu à
+ * 26px de haut, ses 102px de source suffisent largement au 3×.
+ */
+const mobileLogo = await getImage({
+  src: logoMobile,
+  widths: [34, 68, 102],
+  format: 'webp',
+  quality: 90,
+});
 ---
 
 <a class={`logo logo--${size}`} href={href}>
-  <Image
-    src={logo}
-    alt="Belgreen"
-    widths={[175, 350, 500]}
-    sizes="175px"
-    quality={90}
-    loading="eager"
-    class="logo__image"
-  />
+  <picture>
+    {size === 'header' && (
+      <source
+        media="(max-width: 1023px)"
+        srcset={mobileLogo.srcSet.attribute || mobileLogo.src}
+        sizes="27px"
+        width="34"
+        height="33"
+      />
+    )}
+    <Image
+      src={logo}
+      alt="Belgreen"
+      widths={[175, 350, 500]}
+      sizes="175px"
+      quality={90}
+      loading="eager"
+      class="logo__image"
+    />
+  </picture>
 </a>
 
 <style>
@@ -39,6 +75,14 @@ const { href = '/', size = 'header' } = Astro.props;
     display: inline-block;
     line-height: 0;
     text-decoration: none;
+  }
+
+  /* ⚠️ `<picture>` est INLINE par défaut. Enveloppant une image en `block`, il
+     pose le logo sur une ligne de base : le conteneur gagne la place du
+     jambage, et le pictogramme descend d'un pixel ou deux par rapport aux
+     pastilles avec lesquelles il doit s'aligner. `block` supprime la ligne. */
+  .logo picture {
+    display: block;
   }
 
   .logo__image {
@@ -54,6 +98,33 @@ const { href = '/', size = 'header' } = Astro.props;
 
   .logo--footer {
     --size-logo: var(--size-logo-footer);
+  }
+
+  /* ⚠️ Le ratio est posé en CSS, et non laissé aux attributs du `<source>`.
+     L'`<img>` porte ceux du bloc complet (500×95) : c'est lui qui fixerait le
+     rapport, et le pictogramme serait étiré en bandeau. Déclaré ici, le rapport
+     ne dépend plus de la façon dont le navigateur arbitre entre les deux.
+
+     Même borne que la requête média du `<source>` — les deux doivent basculer
+     ensemble, sinon le ratio s'applique à la mauvaise image. */
+  @media (max-width: 1023px) {
+    .logo--header .logo__image {
+      aspect-ratio: 34 / 33;
+    }
+
+    /* Le pictogramme s'aligne sur les PASTILLES d'icône, pas sur la hauteur de
+       logotype du desktop : dans la rangée mobile il n'est plus un bloc de
+       marque posé seul, c'est le deuxième d'une file de trois objets ronds
+       (burger, picto, appel), aligné sur le CTA qu'ils accompagnent — quatre
+       hauteurs différentes s'y voyaient immédiatement. Il valait 26px quand le
+       bouton en fait 44.
+
+       La valeur est EMPRUNTÉE au token dérivé du bouton plutôt que recopiée :
+       les quatre objets ne peuvent plus se désaccorder à la première retouche
+       de l'un d'eux. */
+    .logo--header {
+      --size-logo: var(--size-header-control);
+    }
   }
 
   .logo:focus-visible {

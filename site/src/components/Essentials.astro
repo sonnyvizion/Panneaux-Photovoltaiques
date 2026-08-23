@@ -17,9 +17,15 @@ import type { Bridge, Fact, Figure, SectionCopy } from '../data/content';
  * vaut mieux qu'un CTA générique — c'est la boucle contenu ↔ contenu.
  */
 interface Props extends SectionCopy {
-  /** Cartes chiffres : un cas, un ordre de grandeur. */
+  /**
+   * Cartes chiffres : un cas, un ordre de grandeur.
+   *
+   * ⚠️ Peut être VIDE. Toutes les pages n'ont pas trois grandeurs à comparer —
+   * certaines n'ont que des conditions en clair. Une liste vide rendue quand
+   * même laissait une bande grise sans contenu au milieu de la section.
+   */
   figures: Figure[];
-  /** Cartes texte : les conditions, en clair. */
+  /** Cartes texte : les conditions, en clair. Peut être vide, comme `figures`. */
   facts: Fact[];
   bridges: Bridge[];
 }
@@ -31,6 +37,7 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
   <SectionHeading overline={overline} title={title} intro={intro} />
 
   <div class="essentials reveal">
+    {figures.length > 0 && (
     <ul class="essentials__figures">
       {figures.map((figure) => (
         <li class={`essentials__card essentials__card--${figure.tone}`}>
@@ -39,10 +46,13 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
             {figure.prefix && <span class="essentials__prefix">{figure.prefix}</span>}
             {figure.value}
           </p>
+          {figure.note && <p class="essentials__note">{figure.note}</p>}
         </li>
       ))}
     </ul>
+    )}
 
+    {facts.length > 0 && (
     <ul class="essentials__facts">
       {facts.map((fact) => (
         <li class="essentials__card essentials__card--grey">
@@ -51,6 +61,7 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
         </li>
       ))}
     </ul>
+    )}
 
     <div class="essentials__bridges">
       {/* Décoratif : « i » dit à l'œil que ce panneau nuance ce qui précède.
@@ -168,6 +179,28 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
     text-wrap: nowrap;
   }
 
+  /* La condition qui restreint le chiffre, sous lui. Alignée sur la valeur et
+     non sur le libellé : les deux forment une seule unité de lecture, que la
+     `space-between` de la carte pousse déjà en bas.
+
+     ⚠️ Elle ne rentre PAS dans `.essentials__value` : la valeur est en
+     `nowrap` (voir la règle ci-dessus), et une condition de plusieurs mots y
+     déborderait de la carte au lieu de passer à la ligne. */
+  .essentials__note {
+    text-align: end;
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  /* La carte sombre éclaircit sa condition comme elle éclaircit son libellé,
+     sinon le gris secondaire par défaut y devient illisible. */
+  .essentials__card--ink .essentials__note {
+    color: var(--color-white-clear);
+  }
+
   .essentials__prefix {
     display: block;
     font-family: var(--text-figure-prefix-family);
@@ -264,6 +297,16 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
   @media (max-width: 767px) {
     .essentials__bridges {
       padding: var(--space-2);
+      /* ⚠️ Le haut ne suit PAS les 8px des trois autres côtés : l'icône est en
+         `position: absolute`, elle ne pousse donc rien devant elle. Sur desktop
+         les 25px de padding lui laissaient une gouttière ; réduits à 8px, le
+         titre du premier pont remontait à 16px — exactement le bord haut de
+         l'icône, qu'il recouvrait.
+
+         La valeur est DÉRIVÉE de l'icône (son décalage + sa taille), jamais
+         posée en dur : elle suit si l'un des deux change. Le padding du pont
+         lui-même fournit l'écart sous l'icône. */
+      padding-top: calc(var(--space-3) + var(--space-24));
       gap: var(--space-24);
     }
 

@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Essentials from '../../components/Essentials.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import Star from '../../assets/icons/types-de-panneaux/star.svg';
+import Coin from '../../assets/icons/types-de-panneaux/coin.svg';
+import FlipVertical from '../../assets/icons/types-de-panneaux/flip-vertical.svg';
+import DeviceMobile from '../../assets/icons/types-de-panneaux/device-mobile.svg';
+import heroImage from '../../assets/pages/4.2-types-de-panneaux-hero.webp';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY, TYPES, TYPES_COPY,
+} from '../../data/pages/comprendre-types-de-panneaux';
+
+/**
+ * Page 4.2 — « Types de panneaux ».
+ *
+ * ⚠️ UNE page comparative pour quatre technologies, là où le reste du site
+ * scinde. Choix d'architecture assumé et confirmé : ces quatre options ne se
+ * lisent que les unes contre les autres.
+ *
+ * Module : `TopicCards` en QUATRE colonnes (famille F) — le composant existait,
+ * seule la borne de `columns` a été élargie. Pas de cartes chiffres dans
+ * « L'essentiel » : le cahier y décrit exactement les quatre cartes du module.
+ */
+---
+
+<BaseLayout title="Types de panneaux solaires : mono, poly, bifacial, amorphe | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <TopicCards overline={TYPES_COPY.overline} title={TYPES_COPY.title} intro={TYPES_COPY.intro} items={TYPES.map((t, i) => ({ ...t, icon: [Star, Coin, FlipVertical, DeviceMobile][i] }))} columns={4} tone="grey" />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={[]} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les types de panneaux." tone="grey" id="faq-types-panneaux" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

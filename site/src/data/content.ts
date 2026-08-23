@@ -39,6 +39,15 @@ export interface Figure {
   /** Sur-libellé de la valeur, ex. « à partir de ». */
   prefix?: string;
   value: string;
+  /**
+   * Sous-libellé : la condition qui rend le chiffre vrai, ex. « logement > 10
+   * ans », « à votre charge ».
+   *
+   * Distinct de `prefix`, qui qualifie la valeur (« à partir de ») : celui-ci
+   * la RESTREINT. Sur la page Aides & primes, un « Taux 0 % » sans son « jusqu'à
+   * 60 000 € » serait un chiffre qu'on ne peut pas tenir.
+   */
+  note?: string;
   tone: 'grey' | 'lime' | 'ink';
 }
 
@@ -65,9 +74,128 @@ export interface DeepDiveItem {
   open?: boolean;
 }
 
+/**
+ * Carte-lien de « Creuser le sujet », variante encyclopédie.
+ *
+ * L'autre forme du même bloc du gabarit (`pages-contenu.md` §4). `DeepDiveItem`
+ * replie une réponse DANS la page ; celle-ci envoie vers une page dédiée.
+ *
+ * Le choix se fait sur la longueur du sujet, pas sur le goût : un arbitrage de
+ * trois phrases se replie, une aide régionale qui a sa propre page se lie. La
+ * page Aides & primes a quatre sujets qui existent déjà au sitemap, d'où les
+ * cartes ; la page prix, cinq digressions qui n'en méritent pas, d'où les
+ * accordéons.
+ *
+ * Pas de libellé de lien : c'est la carte entière qui est cliquable, et son
+ * titre qui la nomme. Un « en savoir plus » de plus n'apprendrait rien et
+ * donnerait quatre liens de même nom à un lecteur d'écran.
+ */
+export interface TopicCard {
+  title: string;
+  text: string;
+  /**
+   * Destination, quand le sujet a une page.
+   *
+   * ⚠️ OPTIONNEL : la plupart des pages du sitemap développent leurs quatre
+   * sujets sur place, sans page dédiée. La carte devient alors un simple bloc
+   * de texte — sans flèche, sans survol, sans entrée au clavier. Une carte
+   * cliquable qui ne mène nulle part est pire qu'une carte inerte.
+   */
+  href?: string;
+  /**
+   * Porte l'aplat d'accent. Un seul par grille — le wireframe générique du
+   * cahier de construction demande « 2x2, 1 accent ».
+   */
+  accent?: boolean;
+  /**
+   * Points énumérés sous le texte, quand la carte porte une liste plutôt qu'un
+   * paragraphe (famille F du registre : « permis / pas permis »).
+   *
+   * Une vraie `<ul>` et non des puces dans une chaîne : ce sont des éléments
+   * distincts, un lecteur d'écran doit les annoncer comme tels et en donner le
+   * nombre. C'est précisément ce que la page « Installer soi-même » demande —
+   * savoir combien de choses tombent de chaque côté de la limite.
+   */
+  items?: string[];
+}
+
 /** En-tête de section : surtitre, titre, chapô. */
 export interface SectionCopy {
   overline: string;
   title: string;
   intro?: string;
+}
+
+/**
+ * Étape d'une timeline de démarches (famille D du registre des modules).
+ *
+ * Les trois pages « Démarches » du pilier Aides & primes partagent ce module :
+ * même composant, deux à quatre étapes selon la région.
+ */
+export interface TimelineStep {
+  title: string;
+  text: string;
+  /**
+   * Pastille d'accent sur l'étape, ex. « Pris en charge par notre équipe ».
+   *
+   * C'est l'argument anti-intermédiaire posé exactement là où le doute naît —
+   * au milieu d'une liste de formalités administratives (règle d'or #7). Une
+   * seule étape par page la porte, sinon elle ne signale plus rien.
+   */
+  badge?: string;
+}
+
+/**
+ * Cellule d'un comparateur multi-options (famille B du registre).
+ *
+ * `status` porte le pictogramme, `text` la nuance. Les deux sont facultatifs :
+ * une case peut n'avoir qu'un symbole (« ✕ »), qu'un texte (« Tarif prosumer »),
+ * ou les deux (« ✕ depuis 2014 »).
+ *
+ * ⚠️ `status` est un ÉTAT, pas un caractère. Le composant en tire à la fois le
+ * signe visible et un mot lu par les lecteurs d'écran — une croix collée dans
+ * du texte s'annoncerait « lettre x » ou serait passée sous silence.
+ */
+export interface ComparatorCell {
+  status?: 'yes' | 'no' | 'na';
+  text?: string;
+}
+
+/** Ligne d'un comparateur : un critère, une cellule par option comparée. */
+export interface ComparatorRow {
+  label: string;
+  cells: ComparatorCell[];
+}
+
+/**
+ * État d'une bascule à deux positions (famille C du registre).
+ *
+ * ⚠️ Les DEUX états sont rendus dans le HTML, jamais construits au clic : leur
+ * texte doit être indexable (règle d'or #1). La bascule ne fait que masquer, et
+ * elle le fait en CSS.
+ */
+export interface ToggleState {
+  /** Libellé du bouton, ex. « Avant 2021 ». */
+  label: string;
+  title: string;
+  text: string;
+  /** Ce que le mécanisme donne, en une formule courte et frappante. */
+  highlight?: string;
+}
+
+/**
+ * Étape du schéma « voyage du photon » (famille G du registre — schéma animé
+ * au scroll).
+ *
+ * Purement descriptif : ce module n'a aucun calcul, il raconte un trajet. Le
+ * texte de chaque étape est du HTML normal, indexable — seule sa mise en scène
+ * est animée (règle d'or #1).
+ */
+export interface FlowStep {
+  /** Le nom de l'étape, ex. « Cellule photovoltaïque ». */
+  title: string;
+  /** Ce qui s'y passe, en une phrase. */
+  text: string;
+  /** L'état de l'énergie à ce point du trajet, ex. « courant continu ». */
+  state?: string;
 }

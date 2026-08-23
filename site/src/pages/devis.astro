@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import LeadForm from '../components/LeadForm.astro';
+
+/**
+ * Écran E du brief — la sortie la plus engagée du simulateur.
+ *
+ * ⚠️ Un DEVIS DIRECT, pas « trois devis ». Le client possède ses installateurs :
+ * le visiteur parle à l'équipe qui posera ses panneaux (règle d'or #7).
+ *
+ * ⚠️ `noindex` : une page de formulaire n'a rien à indexer, et le SEO vit sur
+ * les pages encyclopédiques qui amènent ici.
+ */
+---
+
+<BaseLayout title="Recevoir mon devis — Belgreen" noindex>
+  <Section tone="grey">
+    <SectionHeading
+      overline="Votre devis"
+      overlineTone="tertiary"
+      title="Un devis chiffré, par l’équipe qui installera vos panneaux"
+      intro="Pas d’intermédiaire, pas de mise en concurrence artificielle, aucune revente de vos coordonnées. Nous vérifions votre toiture, puis nous vous répondons."
+    />
+    <LeadForm variant="devis" submitLabel="Demander mon devis" />
+  </Section>
+</BaseLayout>

@@ -45,6 +45,22 @@ export const LEAD = {
 
 export const WIDGET = {
   title: 'Puissance installée',
+  sliderLabel: 'Puissance installée, en kilowatts-crête',
+  /* Les LIBELLÉS des tuiles seulement : les valeurs viennent du modèle
+     `power`, jamais d'ici. Le prix porte l'accent — c'est ce que la page
+     promet de montrer, pas la production. */
+  outputs: [
+    { label: 'Prix estimé', accent: true },
+    { label: 'Panneaux' },
+    { label: 'Production/an' },
+  ],
+  /* U+202F (fine insécable), le même caractère que celui écrit par le modèle :
+     une espace ordinaire d'un côté et fine de l'autre décalerait la valeur au
+     premier déplacement du curseur. */
+  bounds: [
+    `${POWER_MIN}\u202FkWc · ~${formatEuro(low.price)}`,
+    `${POWER_MAX}\u202FkWc · ~${formatEuro(high.price)}`,
+  ] as [string, string],
   bridgeLabel: 'Voir ce que ça change sur votre facture',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   /* La bande du widget reprend la photo du hero, recadrée : un seul fichier, un

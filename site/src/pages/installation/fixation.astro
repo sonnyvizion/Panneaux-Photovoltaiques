@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Essentials from '../../components/Essentials.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.7-fixation-hero.webp';
+import Anchor from '../../assets/icons/fixation/anchor.svg';
+import Box from '../../assets/icons/fixation/box.svg';
+import Puzzle from '../../assets/icons/fixation/puzzle.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FINAL_CTA,
+  FIXATIONS, FIXATIONS_COPY, HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-fixation';
+
+/**
+ * Page 2.7 — « Fixation ».
+ *
+ * Première instance de `TopicCards` en MODULE (famille F) : trois colonnes, fond
+ * gris pour se détacher comme les autres modules du site, cartes inertes.
+ *
+ * ⚠️ « L'essentiel » ne porte pas de cartes chiffres ici — le cahier y décrivait
+ * exactement le contenu du module. Voir l'en-tête du fichier de données.
+ */
+---
+
+<BaseLayout title="Fixation des panneaux solaires : les 3 systèmes | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <TopicCards
+    overline={FIXATIONS_COPY.overline}
+    title={FIXATIONS_COPY.title}
+    intro={FIXATIONS_COPY.intro}
+    items={FIXATIONS.map((f, i) => ({ ...f, icon: [Anchor, Box, Puzzle][i] }))}
+    columns={3}
+    tone="grey"
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={[]} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la fixation." tone="grey" id="faq-fixation" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

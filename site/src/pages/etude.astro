@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Section from '../components/Section.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import LeadForm from '../components/LeadForm.astro';
+
+/**
+ * Écran F du brief — l'étude gratuite, la sortie que le résultat met en avant.
+ *
+ * ⚠️ C'est ici que vit la QUALIFICATION (objectif · horizon · budget). Elle a
+ * quitté le simulateur sur consigne du brief : « le simulateur calcule, il ne
+ * qualifie pas ». Ces trois questions préparent un rendez-vous déjà accepté —
+ * elles ne filtrent l'accès à rien.
+ */
+---
+
+<BaseLayout title="Réserver mon étude gratuite — Belgreen" noindex>
+  <Section tone="grey">
+    <SectionHeading
+      overline="Votre étude"
+      overlineTone="tertiary"
+      title="Une étude personnalisée, gratuite et sans engagement"
+      intro="Nos experts certifiés Enphase reprennent votre estimation, mesurent votre toiture et la confrontent à votre consommation réelle. Vous repartez avec des chiffres fermes."
+    />
+    <LeadForm variant="etude" submitLabel="Réserver mon étude gratuite" />
+  </Section>
+</BaseLayout>

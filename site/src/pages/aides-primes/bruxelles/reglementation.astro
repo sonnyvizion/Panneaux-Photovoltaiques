@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import LeadStatement from '../../../components/LeadStatement.astro';
+import Essentials from '../../../components/Essentials.astro';
+import TopicCards from '../../../components/TopicCards.astro';
+import Faq from '../../../components/Faq.astro';
+import FinalCta from '../../../components/FinalCta.astro';
+import heroImage from '../../../assets/pages/1.5-reglementation-bruxelles-hero.webp';
+import Certificate from '../../../assets/icons/reglementation-bruxelles/certificate.svg';
+import AlertTriangle from '../../../assets/icons/reglementation-bruxelles/alert-triangle.svg';
+import Home from '../../../assets/icons/reglementation-bruxelles/home.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../../data/pages/aides-primes-bruxelles-reglementation';
+
+/**
+ * Page 1.5 du cahier de construction — « Réglementation bruxelloise 2026 ».
+ *
+ * ⚠️ SANS MODULE, sur prescription du cahier : « sujet réglementaire, pas de
+ * variable à calculer ». Le gabarit passe du chapô à « L'essentiel ». C'est la
+ * règle d'or #5 appliquée — l'interactif est un accent, pas un réflexe.
+ */
+const TOPIC_ICONS = [Certificate, AlertTriangle, Home];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout title="RESCert PV Bruxelles 2026 : l'obligation expliquée | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur cette obligation." tone="grey" id="faq-rescert" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

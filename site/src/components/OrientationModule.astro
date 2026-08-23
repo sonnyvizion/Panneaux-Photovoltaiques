@@ -1,0 +1,103 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Button from './Button.astro';
+import OrientationDial from './OrientationDial.astro';
+import { ORIENTATION_DEFAULT, orientationSpread, type DialAxis } from '../scripts/orientation';
+import type { ContentLink, SectionCopy } from '../data/content';
+
+/**
+ * La coquille de section qui monte le curseur orientation/inclinaison sur une
+ * page de contenu — l'autre moitié du contrat du catalogue : la brique explique
+ * ici ce qu'elle fait calculer dans le simulateur.
+ *
+ * ⚠️ Elle DÉMARRE RÉPONDUE, contrairement au simulateur. Sur une page de
+ * contenu il n'y a rien à verrouiller, et un module qui s'ouvre sur un tiret
+ * n'explique rien : il montre le cas de référence, et le visiteur le déplace.
+ *
+ * ⚠️ L'écart annoncé est DÉRIVÉ de `orientationSpread()`, jamais écrit à la
+ * main : il doit rester solidaire des coefficients du modèle.
+ */
+interface Props extends SectionCopy {
+  axis?: DialAxis;
+  bridgeLabel: string;
+  cta: ContentLink;
+}
+
+const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro.props;
+---
+
+<Section tone="grey">
+  <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
+
+  <div class="orient reveal">
+    <OrientationDial axis={axis} name="orientation-demo" value={ORIENTATION_DEFAULT} escape={false} id="orient-demo" />
+
+    <p class="orient__spread">
+      Entre le meilleur et le pire cas, l’écart atteint {orientationSpread()} points
+      de rendement — à toiture et puissance identiques.
+    </p>
+
+    <div class="orient__bridge">
+      <p class="orient__bridge-label">{bridgeLabel}</p>
+      <Button href={cta.href}>{cta.label}</Button>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .orient {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: var(--width-timeline);
+    margin-inline: auto;
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  .orient__spread {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .orient__bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  .orient__bridge :global(.btn) {
+    justify-content: center;
+  }
+
+  .orient__bridge-label {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .orient__bridge {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      text-align: start;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .orient {
+      padding: var(--space-12);
+      gap: var(--space-3);
+    }
+  }
+</style>

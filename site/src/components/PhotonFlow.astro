@@ -1,0 +1,218 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import type { FlowStep, SectionCopy } from '../data/content';
+
+/**
+ * Schéma animé du trajet de l'énergie — famille G du registre des modules.
+ *
+ * Le module `photonFlow` de la page « Fonctionnement des panneaux » : lumière →
+ * cellule → électron → courant continu → onduleur. Aucun calcul, aucune entrée :
+ * il raconte une chaîne de transformations, et c'est exactement le cas où un
+ * schéma remplace un pavé (règle d'or #4).
+ *
+ * ⚠️ ZÉRO JAVASCRIPT, et zéro `IntersectionObserver`. L'apparition séquentielle
+ * réutilise le mécanisme d'animation du site — `animation-timeline: view()`,
+ * déjà employé par la classe `.reveal` de `global.css`. Le décalage entre étapes
+ * vient d'une `animation-range` progressive, pas d'un `animation-delay` : sur une
+ * timeline de défilement, un délai en secondes n'a aucun sens, c'est la POSITION
+ * dans le défilement qui pilote la course.
+ *
+ * ⚠️ Dégradation en trois temps, dans cet ordre :
+ *  — navigateur sans `animation-timeline` → tout est visible d'emblée
+ *    (l'animation vit entièrement dans un `@supports`) ;
+ *  — `prefers-reduced-motion` → idem, l'animation n'est jamais déclarée ;
+ *  — sans CSS du tout → une liste ordonnée de cinq étapes, lisible.
+ * À aucun moment le texte ne dépend de l'animation pour exister.
+ *
+ * ⚠️ C'est un `<ol>` : l'ordre EST l'information. Un lecteur d'écran doit
+ * entendre « 3 sur 5 » — la lumière ne devient pas du courant alternatif avant
+ * d'avoir traversé la cellule.
+ */
+interface Props extends SectionCopy {
+  /** Les étapes du trajet, dans l'ordre. */
+  steps: FlowStep[];
+}
+
+const { overline, title, intro, steps } = Astro.props;
+---
+
+<Section tone="grey">
+  <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
+
+  <div class="flow">
+    <ol class="flow__steps" style={`--flow-count: ${steps.length}`}>
+      {steps.map((step, index) => (
+        <li class="flow__step" style={`--flow-index: ${index}`}>
+          {/* Le rail décoratif qui relie l'étape à la suivante. En CSS, pas en
+              SVG : il doit suivre une largeur de colonne qui change avec la
+              taille de l'écran, ce qu'un tracé à coordonnées fixes ne fait pas. */}
+          <span class="flow__rail" aria-hidden="true"></span>
+          <span class="flow__marker" aria-hidden="true">{index + 1}</span>
+          <span class="flow__body">
+            <span class="flow__title">{step.title}</span>
+            {step.state && <span class="flow__state">{step.state}</span>}
+            <span class="flow__text">{step.text}</span>
+          </span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</Section>
+
+<style>
+  .flow {
+    width: 100%;
+    max-width: var(--width-timeline);
+    margin-inline: auto;
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  .flow__steps {
+    display: grid;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .flow__step {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--space-48) 1fr;
+    gap: var(--space-3);
+    align-items: start;
+  }
+
+  /* Le rail relie une étape à la suivante : la dernière n'a rien à relier. */
+  .flow__step:last-child .flow__rail {
+    display: none;
+  }
+
+  .flow__rail {
+    position: absolute;
+    top: var(--space-48);
+    bottom: calc(var(--space-4) * -1);
+    left: calc(var(--space-48) / 2 - var(--border-width) / 2);
+    width: var(--border-width);
+    background: var(--color-shade-grey);
+  }
+
+  .flow__marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-48);
+    height: var(--space-48);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-power-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .flow__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+    padding-top: var(--space-2);
+  }
+
+  .flow__title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  /* L'état de l'énergie à ce point du trajet — c'est ce qui change d'une étape
+     à l'autre, donc ce que l'œil doit pouvoir suivre en diagonale. */
+  .flow__state {
+    align-self: flex-start;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--color-white-clear);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .flow__text {
+    margin-top: var(--space-1);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  @media (max-width: 767px) {
+    .flow {
+      padding: var(--space-12);
+    }
+
+    .flow__step {
+      grid-template-columns: var(--space-24) 1fr;
+      gap: var(--space-2);
+    }
+
+    .flow__rail {
+      top: var(--space-24);
+      left: calc(var(--space-24) / 2 - var(--border-width) / 2);
+    }
+
+    .flow__marker {
+      width: var(--space-24);
+      height: var(--space-24);
+      font-size: var(--text-body-sm-size);
+    }
+
+    .flow__body {
+      padding-top: 0;
+    }
+  }
+
+  /* --- L'apparition séquentielle ---
+     Même mécanisme que `.reveal` (global.css) : une animation pilotée par la
+     timeline de défilement, entièrement dans un `@supports` et un
+     `prefers-reduced-motion`. Hors de ces conditions, rien n'est déclaré et les
+     cinq étapes sont simplement visibles. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .flow__step {
+        animation-name: flow-step-in;
+        animation-duration: auto;
+        animation-timing-function: ease-out;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        /* ⚠️ Le décalage entre étapes se fait sur la PLAGE, pas sur un délai :
+           la course est indexée sur le défilement, où une durée en secondes n'a
+           pas de sens. Chaque étape démarre 6 % plus tard que la précédente, ce
+           qui produit la cascade sans jamais retarder la dernière au point
+           qu'elle apparaisse hors écran. */
+        animation-range: entry calc(10% + var(--flow-index) * 6%)
+          cover calc(28% + var(--flow-index) * 6%);
+      }
+
+      @keyframes flow-step-in {
+        from {
+          opacity: 0;
+          transform: translateY(var(--reveal-rise, 16px));
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    }
+  }
+</style>

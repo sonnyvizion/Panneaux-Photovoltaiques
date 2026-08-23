@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import LeadStatement from '../components/LeadStatement.astro';
-import PowerWidget from '../components/PowerWidget.astro';
+import SliderCalculator from '../components/SliderCalculator.astro';
 import Essentials from '../components/Essentials.astro';
 import DeepDive from '../components/DeepDive.astro';
 import Faq from '../components/Faq.astro';
@@ -12,6 +12,7 @@ import FinalCta from '../components/FinalCta.astro';
    est un ciel bleu vif, y aurait fait tomber le contraste des libellés. */
 import heroImage from '../assets/pages/renta1.webp';
 import deepDiveImage from '../assets/pages/renta2.webp';
+import { POWER_DEFAULT, POWER_MAX, POWER_MIN, POWER_STEP } from '../scripts/powerEstimate';
 import {
   BRIDGES,
   DEEP_DIVE,
@@ -63,8 +64,16 @@ import {
 
   <LeadStatement text={LEAD.text} note={LEAD.note} />
 
-  <PowerWidget
+  <SliderCalculator
+    calculator="power"
     title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={POWER_MIN}
+    max={POWER_MAX}
+    step={POWER_STEP}
+    value={POWER_DEFAULT}
+    outputs={WIDGET.outputs}
+    bounds={WIDGET.bounds}
     bridgeLabel={WIDGET.bridgeLabel}
     cta={WIDGET.cta}
     {/* Même fichier que le hero, recadré par `object-fit`. Alternative vide :

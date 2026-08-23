@@ -53,6 +53,25 @@ export function withRegion(href: string, region: string | null | undefined): str
   return `${url.pathname}${url.search}${url.hash}`;
 }
 
+/**
+ * Le code postal → la région. Table de préfixes de `simulateur.md`.
+ *
+ * ⚠️ Vit ici et non dans le simulateur : c'est une règle sur les régions, et le
+ * parcours en a besoin pour valider sa première question.
+ *
+ * ⚠️ La validation à quatre chiffres n'est pas cosmétique : sans elle,
+ * `'4567'.includes('')` vaut `true` et une chaîne vide renvoyait « wallonie ».
+ */
+export function regionFromPostalCode(code: string): Region | null {
+  const trimmed = code.trim();
+  if (!/^\d{4}$/.test(trimmed)) return null;
+  const digit = trimmed[0];
+  if (digit === '1') return 'bruxelles';
+  if ('4567'.includes(digit)) return 'wallonie';
+  if ('2389'.includes(digit)) return 'flandre';
+  return null;
+}
+
 /** La région mémorisée, ou `null`. Le stockage peut être refusé (mode privé). */
 export function readStoredRegion(): Region | null {
   try {
@@ -63,7 +82,13 @@ export function readStoredRegion(): Region | null {
   }
 }
 
-function storeRegion(region: Region): void {
+/**
+ * ⚠️ Exporté : le simulateur écrit la région qu'il vient de déduire du code
+ * postal, pour que le reste du site cesse d'en supposer une. Sans cela, le
+ * sélecteur du header continuerait d'afficher « Wallonie » juste après qu'un
+ * visiteur ait tapé 1000.
+ */
+export function writeStoredRegion(region: Region): void {
   try {
     localStorage.setItem(STORAGE_KEY, region);
   } catch {
@@ -116,7 +141,7 @@ export function initRegion(document: Document): void {
   for (const select of selects) {
     select.addEventListener('change', () => {
       if (!isRegion(select.value)) return;
-      storeRegion(select.value);
+      writeStoredRegion(select.value);
       // Les autres sélecteurs suivent : ils désignent la même région.
       for (const other of selects) other.value = select.value;
       applyRegionToLinks(document, select.value);

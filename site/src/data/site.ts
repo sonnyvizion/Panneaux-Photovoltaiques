@@ -24,6 +24,23 @@ export interface NavLink {
    * À la bascule Sanity, ce drapeau devient l'existence du document.
    */
   published?: boolean;
+  /**
+   * Liable, mais absent des méga-menus et du footer.
+   *
+   * Pour une destination qu'une PAGE référence déjà — les cartes « Creuser le
+   * sujet » de `/aides-primes/wallonie` visent trois sujets que la maquette a
+   * dessinés en avance sur le sitemap. Sans elle, il fallait choisir entre deux
+   * mauvaises options : laisser le lien tomber en 404, ou publier dans la nav
+   * trois entrées qui n'ouvrent qu'un gabarit vide.
+   *
+   * `published` reste donc à `true` — la route attrape-tout doit générer le
+   * gabarit `noindex`, faute de quoi le lien casse. Ce drapeau-ci ne parle que
+   * de LISTAGE : il retire l'entrée des inventaires de navigation, pas du site.
+   *
+   * ⚠️ Temporaire par nature. Le jour où la page est écrite, on retire le
+   * drapeau et l'entrée réapparaît dans son méga-menu.
+   */
+  hidden?: boolean;
 }
 
 /** Colonne d'un méga-menu. Sans `label`, la colonne n'a pas d'en-tête. */
@@ -94,6 +111,17 @@ export const TRUST_LINKS: NavLink[] = [
   { label: 'Contact', href: '/contact', published: true },
 ];
 
+/**
+ * ⚠️ Trois entrées portent `published: true, hidden: true` sans avoir de page
+ * rédigée : `/comprendre/onduleur`, `/installation/au-sol` et
+ * `/rentabilite-prix/amortissement`. Des pages LIVRÉES pointent vers elles
+ * (ponts contextuels d'Ombrage, d'Abri de jardin et de Rentabilité) et ces
+ * liens tombaient en 404. Le drapeau leur donne un gabarit « en cours de
+ * rédaction » en `noindex`, sans les faire apparaître dans les méga-menus.
+ *
+ * `/installation/au-sol` est la page 2.12, en attente de son texte ; les deux
+ * autres relèvent de piliers non traités à ce jour.
+ */
 export const PILLARS: NavPillar[] = [
   {
     label: 'Comprendre',
@@ -104,35 +132,38 @@ export const PILLARS: NavPillar[] = [
       {
         label: 'Le principe',
         links: [
-          { label: 'Fonctionnement des panneaux', href: '/comprendre/fonctionnement' },
-          { label: 'Impact écologique', href: '/comprendre/impact-ecologique' },
-          { label: 'Risques & inconvénients', href: '/comprendre/risques-inconvenients' },
+          { label: 'Fonctionnement des panneaux', href: '/comprendre/fonctionnement', published: true },
+          { label: 'Impact écologique', href: '/comprendre/impact-ecologique', published: true },
+          { label: 'Risques & inconvénients', href: '/comprendre/risques-inconvenients', published: true },
         ],
       },
       {
         label: 'Types de panneaux',
         links: [
-          { label: 'Monocristallin', href: '/comprendre/monocristallin' },
-          { label: 'Polycristallin', href: '/comprendre/polycristallin' },
-          { label: 'Bifacial', href: '/comprendre/bifacial' },
-          { label: 'Amorphe', href: '/comprendre/amorphe' },
+          /* ⚠️ UNE entrée pour quatre technologies, là où le sitemap d'origine
+             en prévoyait quatre. La rédaction du pilier Comprendre en fait une
+             page comparative unique : mono, poly, bifacial et amorphe ne se
+             choisissent qu'en les comparant, et quatre pages obligeraient à
+             quatre allers-retours pour une seule décision. Choix d'architecture
+             assumé, confirmé à la commande. */
+          { label: 'Types de panneaux', href: '/comprendre/types-de-panneaux', published: true },
         ],
       },
       {
         label: 'Composants',
         links: [
-          { label: 'Onduleur & micro-onduleur', href: '/comprendre/onduleur' },
-          { label: 'Batterie domestique', href: '/comprendre/batterie' },
-          { label: 'Compteur intelligent', href: '/comprendre/compteur-intelligent' },
-          { label: 'Borne de recharge', href: '/comprendre/borne-de-recharge' },
+          { label: 'Onduleur & micro-onduleur', href: '/comprendre/onduleur', published: true },
+          { label: 'Batterie domestique', href: '/comprendre/batterie', published: true },
+          { label: 'Compteur intelligent', href: '/comprendre/compteur-intelligent', published: true },
+          { label: 'Borne de recharge', href: '/comprendre/borne-de-recharge', published: true },
         ],
       },
       {
         label: 'Dans la durée',
         links: [
-          { label: 'Longévité', href: '/comprendre/longevite' },
-          { label: 'Garanties (Belgique)', href: '/comprendre/garanties' },
-          { label: 'Maintenance & nettoyage', href: '/comprendre/maintenance' },
+          { label: 'Longévité', href: '/comprendre/longevite', published: true },
+          { label: 'Garanties (Belgique)', href: '/comprendre/garanties', published: true },
+          { label: 'Maintenance & nettoyage', href: '/comprendre/maintenance', published: true },
         ],
       },
     ],
@@ -146,10 +177,10 @@ export const PILLARS: NavPillar[] = [
       {
         links: [
           { label: 'Prix des panneaux 2026', href: '/rentabilite-prix/prix' },
-          { label: 'Rendement', href: '/rentabilite-prix/rendement' },
+          { label: 'Rendement', href: '/rentabilite-prix/rendement', published: true },
           { label: 'Production', href: '/rentabilite-prix/production' },
-          { label: 'Amortissement / retour sur investissement', href: '/rentabilite-prix/amortissement' },
-          { label: 'Autoconsommation', href: '/rentabilite-prix/autoconsommation' },
+          { label: 'Amortissement / retour sur investissement', href: '/rentabilite-prix/amortissement', published: true },
+          { label: 'Autoconsommation', href: '/rentabilite-prix/autoconsommation', published: true },
           { label: 'Revente de surplus / injection réseau', href: '/rentabilite-prix/injection' },
         ],
       },
@@ -172,6 +203,13 @@ export const PILLARS: NavPillar[] = [
           { label: 'Primes & certificats verts', href: '/aides-primes/wallonie', published: true },
           { label: 'Tarif prosumer', href: '/aides-primes/wallonie/prosumer', published: true },
           { label: 'Démarches administratives', href: '/aides-primes/wallonie/demarches', published: true },
+          /* Les trois sujets visés par les cartes « Creuser le sujet » de
+             `/aides-primes/wallonie`, dessinés dans la maquette avant d'exister
+             au sitemap. `hidden` : liables depuis la page, pas encore listés
+             dans le méga-menu — voir le drapeau plus haut. */
+          { label: 'Le Rénoprêt', href: '/aides-primes/wallonie/renopret', published: true, hidden: true },
+          { label: 'Certificats verts', href: '/aides-primes/wallonie/certificats-verts', published: true, hidden: true },
+          { label: 'Primes communales', href: '/aides-primes/wallonie/primes-communales', published: true, hidden: true },
         ],
       },
       {
@@ -195,8 +233,13 @@ export const PILLARS: NavPillar[] = [
       {
         label: 'Transverses',
         links: [
-          { label: 'Guide entreprises', href: '/aides-primes/entreprises' },
-          { label: 'Installation en copropriété', href: '/aides-primes/copropriete' },
+          /* ⚠️ `hidden` : la page existe et se visite, mais son volet fiscal
+             n'est pas validé (le cahier de construction marque trois passages
+             « à valider »). La lister dans le méga-menu enverrait du trafic
+             professionnel sur une page qui ne répond pas encore à sa question.
+             Retirer le drapeau dès que le client aura tranché. */
+          { label: 'Guide entreprises', href: '/aides-primes/entreprises', published: true, hidden: true },
+          { label: 'Installation en copropriété', href: '/aides-primes/copropriete', published: true },
         ],
       },
     ],
@@ -211,24 +254,29 @@ export const PILLARS: NavPillar[] = [
         label: 'Préparation',
         links: [
           { label: 'Orientation & inclinaison', href: '/installation/orientation' },
-          { label: 'Nombre de panneaux', href: '/installation/nombre-de-panneaux' },
-          { label: 'Puissance (kWc)', href: '/installation/puissance' },
-          { label: 'Dimensions & poids', href: '/installation/dimensions-poids' },
-          { label: 'Ombrage', href: '/installation/ombrage' },
-          { label: 'Fixation', href: '/installation/fixation' },
+          { label: 'Nombre de panneaux', href: '/installation/nombre-de-panneaux', published: true },
+          { label: 'Puissance (kWc)', href: '/installation/puissance', published: true },
+          /* ⚠️ Scindé en deux : le cahier de construction en fait deux pages
+             distinctes (2.4 et 2.5), avec deux textes complets et deux jeux
+             d'icônes livrés. L'entrée unique « Dimensions & poids » venait du
+             sitemap d'origine, antérieur à la rédaction. */
+          { label: 'Dimensions', href: '/installation/dimensions', published: true },
+          { label: 'Poids', href: '/installation/poids', published: true },
+          { label: 'Ombrage', href: '/installation/ombrage', published: true },
+          { label: 'Fixation', href: '/installation/fixation', published: true },
         ],
       },
       {
         label: 'Emplacements',
         links: [
           { label: 'Toit incliné', href: '/installation/toit-incline' },
-          { label: 'Toit plat', href: '/installation/toit-plat' },
-          { label: 'Intégré toiture (BIPV)', href: '/installation/bipv' },
-          { label: 'Abri de jardin', href: '/installation/abri-de-jardin' },
-          { label: 'Au sol / jardin', href: '/installation/au-sol' },
-          { label: 'Carport', href: '/installation/carport' },
-          { label: 'Balcon', href: '/installation/balcon' },
-          { label: 'Camping-car & van', href: '/installation/camping-car' },
+          { label: 'Toit plat', href: '/installation/toit-plat', published: true },
+          { label: 'Intégré toiture (BIPV)', href: '/installation/bipv', published: true },
+          { label: 'Abri de jardin', href: '/installation/abri-de-jardin', published: true },
+          { label: 'Au sol / jardin', href: '/installation/au-sol', published: true, hidden: true },
+          { label: 'Carport', href: '/installation/carport', published: true },
+          { label: 'Balcon', href: '/installation/balcon', published: true },
+          { label: 'Camping-car & van', href: '/installation/camping-car', published: true },
           { label: 'Ombrière de parking', href: '/installation/ombriere' },
         ],
       },
@@ -236,9 +284,9 @@ export const PILLARS: NavPillar[] = [
         label: 'Passer à l’acte',
         links: [
           { label: 'Trouver un pro', href: '/installation/trouver-un-installateur', published: true },
-          { label: 'Installer soi-même', href: '/installation/soi-meme' },
-          { label: 'Pompe à chaleur', href: '/installation/pompe-a-chaleur' },
-          { label: 'Voiture électrique', href: '/installation/voiture-electrique' },
+          { label: 'Installer soi-même', href: '/installation/soi-meme', published: true },
+          { label: 'Pompe à chaleur', href: '/installation/pompe-a-chaleur', published: true },
+          { label: 'Voiture électrique', href: '/installation/voiture-electrique', published: true },
         ],
       },
     ],
@@ -253,14 +301,25 @@ export const PILLARS: NavPillar[] = [
  * publiée.
  */
 export function publishedLinks(pillar: NavPillar): NavLink[] {
-  return pillar.groups.flatMap((group) => group.links.filter((link) => link.published));
+  return pillar.groups.flatMap((group) => group.links.filter(isListed));
 }
 
 /** Les colonnes d'un pilier, vidées de leurs liens non publiés. */
 export function publishedGroups(pillar: NavPillar): NavGroup[] {
   return pillar.groups
-    .map((group) => ({ ...group, links: group.links.filter((link) => link.published) }))
+    .map((group) => ({ ...group, links: group.links.filter(isListed) }))
     .filter((group) => group.links.length > 0);
+}
+
+/**
+ * Un lien qui a sa place dans un inventaire de navigation.
+ *
+ * ⚠️ À ne pas confondre avec « le lien fonctionne » : une destination `hidden`
+ * existe et se visite, elle ne se LISTE pas. C'est la route attrape-tout, qui
+ * filtre sur `published` seul, qui décide de ce qui doit exister.
+ */
+function isListed(link: NavLink): boolean {
+  return Boolean(link.published) && !link.hidden;
 }
 
 /** Liens transverses de la rangée basse du footer. */

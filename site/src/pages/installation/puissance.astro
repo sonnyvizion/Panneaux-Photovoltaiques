@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import FigureModule from '../../components/FigureModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.3-puissance-hero.webp';
+import Bolt from '../../assets/icons/puissance-kwc/bolt.svg';
+import CalculatorIcon from '../../assets/icons/puissance-kwc/calculator.svg';
+import TrendingUp from '../../assets/icons/puissance-kwc/trending-up.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-puissance';
+
+/**
+ * Page 2.3 — « Puissance (kWc) ».
+ *
+ * Module : `FigureModule` (famille E). Le schéma kWc/kWh demandé par le cahier
+ * n'est pas livré ; la photo du hero sert de fond et c'est la LÉGENDE qui porte
+ * l'explication — c'est du texte, donc lisible et indexable (règle d'or #1).
+ */
+---
+
+<BaseLayout title="kWc : définition et puissance nécessaire | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Bolt, CalculatorIcon, TrendingUp][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le kWc." tone="grey" id="faq-puissance" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

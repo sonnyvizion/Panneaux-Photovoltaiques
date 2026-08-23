@@ -1,0 +1,317 @@
+---
+import { formatEuro } from '../scripts/powerEstimate';
+import { CHART_H, CHART_W, paybackGeometry, paybackLabel } from '../scripts/payback';
+import {
+  ELECTRICITY_PRICE,
+  REGION_DEFAULT,
+  SELF_CONSUMPTION_RATE,
+  regionLabel,
+  type Region,
+} from '../scripts/savings';
+
+/**
+ * Timeline d'amortissement — brique du catalogue (`interactivite-seo.md`),
+ * famille H « schéma tracé au scroll ». Un axe de 25 ans, la courbe des
+ * économies cumulées, la ligne plate du coût initial, et le point où l'une
+ * croise l'autre.
+ *
+ * ⚠️ MONTÉE DEUX FOIS, c'est le contrat du catalogue : « on construit chaque
+ * brique une fois, on la réutilise dans le simulateur (pour calculer) ET dans le
+ * contenu (pour expliquer) ». Sur `/rentabilite-prix/amortissement` elle
+ * illustre le cas médian, calculé au build ; dans le simulateur elle trace le
+ * projet du visiteur et se redessine à chaque mise à jour.
+ *
+ * ⚠️ Le composant portait « AUCUNE ENTRÉE UTILISATEUR, et c'est délibéré :
+ * règle d'or #3, un seul simulateur ». Ce raisonnement vaut sur une page de
+ * contenu — un module qui y calculerait ferait concurrence au simulateur. Il ne
+ * vaut plus DANS le simulateur, qui est précisément ce seul simulateur. D'où le
+ * drapeau `live` : la page reste muette, l'outil calcule.
+ *
+ * ⚠️ ZÉRO ARITHMÉTIQUE ICI : tout vient de `paybackGeometry()`, pure et testée.
+ *
+ * ⚠️ Le SVG est `aria-hidden` et purement illustratif : TOUT ce qu'il montre est
+ * écrit en toutes lettres juste en dessous. C'est le texte qui porte
+ * l'information (règle d'or #1), le dessin ne fait que la rendre évidente.
+ */
+interface Props {
+  kwc: number;
+  region?: Region;
+  /**
+   * Le graphe se redessine à l'exécution. Réservé au simulateur : il coupe
+   * l'animation de tracé au défilement, qui rejouerait à chaque frappe.
+   */
+  live?: boolean;
+  /** Le rappel des hypothèses, hors de propos quand le visiteur les a saisies. */
+  hypotheses?: boolean;
+  /**
+   * Le coût de départ dans la lecture chiffrée. Coupé dans le simulateur, où il
+   * a déjà sa tuile « Budget indicatif » à quelques pixels de là.
+   */
+  showCost?: boolean;
+}
+
+const {
+  kwc,
+  region = REGION_DEFAULT,
+  live = false,
+  hypotheses = true,
+  showCost = true,
+} = Astro.props;
+const g = paybackGeometry(kwc, { region });
+const PAD = 8;
+---
+
+<div class={`payback__chart-block${live ? ' payback__chart-block--live' : ''}`} data-payback>
+  <div class="payback__chart">
+    {/* Décoratif : la lecture chiffrée est juste en dessous, en texte. */}
+    <svg
+      class="payback__svg"
+      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path class="payback__benefit" d={g.benefit} data-payback-benefit />
+      <line class="payback__cost" x1={PAD} y1={g.costY} x2={CHART_W - PAD} y2={g.costY} data-payback-cost />
+      <path class="payback__curve" d={g.curve} pathLength="1" data-payback-curve />
+      <circle
+        class="payback__cross"
+        cx={g.crossX ?? 0}
+        cy={g.costY}
+        r="11"
+        hidden={g.crossX === null}
+        data-payback-cross
+      />
+    </svg>
+
+    <p class="payback__axis" aria-hidden="true" data-payback-axis>
+      {g.marks.map((year) => <span>{year === 1 ? 'Année 1' : `${year} ans`}</span>)}
+    </p>
+  </div>
+
+  {/* La lecture du schéma, en toutes lettres. */}
+  <dl class="payback__readout">
+    <div class="payback__item payback__item--accent">
+      <dt>Amortissement</dt>
+      <dd data-payback-years>{paybackLabel(g.payback)}</dd>
+    </div>
+    {showCost && (
+      <div class="payback__item">
+        <dt>Coût de départ</dt>
+        <dd data-payback-cost-value>{formatEuro(g.cost)}</dd>
+      </div>
+    )}
+    {/* ⚠️ « Bilan » et non « Gain ». En Wallonie, le tarif prosumer fait que
+        l'installation ne se rembourse pas sur l'horizon : le chiffre est
+        NÉGATIF, et la page publiait « Gain net à 25 ans : -2 000 € ». Le nombre
+        est juste — c'est le modèle validé par le client — mais un montant
+        négatif n'est pas un gain. « Bilan » dit la vérité dans les deux sens,
+        sans rien forcer. */}
+    <div class="payback__item">
+      <dt>Bilan à 25 ans</dt>
+      <dd data-payback-gain>{formatEuro(Math.round(g.gain / 100) * 100)}</dd>
+    </div>
+  </dl>
+
+  {hypotheses && (
+    <p class="payback__hypotheses">
+      Installation de {kwc} kWc en {regionLabel(region)} ·
+      {' '}{Math.round(SELF_CONSUMPTION_RATE * 100)} % d’autoconsommation ·
+      électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh ·
+      dégradation de 0,5 % par an
+    </p>
+  )}
+</div>
+
+<style>
+  .payback__chart-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* ⚠️ Le tracé au défilement est COUPÉ quand le graphe est vivant : réécrire le
+     `d` d'un chemin dont le `stroke-dasharray` est piloté par
+     `animation-timeline: view()` rejoue l'animation à chaque mise à jour, et la
+     courbe clignote. Sur la page de contenu, où rien ne bouge, elle reste. */
+  .payback__chart-block--live .payback__curve,
+  .payback__chart-block--live .payback__benefit,
+  .payback__chart-block--live .payback__cross {
+    animation: none;
+  }
+
+  .payback__cross[hidden] {
+    display: none;
+  }
+
+
+  .payback__chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* `preserveAspectRatio: none` : le tracé s'étire en largeur avec le panneau.
+     C'est une courbe de tendance, pas un relevé — sa pente exacte n'a pas à être
+     préservée, et l'étirement évite une hauteur fixe qui écraserait le mobile. */
+  .payback__svg {
+    width: 100%;
+    height: var(--height-payback);
+    overflow: visible;
+  }
+
+  .payback__benefit {
+    fill: var(--color-highlight-primary);
+    opacity: 0.35;
+  }
+
+  /* La ligne du coût est en tirets : c'est un seuil, pas une trajectoire. */
+  .payback__cost {
+    stroke: var(--color-text-muted);
+    stroke-width: 2;
+    stroke-dasharray: 8 8;
+  }
+
+  .payback__curve {
+    fill: none;
+    stroke: var(--color-text-primary);
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .payback__cross {
+    fill: var(--color-highlight-primary);
+    stroke: var(--color-text-primary);
+    stroke-width: 3;
+  }
+
+  .payback__axis {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* --- La lecture chiffrée --- */
+  .payback__readout {
+    display: grid;
+    /* `auto-fit` et non `repeat(3, …)` : le simulateur retire le coût de départ,
+       et deux tuiles doivent alors se partager la largeur, pas en laisser une
+       vide. */
+    grid-template-columns: repeat(auto-fit, minmax(var(--width-sim-metric), 1fr));
+    gap: var(--space-2);
+    padding: var(--space-2);
+    margin: 0;
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  .payback__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-card);
+    text-align: center;
+  }
+
+  .payback__item--accent {
+    background: var(--color-highlight-primary);
+  }
+
+  .payback__item dt {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .payback__item--accent dt {
+    color: var(--color-text-secondary);
+  }
+
+  .payback__item dd {
+    margin: 0;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-power-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+    /* ⚠️ PAS de `tabular-nums`. Il était là du temps où ce bloc n'affichait qu'un
+       nombre isolé (« 12 ans »). Depuis que le simulateur y écrit une fourchette,
+       la chasse tabulaire élargit AUSSI l'espace et le tiret : « 4 – 8 ans » s'y
+       délite en trois blocs. Piège déjà payé quatre fois dans ce projet. */
+    white-space: nowrap;
+  }
+
+  .payback__hypotheses {
+    color: var(--color-text-muted);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+
+
+
+  @media (max-width: 767px) {
+    .payback__item {
+      padding: var(--space-3) var(--space-1);
+    }
+
+    .payback__item dt {
+      font-size: var(--text-utility-mobile-size);
+    }
+  }
+
+  /* --- Le tracé au défilement ---
+     `pathLength="1"` normalise la longueur du chemin : le `dasharray` s'écrit
+     alors en fraction, sans avoir à mesurer la courbe. Même mécanisme que
+     `PhotonFlow` — entièrement dans un `@supports` et un `prefers-reduced-motion`,
+     donc la courbe est complète partout ailleurs. */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .payback__curve {
+        animation-name: payback-draw;
+        animation-duration: auto;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 20% cover 45%;
+      }
+
+      /* L'aire et le point de croisement n'apparaissent qu'une fois la courbe
+         tracée : le bénéfice est une conséquence, il ne doit pas précéder. */
+      .payback__benefit,
+      .payback__cross {
+        animation-name: payback-appear;
+        animation-duration: auto;
+        animation-timing-function: ease-out;
+        animation-fill-mode: both;
+        animation-timeline: view();
+        animation-range: entry 40% cover 55%;
+      }
+
+      @keyframes payback-draw {
+        from {
+          stroke-dasharray: 0 1;
+        }
+        to {
+          stroke-dasharray: 1 0;
+        }
+      }
+
+      @keyframes payback-appear {
+        from {
+          opacity: 0;
+        }
+      }
+    }
+  }
+</style>

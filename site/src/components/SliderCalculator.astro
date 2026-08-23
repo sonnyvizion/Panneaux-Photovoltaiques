@@ -1,0 +1,672 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import { CALCULATOR_MODELS, type CalculatorName } from '../scripts/calculators/registry';
+import { initialState } from '../scripts/calculators/types';
+import type { ContentLink } from '../data/content';
+
+/**
+ * Module interactif de la famille A du registre — « calculateur à slider(s) ».
+ *
+ * Un curseur, parfois un groupe de boutons, une à trois valeurs qui se
+ * recalculent. Six pages du site partagent cet objet ; seule la FORMULE change,
+ * et elle est passée par son nom (`calculator`) — voir
+ * `scripts/calculators/registry.ts`. Ce composant remplace `PowerWidget` et
+ * `LoanWidget`, qui en étaient deux copies divergentes.
+ *
+ * ⚠️ Ce n'est PAS un second simulateur (règle d'or #3). Aucune de ses instances
+ * ne demande de région, de consommation ni de coordonnées : chacune répond à une
+ * seule question et se termine sur un pont vers `/simulateur`, qui seul fait le
+ * vrai calcul.
+ *
+ * C'est le cas d'école de la règle d'or #4 : une relation entre variables se
+ * manipule, elle ne se lit pas dans un tableau.
+ *
+ * ⚠️ Rendu complet SANS JavaScript (règle d'or #1) : l'état par défaut est
+ * calculé AU BUILD par `initialState` et écrit dans le HTML, chiffres compris.
+ * Le script ne fait que réécrire des nœuds de texte existants — il ne construit
+ * rien. Sans lui, la page reste lisible, indexable, et le pont fonctionne.
+ *
+ * ⚠️ La carte est en `backdrop-filter` (design.md §3) : aucun `mask-image` sur
+ * un de ses ancêtres, et le préfixe `-webkit-` isolé en fin de bloc.
+ */
+
+/** Une tuile de résultat. Sa VALEUR vient du modèle, pas de l'appelant. */
+interface Output {
+  label: string;
+  /** Porte l'aplat d'accent. Un seul par module : ce que la page promet. */
+  accent?: boolean;
+}
+
+/** Un bouton du groupe d'options. Sa valeur entre dans la formule. */
+interface Option {
+  value: number;
+  label: string;
+}
+
+interface Props {
+  /** Nom du modèle dans le registre. C'est lui qui porte la formule. */
+  calculator: CalculatorName;
+  title: string;
+  /** Libellé du curseur pour les lecteurs d'écran. */
+  sliderLabel: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  /**
+   * Groupe de boutons, quand la formule a une seconde entrée discrète (la durée
+   * du Rénoprêt). Absent, le modèle reçoit `0` et l'ignore.
+   */
+  options?: Option[];
+  optionsLegend?: string;
+  optionDefault?: number;
+  /**
+   * Les sorties, dans l'ordre où le modèle les produit.
+   *
+   * Une seule : la variante « lecture », une phrase sous la jauge (Rénoprêt).
+   * Deux ou trois : la variante « tuiles », une bande de résultats (page prix).
+   * C'est le NOMBRE qui choisit la mise en page, pas un drapeau de plus — les
+   * deux mises en page existent parce qu'un chiffre seul ne mérite pas une
+   * bande, et que trois chiffres ne tiennent pas dans une phrase.
+   */
+  outputs: Output[];
+  /** Préfixe et suffixe de la variante « lecture », ex. « ≈ » et « par mois ». */
+  readoutPrefix?: string;
+  readoutSuffix?: string;
+  /** Les deux bornes qui légendent la jauge, variante « tuiles ». */
+  bounds?: [string, string];
+  /** Ce que le pont promet, à gauche du bouton. */
+  bridgeLabel: string;
+  cta: ContentLink;
+  /** Absente tant que le client n'a pas fourni la photo — voir `placeholder`. */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  /** Ce que la maquette attend à cet endroit, si l'image manque encore. */
+  placeholder?: string;
+}
+
+const {
+  calculator,
+  title,
+  sliderLabel,
+  min,
+  max,
+  step,
+  value,
+  options = [],
+  optionsLegend,
+  optionDefault = options[0]?.value ?? 0,
+  outputs,
+  readoutPrefix,
+  readoutSuffix,
+  bounds,
+  bridgeLabel,
+  cta,
+  image,
+  imageAlt = '',
+  placeholder,
+} = Astro.props;
+
+/* Calculé au build : ce sont ces valeurs-là qui partent dans le HTML. */
+const model = CALCULATOR_MODELS[calculator];
+const initial = initialState(model, value, optionDefault);
+
+/* Une seule sortie ⇒ phrase ; plusieurs ⇒ bande de tuiles. Voir `outputs`. */
+const asReadout = outputs.length === 1;
+
+/* Un identifiant par instance : deux calculateurs sur une même page
+   partageraient sinon le `for` de leur label et le `name` de leurs radios. */
+const uid = `calc-${calculator}`;
+---
+
+<section class="calc" data-calc={calculator}>
+  {image ? (
+    <Image
+      src={image}
+      alt={imageAlt}
+      {/* ⚠️ Réglages IDENTIQUES à ceux de `PageHero` — plusieurs pages posent
+          la photo du hero en fond de ce module, et à réglages égaux
+          `astro:assets` produit le même fichier : un seul téléchargement. Toute
+          divergence ici génère un second jeu complet de variantes, sans signal.
+          L'échelle monte à 2560 pour les écrans Retina : voir PageHero. */}
+      width={2560}
+      widths={[768, 1280, 1920, 2560]}
+      sizes="100vw"
+      format="webp"
+      quality={72}
+      loading="lazy"
+      class="calc__image"
+    />
+  ) : (
+    <div class="calc__image calc__image--placeholder" role="img" aria-label={`Photo à fournir : ${placeholder}`}></div>
+  )}
+  <div class="calc__overlay" aria-hidden="true"></div>
+
+  <div class="calc__panel reveal">
+    <div class="calc__head">
+      <h2 class="calc__title">{title}</h2>
+      {/* `aria-hidden` : la valeur est déjà annoncée par le curseur lui-même,
+          dont c'est le rôle. L'afficher deux fois la ferait lire deux fois. */}
+      <p class="calc__value" data-calc-label aria-hidden="true">{initial.inputLabel}</p>
+    </div>
+
+    <div class="calc__card">
+      <label class="visually-hidden" for={uid}>{sliderLabel}</label>
+      <input
+        class="calc__range"
+        id={uid}
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        data-calc-input
+        aria-valuetext={initial.inputLabel}
+        style={`--slider-ratio: ${initial.sliderRatio}%`}
+      />
+
+      {options.length > 0 && (
+        /* Des boutons radio et non des onglets : c'est un choix unique dans un
+           groupe, la sémantique existe déjà et le clavier la connaît. Les tuiles
+           sont l'habillage du `<label>`, pas un composant à part. */
+        <fieldset class="calc__options">
+          <legend class="visually-hidden">{optionsLegend}</legend>
+          {/* ⚠️ La grille est ce DIV, pas le `<fieldset>`. `.visually-hidden`
+              reste volontairement dans le flux (`global.css`) : une `<legend>`
+              posée dans un conteneur de grille en devient un élément et occupe
+              la première cellule. */}
+          <div class="calc__options-grid" style={`--option-count: ${options.length}`}>
+            {options.map((option) => (
+              <label class="calc__option">
+                <input
+                  class="calc__option-input"
+                  type="radio"
+                  name={`${uid}-option`}
+                  value={option.value}
+                  checked={option.value === optionDefault}
+                  data-calc-option
+                />
+                <span class="calc__option-label">{option.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      )}
+
+      {!asReadout && (
+        /* ⚠️ PAS de région live : les chiffres traversent leurs valeurs
+           intermédiaires, un lecteur d'écran en annoncerait des dizaines par
+           glissé. L'annonce se fait une fois, à la fin du geste. */
+        <ul class="calc__results" style={`--output-count: ${outputs.length}`}>
+          {outputs.map((output, index) => (
+            <li class={`calc__result${output.accent ? ' calc__result--accent' : ''}`}>
+              <span class="calc__result-label">{output.label}</span>
+              <span class="calc__result-value" data-calc-output>{initial.outputs[index]}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Jauge, distincte du curseur : elle situe un RÉSULTAT. Purement
+          descriptive, donc retirée de l'oral — ce qui la légende reste lu. */}
+      <div class="calc__gauge" data-calc-gauge style={`--gauge-ratio: ${initial.gaugeRatio}%`} aria-hidden="true"></div>
+
+      {asReadout ? (
+        <p class="calc__readout">
+          <span class="calc__readout-value">
+            {readoutPrefix && <>{readoutPrefix}&#8239;</>}<span data-calc-output>{initial.outputs[0]}</span>{readoutSuffix && <> {readoutSuffix}</>}
+          </span>
+          {initial.caption && <span class="calc__caption" data-calc-caption>{initial.caption}</span>}
+        </p>
+      ) : (
+        <>
+          {bounds && (
+            <p class="calc__bounds">
+              <span>{bounds[0]}</span>
+              <span>{bounds[1]}</span>
+            </p>
+          )}
+          {/* Les hypothèses de calcul, quand le modèle en publie. Sur la page
+              certificats verts c'est une consigne explicite de la rédaction —
+              « transparence = crédibilité », dans l'esprit du bloc
+              « Hypothèses » du simulateur. Elles sont dérivées des constantes du
+              modèle, jamais réécrites : une correction s'y propage. */}
+          {initial.caption && (
+            <p class="calc__hypotheses" data-calc-caption>{initial.caption}</p>
+          )}
+        </>
+      )}
+
+      {/* L'annonce sonore, posée une fois le geste terminé. Vide au chargement :
+          les valeurs par défaut sont déjà lisibles à l'écran. */}
+      <p class="visually-hidden" data-calc-status role="status" aria-live="polite"></p>
+
+      <div class="calc__bridge">
+        <p class="calc__bridge-label">{bridgeLabel}</p>
+        <Button href={cta.href}>{cta.label}</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initSliderCalculator } from '../scripts/sliderCalculator';
+  initSliderCalculator(document);
+</script>
+
+<style>
+  .calc {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--section-padding-block) var(--container-padding);
+    overflow: hidden;
+  }
+
+  .calc__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .calc__image--placeholder {
+    background: var(--color-shade-grey);
+  }
+
+  .calc__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--overlay-photo);
+  }
+
+  .calc__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: var(--width-power-panel);
+    padding: var(--pad-power-panel);
+    border-radius: var(--radius-panel);
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+  }
+
+  .calc__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .calc__title {
+    /* Le H2 pleine taille déséquilibrait le panneau : ce titre n'ouvre pas une
+       section, il nomme un réglage. */
+    font-size: var(--text-h3-size);
+    line-height: var(--text-h3-line-height);
+  }
+
+  /* ⚠️ PAS de `tabular-nums`. Dans Circular Std, la chasse tabulaire élargit
+     AUSSI l'espace : « 15 000 € » s'y délite en trois blocs, et une virgule y
+     prend la largeur d'un chiffre. La valeur est calée à droite dans un
+     `space-between` — elle grandit vers la gauche sans jamais pousser le titre,
+     et n'a donc pas besoin d'une chasse fixe pour rester stable. */
+  .calc__value {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+    white-space: nowrap;
+  }
+
+  .calc__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  /* --- Curseur ---
+     Apparence remise à zéro puis reconstruite : la piste porte sa portion
+     parcourue en dégradé dur, pilotée par `--slider-ratio` que le script met à
+     jour. Une seule custom property change par déplacement — pas de mesure, pas
+     de lecture de mise en page. */
+  .calc__range {
+    appearance: none;
+    width: 100%;
+    height: var(--size-power-knob);
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .calc__range::-webkit-slider-runnable-track {
+    height: var(--height-power-track);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--color-ink-700) var(--slider-ratio),
+      var(--color-shade-grey) var(--slider-ratio)
+    );
+  }
+
+  .calc__range::-moz-range-track {
+    height: var(--height-power-track);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+  }
+
+  .calc__range::-moz-range-progress {
+    height: var(--height-power-track);
+    border-radius: var(--radius-pill);
+    background: var(--color-ink-700);
+  }
+
+  .calc__range::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-white-primary);
+    border: var(--border-width) solid var(--color-shade-strong);
+    /* Recentre la poignée sur une piste plus fine qu'elle. */
+    margin-top: calc((var(--height-power-track) - var(--size-power-knob)) / 2);
+  }
+
+  .calc__range::-moz-range-thumb {
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-white-primary);
+    border: var(--border-width) solid var(--color-shade-strong);
+  }
+
+  .calc__range:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-pill);
+  }
+
+  /* --- Groupe d'options --- */
+  .calc__options {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-inline-size: 0;
+  }
+
+  .calc__options-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--option-count), 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  .calc__option {
+    display: flex;
+    min-width: 0;
+  }
+
+  /* Le bouton reste dans la page — il doit rester focusable — mais invisible :
+     c'est la tuile qui le représente. Surtout pas `display: none`, qui le
+     retirerait de la navigation clavier. */
+  .calc__option-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .calc__option-label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-power-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+    color: var(--color-text-primary);
+    background: var(--color-white-primary);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  /* L'option cochée porte l'aplat d'accent — le seul état du module qui se lise
+     sans avoir touché à rien. */
+  .calc__option-input:checked + .calc__option-label {
+    background: var(--color-highlight-primary);
+  }
+
+  /* L'anneau se pose sur la TUILE, le bouton étant invisible. Sans cette règle,
+     la navigation au clavier dans le groupe n'a aucun retour visible. */
+  .calc__option-input:focus-visible + .calc__option-label {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* --- Tuiles de résultat --- */
+  .calc__results {
+    display: grid;
+    grid-template-columns: repeat(var(--output-count), 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+    margin: 0;
+    list-style: none;
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  .calc__result {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-card);
+    text-align: center;
+    /* Sans `min-width: 0`, la valeur en `nowrap` impose sa largeur à la colonne
+       et les tuiles débordent du panneau. */
+    min-width: 0;
+  }
+
+  .calc__result--accent {
+    background: var(--color-highlight-primary);
+  }
+
+  .calc__result-label {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .calc__result--accent .calc__result-label {
+    color: var(--color-text-secondary);
+  }
+
+  .calc__result-value {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-power-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* --- Jauge --- */
+  .calc__gauge {
+    width: 100%;
+    height: var(--height-power-gauge);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--color-ink-700) var(--gauge-ratio),
+      var(--color-shade-grey) var(--gauge-ratio)
+    );
+  }
+
+  /* Ce qui légende la jauge doit la TOUCHER, pas flotter à l'écart de la pile.
+     La marge négative annule l'écart de la carte et repose le sien — dérivée de
+     `--space-24`, elle suit donc toute retouche de cet écart. */
+  .calc__bounds,
+  .calc__readout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-2) var(--space-3);
+    margin-top: calc(var(--space-24) * -1 + var(--space-2));
+  }
+
+  .calc__bounds {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .calc__readout {
+    align-items: baseline;
+  }
+
+  .calc__readout-value {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+    white-space: nowrap;
+  }
+
+  /* La chasse fixe est posée sur le SEUL nombre : elle élargit l'espace autant
+     que les chiffres, et le suffixe s'y disloquait. */
+  .calc__readout-value [data-calc-output] {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* La légende d'hypothèses de la variante « tuiles ». Elle colle à la jauge
+     quand rien ne s'intercale — même marge négative que les bornes, dérivée de
+     l'écart de la carte. Le sélecteur d'adjacence évite d'avoir à savoir, ici,
+     si des bornes ont été fournies. */
+  .calc__hypotheses {
+    color: var(--color-text-muted);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .calc__gauge + .calc__hypotheses {
+    margin-top: calc(var(--space-24) * -1 + var(--space-2));
+  }
+
+  .calc__caption {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* --- Pont ---
+     Sur mobile, le libellé se centre au-dessus d'un bouton pleine largeur : côte
+     à côte, il ne resterait ni assez de place au texte ni assez de surface
+     tactile au bouton. */
+  .calc__bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    text-align: center;
+  }
+
+  /* Le bouton est en `inline-flex` : sans cette règle il garderait la largeur de
+     son libellé au lieu de remplir la colonne. */
+  .calc__bridge :global(.btn) {
+    justify-content: center;
+  }
+
+  .calc__bridge-label {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .calc {
+      min-height: var(--height-power-band);
+    }
+
+    .calc__title {
+      font-size: 36px;
+      line-height: 0.96;
+    }
+
+    .calc__value {
+      font-size: var(--text-display-mid-size);
+    }
+
+    .calc__bridge {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      text-align: start;
+    }
+  }
+
+  /* ⚠️ Tuiles et options restent de front à TOUTES les tailles (Figma 466:1831).
+     Elles ne s'empilent pas : la valeur du module est de montrer des grandeurs
+     qui bougent ensemble, et une pile les ferait défiler l'une après l'autre.
+     C'est la typographie qui absorbe la contrainte. Le panneau et sa carte
+     perdent leurs 25px de padding au profit de 12 (relevé sur la maquette
+     mobile) : imbriqués, ils retiraient 100px de largeur à un écran de 320. */
+  @media (max-width: 767px) {
+    .calc {
+      padding-inline: var(--container-padding);
+    }
+
+    .calc__panel,
+    .calc__card {
+      padding: var(--space-12);
+    }
+
+    .calc__result {
+      padding: var(--space-3) var(--space-1);
+      gap: var(--space-1);
+    }
+
+    .calc__result-label {
+      font-size: var(--text-utility-mobile-size);
+    }
+
+    .calc__option-label {
+      padding: var(--space-3) var(--space-1);
+    }
+  }
+
+  /* Règle compagnon, isolée et en fin de bloc — voir design.md §3. */
+  .calc__panel {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+</style>

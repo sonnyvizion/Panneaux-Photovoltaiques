@@ -1,0 +1,28 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import FigureModule from '../../components/FigureModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.13-carport-hero.webp';
+import Coin from '../../assets/icons/carport/coin.svg';
+import Car from '../../assets/icons/carport/car.svg';
+import FileCertificate from '../../assets/icons/carport/file-certificate.svg';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-carport';
+/** Page 2.13 — « Carport ». Seul module du pilier dont la photo livrée correspond. */
+---
+<BaseLayout title="Carport solaire : abri et production combinés | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, Car, FileCertificate][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le carport." tone="grey" id="faq-carport" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

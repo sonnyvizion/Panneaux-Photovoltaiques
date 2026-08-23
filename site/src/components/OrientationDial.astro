@@ -1,0 +1,268 @@
+---
+import { dialModel, dialPercent, type DialAxis } from '../scripts/orientation';
+import { sunPosition } from '../scripts/orientationDial';
+
+/**
+ * Curseur orientation / inclinaison — brique du catalogue
+ * (`interactivite-seo.md`) : « on bouge le soleil, le % bouge ».
+ *
+ * ⚠️ MONTÉE TROIS FOIS, sur DEUX axes : la page « Rendement & production » pour
+ * expliquer, l'étape 3 du simulateur pour l'azimut, l'affinage `a1` pour la
+ * pente. Un seul composant, un seul modèle (`orientation.ts`) — c'est le
+ * contrat du catalogue : « on construit chaque brique une fois ».
+ *
+ * ⚠️ ELLE NE CALCULE RIEN. `dialModel()` et `dialPercent()` sont purs et testés ;
+ * ce fichier ne fait que les mettre en scène.
+ *
+ * ⚠️ ELLE PEUT DÉMARRER SANS RÉPONSE, et c'est indispensable dans le parcours :
+ * le simulateur verrouille « Suivant » tant qu'on n'a pas répondu, or un curseur
+ * a toujours une position. Sans valeur initiale, le champ reste vide, le soleil
+ * se pose au milieu en gris, et la première manipulation écrit la réponse.
+ *
+ * ⚠️ Le SVG est décoratif (`aria-hidden`) : le vrai contrôle est le `range` en
+ * dessous, avec son libellé et son pourcentage en toutes lettres. C'est le texte
+ * qui porte l'information (règle d'or #1), le dessin la rend évidente.
+ */
+interface Props {
+  axis?: DialAxis;
+  /** Le nom du champ transmis au formulaire. */
+  name: string;
+  /** Valeur de départ. Absente, le curseur attend une première manipulation. */
+  value?: string;
+  /** L'échappatoire, « Je ne sais pas ». Coupée quand la réponse est obligatoire. */
+  escape?: boolean;
+  id?: string;
+}
+
+const { axis = 'orientation', name, value, escape = true, id = `dial-${name}` } = Astro.props;
+const model = dialModel(axis);
+const index = value ? model.steps.findIndex((s) => s.value === value) : -1;
+const start = index < 0 ? Math.floor((model.steps.length - 1) / 2) : index;
+const answered = index >= 0;
+
+/* Géométrie. L'abscisse suit la course du curseur, l'ordonnée porte le
+   rendement — voir `sunPosition()`, qui explique pourquoi ce n'est PAS la
+   trajectoire réelle du soleil. `viewBox` en unités arbitraires : c'est le
+   ratio qui compte, pas les pixels. */
+const W = 320;
+const H = 170;
+const CX = W / 2;
+const CY = H - 26;
+const SPAN = 118;
+const RISE = 104;
+const sun = sunPosition(start, model.steps.length, dialPercent(axis, model.steps[start].value) / 100);
+---
+
+<div class={`dial${answered ? '' : ' dial--unset'}`} data-dial data-dial-axis={axis}>
+  <div class="dial__stage">
+    <svg class="dial__svg" viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false">
+      {/* Le plafond : la hauteur qu'atteint le meilleur cas de l'axe. Il donne
+          au soleil une échelle — sans lui, « haut » ne veut rien dire. */}
+      <line class="dial__ceiling" x1={CX - SPAN} y1={CY - RISE} x2={CX + SPAN} y2={CY - RISE} />
+      {/* Le pan de toiture, vu en coupe. */}
+      <path class="dial__roof" d={`M ${CX - 62},${CY} L ${CX},${CY - 42} L ${CX + 62},${CY} Z`} />
+      <line class="dial__ground" x1={CX - SPAN} y1={CY} x2={CX + SPAN} y2={CY} />
+      <circle class="dial__sun" cx={sun.x.toFixed(1)} cy={sun.y.toFixed(1)} r="13" data-dial-sun />
+    </svg>
+
+    <p class="dial__readout">
+      <span class="dial__percent" data-dial-percent>
+        {answered ? `${dialPercent(axis, value!)} %` : '—'}
+      </span>
+      <span class="dial__caption" data-dial-caption>
+        {answered ? model.steps[start].label : 'Déplacez le curseur'}
+      </span>
+    </p>
+  </div>
+
+  <label class="visually-hidden" for={id}>{model.legend}</label>
+  <input
+    class="dial__range"
+    id={id}
+    type="range"
+    min="0"
+    max={model.steps.length - 1}
+    step="1"
+    value={start}
+    data-dial-range
+    aria-describedby={`${id}-out`}
+  />
+  {/* La valeur réellement transmise. Vide tant que rien n'a été manipulé : c'est
+      ce qui garde « Suivant » verrouillé dans le parcours. */}
+  <input type="hidden" name={name} value={answered ? value : ''} data-dial-value />
+
+  <p class="dial__bounds" aria-hidden="true">
+    <span>{model.bounds[0]}</span>
+    <span>{model.bounds[1]}</span>
+  </p>
+
+  <p class="visually-hidden" id={`${id}-out`} role="status" aria-live="polite" data-dial-status></p>
+
+  {escape && (
+    <button class="dial__escape" type="button" data-dial-escape={model.unknown}>
+      Je ne sais pas
+    </button>
+  )}
+</div>
+
+<script>
+  import { initOrientationDials } from '../scripts/orientationDial';
+  initOrientationDials(document);
+</script>
+
+<style>
+  .dial {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .dial__stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--space-3) var(--space-3) 0;
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  .dial__svg {
+    width: 100%;
+    max-width: var(--width-dial);
+    height: auto;
+  }
+
+  .dial__ceiling {
+    stroke: var(--color-shade-grey);
+    stroke-width: 2;
+    stroke-dasharray: 4 7;
+  }
+
+  .dial__roof {
+    fill: var(--color-ink-700);
+  }
+
+  .dial__ground {
+    stroke: var(--color-shade-grey);
+    stroke-width: 2;
+  }
+
+  .dial__sun {
+    fill: var(--color-highlight-primary);
+    stroke: var(--color-ink-900);
+    stroke-width: 2;
+    transition: cx var(--duration-fast) var(--easing-default),
+      cy var(--duration-fast) var(--easing-default);
+  }
+
+  /* Tant que rien n'a été manipulé, le soleil est éteint : il montre la course,
+     il n'annonce pas une réponse que personne n'a donnée. */
+  .dial--unset .dial__sun {
+    fill: var(--color-shade-grey);
+    stroke: var(--color-text-muted);
+  }
+
+  .dial__readout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    padding-bottom: var(--space-3);
+    text-align: center;
+  }
+
+  /* Pas de `tabular-nums` : dans Circular Std il élargit aussi l'espace, et
+     « 95 % » s'y disloque. */
+  .dial__percent {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .dial--unset .dial__percent {
+    color: var(--color-text-muted);
+  }
+
+  .dial__caption {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+  }
+
+  .dial__range {
+    width: 100%;
+    height: var(--size-power-knob);
+    appearance: none;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .dial__range::-webkit-slider-runnable-track {
+    height: var(--height-power-track);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+  }
+
+  .dial__range::-moz-range-track {
+    height: var(--height-power-track);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+  }
+
+  .dial__range::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    border: var(--border-width) solid var(--color-ink-900);
+    margin-top: calc((var(--height-power-track) - var(--size-power-knob)) / 2);
+  }
+
+  .dial__range::-moz-range-thumb {
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    border: var(--border-width) solid var(--color-ink-900);
+  }
+
+  .dial__range:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-pill);
+  }
+
+  .dial__bounds {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+  }
+
+  .dial__escape {
+    align-self: flex-start;
+    padding: var(--space-2) 0;
+    border: 0;
+    background: none;
+    color: var(--color-text-tertiary);
+    font: inherit;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+    cursor: pointer;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dial__sun {
+      transition: none;
+    }
+  }
+</style>

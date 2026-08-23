@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import Coin from '../../assets/icons/batterie-domestique/coin.svg';
+import Battery from '../../assets/icons/batterie-domestique/battery.svg';
+import PlugOff from '../../assets/icons/batterie-domestique/plug-off.svg';
+import Plus from '../../assets/icons/batterie-domestique/plus.svg';
+import heroImage from '../../assets/pages/4.4-batterie-domestique-hero.webp';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/comprendre-batterie';
+
+/**
+ * Page 4.4 — « Batterie domestique ».
+ *
+ * Gabarit standard de famille E : aucun module, sur prescription du cahier.
+ * Aucun composant nouveau — c'est le même assemblage que les quatorze autres
+ * pages de cette famille déjà livrées.
+ *
+ * Photos et icônes du pilier livrées et branchées.
+ */
+---
+
+<BaseLayout title="Batterie domestique solaire : rôle et rentabilité | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, Battery, PlugOff, Plus][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les batteries." tone="grey" id="faq-batterie" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

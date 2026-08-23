@@ -66,10 +66,28 @@ const PRICE_FIXED = 1500;
 const PRICE_PER_KWC = 1000;
 
 /** Puissance unitaire d'un panneau courant en 2026, en Wc. */
-const WC_PER_PANEL = 430;
+export const WC_PER_PANEL = 430;
 
-/** Productible belge moyen, en kWh par kWc et par an, toutes orientations. */
-const KWH_PER_KWC_YEAR = 900;
+/**
+ * Encombrement d'un panneau, en m².
+ *
+ * La page « Dimensions » publie « environ 1,9 à 2 m² par panneau » ; on retient
+ * la borne haute, qui inclut de fait les pertes de calepinage. Exportée parce
+ * que le simulateur en a besoin pour convertir une surface de toiture en
+ * puissance installable — et qu'il ne doit pas la redéclarer.
+ */
+export const M2_PER_PANEL = 2;
+
+/**
+ * Productible belge moyen, en kWh par kWc et par an, toutes orientations.
+ *
+ * ⚠️ EXPORTÉE : c'est la source unique du productible pour tout le site. Le
+ * modèle des certificats verts en avait recopié une seconde déclaration, ce qui
+ * ouvrait la porte à deux productibles divergents — et donc à une page qui
+ * annonce 5 400 kWh pendant qu'une autre en calcule 5 000 sans que rien ne le
+ * signale. Toute nouvelle formule qui a besoin d'une production part d'ici.
+ */
+export const KWH_PER_KWC_YEAR = 900;
 
 /** Granularité d'affichage des prix : une fourchette, pas un devis. */
 const PRICE_ROUNDING = 500;
@@ -116,29 +134,16 @@ export function estimate(kwc: number): PowerEstimate {
   };
 }
 
-/* Formatage en fr-BE : séparateur de milliers par espace insécable étroite.
-   Les formateurs sont créés une fois — en instancier un par frappe du curseur
-   coûterait plus cher que tout le reste du module. */
-const euroFormat = new Intl.NumberFormat('fr-BE', {
-  style: 'currency',
-  currency: 'EUR',
-  maximumFractionDigits: 0,
-});
-
-const numberFormat = new Intl.NumberFormat('fr-BE', { maximumFractionDigits: 0 });
+/* Les euros et les nombres nus sont formatés dans `format.ts`, partagé avec le
+   module Rénoprêt de la page Aides & primes. Ré-exportés ici : c'est de ce
+   module que le composant et son script les importent depuis toujours, et rien
+   ne gagne à faire bouger ces imports. */
+export { formatEuro, formatNumber } from './format';
 
 /* `maximumFractionDigits: 1` sans minimum : une puissance ronde s'écrit « 6 »
    et non « 6,0 ». Le zéro de fin donnerait au chiffre une précision qu'il n'a
    pas, et ferait sautiller la largeur du libellé au passage de 5,9 à 6. */
 const powerFormat = new Intl.NumberFormat('fr-BE', { maximumFractionDigits: 1 });
-
-export function formatEuro(value: number): string {
-  return euroFormat.format(value);
-}
-
-export function formatNumber(value: number): string {
-  return numberFormat.format(value);
-}
 
 /**
  * La puissance et son unité : « 6 kWc », « 6,4 kWc ».
@@ -149,6 +154,49 @@ export function formatNumber(value: number): string {
  */
 export function formatPower(kwc: number): string {
   return `${powerFormat.format(clampPower(kwc))} kWc`;
+}
+
+/**
+ * Répartition mensuelle de la production, en kWh, de janvier à décembre.
+ *
+ * ⚠️ AUCUNE DONNÉE EXTERNE. Douze valeurs d'irradiation présentées comme
+ * mesurées seraient la seule donnée du site à prétendre une précision qu'on ne
+ * peut pas vérifier. La courbe est donc un MODÈLE, calibré sur un repère que le
+ * site publie déjà : la page « Rendement & production » affirme qu'« un mois de
+ * décembre peut être 5 à 6 fois plus faible qu'un mois de juillet ».
+ *
+ * Une cosinusoïde centrée sur le solstice, dont l'amplitude est déduite de ce
+ * seul rapport, puis normalisée pour que les douze mois somment EXACTEMENT à la
+ * production annuelle. Le total ne peut donc pas diverger de `estimate()`.
+ *
+ * ⚠️ Remplaçable par des données PVGIS le jour où on en a : ce sont douze
+ * coefficients à substituer, le reste du code ne bouge pas.
+ */
+export const MONTH_LABELS = [
+  'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+  'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc',
+] as const;
+
+/** Rapport entre le meilleur et le pire mois — le repère publié par la page. */
+export const SUMMER_WINTER_RATIO = 5.5;
+
+/* Le pic tombe entre juin et juillet : l'ensoleillement suit le solstice, pas le
+   calendrier. Exprimé en index de mois (0 = janvier), d'où 5,5. */
+const PEAK_MONTH = 5.5;
+
+/* Amplitude déduite du rapport publié, jamais réglée à la main :
+   r = (1 + A·c) / (1 − A·c), avec c = cos(π/12) l'écart entre juillet et le pic. */
+const PEAK_OFFSET = Math.cos(Math.PI / 12);
+const AMPLITUDE =
+  (SUMMER_WINTER_RATIO - 1) / (PEAK_OFFSET * (SUMMER_WINTER_RATIO + 1));
+
+export function monthlyProduction(kwc: number): number[] {
+  const weights = MONTH_LABELS.map(
+    (_, month) => 1 + AMPLITUDE * Math.cos(((month - PEAK_MONTH) * 2 * Math.PI) / 12),
+  );
+  const total = weights.reduce((sum, w) => sum + w, 0);
+  const yearly = estimate(kwc).production;
+  return weights.map((w) => (yearly * w) / total);
 }
 
 /**

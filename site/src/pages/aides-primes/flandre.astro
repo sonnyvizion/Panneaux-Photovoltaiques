@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import OptionComparator from '../../components/OptionComparator.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import CertificateOff from '../../assets/icons/flandre-aides/certificate-off.svg';
+import BuildingBank from '../../assets/icons/flandre-aides/building-bank.svg';
+import Clock from '../../assets/icons/flandre-aides/clock.svg';
+import TrendingDown from '../../assets/icons/flandre-aides/trending-down.svg';
+import {
+  BRIDGES, COMPARATOR_COLUMNS, COMPARATOR_COPY, COMPARATOR_ROWS,
+  ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA, HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/aides-primes-flandre';
+
+/**
+ * Page 1.7 du cahier — « Flandre : quelles aides en 2026 ».
+ *
+ * Première instance d'`OptionComparator` (famille B). Le comparateur est mis en
+ * évidence sur la FLANDRE au chargement (troisième colonne) : c'est la page de
+ * la Flandre, la colonne qui la concerne doit être celle qu'on lit d'abord.
+ * Réutilisé un jour sur les pages Wallonie et Bruxelles, seul `selected`
+ * changerait — c'est l'hypothèse que la rédaction posait en note.
+ *
+ * ⚠️ Photo de hero non livrée : emplacement étiqueté, nommage du cahier.
+ */
+const TOPIC_ICONS = [CertificateOff, BuildingBank, Clock, TrendingDown];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout title="Aides panneaux solaires Flandre 2026 : le guide complet | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} placeholder={HERO.imagePlaceholder} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <OptionComparator
+    overline={COMPARATOR_COPY.overline}
+    title={COMPARATOR_COPY.title}
+    intro={COMPARATOR_COPY.intro}
+    columns={COMPARATOR_COLUMNS}
+    rowHeader="Critère"
+    rows={COMPARATOR_ROWS}
+    selected={2}
+    id="comparateur-regions"
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les aides en Flandre." tone="default" id="faq-flandre" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />
+</BaseLayout>

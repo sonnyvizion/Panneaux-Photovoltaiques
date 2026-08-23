@@ -1,0 +1,52 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import SliderCalculator from '../../components/SliderCalculator.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import TrendingUp from '../../assets/icons/autoconsommation-revente/trending-up.svg';
+import Battery from '../../assets/icons/autoconsommation-revente/battery.svg';
+import MapPin from '../../assets/icons/autoconsommation-revente/map-pin.svg';
+import Target from '../../assets/icons/autoconsommation-revente/target.svg';
+import heroImage from '../../assets/pages/3.4-autoconsommation-revente-hero.webp';
+import { RATE_DEFAULT, RATE_MAX, RATE_MIN, RATE_STEP } from '../../scripts/calculators/selfConsumption';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY, WIDGET,
+} from '../../data/pages/rentabilite-autoconsommation';
+
+/**
+ * Page 3.4 — « Autoconsommation & revente ».
+ *
+ * `SliderCalculator` en modèle `selfConsumption` — aucun composant nouveau. Le
+ * curseur porte le taux, les trois tuiles la répartition, et la jauge la part de
+ * VALEUR que représente l'autoconsommation : à 38 % de production consommée sur
+ * place, la part de valeur directe est bien supérieure à 38 %, et c'est
+ * exactement ce que la page veut faire voir.
+ */
+---
+<BaseLayout title="Autoconsommation solaire : comment ça marche et comment l'augmenter | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <SliderCalculator
+    calculator="selfConsumption"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={RATE_MIN}
+    max={RATE_MAX}
+    step={RATE_STEP}
+    value={RATE_DEFAULT}
+    outputs={WIDGET.outputs}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    image={heroImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [TrendingUp, Battery, MapPin, Target][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'autoconsommation." tone="grey" id="faq-autoconsommation" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

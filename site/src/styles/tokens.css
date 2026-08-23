@@ -420,6 +420,15 @@
   /* --- Dimensions de composant --- */
   /* Dimensions relevées au dev mode Figma (nœud 356:349). */
   --size-button-icon: 32px; /* pastille flèche des boutons */
+  /* Hauteur hors tout d'un bouton : sa pastille plus le liseré de padding qui
+     l'entoure. C'est la mesure sur laquelle s'alignent les objets ronds de la
+     rangée mobile (burger, pictogramme, appel), pour qu'aucun ne dépasse le CTA
+     qu'ils accompagnent.
+
+     DÉRIVÉE, jamais figée à 44px : elle est la somme exacte de ce que compose
+     `Button.astro` (`--size-button-icon` + deux fois `--pad-button-edge`).
+     Retoucher l'un des deux déplace le CTA et les trois objets ensemble. */
+  --size-header-control: calc(var(--size-button-icon) + var(--pad-button-edge) * 2);
   --size-arrow-badge: 32px; /* pastille flèche des liens de carte */
   --size-certif-logo: 44px; /* logo Enphase de la pastille de certification */
   --size-logo-header: 26px; /* logotype Belgreen en tête de page, → 33px */
@@ -555,6 +564,43 @@
   --width-progress-step: 55px;
   --height-progress-step: 3px;
 
+  /* --- Parcours du simulateur (rail à étapes) ---
+     Le trait de progression est un peu plus épais que celui du carrousel : il
+     porte l'état d'un formulaire, pas la position d'un rail de citations. La
+     cible tactile, elle, reste au minimum recommandé — le trait est fin, mais
+     on doit pouvoir le viser au doigt pour revenir en arrière. */
+  --height-wizard-seg: 4px;
+  --size-wizard-hit: 44px;
+  --width-wizard-help: 18rem;      /* colonne « en savoir plus », desktop */
+  --width-wizard-question: 640px;  /* la question ne s'étire pas sur 1440px */
+  /* Largeur du panneau de verre. Ni celle du module (768px, trop étroite pour
+     poser l'aide à côté de la question), ni `--container-max` (1320px, qui
+     laissait un trou béant entre les deux colonnes). Somme des deux colonnes,
+     de leur écart et du rembourrage du panneau. */
+  --width-sim-panel: 1040px;
+  --width-sim-text: 200px;         /* champ code postal : quatre chiffres */
+  --tracking-sim-cp: 0.12em;
+  --width-dial: 320px; /* course du soleil, brique orientation/inclinaison */
+
+  /* Panneau de résultat. Le graphe mensuel est un aperçu de forme, pas un relevé
+     à lire au kWh près : 110px suffisent à voir la bosse d'été. La largeur mini
+     d'un chiffre est celle qui laisse « 6 400 € – 9 600 € » tenir sur une ligne. */
+  --height-sim-bars: 110px;
+  --width-sim-metric: 200px;
+  --gap-sim-bars: 2px;
+  --size-certif-logo-sm: 28px; /* logo Enphase en ligne, dans le résultat */
+  --text-micro-size: 10px;     /* étiquettes des mois sous le graphe */
+
+  /* Interrupteur produit (la batterie de l'affinage). Le déplacement du bouton
+     est DÉRIVÉ : largeur moins pastille moins deux fois le retrait, sinon
+     retoucher l'un des trois décale la pastille hors de sa piste. */
+  --width-sim-toggle: 44px;
+  --height-sim-toggle: 26px;
+  --size-sim-toggle-knob: 20px;
+  --shift-sim-toggle: calc(
+    var(--width-sim-toggle) - var(--size-sim-toggle-knob) - var(--space-1) * 2
+  );
+
   /* --- Gabarit des pages de contenu (Figma « page pilier », nœud 466:1352) ---
      Ces valeurs servent les ~55 pages des 4 piliers, pas la home. */
 
@@ -617,6 +663,38 @@
   /* Bloc « Creuser le sujet » (Figma 466:1451). */
   --width-deep-dive-panel: 523px;
   --height-deep-dive: 636px;
+
+  /* Carte-lien de « Creuser le sujet », variante encyclopédie
+     (Figma « page pilier » 494:612 : conteneur de 498px, 16px de padding et
+     16px de gouttière, soit (498 − 32 − 16) / 2 par rangée).
+
+     ⚠️ Hauteur POSÉE et non déduite, comme la carte chiffre plus haut : c'est
+     elle qui pousse le titre en haut et la description en bas
+     (`justify-content: space-between`). Déduite du contenu, une carte au titre
+     court se tassait et la rangée perdait son alignement.
+
+     N'agit qu'à partir de 768px, là où les cartes sont deux de front. Empilées
+     sur téléphone, quatre cartes de 225px allongeraient la page sans rien
+     ajouter — c'est le contenu qui commande alors. */
+  --height-topic-card: 225px;
+
+  /* Timeline des pages « Démarches » (famille D du registre).
+
+     ⚠️ Largeur PLAFONNÉE et centrée, alors que le composant pourrait tenir toute
+     la section : à 1280px, une ligne de description courait sur ~1200px, soit
+     trois fois la mesure au-delà de laquelle l'œil perd le début de la ligne
+     suivante. Calée sur `--width-power-panel` — la timeline et le module
+     interactif occupent le même rôle et la même place dans le gabarit, ils
+     doivent faire la même largeur d'une page à l'autre. */
+  --width-timeline: var(--width-power-panel);
+
+  /* Hauteur du tracé de la timeline d'amortissement (famille H).
+
+     ⚠️ Le SVG est en `preserveAspectRatio: none` : c'est cette hauteur qui fixe
+     la pente perçue de la courbe, pas le `viewBox`. Trop basse, le croisement
+     s'aplatit et l'effet « ça décolle » disparaît ; trop haute, le schéma pousse
+     la lecture chiffrée sous le pli sur un portable. */
+  --height-payback: 300px;
 
   /* --- Widget « Puissance installée » (Figma 466:1368, nœud aplati :
      mesuré sur le rendu). Bande photo pleine largeur, panneau de verre. --- */

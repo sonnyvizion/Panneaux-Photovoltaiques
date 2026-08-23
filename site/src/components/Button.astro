@@ -26,14 +26,23 @@ interface Props {
    * casse en deux perd sa forme de pilule.
    */
   wrap?: boolean;
+  /**
+   * Sens « retour » : la pastille passe à gauche et la flèche pointe en arrière.
+   *
+   * Le motif signature reste entier, simplement miroir — c'est la seule façon
+   * d'avoir un vrai bouton de recul sans inventer un second vocabulaire.
+   */
+  back?: boolean;
 }
 
-const { variant = 'primary', href, type = 'button', wrap = false } = Astro.props;
+/* Les attributs non déclarés (`data-*`, `aria-*`) sont reportés sur la pilule :
+   le simulateur a besoin d'accrocher son parcours au CTA sans le recopier. */
+const { variant = 'primary', href, type = 'button', wrap = false, back = false, ...rest } = Astro.props;
 const Tag = href ? 'a' : 'button';
 const hasIcon = variant !== 'secondary';
 ---
 
-<Tag class={`btn btn--${variant} ${wrap ? 'btn--wrap' : ''}`} href={href} type={href ? undefined : type}>
+<Tag class={`btn btn--${variant} ${wrap ? 'btn--wrap' : ''} ${back ? 'btn--back' : ''}`} href={href} type={href ? undefined : type} {...rest}>
   {/* Deux niveaux : le cadre coupe, la ligne se déplace à l'intérieur. */}
   <span class="btn__label">
     <span class="btn__label-line"><slot /></span>
@@ -64,6 +73,11 @@ const hasIcon = variant !== 'secondary';
     white-space: nowrap;
     padding: var(--pad-button-edge) var(--pad-button-edge) var(--pad-button-edge)
       var(--pad-button-start);
+    /* Angles de la flèche, au repos et à l'appui. En variables pour que la
+       variante miroir n'ait que deux valeurs à redéfinir, sans dupliquer les
+       six règles d'état plus bas. */
+    --btn-arrow-rest: 0deg;
+    --btn-arrow-hover: -45deg;
 
     background: var(--btn-bg);
     color: var(--btn-fg);
@@ -168,7 +182,20 @@ const hasIcon = variant !== 'secondary';
   }
 
   .btn__arrow {
+    transform: rotate(var(--btn-arrow-rest));
     transition: transform var(--duration-fast) var(--easing-default);
+  }
+
+  /* --- Miroir : le recul ---
+     `row-reverse` fait passer la pastille à gauche ; le rembourrage suit, sinon
+     la pilule serait creuse d'un côté et serrée de l'autre. Les deux angles
+     restent séparés de 45° : c'est le même geste, retourné. */
+  .btn--back {
+    flex-direction: row-reverse;
+    padding: var(--pad-button-edge) var(--pad-button-start) var(--pad-button-edge)
+      var(--pad-button-edge);
+    --btn-arrow-rest: -180deg;
+    --btn-arrow-hover: -135deg;
   }
 
   /* --- État actif ---
@@ -208,11 +235,11 @@ const hasIcon = variant !== 'secondary';
 
   .btn:hover .btn__arrow,
   .btn:active .btn__arrow {
-    transform: rotate(-45deg);
+    transform: rotate(var(--btn-arrow-hover));
   }
 
   .btn:focus-visible .btn__arrow {
-    transform: rotate(-45deg);
+    transform: rotate(var(--btn-arrow-hover));
   }
 
   /* `label-roll` vit dans global.css : le même geste sert les liens des
@@ -237,7 +264,7 @@ const hasIcon = variant !== 'secondary';
     .btn:hover .btn__arrow,
     .btn:active .btn__arrow,
     .btn:focus-visible .btn__arrow {
-      transform: none;
+      transform: rotate(var(--btn-arrow-rest));
     }
 
     .btn:hover .btn__label-line,
@@ -258,11 +285,11 @@ const hasIcon = variant !== 'secondary';
 
     .btn:hover .btn__arrow,
     .btn:active .btn__arrow {
-      transform: none;
+      transform: rotate(var(--btn-arrow-rest));
     }
 
     .btn:focus-visible .btn__arrow {
-      transform: none;
+      transform: rotate(var(--btn-arrow-rest));
     }
 
     .btn:hover .btn__label-line,

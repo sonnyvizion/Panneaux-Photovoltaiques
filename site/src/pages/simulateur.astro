@@ -1,0 +1,41 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SimulatorPanels from '../components/SimulatorPanels.astro';
+
+/**
+ * `/simulateur` — la colonne vertébrale du site (CLAUDE.md).
+ *
+ * ⚠️ SEUL ENDROIT DU SITE QUI CALCULE (règle d'or #3). Les modules des pages de
+ * contenu illustrent une variable à la fois et renvoient ici ; cette page prend
+ * toutes les entrées et produit une estimation complète.
+ *
+ * ⚠️ Elle ne contient AUCUNE formule : `simulate()` orchestre les cinq modules
+ * déjà construits pour les pages. C'est la règle absolue du cahier — zéro
+ * nouvelle logique de calcul.
+ *
+ * ⚠️ Le parcours se fait UNE QUESTION PAR ÉCRAN, et l'estimation n'apparaît
+ * qu'au bout. Le simulateur n'est donc plus un calculateur live : on a échangé
+ * le terrain de jeu contre un parcours qui va au bout. `simulateur.md` décrit
+ * encore l'ancien fonctionnement et reste à mettre à jour.
+ *
+ * ⚠️ `noindex` : une page d'outil n'a pas de contenu à indexer, et son texte
+ * ferait doublon avec les pages encyclopédiques qui, elles, portent le SEO.
+ * C'est le trafic de ces pages qui alimente ce simulateur, pas l'inverse.
+ *
+ * ⚠️ La page ne pose plus de `Section` : le simulateur EST une bande, sur le
+ * modèle des modules qui y mènent (`SliderCalculator`). Photo en fond, panneau
+ * de verre par-dessus.
+ *
+ * ⚠️ PAS de `transparentHeader`, contrairement aux pages qui ouvrent sur une
+ * photo. Cette bande n'est pas un hero : `header--over-hero` passe en
+ * `position: absolute` et viendrait recouvrir le titre du simulateur. L'en-tête
+ * opaque reste dans le flux et la bande commence dessous.
+ */
+---
+
+<BaseLayout
+  title="Simulateur solaire — votre estimation en quelques questions | Belgreen"
+  noindex
+>
+  <SimulatorPanels />
+</BaseLayout>

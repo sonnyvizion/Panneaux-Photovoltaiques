@@ -1,0 +1,211 @@
+---
+import type { SvgComponent } from 'astro/types';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Badge from './Badge.astro';
+import type { SectionCopy, TimelineStep } from '../data/content';
+
+/**
+ * Timeline de démarches — famille D du registre des modules.
+ *
+ * Le module des trois pages « Démarches administratives » (Wallonie, Bruxelles,
+ * Flandre). Deux à quatre étapes selon la région, même composant.
+ *
+ * ⚠️ C'est un `<ol>`, pas une suite de cartes. L'ordre EST l'information sur ces
+ * pages — on ne déclare pas la mise en service avant d'avoir fait contrôler
+ * l'installation. Un lecteur d'écran doit l'entendre (« 2 sur 4 »), et il
+ * l'entend gratuitement avec le bon élément.
+ *
+ * ⚠️ Le trait vertical est décoratif et purement CSS : un pseudo-élément sur
+ * chaque étape sauf la dernière. Pas de SVG, pas de hauteur calculée — il suit
+ * la hauteur réelle du texte, qui varie d'une région à l'autre.
+ *
+ * Ces pages suivent le GABARIT ALLÉGÉ du cahier de construction (hero →
+ * transition → timeline → FAQ → pont) : ni « L'essentiel », ni « Creuser le
+ * sujet ». Une démarche administrative n'a pas de profondeur à replier, elle a
+ * des étapes à suivre.
+ */
+interface Props extends SectionCopy {
+  /** Les étapes, dans l'ordre. Leur numéro vient de leur position. */
+  steps: (TimelineStep & { icon?: SvgComponent })[];
+}
+
+const { overline, title, intro, steps } = Astro.props;
+---
+
+<Section tone="grey">
+  <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
+
+  <ol class="timeline reveal">
+    {steps.map((step, index) => (
+      <li class:list={['timeline__step', { 'timeline__step--last': index === steps.length - 1 }]}>
+        {/* Le numéro est écrit, pas seulement suggéré par la puce : c'est un
+            ordre à suivre, et le compteur natif d'un `<ol>` ne se met pas en
+            forme de façon fiable dans un cercle. `aria-hidden` parce que la
+            liste ordonnée le dit déjà à l'oral. */}
+        <span class="timeline__marker" aria-hidden="true">{index + 1}</span>
+
+        <div class="timeline__body">
+          <div class="timeline__head">
+            <h3 class="timeline__title">{step.title}</h3>
+            {step.icon && (
+              <step.icon class="timeline__icon" width={32} height={32} aria-hidden="true" focusable="false" />
+            )}
+          </div>
+          <p class="timeline__text">{step.text}</p>
+          {step.badge && (
+            <p class="timeline__badge">
+              <Badge variant="lime">{step.badge}</Badge>
+            </p>
+          )}
+        </div>
+      </li>
+    ))}
+  </ol>
+</Section>
+
+<style>
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: var(--width-timeline);
+    margin: 0 auto;
+    padding: var(--pad-card-lg-block);
+    list-style: none;
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  /* La grille tient le marqueur à gauche et laisse le texte commander la
+     hauteur. `1fr` sur la seconde colonne, pas `auto` : sans elle, un titre long
+     élargirait la colonne du marqueur. */
+  .timeline__step {
+    display: grid;
+    grid-template-columns: var(--space-48) 1fr;
+    gap: var(--space-3);
+    /* L'espace sous une étape appartient au trait qui la relie à la suivante :
+       il est donc dans le padding, pas dans un `gap` de la pile. */
+    padding-bottom: var(--space-4);
+    position: relative;
+  }
+
+  /* Le trait de liaison. Il part sous le marqueur et descend jusqu'à l'étape
+     suivante — d'où son absence sur la dernière, qui ne relie plus rien. */
+  .timeline__step::before {
+    content: '';
+    position: absolute;
+    top: var(--space-48);
+    bottom: 0;
+    /* Centré sur le marqueur : la moitié de sa largeur, moins la moitié du
+       trait. Dérivé des tokens, donc solidaire de toute retouche de taille. */
+    left: calc(var(--space-48) / 2 - var(--border-width) / 2);
+    width: var(--border-width);
+    background: var(--color-shade-grey);
+  }
+
+  .timeline__step--last {
+    padding-bottom: 0;
+  }
+
+  .timeline__step--last::before {
+    display: none;
+  }
+
+  .timeline__marker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-48);
+    height: var(--space-48);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-power-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timeline__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+    /* Aligne la première ligne du titre sur le centre optique du marqueur. */
+    padding-top: var(--space-2);
+  }
+
+  .timeline__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .timeline__title {
+    margin: 0;
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  .timeline__icon {
+    flex-shrink: 0;
+    /* Livrées en `stroke="currentColor"`, affinées comme celles des cartes :
+       à cette taille le trait d'origine pèse plus lourd que le titre. */
+    color: var(--color-text-muted);
+    stroke-width: 1.5;
+  }
+
+  .timeline__text {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .timeline__badge {
+    margin-top: var(--space-1);
+  }
+
+  /* Le panneau perd ses 25px de padding sur téléphone : imbriqué dans la marge
+     de section, il ne laissait pas 250px au texte sur un écran de 320. */
+  @media (max-width: 767px) {
+    .timeline {
+      padding: var(--space-12);
+    }
+
+    /* Marqueur plus compact : à 48px il mangeait un sixième de la largeur. */
+    .timeline__step {
+      grid-template-columns: var(--space-24) 1fr;
+      gap: var(--space-2);
+    }
+
+    .timeline__step::before {
+      top: var(--space-24);
+      left: calc(var(--space-24) / 2 - var(--border-width) / 2);
+    }
+
+    .timeline__marker {
+      width: var(--space-24);
+      height: var(--space-24);
+      font-size: var(--text-body-sm-size);
+    }
+
+    .timeline__body {
+      padding-top: 0;
+    }
+
+    /* L'icône disparaît : elle n'apporte rien à côté d'un titre qui prend déjà
+       deux lignes, et elle vole la largeur dont ce titre a besoin. */
+    .timeline__icon {
+      display: none;
+    }
+  }
+</style>

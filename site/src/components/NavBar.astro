@@ -114,6 +114,34 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
 
   {/* Rangée principale — logo · Accueil + 4 piliers · CTA unique (règle d'or #2) */}
   <div class="header__main">
+    {/* ⚠️ Le burger est ici, PREMIER enfant de la rangée, et non plus dans
+        `.header__actions` : la maquette mobile le veut à gauche, collé au
+        pictogramme. Un `order` n'aurait rien pu y faire — il ne réordonne
+        qu'entre frères, or le burger était enfermé dans le bloc d'actions,
+        à l'autre bout de la rangée.
+
+        Sans effet sur le desktop, où il est `display: none` dès 1024px : la
+        rangée y retrouve exactement les trois blocs qu'elle avait. */}
+    <button
+      type="button"
+      class="header__burger"
+      aria-expanded="false"
+      aria-controls="header-panel"
+    >
+      {/* Le libellé change avec l'état : le panneau couvrant tout l'écran,
+          « Ouvrir » serait faux une fois ouvert. Le script le met à jour en
+          même temps qu'`aria-expanded`. */}
+      <span class="visually-hidden" data-burger-label>Ouvrir le menu</span>
+      <svg class="header__burger-icon header__burger-icon--open" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+      {/* Une croix quand le panneau est plein écran : un burger n'y dit plus
+          comment revenir en arrière. */}
+      <svg class="header__burger-icon header__burger-icon--close" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+    </button>
+
     <div class="header__brand">
       <Logo size="header" />
     </div>
@@ -274,30 +302,32 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     </nav>
 
     <div class="header__actions">
-      {/* Masqué tant que le CTA du hero est à l'écran : deux CTA identiques
-          visibles en même temps se cannibalisent (règle d'or #2). */}
+      {/* Appel direct — mobile uniquement. Sur desktop le numéro est en toutes
+          lettres dans la rangée utilitaire ; sous 1024px cette rangée n'existe
+          plus, et le téléphone n'était plus joignable qu'au fond du panneau
+          déplié. Or c'est le geste le plus court du modèle « pas
+          d'intermédiaire » : il remonte donc à côté du CTA.
+
+          Un `aria-label` explicite, le pictogramme étant seul — et le numéro y
+          est lu, sans quoi « Appeler » ne dirait pas qui. */}
+      <a class="header__call" href={PHONE.href} aria-label={`Appeler le ${PHONE.label}`}>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <path
+            d="M3 2h3l1.5 3.5-2 1.2a9 9 0 004.8 4.8l1.2-2L15 11v3a1 1 0 01-1 1A11.5 11.5 0 012 3a1 1 0 011-1z"
+            stroke="currentColor"
+            stroke-width="1.3"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+
+      {/* Sur DESKTOP, masqué tant que le CTA du hero est à l'écran : deux CTA
+          identiques visibles en même temps se cannibalisent (règle d'or #2).
+          Sous 1024px cette réserve est levée — le bouton reste en place en
+          permanence (demande client, voir la règle plus bas). */}
       <div class="header__cta">
         <Button variant="primary" href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</Button>
       </div>
-      <button
-        type="button"
-        class="header__burger"
-        aria-expanded="false"
-        aria-controls="header-panel"
-      >
-        {/* Le libellé change avec l'état : le panneau couvrant tout l'écran,
-            « Ouvrir » serait faux une fois ouvert. Le script le met à jour en
-            même temps qu'`aria-expanded`. */}
-        <span class="visually-hidden" data-burger-label>Ouvrir le menu</span>
-        <svg class="header__burger-icon header__burger-icon--open" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M3 6h14M3 10h14M3 14h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-        </svg>
-        {/* Une croix quand le panneau est plein écran : un burger n'y dit plus
-            comment revenir en arrière. */}
-        <svg class="header__burger-icon header__burger-icon--close" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-          <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-        </svg>
-      </button>
     </div>
   </div>
 
@@ -1473,8 +1503,9 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
   }
 
   /* --- Mobile : le burger est épinglé, la rangée utilitaire disparaît ---
-     Le header mobile se réduit au logo et à ce bouton. Téléphone, région et
-     langues descendent dans le panneau, qui a la place de les traiter.
+     Le header mobile tient en quatre objets : burger et pictogramme à gauche,
+     appel et CTA à droite. Région et langues descendent dans le panneau, qui a
+     la place de les traiter.
 
      `fixed` et non `sticky` : le header est absolu au-dessus du hero, donc il
      défile avec lui — un `sticky` n'aurait rien à quoi se raccrocher. Épinglé,
@@ -1507,7 +1538,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
        remonterait sous le logo et le burger. Même calcul que le retrait haut du
        panneau — les deux dégagent le même objet. */
     .header {
-      min-height: calc(var(--container-padding) * 2 + var(--size-button-icon));
+      min-height: calc(var(--container-padding) * 2 + var(--size-header-control));
     }
 
     /* Le logo reste visible une fois détaché du hero. La règle qui le masque
@@ -1516,6 +1547,18 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
        et le logo doit accompagner le burger en permanence. */
     [data-over-hero].header--opaque .header__brand {
       visibility: visible;
+    }
+
+    /* Ce qui SÉPARE les deux groupes. La rangée est en `space-between` : avec
+       trois blocs visibles, elle aurait distribué l'espace DE PART ET D'AUTRE
+       du pictogramme, qui serait parti flotter au milieu, loin du burger.
+
+       Une marge automatique absorbe tout l'espace libre avant que
+       `justify-content` ne puisse en répartir la moindre part : elle rassemble
+       donc burger et pictogramme à gauche, et pousse le bloc d'actions à
+       droite. C'est la mise en page de la maquette, sans conteneur en plus. */
+    .header__brand {
+      margin-right: auto;
     }
   }
 
@@ -1553,6 +1596,27 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     visibility: visible;
     transform: translateY(0) scale(1);
     --cta-hide-delay: 0s;
+  }
+
+  /* Sous 1024px le CTA ne se réserve plus : il est LÀ en permanence (demande
+     client), sans attendre que le hero soit dépassé.
+
+     ⚠️ Cette règle DOIT rester après `.header__cta` : à spécificité égale,
+     c'est l'ordre qui tranche. Placée dans le bloc mobile plus haut — celui qui
+     épingle la rangée — elle était écrasée par la valeur `opacity: 0` déclarée
+     après elle, et le bouton restait invisible tant qu'on n'avait pas défilé.
+
+     ⚠️ Elle lève par ailleurs, sur mobile seulement, la précaution de la règle
+     d'or #2 : le CTA du hero et celui du header coexistent désormais en haut de
+     page. C'était le motif du masquage d'origine — deux boutons identiques qui
+     se cannibalisent. Le desktop garde la réserve intacte. */
+  @media (max-width: 1023px) {
+    .header__cta {
+      opacity: 1;
+      visibility: visible;
+      transform: none;
+      --cta-hide-delay: 0s;
+    }
   }
 
   /* Repli de la nav : seule la pilule de liens se retire, la rangée
@@ -1611,18 +1675,42 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     }
   }
 
-  .header__burger {
+  /* Les deux pastilles d'icône de la rangée partagent tout : même diamètre,
+     même verre, même couleur. Elles se répondent d'un bout à l'autre du header
+     et doivent rester indiscernables — les séparer ferait diverger celle qu'on
+     oublierait de mettre à jour. */
+  .header__burger,
+  .header__call {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: var(--size-button-icon);
-    height: var(--size-button-icon);
+    /* Calées sur la hauteur HORS TOUT du CTA, pas sur la pastille nue qu'il
+       contient : les quatre objets de la rangée forment une seule ligne
+       d'objets ronds, et le liseré de padding du bouton suffisait à les
+       désaligner de 12px. */
+    width: var(--size-header-control);
+    height: var(--size-header-control);
     border-radius: var(--radius-pill);
     border: none;
     cursor: pointer;
     background: var(--bg-glass-fill);
     backdrop-filter: blur(var(--bg-glass-blur));
     color: var(--color-text-primary);
+  }
+
+  /* Mobile uniquement : sur desktop le numéro est en toutes lettres dans la
+     rangée utilitaire, une pastille de plus y ferait doublon. Le `display` est
+     rétabli par le bloc 1023px, avec le reste de la rangée mobile. */
+  .header__call {
+    display: none;
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  @media (max-width: 1023px) {
+    .header__call {
+      display: inline-flex;
+    }
   }
 
   /* --- Panneau mobile --- */
@@ -1640,7 +1728,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     padding: var(--space-2);
     /* Le haut dégage la place du burger, qui reste épinglé PAR-DESSUS pour
        pouvoir refermer. */
-    padding-top: calc(var(--container-padding) * 2 + var(--size-button-icon));
+    padding-top: calc(var(--container-padding) * 2 + var(--size-header-control));
     background: var(--bg-glass-fill-menu);
     backdrop-filter: blur(var(--bg-glass-blur-menu));
     overflow-y: auto;
@@ -1821,14 +1909,17 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     margin-top: auto;
   }
 
-  /* Sous 768px, le CTA vit dans le panneau : le garder dans la rangée
-     ferait déborder logo + bouton + burger hors de l'écran. */
-  @media (max-width: 767px) {
-    .header__cta {
-      display: none;
-    }
-  }
+  /* Le CTA vivait dans le panneau sous 768px : avec le logotype complet (~175px
+     de large), la rangée débordait dès qu'on y ajoutait un bouton. Le passage
+     au pictogramme a libéré la place. Le CTA du panneau reste en second
+     recours, il ne coûte rien et sert le menu déplié.
 
+     ⚠️ Le budget est SERRÉ, et il l'est devenu en alignant les trois objets sur
+     la hauteur du CTA : ils sont passés de 32 à 44px, et le pictogramme, carré,
+     s'est élargi d'autant. Largeur du bouton mesurée dans Circular Std Medium
+     (tracking -0.02em compris) : « Mon estimation » = 110,3px, soit 178,3px de
+     bouton. Les deux blocs ci-dessous tiennent ce budget par les seuls ÉCARTS —
+     les toucher sans refaire le compte fait déborder la rangée. */
   @media (max-width: 479px) {
     .header {
       gap: var(--space-1);
@@ -1866,8 +1957,31 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
       white-space: nowrap;
     }
 
-    .header__main {
-      gap: var(--space-2);
+    /* Les écarts sont le SEUL levier utilisé pour tenir la rangée : ni le
+       libellé du bouton ni son padding n'y touchent, le CTA garde exactement
+       la forme qu'il a partout ailleurs sur le site.
+
+       À 360px, l'écran le plus étroit qui montre encore les quatre objets :
+       44 (burger) + 4 + 45,3 (picto) + 4 + 44 (appel) + 4 + 178,3 (CTA)
+       = 323,6px pour 328 disponibles. Il reste 4px — c'est peu, mais le
+       compte est exact : la largeur du bouton est mesurée dans le fichier de
+       police, pas estimée. Toucher un écart d'un pixel fait déborder. */
+    .header__main,
+    .header__actions {
+      gap: var(--space-1);
+    }
+  }
+
+  /* Sous 360px, plus rien ne rentre : il resterait 265,6px de rangée pour 288
+     disponibles à 320px, appel compris — soit 25px de trop.
+
+     C'est l'APPEL qui saute, et pas le CTA : il est le seul des quatre à être
+     joignable ailleurs sans coût pour l'utilisateur (pied du panneau déplié,
+     où il figure déjà en toutes lettres). Le CTA, lui, est la raison d'être de
+     la rangée, et le burger sa seule porte de sortie. */
+  @media (max-width: 359px) {
+    .header__call {
+      display: none;
     }
   }
 
@@ -1886,6 +2000,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
   .header__summary:focus-visible,
   .header__utility-item:focus-visible,
   .header__burger:focus-visible,
+  .header__call:focus-visible,
   .header__panel-link:focus-visible,
   .header__group-link:focus-visible,
   .header__panel-sublink:focus-visible,
@@ -1935,7 +2050,8 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
   }
 
-  .header__burger {
+  .header__burger,
+  .header__call {
     -webkit-backdrop-filter: blur(var(--bg-glass-blur));
   }
 </style>

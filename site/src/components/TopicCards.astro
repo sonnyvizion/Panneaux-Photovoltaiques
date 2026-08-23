@@ -1,0 +1,328 @@
+---
+import type { SvgComponent } from 'astro/types';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import type { SectionCopy, TopicCard } from '../data/content';
+
+/**
+ * « Creuser le sujet », variante cartes-liens (Figma « page pilier » 494:564).
+ *
+ * Même emplacement du gabarit que `DeepDive.astro` — la profondeur, après
+ * « L'essentiel » — mais l'autre issue : ici la profondeur est AILLEURS, sur des
+ * pages qui existent déjà au sitemap, et le bloc y conduit. Voir `TopicCard`
+ * dans `data/content.ts` pour le critère de choix entre les deux.
+ *
+ * Ce que ça change pour le SEO : ce bloc est un maillage interne, pas du contenu
+ * indexable de plus. Les quatre libellés sont donc les vrais titres des pages
+ * visées, jamais des accroches — c'est ce texte-là qui porte le signal.
+ *
+ * ⚠️ La CARTE ENTIÈRE est le lien, pas la flèche : sur mobile, une pastille de
+ * 32px au fond d'une carte est une cible qu'on rate (règle d'or #6). La flèche
+ * n'est qu'un signe, d'où son `aria-hidden`.
+ *
+ * ⚠️ Une carte SANS `href` est un simple bloc de texte : pas de flèche, pas de
+ * survol, pas d'entrée au clavier. C'est le cas le plus fréquent du sitemap —
+ * la plupart des pages développent leurs quatre sujets sur place.
+ */
+interface Props extends SectionCopy {
+  /**
+   * Les cartes, avec leur icône déjà résolue.
+   *
+   * L'icône est un COMPOSANT passé par la page, pas une clé à résoudre ici :
+   * chaque page du sitemap a son propre jeu d'icônes livré par le client
+   * (`img/icones-toutes-pages/<page>/`). Un registre central dans ce composant
+   * aurait fini par importer les icônes des cinquante-cinq pages dans chacune
+   * d'elles.
+   */
+  items: (TopicCard & { icon?: SvgComponent })[];
+  /**
+   * Nombre de colonnes au-delà de 768px.
+   *
+   * 2 par défaut — la grille 2×2 du wireframe générique. 3 pour les grilles de
+   * critères qui comparent trois options de front (les familles de fixation).
+   * 4 pour une comparaison de technologies (les types de panneaux), où les
+   * quatre options doivent se lire d'un seul balayage.
+   */
+  columns?: 2 | 3 | 4;
+  /**
+   * Fond de la section.
+   *
+   * `default` quand le bloc occupe sa place habituelle de « Creuser le sujet »,
+   * `grey` quand il sert de MODULE en milieu de page — il doit alors se
+   * détacher comme les autres modules du site, qui sont tous sur fond contrasté.
+   */
+  tone?: 'default' | 'grey';
+}
+
+const { overline, title, intro, items, columns = 2, tone = 'default' } = Astro.props;
+---
+
+<Section tone={tone}>
+  <SectionHeading
+    overline={overline}
+    overlineTone={tone === 'grey' ? 'tertiary' : 'muted'}
+    title={title}
+    intro={intro}
+  />
+
+  <ul class="topics reveal" style={`--topic-columns: ${columns}`}>
+    {items.map(({ title: cardTitle, text, href, accent, items: cardItems, icon: Icon }) => {
+      /* `<a>` seulement si la carte mène quelque part. Sans destination, un
+         lien vide entrerait dans la navigation clavier pour ne rien faire —
+         voir `href` dans `TopicCard`. */
+      const Tag = href ? 'a' : 'div';
+      return (
+      <li class="topics__item">
+        <Tag class:list={['topics__card', { 'topics__card--accent': accent, 'topics__card--link': href }]} href={href}>
+          <span class="topics__head">
+            <span class="topics__title">{cardTitle}</span>
+            {/* `aria-hidden` sur une icône décorative : le titre juste à côté
+                dit déjà de quoi il s'agit. Taille imposée aux DEUX dimensions —
+                un SVG en `auto` reprend sa taille intrinsèque. */}
+            {Icon && <Icon class="topics__icon" width={45} height={45} aria-hidden="true" focusable="false" />}
+          </span>
+          <span class="topics__foot">
+            <span class="topics__body">
+              <span class="topics__text">{text}</span>
+              {/* ⚠️ `cardItems`, pas `items` : le second est le tableau de
+                  CARTES reçu en prop. Sans ce renommage, chaque carte rendait
+                  la liste de toutes les cartes de la grille, en
+                  « [object Object] ». */}
+              {cardItems && cardItems.length > 0 && (
+                /* Une vraie liste : ce sont des éléments distincts, un lecteur
+                   d'écran doit les annoncer comme tels et en donner le nombre. */
+                <ul class="topics__list">
+                  {cardItems.map((item) => <li>{item}</li>)}
+                </ul>
+              )}
+            </span>
+            {href && (
+              <span class="topics__arrow" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <path
+                    d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+            )}
+          </span>
+        </Tag>
+      </li>
+      );
+    })}
+  </ul>
+</Section>
+
+<style>
+  /* Le creux gris qui porte les cartes blanches. C'est lui qui donne au bloc sa
+     silhouette : sans fond, quatre cartes blanches sur une section blanche ne
+     formeraient plus un ensemble. */
+  .topics {
+    display: grid;
+    gap: var(--gap-cards);
+    padding: var(--space-3);
+    margin: 0;
+    list-style: none;
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
+  .topics__item {
+    display: flex;
+    /* Sans `min-width: 0`, un titre long impose sa largeur à la colonne et la
+       grille déborde du conteneur. */
+    min-width: 0;
+  }
+
+  .topics__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-width: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: opacity var(--duration-medium) var(--easing-expand);
+  }
+
+  .topics__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* Le style « overline », celui des libellés de cartes de « L'essentiel » :
+     les deux blocs se suivent dans la page et nomment tous les deux un sujet
+     au-dessus de son contenu. Le H3 pleine taille les mettait en concurrence. */
+  .topics__title {
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  .topics__icon {
+    flex-shrink: 0;
+    /* Les icônes livrées sont en `stroke="currentColor"` : elles suivent la
+       couleur du texte de la carte au lieu d'imposer la leur. */
+    color: var(--color-text-tertiary);
+    /* ⚠️ Affiné depuis le 2 des fichiers livrés : à 45px de côté, le trait
+       d'origine empâte le dessin et pèse plus lourd que le titre qu'il
+       accompagne. En CSS et non en attribut sur chaque import — une déclaration
+       CSS l'emporte sur l'attribut de présentation gravé dans le SVG, et le
+       réglage reste au même endroit que la couleur. */
+    stroke-width: 1.5;
+  }
+
+  .topics__foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* Le style de la réponse du hero (`.page-hero__answer`) : c'est le même rôle
+     — la phrase de contexte sous un titre, en Inter et en gris tertiaire. Le
+     display 22px d'origine faisait de la description le poids lourd de la
+     carte, devant son propre titre. */
+  .topics__text {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  /* Le corps prend toute la largeur restante : sans lui, une carte à liste
+     laissait la flèche coller au texte au lieu de rester en pied de carte. */
+  .topics__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  .topics__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: 0;
+    padding-left: var(--space-3);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .topics__card--accent .topics__list {
+    color: var(--color-text-secondary);
+  }
+
+  .topics__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--size-button-icon);
+    height: var(--size-button-icon);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+    /* Même geste que `ArrowLink` : la flèche se lève à 45°. */
+    transition: transform var(--duration-medium) var(--easing-expand);
+  }
+
+  /* L'aplat d'accent : une carte par grille, celle que la page veut voir en
+     premier. Le texte y passe en encre pleine — le gris tertiaire, calibré pour
+     du blanc, perd son contraste sur le lime. */
+  .topics__card--accent {
+    background: var(--color-highlight-primary);
+  }
+
+  .topics__card--accent .topics__text,
+  .topics__card--accent .topics__icon {
+    color: var(--color-text-secondary);
+  }
+
+  /* ⚠️ Survol et anneau réservés aux cartes qui SONT des liens : sur une carte
+     inerte, ils promettraient un clic qui n'arrive jamais. */
+  .topics__card--link:hover {
+    opacity: var(--opacity-hover);
+  }
+
+  .topics__card--link:hover .topics__arrow,
+  .topics__card--link:focus-visible .topics__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .topics__card--link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Deux colonnes seulement à partir de 768px : à quatre de front, les titres
+     se casseraient en quatre lignes et les cartes perdraient leur rapport.
+     Sur téléphone elles s'empilent — ce sont des liens, pas des grandeurs à
+     comparer d'un coup d'œil (contrairement aux tuiles du module). */
+  @media (min-width: 768px) {
+    .topics {
+      grid-template-columns: repeat(var(--topic-columns), 1fr);
+    }
+
+    /* `min-height` et non `height` : une carte dont le titre passe à deux
+       lignes doit pouvoir grandir, et les autres de sa rangée la suivent par
+       l'étirement de la grille. Une hauteur fixe l'aurait fait déborder. */
+    .topics__card {
+      min-height: var(--height-topic-card);
+    }
+  }
+
+  /* Aucun survol sur écran tactile : il n'y a pas de survol, seulement un état
+     qui reste collé après le tap (règle d'or #6). */
+  @media (max-width: 767px) {
+    /* Trait encore affiné sur téléphone. À densité de pixels élevée, un 1,5
+       rendu sur un écran de 390 revient visuellement plus épais que le même
+       trait vu à 1440 : l'icône y reprenait le dessus sur le titre qu'elle
+       accompagne, alors que sur mobile elle n'est plus qu'un repère. */
+    .topics__icon {
+      stroke-width: 1;
+    }
+
+    .topics__card {
+      transition: none;
+    }
+
+    .topics__card--link:hover {
+      opacity: 1;
+    }
+
+    .topics__arrow,
+    .topics__card--link:hover .topics__arrow,
+    .topics__card--link:focus-visible .topics__arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .topics__arrow,
+    .topics__card--link:hover .topics__arrow,
+    .topics__card--link:focus-visible .topics__arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>
