@@ -48,6 +48,24 @@ interface Props {
    * a déjà sa tuile « Budget indicatif » à quelques pixels de là.
    */
   showCost?: boolean;
+  /**
+   * Le titre du graphe.
+   *
+   * ⚠️ Optionnel, et absent par défaut : sur `/rentabilite-prix/amortissement`
+   * le `SectionHeading` de `PaybackTimeline` titre déjà le bloc, un second
+   * intitulé ferait doublon. Dans le compte rendu du simulateur, le graphe
+   * n'est précédé de rien — sans ce titre, il ne dit pas ce qu'il mesure.
+   */
+  caption?: string;
+  /**
+   * Le TRACÉ. `true` par défaut — la page de contenu ne vit que par lui.
+   *
+   * ⚠️ Le compte rendu du simulateur le coupe : la courbe y prenait un tiers de
+   * la hauteur de l'écran pour dire ce que les deux tuiles disent en trois mots,
+   * et le détail visuel est ce qui donne sa valeur au rapport PDF. La lecture
+   * chiffrée, elle, reste : c'est elle qui porte l'information (règle d'or #1).
+   */
+  plot?: boolean;
 }
 
 const {
@@ -56,42 +74,101 @@ const {
   live = false,
   hypotheses = true,
   showCost = true,
+  caption,
+  plot = true,
 } = Astro.props;
 const g = paybackGeometry(kwc, { region });
 const PAD = 8;
+
+/**
+ * Les graduations de l'axe vertical, en euros.
+ *
+ * ⚠️ Sans elles le graphe montrait une FORME, pas une quantité : on voyait une
+ * courbe monter sans savoir vers quoi. Trois repères suffisent — un axe
+ * finement gradué prétendrait à une précision que l'estimation n'a pas.
+ *
+ * La position se déduit de la même projection que le tracé (`payback.ts`) :
+ * `PAD` en haut et en bas, le reste proportionnel. La recalculer autrement
+ * décalerait les étiquettes par rapport à la courbe.
+ */
+const scale = [1, 0.5, 0].map((share) => ({
+  value: g.maxY * share,
+  top: ((CHART_H - PAD - share * (CHART_H - PAD * 2)) / CHART_H) * 100,
+}));
+
+/* Le croisement, en pourcentage du cadre — mêmes unités que l'échelle. */
+const crossLeft = ((g.crossX ?? 0) / CHART_W) * 100;
+const crossTop = (g.costY / CHART_H) * 100;
 ---
 
 <div class={`payback__chart-block${live ? ' payback__chart-block--live' : ''}`} data-payback>
-  <div class="payback__chart">
-    {/* Décoratif : la lecture chiffrée est juste en dessous, en texte. */}
-    <svg
-      class="payback__svg"
-      viewBox={`0 0 ${CHART_W} ${CHART_H}`}
-      preserveAspectRatio="none"
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path class="payback__benefit" d={g.benefit} data-payback-benefit />
-      <line class="payback__cost" x1={PAD} y1={g.costY} x2={CHART_W - PAD} y2={g.costY} data-payback-cost />
-      <path class="payback__curve" d={g.curve} pathLength="1" data-payback-curve />
-      <circle
-        class="payback__cross"
-        cx={g.crossX ?? 0}
-        cy={g.costY}
-        r="11"
-        hidden={g.crossX === null}
-        data-payback-cross
-      />
-    </svg>
+  {caption && <p class="payback__caption">{caption}</p>}
 
-    <p class="payback__axis" aria-hidden="true" data-payback-axis>
-      {g.marks.map((year) => <span>{year === 1 ? 'Année 1' : `${year} ans`}</span>)}
-    </p>
-  </div>
+  {plot && (
+    <div class="payback__chart">
+      <div class="payback__plot">
+        {/* L'échelle verticale. `aria-hidden` comme le tracé : la lecture chiffrée
+            en dessous porte l'information, ceci ne fait que la situer. */}
+        <ul class="payback__scale" aria-hidden="true" data-payback-scale>
+          {scale.map(({ value, top }) => (
+            <li style={`top:${top.toFixed(1)}%`}>{formatEuro(Math.round(value / 100) * 100)}</li>
+          ))}
+        </ul>
+
+      {/* Décoratif : la lecture chiffrée est juste en dessous, en texte. */}
+      <svg
+        class="payback__svg"
+        viewBox={`0 0 ${CHART_W} ${CHART_H}`}
+        preserveAspectRatio="none"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path class="payback__benefit" d={g.benefit} data-payback-benefit />
+        <line class="payback__cost" x1={PAD} y1={g.costY} x2={CHART_W - PAD} y2={g.costY} data-payback-cost />
+        <path class="payback__curve" d={g.curve} pathLength="1" data-payback-curve />
+      </svg>
+
+        {/* ⚠️ LE POINT DE CROISEMENT N'EST PAS DANS LE SVG. Il y était, en
+            `<circle r="11">` — et `preserveAspectRatio="none"` l'écrasait en
+            ellipse, puisque le tracé s'étire en largeur avec le panneau. C'est
+            voulu pour une courbe de tendance (sa pente exacte n'a pas à être
+            préservée), mais un disque, lui, doit rester un disque.
+
+            Posé en HTML par-dessus, il garde sa forme à toutes les largeurs. Ses
+            coordonnées restent celles du `viewBox`, exprimées en pourcentage :
+            c'est la même projection, donc il tombe exactement sur la courbe. */}
+        <span
+          class="payback__cross"
+          aria-hidden="true"
+          hidden={g.crossX === null}
+          style={`left:${crossLeft.toFixed(2)}%;top:${crossTop.toFixed(2)}%`}
+          data-payback-cross
+        ></span>
+      </div>
+
+      <p class="payback__axis" aria-hidden="true" data-payback-axis>
+        {g.marks.map((year) => <span>{year === 1 ? 'Année 1' : `${year} ans`}</span>)}
+      </p>
+
+      {/* ⚠️ LA LÉGENDE MANQUAIT. Rien n'indiquait que la ligne en tirets est le
+          coût de l'installation et la courbe les économies cumulées : sans ces
+          deux mots, le dessin est décoratif — on voit deux traits monter et
+          stagner sans savoir lequel dit quoi. */}
+      <ul class="payback__legend">
+        <li><span class="payback__key payback__key--curve" aria-hidden="true"></span>Économies cumulées</li>
+        <li><span class="payback__key payback__key--cost" aria-hidden="true"></span>Coût de l’installation</li>
+      </ul>
+    </div>
+  )}
 
   {/* La lecture du schéma, en toutes lettres. */}
   <dl class="payback__readout">
-    <div class="payback__item payback__item--accent">
+    {/* ⚠️ L'ACCENT NE SE POSE QUE SUR UNE BONNE NOUVELLE. Le lime est la couleur
+        d'action du système ; l'appliquer à « au-delà de 25 ans » mettait en
+        valeur le verdict le plus défavorable, et la tuile lisait comme un
+        argument de vente. Quand l'installation ne s'amortit pas, la tuile
+        redevient neutre. */}
+    <div class={`payback__item${g.payback === null ? '' : ' payback__item--accent'}`} data-payback-tile>
       <dt>Amortissement</dt>
       <dd data-payback-years>{paybackLabel(g.payback)}</dd>
     </div>
@@ -112,6 +189,17 @@ const PAD = 8;
       <dd data-payback-gain>{formatEuro(Math.round(g.gain / 100) * 100)}</dd>
     </div>
   </dl>
+
+  {/* ⚠️ L'ÉTAT « JAMAIS AMORTI » DOIT SE DIRE. Le graphe montre alors une courbe
+      qui ne croise rien : sans un mot, le visiteur voit un dessin qui monte et
+      croit que tout va bien. On nomme l'écart, et on nomme le levier — l'affinage
+      est le seul qui puisse retourner ce verdict (il fait passer l'autoconsommation
+      de 38 % à 60-70 %). */}
+  <p class="payback__shortfall" hidden={g.payback !== null} data-payback-shortfall>
+    Sur 25 ans, les économies cumulées n’atteignent pas le coût de l’installation.
+    Une puissance plus faible, ou un chauffage et une voiture qui consomment votre
+    propre production, changent complètement ce calcul.
+  </p>
 
   {hypotheses && (
     <p class="payback__hypotheses">
@@ -140,10 +228,13 @@ const PAD = 8;
     animation: none;
   }
 
-  .payback__cross[hidden] {
-    display: none;
+  .payback__caption {
+    color: var(--color-text-primary);
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
   }
-
 
   .payback__chart {
     display: flex;
@@ -151,10 +242,95 @@ const PAD = 8;
     gap: var(--space-2);
   }
 
+  /* L'échelle est posée SUR le tracé, pas à côté : une colonne d'étiquettes en
+     flux rétrécirait le graphe, et c'est la largeur qui rend la pente lisible. */
+  .payback__plot {
+    position: relative;
+  }
+
+  .payback__scale {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    pointer-events: none;
+  }
+
+  .payback__scale li {
+    position: absolute;
+    left: 0;
+    transform: translateY(-50%);
+    padding-inline: var(--space-1);
+    border-radius: var(--radius-1);
+    background: var(--color-white-primary);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .payback__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .payback__legend li {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  /* Les clés reprennent EXACTEMENT le trait qu'elles nomment — même couleur,
+     même tireté. Une pastille ronde obligerait à faire le lien de tête. */
+  .payback__key {
+    flex: none;
+    width: var(--space-4);
+    border-top-style: solid;
+    border-top-width: 3px;
+  }
+
+  .payback__key--curve {
+    border-top-color: var(--color-text-primary);
+  }
+
+  .payback__key--cost {
+    border-top-style: dashed;
+    border-top-width: 2px;
+    border-top-color: var(--color-text-muted);
+  }
+
+  .payback__shortfall {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* `display: flex`/`block` bat la règle UA sur `[hidden]` — garde-fou obligatoire
+     pour tout bloc masquable, le projet l'a déjà payé cinq fois. */
+  .payback__shortfall[hidden] {
+    display: none;
+  }
+
   /* `preserveAspectRatio: none` : le tracé s'étire en largeur avec le panneau.
      C'est une courbe de tendance, pas un relevé — sa pente exacte n'a pas à être
      préservée, et l'étirement évite une hauteur fixe qui écraserait le mobile. */
   .payback__svg {
+    /* ⚠️ `display: block` : en inline, le SVG laisse sous lui l'espace de la
+       ligne de base, le cadre devient plus haut que le tracé, et TOUT ce qui se
+       positionne en pourcentage par-dessus (l'échelle, le point de croisement)
+       glisse vers le bas. */
+    display: block;
     width: 100%;
     height: var(--height-payback);
     overflow: visible;
@@ -181,9 +357,19 @@ const PAD = 8;
   }
 
   .payback__cross {
-    fill: var(--color-highlight-primary);
-    stroke: var(--color-text-primary);
-    stroke-width: 3;
+    position: absolute;
+    width: var(--space-3);
+    height: var(--space-3);
+    /* Le disque est centré SUR le croisement, pas posé à côté. */
+    transform: translate(-50%, -50%);
+    border: var(--border-width) solid var(--color-text-primary);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    pointer-events: none;
+  }
+
+  .payback__cross[hidden] {
+    display: none;
   }
 
   .payback__axis {
@@ -202,25 +388,31 @@ const PAD = 8;
        et deux tuiles doivent alors se partager la largeur, pas en laisser une
        vide. */
     grid-template-columns: repeat(auto-fit, minmax(var(--width-sim-metric), 1fr));
-    gap: var(--space-2);
-    padding: var(--space-2);
+    gap: var(--gap-cards);
     margin: 0;
-    border-radius: var(--radius-card);
-    background: var(--color-white-clear);
   }
 
+  /* ⚠️ CHAQUE TUILE PORTE SA SURFACE. Un bandeau `white-clear` les tenait
+     ensemble, ce qui marchait sur une carte blanche. Dans le compte rendu du
+     simulateur — désormais posé sur un fond `white-clear` — le bandeau
+     disparaissait dans la page et les tuiles flottaient sans contour. Le filet
+     fait le travail, et c'est le seul moyen de profondeur du système : il n'y a
+     aucune ombre ici. */
   .payback__item {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--space-2);
     min-width: 0;
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-24) var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
     border-radius: var(--radius-card);
+    background: var(--color-white-primary);
     text-align: center;
   }
 
   .payback__item--accent {
+    border-color: var(--color-highlight-primary);
     background: var(--color-highlight-primary);
   }
 
@@ -246,8 +438,14 @@ const PAD = 8;
     /* ⚠️ PAS de `tabular-nums`. Il était là du temps où ce bloc n'affichait qu'un
        nombre isolé (« 12 ans »). Depuis que le simulateur y écrit une fourchette,
        la chasse tabulaire élargit AUSSI l'espace et le tiret : « 4 – 8 ans » s'y
-       délite en trois blocs. Piège déjà payé quatre fois dans ce projet. */
-    white-space: nowrap;
+       délite en trois blocs. Piège déjà payé quatre fois dans ce projet.
+
+       ⚠️ ET PLUS DE `white-space: nowrap` NON PLUS. Il protégeait la fourchette,
+       mais faisait sortir « au-delà de 25 ans » (330px en display 44) d'une tuile
+       de 192px sur la page Amortissement, où elles sont trois de front. Ce sont
+       maintenant des espaces INSÉCABLES qui tiennent la fourchette — le repli
+       reste possible pour la phrase, impossible pour le chiffre. */
+    text-wrap: balance;
   }
 
   .payback__hypotheses {

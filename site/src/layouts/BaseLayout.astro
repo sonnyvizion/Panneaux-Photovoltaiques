@@ -20,9 +20,16 @@ interface Props {
    * autres pages du sitemap.
    */
   transparentHeader?: boolean;
+  /**
+   * La page N'EST PAS une page du site : ni nav, ni footer, ni défilement
+   * piloté. Réservé au rapport (`/rapport/document`), qui est un DOCUMENT
+   * destiné à être imprimé — une nav en haut d'un PDF n'a aucun sens, et le
+   * défilement adouci n'a personne à servir dans un moteur d'impression.
+   */
+  bare?: boolean;
 }
 
-const { title, noindex = false, transparentHeader = false } = Astro.props;
+const { title, noindex = false, transparentHeader = false, bare = false } = Astro.props;
 ---
 
 <html lang="fr">
@@ -35,14 +42,16 @@ const { title, noindex = false, transparentHeader = false } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
-		<NavBar overHero={transparentHeader} />
+		{!bare && <NavBar overHero={transparentHeader} />}
 		<slot />
-		<Footer />
-		<script>
-			import { initSmoothScroll } from '../scripts/smoothScroll';
-			import { initRegion } from '../scripts/regionLinks';
-			initSmoothScroll();
-			initRegion(document);
-		</script>
+		{!bare && <Footer />}
+		{!bare && (
+			<script>
+				import { initSmoothScroll } from '../scripts/smoothScroll';
+				import { initRegion } from '../scripts/regionLinks';
+				initSmoothScroll();
+				initRegion(document);
+			</script>
+		)}
 	</body>
 </html>

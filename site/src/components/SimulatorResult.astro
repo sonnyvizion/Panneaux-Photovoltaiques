@@ -2,12 +2,19 @@
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
 import enphaseLogo from '../assets/reassurance/enphase-logo.png';
-import { MONTH_LABELS, KWH_PER_KWC_YEAR, POWER_DEFAULT } from '../scripts/powerEstimate';
+import { MONTH_LABELS, KWH_PER_KWC_YEAR, POWER_DEFAULT, SUMMER_WINTER_RATIO } from '../scripts/powerEstimate';
 import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
 import { ELECTRICITY_PRICE, REGION_DEFAULT, SELF_CONSUMPTION_RATE, regionLabel } from '../scripts/savings';
 import { formatEuro, formatNumber } from '../scripts/format';
 import PaybackChart from './PaybackChart.astro';
-import { AREA_DEFAULT, CONSUMPTION_DEFAULT, aidesLabel, simulate, type Range } from '../scripts/simulator';
+import {
+  AREA_DEFAULT,
+  CONSUMPTION_DEFAULT,
+  aidesLabel,
+  outcomeProfile,
+  simulate,
+  type Range,
+} from '../scripts/simulator';
 
 /**
  * Le résultat — la récompense de la cinquième question.
@@ -50,141 +57,246 @@ const kwc = (r: Range) =>
 const years = (r: Range | null) => (r === null ? 'au-delà de 25 ans' : `${r.low} – ${r.high} ans`);
 
 const peak = Math.max(...initial.monthly);
+
+/* Le profil du cas médian : c'est la variante de conversion que voit un visiteur
+   sans JavaScript, et celle que le script remplacera dès la première réponse. */
+const initialProfile = outcomeProfile(initial);
 ---
 
 <section class="result" data-sim-result aria-labelledby="resultat-titre">
-  {/* ⚠️ La ligne de tête du module, enfin avec ce pour quoi elle est faite : le
-      titre à gauche, LA valeur à droite. C'est le moment que tout le parcours
-      prépare — les questions n'y montraient qu'un rang. */}
-  <div class="result__head">
+  {/* ─────────────────────────────────────────────── 1 · LE VERDICT ───────
+      La ligne de tête, et immédiatement sous elle ce qui l'EXPLIQUE. La phrase
+      régionale traînait au milieu de l'écran, entre la courbe et les barres,
+      là où plus personne ne la reliait au chiffre. En Wallonie elle dit
+      pourtant l'essentiel : « le tarif prosumer est déjà déduit des économies ».
+      C'est la réponse à la question que pose le chiffre. */}
+  <header class="result__head">
     <h2 class="result__title" id="resultat-titre" tabindex="-1">Votre estimation</h2>
     <p class="result__headline" data-sim-out="savings">{euro(initial.savings)} / an</p>
-  </div>
+    <p class="result__unit">d’économies sur votre facture d’électricité</p>
+    <p class="result__aides" data-sim-aides>{aidesLabel(REGION_DEFAULT)}</p>
 
-  {/* Retiré par le script dès la première réponse du visiteur. */}
-  <p class="result__example" data-sim-example>
-    Exemple pour une maison en <span data-sim-example-region>{regionLabel(REGION_DEFAULT)}</span> :
-    toit incliné plein sud, {AREA_DEFAULT} m², facture de 100 à 200 €/mois.
-    Répondez aux questions pour obtenir la vôtre.
-  </p>
+    {/* Retiré par le script dès la première réponse du visiteur. */}
+    <p class="result__example" data-sim-example>
+      Exemple pour une maison en <span data-sim-example-region>{regionLabel(REGION_DEFAULT)}</span> :
+      toit incliné plein sud, {AREA_DEFAULT} m², facture de 100 à 200 €/mois.
+      Répondez aux questions pour obtenir la vôtre.
+    </p>
 
-  <p class="result__outofscope" data-sim-outofscope hidden>
-    Un bâtiment professionnel se dimensionne autrement qu’une maison — notre
-    estimation résidentielle ne s’y applique pas.
-    <a href="/contact">Parlons-en directement.</a>
-  </p>
+    <p class="result__outofscope" data-sim-outofscope hidden>
+      Un bâtiment professionnel se dimensionne autrement qu’une maison — notre
+      estimation résidentielle ne s’y applique pas.
+      <a href="/contact">Parlons-en directement.</a>
+    </p>
+  </header>
 
-  {/* Le bandeau de tuiles du module : un fond gris qui les tient ensemble.
+  {/* ──────────────────────────────────────── 2 · LE DIMENSIONNEMENT ───────
+      ⚠️ NI les économies NI le temps de retour ici : les premières occupent la
+      ligne de tête, le second vit dans la timeline. Les répéter donnait le même
+      chiffre à trois endroits.
 
-      ⚠️ NI les économies NI le temps de retour n'y sont, et c'est voulu : les
-      premières occupent la ligne de tête, le second est passé dans la timeline
-      juste en dessous. Les répéter donnait le même chiffre à trois endroits.
+      ⚠️ AUCUNE TUILE EN LIME : l'accent de l'écran est descendu sur
+      l'amortissement. Un seul lime par écran, sinon il ne désigne plus rien. */}
+  <section class="result__block">
+    <h3 class="result__block-title">L’installation qu’il vous faut</h3>
+    <dl class="result__metrics">
+      <div class="result__metric">
+        <dt>Puissance recommandée</dt>
+        <dd data-sim-out="kwc">{kwc(initial.kwc)}</dd>
+      </div>
+      <div class="result__metric">
+        <dt>Production annuelle</dt>
+        <dd data-sim-out="production">{kwh(initial.production)}</dd>
+      </div>
+      <div class="result__metric">
+        <dt>Budget indicatif</dt>
+        <dd data-sim-out="cost">{euro(initial.cost)}</dd>
+      </div>
+    </dl>
+  </section>
 
-      ⚠️ AUCUNE TUILE EN LIME ici, contrairement au module : l'accent de l'écran
-      est descendu sur l'amortissement, dans la lecture chiffrée de la timeline.
-      Un seul lime par écran, sinon il ne désigne plus rien. */}
-  <dl class="result__metrics">
-    <div class="result__metric">
-      <dt>Puissance recommandée</dt>
-      <dd data-sim-out="kwc">{kwc(initial.kwc)}</dd>
-    </div>
-    <div class="result__metric">
-      <dt>Production annuelle</dt>
-      <dd data-sim-out="production">{kwh(initial.production)}</dd>
-    </div>
-    <div class="result__metric">
-      <dt>Budget indicatif</dt>
-      <dd data-sim-out="cost">{euro(initial.cost)}</dd>
-    </div>
-  </dl>
-
-  {/* ⚠️ LA BRIQUE DU CATALOGUE, à son poste. `interactivite-seo.md` lui assigne
-      le rôle « Résultats (ROI) » depuis le début : elle vivait jusqu'ici sur la
-      seule page Amortissement. Même composant, même arithmétique, mais nourri
-      des réponses du visiteur — c'est la définition d'une brique construite une
-      fois et montée deux fois.
+  {/* ────────────────────────────────────────── 3 · LA RENTABILITÉ ─────────
+      ⚠️ LA BRIQUE DU CATALOGUE, à son poste. `interactivite-seo.md` lui assigne
+      le rôle « Résultats (ROI) » depuis le début.
 
       ⚠️ Le tracé est indicatif, le TEXTE porte la fourchette : le script écrit
       « 4 – 8 ans » dans la lecture chiffrée, pas l'année exacte que dessine la
       courbe. Le résultat reste en fourchettes, décision validée avec le client. */}
-  <PaybackChart kwc={POWER_DEFAULT} region={REGION_DEFAULT} live showCost={false} hypotheses={false} />
+  <section class="result__block">
+    <h3 class="result__block-title">Quand rentrez-vous dans vos frais&nbsp;?</h3>
+    <PaybackChart
+      kwc={POWER_DEFAULT}
+      region={REGION_DEFAULT}
+      live
+      showCost={false}
+      hypotheses={false}
+      plot={false}
+    />
+  </section>
 
-  {/* ⚠️ Le brief demande « budget avant et après primes ». Or nos propres pages
-      établissent qu'il n'existe plus de prime directe en Wallonie ni en Flandre,
-      et que les certificats verts bruxellois sont un revenu étalé sur dix ans —
-      pas une déduction du budget. On nomme donc le mécanisme régional au lieu
-      d'afficher une seconde ligne qui serait fausse. */}
-  <p class="result__aides" data-sim-aides>{aidesLabel(REGION_DEFAULT)}</p>
+  {/* ─────────────────────────────────── 4 · LA PRODUCTION DANS L'ANNÉE ────
+      ⚠️ Les barres n'avaient ni échelle ni interprétation : on voyait une forme,
+      pas une quantité, et rien ne disait à quoi elle sert. Le repère haut donne
+      l'ordre de grandeur, la phrase relie le graphique au reste du site — c'est
+      l'écart été/hiver qui explique pourquoi le surplus part au réseau, donc
+      pourquoi l'autoconsommation décide de la rentabilité. */}
+  <section class="result__block">
+    <h3 class="result__block-title">La production dans l’année</h3>
+    <figure class="result__monthly" data-sim-monthly>
+      <div class="result__plot">
+        <p class="result__peak" aria-hidden="true">
+          <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+        </p>
+        <div class="result__bars" aria-hidden="true">
+          {MONTH_LABELS.map((label, index) => (
+            <span class="result__bar" data-sim-bar style={`--bar: ${(initial.monthly[index] / peak) * 100}%`}>
+              <span class="result__bar-label">
+                <span class="result__bar-short">{label.slice(0, 1)}</span>
+                <span class="result__bar-long">{label}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <figcaption>
+        Un mois d’été produit environ {SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois
+        plus qu’un mois d’hiver. C’est ce creux qui envoie le surplus d’été au
+        réseau — et pourquoi consommer sa propre production change tout au calcul.
+      </figcaption>
+    </figure>
+  </section>
 
-  <figure class="result__monthly" data-sim-monthly>
-    <figcaption>Production mois par mois</figcaption>
-    <div class="result__bars" aria-hidden="true">
-      {MONTH_LABELS.map((label, index) => (
-        <span class="result__bar" data-sim-bar style={`--bar: ${(initial.monthly[index] / peak) * 100}%`}>
-          <span class="result__bar-label">{label}</span>
-        </span>
-      ))}
+  {/* ────────────────────────────────────────────────── 5 · LA SUITE ───────
+      ⚠️ UNE SEULE ACTION PRINCIPALE, CHOISIE SELON LE RÉSULTAT.
+
+      L'écran en proposait cinq de front — deux boutons pleins concurrents, deux
+      liens et une sortie d'édition — là où le brief demande « CTA primaire
+      dominant, CTA secondaire en texte plus petit, sans bouton concurrent ».
+      Pire : il poussait « réservez votre étude » à un visiteur dont
+      l'installation ne s'amortit pas sur 25 ans.
+
+      Les quatre variantes sont rendues EN HTML au build, le script en révèle
+      une (`outcomeProfile`). Sans JavaScript, celle du cas médian reste visible
+      et la page tient debout — règle d'or #1.
+
+      ⚠️ Le bouton « Recevoir mon devis » a disparu : doublon fonctionnel de
+      l'étude, et `funnel.md` tranche — « CTA = étude personnalisée, pas devis ». */}
+  <section class="result__next">
+    <div class="result__outcome" data-sim-outcome="chaud" hidden={initialProfile !== 'chaud'}>
+      <p class="result__pitch">Vos chiffres sont bons. Faites-les vérifier gratuitement.</p>
+      <p class="result__sub">Nos experts certifiés Enphase confirment la puissance et le prix exact, sur place, sans engagement.</p>
+      <Button href="/etude">Réserver mon étude gratuite</Button>
+      <a class="result__second" href="/rapport" data-sim-report-link>Recevoir cette estimation par e-mail</a>
     </div>
-  </figure>
 
-  <div class="result__reassurance">
-    <Image src={enphaseLogo} alt="Installateur certifié Enphase" width={96} height={28} class="result__enphase" />
-    <p>Installateur certifié Enphase · vous parlez à l’équipe qui pose vos panneaux.</p>
-  </div>
+    <div class="result__outcome" data-sim-outcome="tiede" hidden={initialProfile !== 'tiede'}>
+      <p class="result__pitch">Votre projet tient, mais le retour dépend de vos usages.</p>
+      <p class="result__sub">Cinq questions de plus resserrent la fourchette — un chauffage ou une voiture électriques changent nettement le calcul.</p>
+      <Button href="/etude">Réserver mon étude gratuite</Button>
+      <button class="result__second" type="button" data-sim-refine-open>Affiner mon estimation →</button>
+    </div>
 
-  <p class="result__mention">
-    Estimation indicative basée sur des moyennes régionales. Nos experts certifiés
-    Enphase l’affinent <strong>gratuitement</strong> avec une étude personnalisée.
-  </p>
+    {/* ⚠️ Le profil froid ne reçoit PAS de bouton d'étude en primaire. Pousser un
+        rendez-vous commercial sur un résultat qui ne s'amortit pas serait
+        exactement le travers d'intermédiaire que le positionnement du site
+        refuse. On propose le levier qui peut réellement changer le verdict. */}
+    <div class="result__outcome" data-sim-outcome="froid" hidden={initialProfile !== 'froid'}>
+      <p class="result__pitch">En l’état, cette installation ne se rembourse pas sur 25 ans.</p>
+      <p class="result__sub">Ce n’est pas forcément un non : une puissance mieux calibrée, ou une consommation déplacée vers la journée, retourne souvent le calcul. Précisez votre situation avant de décider.</p>
+      <Button href="#" variant="ink" data-sim-refine-open>Affiner mon estimation</Button>
+      <a class="result__second" href="/contact">En parler à un conseiller</a>
+    </div>
 
-  {/* La ligne de pont du module : ce qu'elle promet à gauche, le bouton à
-      droite ; empilée et centrée sous 768px, où côte à côte il ne resterait ni
-      assez de place au texte ni assez de surface tactile au bouton. */}
-  <div class="result__bridge">
-    <p class="result__bridge-label">Faites vérifier ces chiffres, gratuitement</p>
-    <Button href="/etude">Réserver mon étude gratuite</Button>
-  </div>
+    <div class="result__outcome" data-sim-outcome="hors-perimetre" hidden={initialProfile !== 'hors-perimetre'}>
+      <p class="result__pitch">Un bâtiment professionnel se dimensionne autrement.</p>
+      <p class="result__sub">Notre modèle résidentiel ne s’y applique pas — et publier un chiffre faux ne vous rendrait pas service.</p>
+      <Button href="/contact">Parler à un conseiller</Button>
+    </div>
 
-  <div class="result__actions">
-    <Button href="/devis" variant="ink">Recevoir mon devis</Button>
-    <button class="result__refine-cta" type="button" data-sim-refine-open>Affiner mon estimation →</button>
-    <a class="result__pdf" href="/rapport">Recevoir le PDF par e-mail</a>
-  </div>
+    <div class="result__reassurance">
+      {/* ⚠️ RATIO NATIF. Le fichier est un pictogramme de 259×267 — quasi carré.
+          Il était déclaré en 96×28 : `astro:assets` produisait une variante
+          écrasée, et le logo s'affichait comme une barre noire. La hauteur suit
+          le token de certification, la largeur suit l'image. */}
+      <Image src={enphaseLogo} alt="Installateur certifié Enphase" width={27} height={28} class="result__enphase" />
+      <p>Installateur certifié Enphase · vous parlez à l’équipe qui pose vos panneaux.</p>
+    </div>
+  </section>
 
-  {/* Le parcours remplace les questions par le résultat : sans cette sortie, une
-      réponse mal cliquée serait irrattrapable autrement qu'en rechargeant. */}
-  <button class="result__edit" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
+  {/* ──────────────────────────────────────── 6 · LE PIED UTILITAIRE ───────
+      Des OUTILS, pas des offres. Détachés du bloc de conversion, en retrait :
+      c'est ce qui rend l'action principale lisible comme la seule. */}
+  <footer class="result__tools">
+    <p class="result__mention">
+      Estimation indicative basée sur des moyennes régionales. Nos experts certifiés
+      Enphase l’affinent <strong>gratuitement</strong> avec une étude personnalisée.
+    </p>
 
-  <details class="result__assumptions">
-    <summary>Hypothèses de calcul</summary>
-    <ul>
-      <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
-      <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
-      <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
-      <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
-      <li>Dégradation des panneaux : 0,5 % par an.</li>
-      <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
-    </ul>
-  </details>
+    <div class="result__links">
+      {/* Le parcours remplace les questions par le résultat : sans cette sortie, une
+          réponse mal cliquée serait irrattrapable autrement qu'en rechargeant. */}
+      <button class="result__link" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
+      <button class="result__link" type="button" data-sim-refine-open data-sim-refine-tool>Affiner mon estimation →</button>
+    </div>
+
+    <details class="result__assumptions">
+      <summary>Hypothèses de calcul</summary>
+      <ul>
+        <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
+        <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
+        <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
+        <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
+        <li>Dégradation des panneaux : 0,5 % par an.</li>
+        <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
+      </ul>
+    </details>
+  </footer>
 </section>
 
 <style>
-  /* La carte blanche du module — le panneau de verre l'encadre déjà, elle n'a
-     plus à se teinter pour se distinguer. */
+  /* ⚠️ LE COMPTE RENDU N'EST PLUS UNE CARTE. C'était une carte blanche posée
+     dans le panneau de verre, et douze blocs y étaient empilés avec le MÊME
+     écart : rien ne disait où un sujet finissait et où le suivant commençait.
+     C'est de là que venait l'impression de confusion, bien plus que du décor.
+
+     Il devient un document : des blocs titrés, séparés par un vrai silence
+     (`--space-64`), sur le fond uni de la page. */
   .result {
     display: flex;
     flex-direction: column;
-    gap: var(--space-24);
-    padding: var(--pad-card-lg-block);
-    border-radius: var(--radius-panel);
-    background: var(--color-white-primary);
+    gap: var(--space-64);
+    max-width: var(--width-sim-panel);
+    margin-inline: auto;
   }
 
+  /* Le verdict : titre, chiffre, unité, explication — empilés, pas répartis sur
+     une ligne. La valeur est le sommet de l'écran, elle prend la largeur. */
   .result__head {
     display: flex;
-    align-items: baseline;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .result__unit {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* Un bloc = un sujet, avec son titre. */
+  .result__block {
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
+  }
+
+  .result__block-title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
   }
 
   /* ⚠️ PAS de `tabular-nums` : dans Circular Std la chasse tabulaire élargit
@@ -192,6 +304,7 @@ const peak = Math.max(...initial.monthly);
   .result__headline {
     font-family: var(--text-display-mid-family);
     font-size: var(--text-h3-size);
+    color: var(--color-text-primary);
     font-weight: var(--text-display-mid-weight);
     line-height: 1;
     letter-spacing: var(--text-display-mid-tracking);
@@ -241,14 +354,16 @@ const peak = Math.max(...initial.monthly);
      courts (« 12 », « 6 500 € »). Les nôtres portent des FOURCHETTES
      (« 6 400 € – 9 600 € ») : cinq de front à 390px seraient illisibles. Le
      bandeau se replie donc, et c'est un choix, pas un oubli. */
+  /* ⚠️ LE BANDEAU A SAUTÉ. Un fond `white-clear` tenait les tuiles ensemble tant
+     que le compte rendu était une carte blanche. Sur une page qui est ELLE-MÊME
+     en `white-clear`, il ne sépare plus rien : il ne restait qu'un niveau
+     d'emboîtement de plus. Les tuiles se tiennent maintenant seules, par leur
+     filet — c'est la profondeur du système (aucune ombre n'existe ici). */
   .result__metrics {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(var(--width-sim-metric), 1fr));
-    gap: var(--space-2);
-    padding: var(--space-2);
+    gap: var(--gap-cards);
     margin: 0;
-    border-radius: var(--radius-card);
-    background: var(--color-white-clear);
   }
 
   .result__metric {
@@ -257,10 +372,12 @@ const peak = Math.max(...initial.monthly);
     align-items: center;
     gap: var(--space-2);
     /* Sans `min-width: 0`, la valeur impose sa largeur à la colonne et les
-       tuiles débordent du bandeau. */
+       tuiles débordent de la grille. */
     min-width: 0;
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-24) var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
     border-radius: var(--radius-card);
+    background: var(--color-white-primary);
     text-align: center;
     background: var(--color-white-primary);
   }
@@ -299,11 +416,43 @@ const peak = Math.max(...initial.monthly);
     line-height: var(--text-body-sm-line-height);
   }
 
+  .result__monthly {
+    display: flex;
+    flex-direction: column;
+    /* L'écart laisse passer les étiquettes de mois, posées en absolu SOUS les
+       barres : sans lui, la légende viendrait s'écrire par-dessus. */
+    gap: var(--space-24);
+    padding: var(--space-24) var(--space-3) var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
   .result__monthly figcaption {
-    margin-bottom: var(--space-2);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* ⚠️ LE REPÈRE HAUT MANQUAIT. Douze barres sans échelle montrent une FORME,
+     pas une quantité : on voyait que l'été produit plus, sans savoir combien.
+     Un seul repère suffit — le mois le plus fort borne la lecture, et une
+     graduation fine promettrait une précision que l'estimation n'a pas. */
+  .result__plot {
+    position: relative;
+    padding-top: var(--space-24);
+  }
+
+  .result__peak {
+    position: absolute;
+    top: 0;
+    left: 0;
     color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
-    font-size: var(--text-body-sm-size);
+    font-size: var(--text-utility-mobile-size);
+    line-height: 1;
   }
 
   .result__bars {
@@ -312,6 +461,8 @@ const peak = Math.max(...initial.monthly);
     align-items: end;
     gap: var(--gap-sim-bars);
     height: var(--height-sim-bars);
+    /* Le trait du haut matérialise le repère : sans lui, le chiffre flotte. */
+    border-top: var(--border-width) solid var(--color-shade-grey);
   }
 
   .result__bar {
@@ -323,6 +474,10 @@ const peak = Math.max(...initial.monthly);
     transition: height var(--duration-fast) var(--easing-default);
   }
 
+  /* ⚠️ CONTRASTE. Les étiquettes étaient en `--color-text-muted` (#a4acac) sur
+     blanc, à 10px : `design.md` signale déjà UN point du site sous le seuil AA,
+     il n'était pas question d'en ajouter douze. `text-tertiary` (#4c5250) passe
+     largement. */
   .result__bar-label {
     position: absolute;
     top: 100%;
@@ -330,10 +485,26 @@ const peak = Math.max(...initial.monthly);
     right: 0;
     padding-top: var(--space-1);
     text-align: center;
-    color: var(--color-text-muted);
+    color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-micro-size);
     line-height: 1;
+  }
+
+  /* À 390px, douze fois « Jan Fév Mar… » se chevauchent : chaque colonne fait
+     moins de 25px. L'initiale tient, et l'ordre des mois fait le reste. */
+  .result__bar-short {
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .result__bar-short {
+      display: inline;
+    }
+
+    .result__bar-long {
+      display: none;
+    }
   }
 
   .result__reassurance {
@@ -363,19 +534,42 @@ const peak = Math.max(...initial.monthly);
     line-height: var(--text-body-sm-line-height);
   }
 
-  .result__bridge {
+  /* ═══════════════════════════════════════════════════════════════════════
+     LE BLOC DE CONVERSION — une seule offre à la fois.
+
+     Quatre variantes existent dans le HTML, une seule est visible. C'est la
+     doctrine du projet : « le module rend son état par défaut en HTML, le
+     script réécrit des nœuds existants, il n'en construit aucun ». Sans
+     JavaScript, celle du cas médian reste affichée.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .result__next {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  .result__outcome {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: var(--space-3);
-    text-align: center;
   }
 
-  .result__bridge :global(.btn) {
+  /* ⚠️ Garde-fou obligatoire : `display: flex` bat la règle UA sur `[hidden]`,
+     et les quatre variantes s'afficheraient toutes en même temps. Le projet a
+     déjà payé ce piège cinq fois ailleurs. */
+  .result__outcome[hidden] {
+    display: none;
+  }
+
+  .result__outcome :global(.btn) {
     justify-content: center;
   }
 
-  .result__bridge-label {
+  .result__pitch {
     font-family: var(--text-h4-family);
     font-size: var(--text-h4-size);
     font-weight: var(--text-h4-weight);
@@ -383,40 +577,45 @@ const peak = Math.max(...initial.monthly);
     letter-spacing: var(--text-h4-tracking);
   }
 
-  .result__actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
+  .result__sub {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
   }
 
-  .result__actions :global(.btn) {
-    justify-content: center;
-  }
-
-  /* Secondaire, comme le brief le demande : un lien-bouton, pas une troisième
-     pilule qui concurrencerait les deux CTA de conversion. */
-  .result__refine-cta {
+  /* Le secondaire est un LIEN, jamais une seconde pilule : c'est exactement ce
+     que demande le brief, et ce que l'écran ne faisait pas. */
+  .result__second {
+    align-self: center;
     padding: var(--space-2);
     border: 0;
     background: none;
-    color: var(--color-text-primary);
+    color: var(--color-text-tertiary);
     font: inherit;
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
+    text-align: center;
     text-decoration: underline;
     text-underline-offset: var(--space-1);
     cursor: pointer;
   }
 
-  .result__pdf {
-    text-align: center;
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
+  /* ── Le pied utilitaire : des outils, en retrait ── */
+  .result__tools {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
-  .result__edit {
-    align-self: flex-start;
+  .result__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-24);
+  }
+
+  .result__link {
     padding: 0;
     border: 0;
     background: none;
@@ -427,6 +626,10 @@ const peak = Math.max(...initial.monthly);
     text-decoration: underline;
     text-underline-offset: var(--space-1);
     cursor: pointer;
+  }
+
+  .result__link[hidden] {
+    display: none;
   }
 
   .result__assumptions {
@@ -467,22 +670,30 @@ const peak = Math.max(...initial.monthly);
       font-size: var(--text-display-mid-size);
     }
 
-    .result__bridge {
-      flex-direction: row;
+    /* Le titre du bloc de conversion et son bouton se répartissent la ligne :
+       la promesse à gauche, l'action à droite. Empilés sous 768px, où côte à
+       côte il ne resterait ni assez de place au texte ni assez de surface
+       tactile au bouton. */
+    .result__outcome {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      justify-content: space-between;
-      text-align: start;
+      column-gap: var(--space-24);
     }
 
-    /* Les actions s'alignent au lieu de s'empiler. */
-    .result__actions {
-      flex-direction: row;
-      flex-wrap: wrap;
-      align-items: center;
+    .result__pitch,
+    .result__sub {
+      grid-column: 1;
     }
 
-    .result__pdf {
-      margin-left: auto;
+    .result__outcome :global(.btn) {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .result__second {
+      grid-column: 2;
+      align-self: start;
     }
   }
 </style>

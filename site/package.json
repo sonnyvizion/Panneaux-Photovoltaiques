@@ -7,11 +7,12 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/deploy-headers.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
-    "images": "node scripts/optimize-images.mjs ../../../img/pages src/assets/pages"
+    "images": "node scripts/optimize-images.mjs ../../../img/pages src/assets/pages",
+    "deploy": "npm run build && npx wrangler@latest pages deploy dist --project-name=belgreen-demo"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.8",

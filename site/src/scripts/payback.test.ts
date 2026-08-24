@@ -65,6 +65,11 @@ describe('paybackGeometry', () => {
 describe('paybackLabel', () => {
   it('dit la vérité quand il n’y a pas d’amortissement', () => {
     expect(paybackLabel(null)).toBe('au-delà de 25 ans');
-    expect(paybackLabel(8)).toBe('8 ans');
+    /* ⚠️ ESPACE INSÉCABLE entre le nombre et l'unité — c'est ce qui empêche
+       « 8 ans » de se couper en deux lignes dans une tuile en display 44px.
+       La phrase, elle, garde des espaces ordinaires : elle DOIT pouvoir se
+       replier, sinon elle déborde de sa tuile sur la page Amortissement. */
+    expect(paybackLabel(8)).toBe('8\u00a0ans');
+    expect(paybackLabel(null)).not.toContain('\u00a0');
   });
 });

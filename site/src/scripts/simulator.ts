@@ -369,3 +369,40 @@ export function simulate(inputs: SimulatorInputs): SimulatorResults {
     needsBill: inputs.consumptionMode === 'inconnue' && property.defaultConsumption === null,
   };
 }
+
+/* ------------------------------------------------------- profil de sortie */
+
+/**
+ * Le profil du résultat, qui décide de la SORTIE proposée au visiteur.
+ *
+ * ⚠️ Ce n'est pas une note donnée au visiteur, c'est le choix du CTA. Le brief
+ * le demande explicitement (« CTA adaptatif selon le profil détecté ») et pour
+ * une raison de fond : pousser « réservez votre étude » à quelqu'un dont
+ * l'installation ne s'amortit pas sur 25 ans est à la fois inefficace et
+ * malhonnête. Le compte rendu doit proposer la sortie qui SERT ce visiteur-là.
+ *
+ * ⚠️ Le critère est l'AMORTISSEMENT, pas les économies annuelles. Une grosse
+ * installation économise beaucoup en valeur absolue tout en se remboursant mal ;
+ * c'est le retour sur investissement qui dit si le projet tient.
+ *
+ * Fonction pure : elle ne lit que le résultat, jamais le DOM ni les entrées.
+ */
+export type OutcomeProfile = 'hors-perimetre' | 'chaud' | 'tiede' | 'froid';
+
+/**
+ * Seuil entre « chaud » et « tiède », en années.
+ *
+ * ⚠️ Il porte sur la borne HAUTE de la fourchette : promettre l'étude sur la
+ * foi de l'hypothèse la plus favorable serait exactement le travers que le
+ * positionnement du site refuse. 15 ans, c'est le point où l'installation reste
+ * rentable sur sa durée de vie (le site annonce 25 ans) avec de la marge.
+ */
+export const ROI_WARM_MAX = 15;
+
+export function outcomeProfile(results: SimulatorResults): OutcomeProfile {
+  if (results.outOfScope) return 'hors-perimetre';
+  /* `roi === null` = le seuil n'est jamais atteint sur l'horizon. Ce n'est pas
+     une donnée manquante, c'est un verdict — et le plus important des quatre. */
+  if (results.roi === null) return 'froid';
+  return results.roi.high <= ROI_WARM_MAX ? 'chaud' : 'tiede';
+}

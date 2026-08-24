@@ -118,7 +118,7 @@ const HELP = {
 };
 ---
 
-<section class="sim">
+<section class="sim" data-sim-view="questions">
   {/* ⚠️ Réglages d'image IDENTIQUES à ceux de `PageHero` et `SliderCalculator` :
       à réglages égaux `astro:assets` réutilise le même fichier, alors que la
       moindre divergence génère en silence un second jeu complet de variantes.
@@ -140,7 +140,7 @@ const HELP = {
 
   <div class="sim__panel">
     <h1 class="sim__h1">Ce que le solaire donnerait chez vous</h1>
-    <p class="sim__lede">
+    <p class="sim__lede" data-sim-lede>
       Quelques questions, une minute. Aucun compte, aucune coordonnée pour voir vos chiffres.
     </p>
 
@@ -493,6 +493,48 @@ const HELP = {
   }
 
   /* Le corps : la carte du parcours, et l'aide qui l'accompagne. */
+  /* ═══════════════════════════════════════════════════════════════════════
+     LE COMPTE RENDU N'EST PAS UN MODULE — il ne porte donc pas son habillage.
+
+     Le parcours de questions est une carte posée sur une photo : le décor y
+     tient le visiteur pendant qu'il répond. Le compte rendu, lui, est un
+     DOCUMENT — cinq blocs, deux graphiques, une décision à prendre. Lu à
+     travers un verre translucide posé sur des feuillages, il devenait illisible :
+     photo → voile → verre → carte blanche → bandeau → tuiles, six surfaces
+     empilées pour lire un chiffre.
+
+     Sur la vue « résultat », le décor s'efface donc entièrement et la page
+     redevient un fond uni. Rien n'est déplacé dans le DOM : c'est le même
+     panneau qui cesse d'être une carte.
+
+     ⚠️ Bénéfice collatéral : plus aucun `backdrop-filter` sur ce chemin. Celui
+     de `.sim__panel` n'avait pas sa règle compagnon `-webkit-backdrop-filter`
+     (contrairement à `FigureModule` et `PageHero`) — il ne rendait donc pas sur
+     Safari ni iOS. Le problème disparaît avec la surface.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .sim[data-sim-view='resultat'] {
+    align-items: stretch;
+    background: var(--color-white-clear);
+  }
+
+  /* ⚠️ `.sim__body` DOIT PARTIR, pas seulement les rails. Le script masque les
+     deux wizards, mais leur conteneur — une carte blanche de 25px de padding —
+     restait affiché : le compte rendu s'ouvrait sous un rectangle blanc vide. */
+  .sim[data-sim-view='resultat'] .sim__image,
+  .sim[data-sim-view='resultat'] .sim__overlay,
+  .sim[data-sim-view='resultat'] .sim__lede,
+  .sim[data-sim-view='resultat'] .sim__body {
+    display: none;
+  }
+
+  .sim[data-sim-view='resultat'] .sim__panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
   .sim__body {
     display: grid;
     gap: var(--gap-cards);

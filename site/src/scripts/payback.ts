@@ -39,6 +39,14 @@ export interface PaybackGeometry {
   crossX: number | null;
   /** Les repères de l'axe : début, croisement, fin. */
   marks: number[];
+  /**
+   * Le haut de l'échelle verticale, en euros.
+   *
+   * ⚠️ Exposé parce que le graphique doit GRADUER son axe : sans le sommet, il
+   * ne peut afficher qu'une forme, pas une quantité. Il est calculé ici, il
+   * n'a pas à l'être une seconde fois dans le composant.
+   */
+  maxY: number;
   /** L'année d'amortissement, ou `null`. */
   payback: number | null;
   cost: number;
@@ -95,10 +103,20 @@ export function paybackGeometry(kwc: number, options: SavingsOptions = {}): Payb
     payback,
     cost,
     gain,
+    maxY,
   };
 }
 
-/** Le libellé de l'amortissement, partagé par la page et le simulateur. */
+/**
+ * Le libellé de l'amortissement, partagé par la page et le simulateur.
+ *
+ * ⚠️ ESPACES INSÉCABLES dans la valeur chiffrée, espaces ORDINAIRES dans la
+ * phrase. Les deux tiennent dans la même tuile, en display 44px : « 12 ans » ne
+ * doit jamais se couper, mais « au-delà de 25 ans » ne rentre sur AUCUNE ligne
+ * de 200px et doit pouvoir se replier. C'est ce qui remplace le
+ * `white-space: nowrap` global, qui faisait déborder la phrase hors de sa tuile
+ * sur la page Amortissement.
+ */
 export function paybackLabel(payback: number | null): string {
-  return payback === null ? 'au-delà de 25 ans' : `${payback} ans`;
+  return payback === null ? 'au-delà de 25 ans' : `${payback}\u00a0ans`;
 }

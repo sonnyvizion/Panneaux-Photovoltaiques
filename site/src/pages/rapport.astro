@@ -3,6 +3,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import Section from '../components/Section.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import LeadForm from '../components/LeadForm.astro';
+import Button from '../components/Button.astro';
 
 /**
  * Écran G du brief — la sortie la moins engageante : l'e-mail seul.
@@ -21,6 +22,50 @@ import LeadForm from '../components/LeadForm.astro';
       title="Recevez votre estimation par e-mail"
       intro="Vos chiffres, envoyés en un message — pour les relire à tête reposée ou les partager. Une seule adresse suffit, et nous n’en faisons rien d’autre."
     />
-    <LeadForm variant="rapport" submitLabel="Recevoir mon estimation" />
+    {/* ⚠️ SANS RÉPONSES, IL N'Y A PAS D'ESTIMATION À ENVOYER. Un visiteur qui
+        arrive ici par un lien direct — un partage, un favori, un e-mail —
+        recevrait sinon le cas médian du build présenté comme le sien. Ce serait
+        un faux document, et sur un site dont l'argument est « pas
+        d'intermédiaire, pas de baratin », c'est exactement ce qu'on ne peut pas
+        se permettre. Rendu au build et masqué ; `rapport.ts` décide. */}
+    <div class="rapport__missing" data-report-missing hidden>
+      <p>
+        Nous n’avons pas encore vos chiffres : cette page envoie l’estimation que
+        le simulateur a calculée pour vous. Deux minutes de questions, et vous
+        recevez le rapport complet.
+      </p>
+      <Button href="/simulateur">Lancer mon estimation</Button>
+    </div>
+
+    <div data-report-available>
+      <LeadForm variant="rapport" submitLabel="Recevoir mon estimation" />
+    </div>
   </Section>
 </BaseLayout>
+
+<script>
+  import { initReportPage } from '../scripts/rapport';
+  initReportPage();
+</script>
+
+<style>
+  .rapport__missing {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* `display: flex` bat la règle UA sur `[hidden]`. */
+  .rapport__missing[hidden] {
+    display: none;
+  }
+</style>

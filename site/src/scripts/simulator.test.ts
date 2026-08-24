@@ -17,10 +17,13 @@ import {
   productionFactor,
   rateFromRefine,
   resolveConsumption,
+  ROI_WARM_MAX,
+  outcomeProfile,
   simulate,
   sizedPower,
   tiltFactor,
   type SimulatorInputs,
+  type SimulatorResults,
 } from './simulator';
 import { SELF_CONSUMPTION_RATE } from './savings';
 import { POWER_MAX, POWER_MIN, estimate } from './powerEstimate';
@@ -235,5 +238,47 @@ describe('continuité entre le mode rapide et l’affinage', () => {
     const unknown = simulate({ ...BASE, refine: { ...REFINE_DEFAULT, tilt: 'inconnue' } });
     const known = simulate({ ...BASE, refine: { ...REFINE_DEFAULT, tilt: 'moyenne' } });
     expect(known.production.low).toBeGreaterThan(unknown.production.low);
+  });
+});
+
+describe('le profil de sortie choisit le CTA', () => {
+  const results = (over: Partial<SimulatorResults>): SimulatorResults =>
+    ({ ...simulate(BASE), ...over }) as SimulatorResults;
+
+  it('range le bâtiment professionnel hors périmètre, avant tout chiffre', () => {
+    /* ⚠️ `outOfScope` prime sur le ROI : le modèle résidentiel ne s'applique
+       pas, donc son verdict n'a pas à être interprété. */
+    expect(outcomeProfile(results({ outOfScope: true, roi: { low: 4, high: 6 } }))).toBe(
+      'hors-perimetre',
+    );
+  });
+
+  it('déclare froid un résultat qui ne s’amortit jamais sur l’horizon', () => {
+    expect(outcomeProfile(results({ roi: null }))).toBe('froid');
+  });
+
+  it('déclare chaud un amortissement court', () => {
+    expect(outcomeProfile(results({ roi: { low: 6, high: 9 } }))).toBe('chaud');
+  });
+
+  it('juge sur la borne HAUTE, jamais sur l’hypothèse la plus favorable', () => {
+    /* Une fourchette « 4 à 22 ans » n'est pas un bon résultat sous prétexte
+       qu'elle commence à 4 : c'est le risque qui décide de la sortie. */
+    expect(outcomeProfile(results({ roi: { low: 4, high: 22 } }))).toBe('tiede');
+  });
+
+  it('place la frontière chaud/tiède à ROI_WARM_MAX inclus', () => {
+    expect(outcomeProfile(results({ roi: { low: 8, high: ROI_WARM_MAX } }))).toBe('chaud');
+    expect(outcomeProfile(results({ roi: { low: 8, high: ROI_WARM_MAX + 1 } }))).toBe('tiede');
+  });
+
+  it('couvre les quatre profils, sans trou', () => {
+    const seen = new Set([
+      outcomeProfile(results({ outOfScope: true })),
+      outcomeProfile(results({ roi: null })),
+      outcomeProfile(results({ roi: { low: 5, high: 8 } })),
+      outcomeProfile(results({ roi: { low: 5, high: 20 } })),
+    ]);
+    expect(seen).toEqual(new Set(['hors-perimetre', 'froid', 'chaud', 'tiede']));
   });
 });

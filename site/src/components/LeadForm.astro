@@ -28,7 +28,12 @@ const asksContact = variant !== 'rapport';
 const asksStatut = variant !== 'rapport';
 ---
 
-<form class="lead" data-lead-form novalidate>
+<form class="lead" data-lead-form data-lead-variant={variant} novalidate>
+  {/* ⚠️ LES RÉPONSES DU SIMULATEUR VOYAGENT AVEC LA DEMANDE. Sans elles, une
+      demande de rapport arrive sans la moindre idée de l'estimation à envoyer :
+      c'est ce qui rendait le document infabricable. Le champ est rempli par
+      `leadForm.ts` à partir de l'URL — le compte rendu y a mis les réponses. */}
+  <input type="hidden" name="reponses" data-lead-answers />
   <ul class="lead__badges">
     <li><Badge variant="lime" dot>Gratuit</Badge></li>
     <li><Badge variant="lime" dot>Sans engagement</Badge></li>
@@ -150,8 +155,30 @@ const asksStatut = variant !== 'rapport';
   )}
 
   <div data-lead-submit>
-    <Button type="submit">{submitLabel}</Button>
+    <Button type="submit" data-lead-button>{submitLabel}</Button>
   </div>
+
+  {/* ⚠️ LES TROIS ISSUES, RENDUES AU BUILD ET MASQUÉES. Le script en révèle une.
+      `role="status"` : sans lui, un lecteur d'écran ne saurait jamais que la
+      demande est partie — le bouton disparaît et rien ne le remplace à voix
+      haute. */}
+  <p class="lead__state lead__state--ok" data-lead-state="sent" role="status" hidden>
+    C’est envoyé. Vous recevez votre estimation dans quelques minutes — pensez à
+    regarder vos indésirables si elle tarde.
+  </p>
+
+  <p class="lead__state lead__state--ko" data-lead-state="error" role="status" hidden>
+    L’envoi n’a pas abouti. Réessayez dans un instant, ou appelez-nous
+    directement — nous répondrons aussi bien.
+  </p>
+
+  {/* ⚠️ Ni faux succès, ni silence : tant qu'aucun endpoint n'est configuré, on
+      le DIT. Un « merci » affiché sans rien envoyer perdrait le prospect ET
+      ferait croire au client que le site fonctionne. */}
+  <p class="lead__state lead__state--ko" data-lead-state="unconfigured" role="status" hidden>
+    L’envoi automatique n’est pas encore actif sur ce site. Appelez-nous ou
+    écrivez-nous, nous vous répondrons directement.
+  </p>
 
   <p class="lead__legal">
     Vos données servent uniquement à vous répondre. Elles ne sont ni revendues ni
@@ -285,6 +312,25 @@ const asksStatut = variant !== 'rapport';
     font-family: var(--text-body-light-family);
     font-size: var(--text-body-light-size);
     line-height: var(--text-body-light-line-height);
+  }
+
+  .lead__state {
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  .lead__state--ok {
+    background: var(--color-white-clear);
+    color: var(--color-text-secondary);
+  }
+
+  .lead__state--ko {
+    border: var(--border-width) solid var(--color-shade-grey);
+    color: var(--color-text-secondary);
   }
 
   .lead__block {

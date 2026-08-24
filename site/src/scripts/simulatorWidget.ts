@@ -1,5 +1,6 @@
 import { getProgressIndex } from './carouselProgress';
-import { CHART_W, paybackGeometry } from './payback';
+import { collectPayback, renderPayback } from './paybackRender';
+import { reportHref } from './reportParams';
 import { chase, CHASE_DURATION } from './sliderCalculator';
 import { formatEuro, formatNumber } from './format';
 import { formatCo2 } from './co2';
@@ -27,6 +28,7 @@ import {
 import { REGION_DEFAULT, regionLabel } from './savings';
 import {
   aidesLabel,
+  outcomeProfile,
   roofType,
   simulate,
   type Range,
@@ -134,7 +136,9 @@ function texts(r: SimulatorResults): Record<string, string> {
     kwc: kwc(r.kwc),
     production: kwh(r.production),
     cost: euro(r.cost),
-    roi: r.roi === null ? 'au-delà de 25 ans' : `${r.roi.low} – ${r.roi.high} ans`,
+    /* Insécables : « 4 – 8 ans » doit rester d'un bloc, alors que « au-delà de
+       25 ans » doit pouvoir se replier (voir `paybackLabel`). */
+    roi: r.roi === null ? 'au-delà de 25 ans' : `${r.roi.low}\u00a0–\u00a0${r.roi.high}\u00a0ans`,
     co2: formatCo2(r.co2Kg),
   };
 }
@@ -142,6 +146,13 @@ function texts(r: SimulatorResults): Record<string, string> {
 export function initSimulator(root: ParentNode = document): void {
   const form = root.querySelector<HTMLFormElement>('[data-sim-form]');
   const result = root.querySelector<HTMLElement>('[data-sim-result]');
+  const decor = root.querySelector<HTMLElement>('[data-sim-view]');
+  /* Les quatre variantes du bloc de conversion, rendues au build ; une seule
+     est révélée. */
+  const outcomes = [...root.querySelectorAll<HTMLElement>('[data-sim-outcome]')];
+  const peakOut = root.querySelector<HTMLElement>('[data-sim-peak]');
+  const refineTool = root.querySelector<HTMLElement>('[data-sim-refine-tool]');
+  const reportLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-sim-report-link]')];
   const status = root.querySelector<HTMLElement>('[data-sim-status]');
   const questions = collectWizard(root, 'questions');
   const refine = collectWizard(root, 'affinage');
@@ -180,15 +191,7 @@ export function initSimulator(root: ParentNode = document): void {
    * fois. Elle se redessine à chaque mise à jour du résultat.
    */
   const payback = root.querySelector<HTMLElement>('[data-payback]');
-  const chart = payback && {
-    benefit: payback.querySelector<SVGPathElement>('[data-payback-benefit]'),
-    cost: payback.querySelector<SVGLineElement>('[data-payback-cost]'),
-    curve: payback.querySelector<SVGPathElement>('[data-payback-curve]'),
-    cross: payback.querySelector<SVGCircleElement>('[data-payback-cross]'),
-    axis: payback.querySelector<HTMLElement>('[data-payback-axis]'),
-    years: payback.querySelector<HTMLElement>('[data-payback-years]'),
-    gain: payback.querySelector<HTMLElement>('[data-payback-gain]'),
-  };
+  const chart = payback && collectPayback(payback);
   const helpBlocks = [...root.querySelectorAll<HTMLElement>('[data-help]')];
   const outOfScopeStep = root.querySelector<HTMLElement>('[data-sim-outofscope-step]');
 
@@ -276,36 +279,12 @@ export function initSimulator(root: ParentNode = document): void {
   const drawPayback = () => {
     if (!chart) return;
     const mid = (r: Range) => (r.low + r.high) / 2;
-    const g = paybackGeometry(mid(current.kwc), {
-      region,
-      rate: current.rate,
-      production: mid(current.production),
-    });
-
-    chart.benefit?.setAttribute('d', g.benefit);
-    chart.curve?.setAttribute('d', g.curve);
-    chart.cost?.setAttribute('y1', String(g.costY));
-    chart.cost?.setAttribute('y2', String(g.costY));
-    if (chart.cross) {
-      chart.cross.toggleAttribute('hidden', g.crossX === null);
-      chart.cross.setAttribute('cx', String(g.crossX ?? 0));
-      chart.cross.setAttribute('cy', String(g.costY));
-    }
-    /* ⚠️ SEULEMENT LES DEUX BORNES, pas le repère de croisement. Sur la page de
-       contenu il annonce l'année exacte, ce qui est juste : elle y est affichée
-       telle quelle. Ici la lecture chiffrée dit « 4 – 8 ans » — laisser l'axe
-       écrire « 6 ans » à côté publierait une précision que l'estimation n'a pas,
-       et contredirait le parti pris des fourchettes. */
-    const bounds = [g.marks[0], g.marks[g.marks.length - 1]];
-    chart.axis?.replaceChildren(
-      ...bounds.map((year) => {
-        const span = document.createElement('span');
-        span.textContent = year === 1 ? 'Année 1' : `${year} ans`;
-        return span;
-      }),
+    renderPayback(
+      chart,
+      mid(current.kwc),
+      { region, rate: current.rate, production: mid(current.production) },
+      texts(current).roi,
     );
-    if (chart.years) chart.years.textContent = texts(current).roi;
-    if (chart.gain) chart.gain.textContent = formatEuro(Math.round(g.gain / 100) * 100);
   };
 
   const paint = () => {
@@ -321,6 +300,35 @@ export function initSimulator(root: ParentNode = document): void {
         const value = current.monthly[i] ?? 0;
         bar.style.setProperty('--bar', `${peak > 0 ? (value / peak) * 100 : 0}%`);
       });
+      /* Le repère haut borne la lecture des barres : il suit le projet, sinon
+         il annoncerait l'échelle du cas médian du build. Arrondi à la dizaine —
+         la précision réelle du modèle ne justifie pas mieux. */
+      if (peakOut) peakOut.textContent = formatNumber(Math.round(peak / 10) * 10);
+    }
+
+    /* ⚠️ UNE SEULE SORTIE VISIBLE. Le profil décide de l'offre : pousser une
+       étude à quelqu'un dont l'installation ne s'amortit pas sur 25 ans est
+       inefficace, et contraire au positionnement du site. */
+    /* ⚠️ LE LIEN VERS LE RAPPORT EMPORTE LES RÉPONSES. Sans elles, `/rapport`
+       promet « votre estimation par e-mail » sans savoir de quelle estimation il
+       parle — le document n'était pas fabricable. */
+    for (const link of reportLinks) link.setAttribute('href', reportHref('/rapport', read()));
+
+    const profile = outcomeProfile(current);
+    let shown: HTMLElement | null = null;
+    for (const node of outcomes) {
+      node.hidden = node.dataset.simOutcome !== profile;
+      if (!node.hidden) shown = node;
+    }
+
+    /* ⚠️ L'affinage est déjà l'action principale du profil froid, et le
+       secondaire du profil tiède. Le laisser AUSSI dans le pied le proposerait
+       deux fois sur le même écran — c'est exactement la concurrence de sorties
+       qu'on vient de supprimer. On ne teste pas la liste des profils : on
+       regarde si la variante affichée le propose déjà, ce qui reste juste le
+       jour où un profil change d'offre. */
+    if (refineTool) {
+      refineTool.hidden = Boolean(shown?.querySelector('[data-sim-refine-open]'));
     }
 
     const inputs = read();
@@ -587,6 +595,10 @@ export function initSimulator(root: ParentNode = document): void {
 
     const onResult = step === RESULT_STEP;
     const inRefine = isRefineStep(step);
+
+    /* Le décor de la page suit la vue : photo et verre pour les questions, fond
+       uni pour le compte rendu (voir le commentaire dans `SimulatorPanels`). */
+    if (decor) decor.dataset.simView = onResult ? 'resultat' : 'questions';
 
     questions.root.hidden = onResult || inRefine;
     refine.root.hidden = onResult || !inRefine;
