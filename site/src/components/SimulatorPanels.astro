@@ -1075,10 +1075,31 @@ const HELP = {
   @media (max-width: 767px) {
     .sim {
       padding-inline: var(--container-padding);
+      /* ⚠️ MOITIÉ MOINS D'AIR AU-DESSUS ET EN DESSOUS. `--section-padding-block`
+         vaut 64 px : c'est le rythme des pages de contenu, où une section
+         respire entre ses voisines. Ici le panneau EST la page, et ces 128 px
+         cumulés repoussaient la première question hors de l'écran d'entrée.
+         Valeur posée sur `.sim` seul — le token reste intact pour le reste du
+         site. */
+      padding-block: var(--space-4);
     }
 
     .sim__panel,
     .sim__form {
+      padding: var(--space-12);
+    }
+
+    /* Titre, accroche et parcours se resserrent : 32 px entre trois blocs qui
+       se lisent d'un trait, c'est un écart de section appliqué à l'intérieur
+       d'une carte. */
+    .sim__panel {
+      gap: var(--space-3);
+    }
+
+    /* Les réponses aussi : 16 px de garniture sur une carte qui n'en contient
+       qu'un mot. À 12 px la cible tactile reste à 46 px de haut, au-dessus du
+       minimum de 44. */
+    .sim__choice span {
       padding: var(--space-12);
     }
   }
