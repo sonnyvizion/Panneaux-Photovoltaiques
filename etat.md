@@ -1,14 +1,15 @@
 # État du projet — où on en est
 
-> Mis à jour le 24 août 2026. Décrit **l'état réel du code**, pas l'intention.
+> Mis à jour le 25 août 2026. Décrit **l'état réel du code**, pas l'intention.
 > Quand ce document et un doc de cadrage divergent, c'est le code qui a raison —
 > et la divergence est signalée ici.
 
 ## En une phrase
 
 Le front Astro est construit : 58 pages, un simulateur en parcours, un compte
-rendu refondu et un rapport imprimable. **Rien n'est en ligne, et aucun
-formulaire n'envoie quoi que ce soit** — deux décisions client manquent pour ça.
+rendu refondu et un rapport imprimable. **La démo est en ligne**
+(https://belgreen-demo.pages.dev), sans protection d'accès et en `noindex`.
+**Aucun formulaire n'envoie quoi que ce soit** — deux décisions client manquent.
 
 ---
 
@@ -120,11 +121,21 @@ Deux gardes posés :
 ## Le déploiement
 
 **Cloudflare Pages**, décidé le 24 août 2026 (`stack.md` hésitait entre
-Cloudflare et Netlify).
+Cloudflare et Netlify). **Première mise en ligne le 25 août 2026** sur
+https://belgreen-demo.pages.dev — projet Pages `belgreen-demo`, 421 fichiers.
 
 ```sh
 cd site && npm run deploy
 ```
+
+Le script porte `--branch=main` : sans lui, Wrangler déduit la branche Git
+courante (`design-systeme-astro`) et publie une *preview* sur une URL à hash,
+pas l'adresse stable donnée au client.
+
+⚠️ **La démo n'est protégée par aucun mot de passe.** Elle est accessible à qui
+connaît l'URL ; seule l'indexation est refusée, et c'est une convention que les
+robots respectent, pas une serrure. Cloudflare Access ou un Basic Auth reste à
+poser si le besoin se confirme — voir `site/README.md`.
 
 ⚠️ **On envoie le `dist/` construit localement, on ne branche PAS le dépôt sur
 le build automatique de Cloudflare.** 41 images vivent en Git LFS sous

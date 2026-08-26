@@ -4,6 +4,10 @@ Site encyclopédique photovoltaïque, orienté conversion. Le cadrage vit à la
 racine du dépôt (`CLAUDE.md`, `stack.md`, `simulateur.md`…) ; ce fichier ne
 couvre que l'exploitation du front.
 
+## Prérequis
+
+Node **≥ 22.12** (`engines` dans `package.json`), puis `npm install`.
+
 ## Commandes
 
 | Commande | Effet |
@@ -39,12 +43,33 @@ Le build annonce son mode en clair à la fin. Le lire.
 
 ## Déploiement — Cloudflare Pages
 
+**En ligne : https://belgreen-demo.pages.dev** — projet Pages `belgreen-demo`,
+première mise en ligne le 25 août 2026.
+
 ```sh
 npm run deploy
 ```
 
-Il construit puis envoie `dist/` avec Wrangler. La première fois, Wrangler
-demande de se connecter au compte Cloudflare et de créer le projet.
+Il construit puis envoie `dist/` avec Wrangler.
+
+**S'authentifier.** Wrangler lit deux variables d'environnement :
+
+```sh
+export CLOUDFLARE_API_TOKEN=...    # permission « Account · Cloudflare Pages · Edit »
+export CLOUDFLARE_ACCOUNT_ID=...   # visible dans l'URL du dashboard
+```
+
+`npx wrangler login` (OAuth navigateur) fait la même chose et évite de manipuler
+un token. Le token, lui, est nécessaire dès qu'on déploie depuis un contexte non
+interactif.
+
+⚠️ **`--branch=main` n'est pas décoratif.** Sans lui, Wrangler déduit la branche
+Git courante ; le travail se faisant sur `design-systeme-astro`, le déploiement
+partirait en *preview* sur une URL à hash aléatoire au lieu de l'adresse stable
+`belgreen-demo.pages.dev` — celle qu'on donne au client. `--commit-dirty=true`
+supprime la question posée quand l'arbre de travail n'est pas propre : elle n'a
+pas de sens ici, puisqu'on envoie un `dist/` construit localement et jamais
+versionné.
 
 ⚠️ **On déploie le `dist/` construit localement, on ne branche PAS le dépôt sur
 le build automatique de Cloudflare.** 41 images vivent en Git LFS sous
@@ -56,10 +81,21 @@ Pour brancher un jour le build automatique, il faudra une étape `git lfs pull`
 avant le build — le plus simple étant de construire dans GitHub Actions avec
 `actions/checkout` et `lfs: true`, puis de publier le `dist/`.
 
-**Protéger la démo** : Cloudflare Access (gratuit jusqu'à 50 utilisateurs) met
-le site derrière une authentification. C'est la seule protection réelle contre
-l'indexation — `robots.txt` et `X-Robots-Tag` sont la ceinture, Access les
-bretelles.
+### Protection de la démo — RIEN n'est en place
+
+La démo est **publiquement accessible** à qui connaît l'URL. Seule l'indexation
+est refusée (`robots.txt` + `X-Robots-Tag`), et c'est une convention que les
+robots respectent, pas une serrure.
+
+Deux façons de fermer la porte, si le besoin se confirme :
+
+- **Cloudflare Access** — authentification par e-mail, gratuit jusqu'à 50
+  utilisateurs, à activer dans Zero Trust. Propre, mais l'activation demande
+  parfois d'enregistrer un moyen de paiement même sur le plan gratuit.
+- **HTTP Basic Auth** — une fonction Pages (`functions/_middleware.ts`) et un
+  mot de passe en variable d'environnement Cloudflare. Rustique (un seul couple
+  identifiant/mot de passe, popup navigateur) mais sans Zero Trust ni carte
+  bancaire. **À retirer avant la mise en production.**
 
 ## Ce qui n'est pas encore branché
 

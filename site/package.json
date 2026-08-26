@@ -12,7 +12,7 @@
     "astro": "astro",
     "test": "vitest run",
     "images": "node scripts/optimize-images.mjs ../../../img/pages src/assets/pages",
-    "deploy": "npm run build && npx wrangler@latest pages deploy dist --project-name=belgreen-demo"
+    "deploy": "npm run build && npx wrangler@latest pages deploy dist --project-name=belgreen-demo --branch=main --commit-dirty=true"
   },
   "dependencies": {
     "@fontsource/geist-mono": "^5.2.8",
