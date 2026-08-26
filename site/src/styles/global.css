@@ -65,6 +65,16 @@ p {
   margin: 0;
 }
 
+/* ⚠️ `<figure>` porte une marge par défaut du navigateur — `1em 40px`, soit
+   40px de chaque côté. Elle passait inaperçue parce que `Reassurance` et
+   `Testimonials` la remettaient à zéro chacun de leur côté ; les deux figures
+   ajoutées depuis (le graphique du compte rendu et celui du rapport) ne l'ont
+   pas fait, et se sont retrouvées avec 40px d'air parasite dont rien dans le
+   CSS ne rendait compte. Le reset était incomplet, pas les composants. */
+figure {
+  margin: 0;
+}
+
 /* Texte réservé aux lecteurs d'écran. Les 1px ne sont pas des valeurs de
    design mais l'idiome standard de masquage accessible.
 

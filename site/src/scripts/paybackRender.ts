@@ -110,11 +110,13 @@ export function renderPayback(
     node.textContent = formatEuro(Math.round((g.maxY * share) / 100) * 100);
   });
 
-  /* ⚠️ Le ton de la tuile et le message d'écart disent la MÊME chose que
-     `g.payback === null`. Les laisser au rendu du build afficherait un accent
-     lime sur « au-delà de 25 ans », ou masquerait l'explication au moment où
-     elle devient nécessaire. */
-  nodes.tile?.classList.toggle('payback__item--accent', g.payback !== null);
+  /* ⚠️ UN ATTRIBUT, PAS UNE CLASSE. C'était `classList.toggle('payback__item--accent')`
+     — une classe stylée dans `PaybackChart`, donc PORTÉE à ce composant par
+     Astro. Le compte rendu, qui rend ses tuiles lui-même, recevait bien la
+     classe mais aucune règle ne s'y appliquait : l'accent n'y a jamais
+     fonctionné, ni au build ni en direct. Un attribut de données se style
+     depuis n'importe quel composant. */
+  nodes.tile?.toggleAttribute('data-accent', g.payback !== null);
   nodes.shortfall?.toggleAttribute('hidden', g.payback !== null);
 
   if (nodes.years) nodes.years.textContent = roiText;

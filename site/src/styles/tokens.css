@@ -42,6 +42,29 @@
   --color-shade-grey: #eaecec;
   --color-shade-strong: #a4acac;
 
+  /* --- Relevés sur la maquette du compte rendu (nœud 667:296) ---
+     ⚠️ Deux gris très proches de ceux qui existaient déjà, et c'est délibéré :
+     la grille de cartes empile trois fonds clairs (le cadre, la carte, la
+     tuile) et il fallait pouvoir les distinguer sans filet. `shade-details` est
+     le fond des tuiles chiffrées et du cadre de la grille ; `page-subtle` est
+     celui de la carte « production », un cran plus soutenu pour qu'elle se
+     détache de son voisin blanc.
+
+     ⚠️ Figma publie `bg/widget-ad` (#f2f6f6) à l'identique de `shade/details` :
+     une seule variable ici, deux noms là-bas pour deux usages. */
+  --color-shade-details: #f2f6f6;
+  --color-page-subtle: #e3ece9;
+
+  /* --- Filets et voiles des deux encarts du compte rendu (nœud 667:296).
+     Ils sont posés SUR un aplat coloré — un blanc voilé y creuse la surface
+     sans ajouter de couleur, et le filet est une version plus dense de l'aplat
+     porteur. Ni l'un ni l'autre ne se lisent sur un fond clair : ces valeurs ne
+     valent que dans leur carte. --- */
+  --bg-verdict-fill: rgba(255, 255, 255, 0.35);
+  --color-verdict-edge: #53dbb0;
+  --bg-certif-fill: rgba(255, 254, 252, 0.65);
+  --color-certif-edge: #bfd65a;
+
   --color-white-primary: #fffefc;
   --color-white-clear: #f0f8f5;
 
@@ -209,6 +232,16 @@
   --text-h1-page-line-height: 1.19;
 
   /* --- overline — Circular Std Medium 18/20, -2 % --- */
+  /* --- `Result_number` (Figma, nœud 667:296) : le chiffre des deux tuiles
+     d'amortissement. Entre `display-little` (22) et `display-mid` (44) — la
+     grille de cartes avait besoin d'un palier intermédiaire, ces valeurs-là ne
+     tiennent ni l'une ni l'autre dans une tuile de 160px. --- */
+  --text-result-family: var(--font-family-display);
+  --text-result-size: 28px;
+  --text-result-weight: var(--font-weight-book);
+  --text-result-line-height: 1;
+  --text-result-tracking: -0.02em;
+
   --text-overline-family: var(--font-family-display);
   --text-overline-size: 18px;
   --text-overline-weight: var(--font-weight-medium);
@@ -278,7 +311,19 @@
 
   /* Rayons relevés au dev mode Figma sur le nœud 356:349. Hors échelle : la
      maquette utilise trois rayons distincts selon la taille du bloc. */
+  /* ⚠️ LE NOM MENT DÉSORMAIS : ce filet vaut 1px, comme `--border-width`. Il
+     était à 2px, relevé sur la maquette, pour que les encarts posés sur aplat
+     (le bloc du chiffre sur le vert, la pastille Enphase sur le lime) ne se
+     noient pas dans leur couleur porteuse. À l'usage, 1px suffit.
+
+     Le token subsiste parce qu'il reste le point d'ajustement UNIQUE de ces
+     deux encarts : les rendre à `--border-width` obligerait à retrouver lesquels
+     le jour où on voudra les réépaissir. Renommer serait plus honnête — à faire
+     si la valeur se stabilise. */
+  --border-width-thick: 1px;
+
   --radius-card: 18px;  /* cartes standard : stats, piliers, FAQ fermée */
+  --radius-grid: 20px;  /* cadre de la grille du compte rendu (nœud 665:87) */
   --radius-panel: 25px; /* grands blocs : équipe, témoignages, FAQ ouverte, CTA */
 
   /* ==========================================================================
@@ -586,6 +631,13 @@
      à lire au kWh près : 110px suffisent à voir la bosse d'été. La largeur mini
      d'un chiffre est celle qui laisse « 6 400 € – 9 600 € » tenir sur une ligne. */
   --height-sim-bars: 110px;
+  --pad-certif-inline: 25px;
+
+  /* L'encart flottant du compte rendu (nœud 672:75) : une largeur à lui, plus
+     étroite que le conteneur — c'est ce qui le fait lire comme un rappel posé
+     sur la page, et non comme une bande qui la barre. */
+  --width-sticky-cta: 715px;
+  --height-sticky-actions: 92px;
   --width-sim-metric: 200px;
   --gap-sim-bars: 2px;
   --size-certif-logo-sm: 28px; /* logo Enphase en ligne, dans le résultat */
@@ -719,6 +771,36 @@
      Au-delà d'une demi-seconde, le mouvement se donne le temps de s'installer
      — c'est la durée qui fait le registre, autant que la courbe. */
   --duration-expand: 560ms;
+
+  /**
+   * L'écran de calcul du simulateur.
+   *
+   * ⚠️ SOURCE UNIQUE, lue par le CSS *et* par `simulatorWidget` via
+   * `getComputedStyle`. Une constante recopiée dans le script finirait par
+   * diverger de l'animation, et le résultat s'afficherait avant que les points
+   * aient fini leur tour — ou après un blanc.
+   *
+   * ⚠️ Cette durée n'est PAS un temps de calcul : l'estimation est instantanée.
+   * C'est une mise en scène, assumée, pour que le résultat ne surgisse pas sans
+   * transition. Les étapes qu'elle affiche, elles, nomment de vraies opérations
+   * du modèle.
+   */
+  --duration-loader: 4500ms;
+
+  --height-loader-bar: 8px;
+
+  /* --- Reliquat de la première version (disque, pictogramme, points en
+     orbite). Conservé le temps que la barre soit validée ; à supprimer si elle
+     l'est. --- */
+  --size-loader-ring: 132px;
+  /* ⚠️ Le disque a SA taille, il ne se déduit pas de l'anneau. Calculé comme
+     « anneau moins un espacement », il laissait 5px de tracé visible de chaque
+     côté : l'anneau de progression était mangé par le disque et on ne voyait
+     plus rien se remplir. */
+  --size-loader-disc: 84px;
+  --size-loader-mark: 44px;
+  --size-loader-dot: 10px;
+  --count-loader-dot: 8;
   --easing-default: ease;
   /* Léger dépassement (~7 %) puis retour : donne un rebond discret sans
      caricature. Réservé aux ouvertures, jamais aux fermetures. */

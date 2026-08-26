@@ -151,7 +151,12 @@ export function initSimulator(root: ParentNode = document): void {
      est révélée. */
   const outcomes = [...root.querySelectorAll<HTMLElement>('[data-sim-outcome]')];
   const peakOut = root.querySelector<HTMLElement>('[data-sim-peak]');
-  const refineTool = root.querySelector<HTMLElement>('[data-sim-refine-tool]');
+  /* ⚠️ `querySelectorAll` : le discours de conversion est rendu DEUX fois — dans
+     la carte de la grille et dans la barre flottante. Un `querySelector` n'en
+     aurait mis à jour qu'un, et la barre serait restée sur le profil du build. */
+  const ctas = [...root.querySelectorAll<HTMLElement>('[data-sim-cta], [data-sim-sticky]')];
+  const ctaEtudes = [...root.querySelectorAll<HTMLElement>('[data-sim-cta-etude]')];
+  const ctaContacts = [...root.querySelectorAll<HTMLElement>('[data-sim-cta-contact]')];
   const reportLinks = [...root.querySelectorAll<HTMLAnchorElement>('[data-sim-report-link]')];
   const status = root.querySelector<HTMLElement>('[data-sim-status]');
   const questions = collectWizard(root, 'questions');
@@ -194,6 +199,80 @@ export function initSimulator(root: ParentNode = document): void {
   const chart = payback && collectPayback(payback);
   const helpBlocks = [...root.querySelectorAll<HTMLElement>('[data-help]')];
   const outOfScopeStep = root.querySelector<HTMLElement>('[data-sim-outofscope-step]');
+
+  /**
+   * LA BARRE FLOTTANTE — visible tant que l'action de la carte est hors écran.
+   *
+   * ⚠️ ELLE S'EFFACE DÈS QUE LE BOUTON EST VISIBLE. Deux fois la même action à
+   * l'écran, c'est la concurrence de sorties qu'on a passé du temps à supprimer.
+   *
+   * ⚠️ UN OBSERVATEUR, PAS UN ÉCOUTEUR DE DÉFILEMENT. Un `scroll` se déclenche
+   * des dizaines de fois par seconde et forcerait un recalcul de mise en page à
+   * chaque appel ; `IntersectionObserver` ne réveille le fil principal qu'au
+   * franchissement. Sur une page dont les Core Web Vitals conditionnent tout le
+   * trafic, ce n'est pas un détail.
+   *
+   * ⚠️ Le CSS la garde en `display: none` sous 768px : retirer `hidden` ici ne
+   * la fera jamais apparaître sur mobile, quoi qu'observe le navigateur.
+   */
+  /* ⚠️ L'ANCRE A DÉMÉNAGÉ. Elle visait `[data-sim-cta] .result__actions` — le
+     bouton quand il vivait dans la carte de conversion. Il est depuis remonté
+     dans le verdict, et ce sélecteur ne trouvait plus rien : l'observateur ne
+     s'installait tout simplement pas, sans que rien ne le signale. */
+  const loader = root.querySelector<HTMLElement>('[data-sim-loader]');
+  const floats = [...root.querySelectorAll<HTMLElement>('[data-sim-sticky], [data-sim-dock]')];
+  const ctaAnchor = root.querySelector<HTMLElement>('.result__verdict .result__actions');
+  const footer = document.querySelector('.footer');
+
+  if (floats.length && ctaAnchor && 'IntersectionObserver' in window) {
+    /**
+     * DEUX CONDITIONS, PAS UNE.
+     *
+     * ⚠️ La barre ne s'affiche que si le bouton est hors champ **ET** que le
+     * pied de page ne l'est pas. Sans la seconde, elle continuait par-dessus le
+     * footer : son verre est un blanc translucide, et `design.md` prévient qu'il
+     * ne signe la surface que sur un fond clair ou une photo. Composé sur le
+     * footer sombre, il donnait un voile grisâtre sale.
+     *
+     * Augmenter l'opacité aurait masqué le symptôme sans traiter la cause : la
+     * barre appartient au compte rendu, elle n'a rien à rappeler une fois qu'on
+     * l'a dépassé.
+     */
+    let ctaOffscreen = false;
+    let footerVisible = false;
+    const sync = () => {
+      const show = ctaOffscreen && !footerVisible;
+      /* ⚠️ UN ATTRIBUT, PAS `hidden`. `hidden` pose `display: none`, qui coupe
+         toute transition : la barre apparaissait d'un coup. Le CSS masque par
+         `visibility`, qui s'anime et retire quand même l'élément du clavier et
+         du lecteur d'écran. */
+      for (const node of floats) node.toggleAttribute('data-shown', show);
+    };
+
+    new IntersectionObserver(
+      ([entry]) => {
+        ctaOffscreen = !entry.isIntersecting;
+        sync();
+      },
+      /* Une marge basse égale à la hauteur de la barre : sans elle, la barre
+         recouvre le bouton au moment précis où il entre à l'écran, et les deux
+         clignotent l'un sur l'autre. */
+      { rootMargin: '0px 0px -120px 0px' },
+    ).observe(ctaAnchor);
+
+    if (footer) {
+      new IntersectionObserver(
+        ([entry]) => {
+          footerVisible = entry.isIntersecting;
+          sync();
+        },
+        /* La barre s'efface un peu AVANT que le footer n'affleure : elle glisse
+           vers le bas pendant que le fond sombre monte, au lieu de disparaître
+           une fois posée dessus. */
+        { rootMargin: '0px 0px 80px 0px' },
+      ).observe(footer);
+    }
+  }
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const regionEcho = root.querySelector<HTMLElement>('[data-sim-region-echo]');
@@ -314,22 +393,19 @@ export function initSimulator(root: ParentNode = document): void {
        parle — le document n'était pas fabricable. */
     for (const link of reportLinks) link.setAttribute('href', reportHref('/rapport', read()));
 
+    /* ⚠️ UNE SEULE SORTIE VISIBLE. Le profil décide de l'offre : pousser une
+       étude à quelqu'un dont l'installation ne s'amortit pas est inefficace, et
+       contraire au positionnement du site. */
     const profile = outcomeProfile(current);
-    let shown: HTMLElement | null = null;
-    for (const node of outcomes) {
-      node.hidden = node.dataset.simOutcome !== profile;
-      if (!node.hidden) shown = node;
-    }
+    for (const node of outcomes) node.hidden = node.dataset.simOutcome !== profile;
 
-    /* ⚠️ L'affinage est déjà l'action principale du profil froid, et le
-       secondaire du profil tiède. Le laisser AUSSI dans le pied le proposerait
-       deux fois sur le même écran — c'est exactement la concurrence de sorties
-       qu'on vient de supprimer. On ne teste pas la liste des profils : on
-       regarde si la variante affichée le propose déjà, ce qui reste juste le
-       jour où un profil change d'offre. */
-    if (refineTool) {
-      refineTool.hidden = Boolean(shown?.querySelector('[data-sim-refine-open]'));
-    }
+    /* ⚠️ LE LIME NE PORTE JAMAIS UNE MAUVAISE NOUVELLE. La carte de conversion
+       perd son accent quand le verdict est défavorable — même raisonnement que
+       la tuile « Amortissement » juste au-dessus. */
+    const warm = profile === 'chaud' || profile === 'tiede';
+    for (const node of ctas) node.dataset.tone = warm ? 'lime' : 'neutre';
+    for (const node of ctaEtudes) node.hidden = !warm;
+    for (const node of ctaContacts) node.hidden = warm;
 
     const inputs = read();
     echoes.get('area')?.replaceChildren(`${inputs.area} m²`);
@@ -593,6 +669,11 @@ export function initSimulator(root: ParentNode = document): void {
       if (indexOf(w, step) < 0) step = liveSteps(w)[0]?.dataset.step ?? step;
     }
 
+    /* Toute navigation annule un chargement en cours : retour navigateur, lien
+       d'étape, « Modifier mes réponses »… Sans cela le timer survivrait au
+       changement de vue. */
+    stopLoader();
+
     const onResult = step === RESULT_STEP;
     const inRefine = isRefineStep(step);
 
@@ -632,6 +713,67 @@ export function initSimulator(root: ParentNode = document): void {
     } else {
       status.textContent = progressLabel(indexOf(wizardOf(step), step), liveSteps(wizardOf(step)).length, wizardOf(step).kind);
     }
+  };
+
+  /**
+   * L'ÉCRAN DE CALCUL — la mise en scène qui précède le compte rendu.
+   *
+   * ⚠️ L'ATTENTE EST FABRIQUÉE. L'estimation est calculée instantanément ; cet
+   * écran existe pour que le résultat ne surgisse pas sans transition. Les
+   * étapes qu'il affiche nomment en revanche de vraies opérations du modèle.
+   *
+   * ⚠️ LA DURÉE VIENT DU CSS, pas d'une constante d'ici. Recopiée, elle
+   * finirait par diverger de l'animation : le résultat s'afficherait avant que
+   * les points aient fini leur tour, ou après un blanc.
+   *
+   * ⚠️ LE TIMER EST ANNULABLE, et c'est indispensable. Sans cela, un retour
+   * navigateur pendant les quatre secondes laissait le `setTimeout` courir : il
+   * affichait ensuite le compte rendu par-dessus la page où le visiteur venait
+   * de revenir.
+   */
+  let loaderTimer: number | undefined;
+
+  const stopLoader = () => {
+    if (loaderTimer !== undefined) {
+      window.clearTimeout(loaderTimer);
+      loaderTimer = undefined;
+    }
+    if (loader) loader.hidden = true;
+  };
+
+  const runLoader = (then: () => void) => {
+    if (!loader) return then();
+
+    /* Les questions s'effacent, l'écran prend leur place. Le compte rendu reste
+       masqué : c'est `show()` qui le révélera, une fois le temps écoulé. */
+    questions.root.hidden = true;
+    refine.root.hidden = true;
+    if (help) help.hidden = true;
+    /* Le décor s'efface dès le chargement : la photo et le verre appartiennent
+       aux questions. Sans cela l'écran de calcul se jouait sur le paysage, et le
+       fond basculait brutalement au blanc à l'apparition du compte rendu. */
+    if (decor) decor.dataset.simView = 'chargement';
+    loader.hidden = false;
+
+    /* ⚠️ REMONTER EN HAUT. La page reste là où le visiteur l'avait laissée — au
+       bas du compte rendu précédent, par exemple : l'écran de calcul s'affichait
+       hors champ et on regardait le pied de page pendant quatre secondes. */
+    loader.scrollIntoView({ behavior: reduced.matches ? 'auto' : 'smooth', block: 'center' });
+
+    /* ⚠️ L'animation se réamorce d'elle-même. Les `@keyframes` démarrent quand
+       l'élément entre dans le rendu : le passage de `display: none` à `flex` que
+       `hidden` vient d'opérer suffit. Une remise à zéro manuelle (retrait puis
+       ajout d'une classe avec `offsetWidth`) serait du bruit — et c'est vérifié
+       au navigateur, pas supposé. */
+    status.textContent = 'Calcul de votre estimation en cours.';
+
+    const ms =
+      Number.parseFloat(getComputedStyle(loader).getPropertyValue('--duration-loader')) || 4500;
+    loaderTimer = window.setTimeout(() => {
+      loaderTimer = undefined;
+      loader.hidden = true;
+      then();
+    }, ms);
   };
 
   /* -------------------------------------------------------------- branchement */
@@ -716,7 +858,21 @@ export function initSimulator(root: ParentNode = document): void {
       if (w.next.hasAttribute('data-exit')) return;
       const steps = liveSteps(w);
       const index = indexOf(w, step);
-      navigate(event, index === steps.length - 1 ? RESULT_STEP : steps[index + 1]?.dataset.step);
+      const target = index === steps.length - 1 ? RESULT_STEP : steps[index + 1]?.dataset.step;
+
+      /* ⚠️ L'ÉCRAN NE S'INTERPOSE QUE SUR CE GESTE-LÀ : le dernier bouton du
+         parcours de QUESTIONS. Le brancher dans `show()` l'aurait déclenché
+         aussi sur une URL `?etape=resultat`, sur un retour navigateur, et sur
+         « Mettre à jour mon estimation » — or l'affinage doit rester léger et
+         répétable, c'est le seul levier capable de retourner un mauvais
+         verdict. */
+      if (target === RESULT_STEP && w.kind === 'questions') {
+        event.preventDefault();
+        runLoader(() => show(RESULT_STEP, true));
+        return;
+      }
+
+      navigate(event, target);
       /* `index` vaut -1 si l'état a dérivé : `navigate` a déjà neutralisé le
          saut d'ancre, on remet simplement le rail sur ses pieds. */
       if (index < 0) show(steps[0].dataset.step!, true);

@@ -168,7 +168,7 @@ const crossTop = (g.costY / CHART_H) * 100;
         valeur le verdict le plus défavorable, et la tuile lisait comme un
         argument de vente. Quand l'installation ne s'amortit pas, la tuile
         redevient neutre. */}
-    <div class={`payback__item${g.payback === null ? '' : ' payback__item--accent'}`} data-payback-tile>
+    <div class="payback__item" data-accent={g.payback === null ? undefined : true} data-payback-tile>
       <dt>Amortissement</dt>
       <dd data-payback-years>{paybackLabel(g.payback)}</dd>
     </div>
@@ -411,7 +411,9 @@ const crossTop = (g.costY / CHART_H) * 100;
     text-align: center;
   }
 
-  .payback__item--accent {
+  /* Style sur ATTRIBUT : c'est ce que `renderPayback()` bascule, et ça reste
+     applicable depuis un composant qui rend ses propres tuiles. */
+  .payback__item[data-accent] {
     border-color: var(--color-highlight-primary);
     background: var(--color-highlight-primary);
   }
@@ -424,7 +426,7 @@ const crossTop = (g.costY / CHART_H) * 100;
     line-height: var(--text-body-sm-line-height);
   }
 
-  .payback__item--accent dt {
+  .payback__item[data-accent] dt {
     color: var(--color-text-secondary);
   }
 

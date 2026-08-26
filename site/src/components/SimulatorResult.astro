@@ -2,11 +2,17 @@
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
 import enphaseLogo from '../assets/reassurance/enphase-logo.png';
-import { MONTH_LABELS, KWH_PER_KWC_YEAR, POWER_DEFAULT, SUMMER_WINTER_RATIO } from '../scripts/powerEstimate';
+import { MONTH_LABELS, KWH_PER_KWC_YEAR } from '../scripts/powerEstimate';
 import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
-import { ELECTRICITY_PRICE, REGION_DEFAULT, SELF_CONSUMPTION_RATE, regionLabel } from '../scripts/savings';
+import {
+  ELECTRICITY_PRICE,
+  REGION_DEFAULT,
+  SELF_CONSUMPTION_RATE,
+  netGain,
+  regionLabel,
+} from '../scripts/savings';
 import { formatEuro, formatNumber } from '../scripts/format';
-import PaybackChart from './PaybackChart.astro';
+import { paybackLabel } from '../scripts/payback';
 import {
   AREA_DEFAULT,
   CONSUMPTION_DEFAULT,
@@ -17,25 +23,37 @@ import {
 } from '../scripts/simulator';
 
 /**
- * Le résultat — la récompense de la cinquième question.
+ * Le compte rendu — la récompense de la dernière question.
+ *
+ * ⚠️ UNE GRILLE DE CARTES, PLUS UNE COLONNE (maquette Figma 667:296). Chaque
+ * carte porte un sujet et sa propre surface : le verdict en vert, les chiffres
+ * en blanc, la production sur un gris soutenu, la conversion en lime. Le gain
+ * n'est pas décoratif — l'écran se lit d'un coup d'œil au lieu de se dérouler.
  *
  * ⚠️ TOUT EN FOURCHETTES. Le détail précis reste la valeur de l'étude
  * personnalisée : c'est l'option A validée avec le client.
  *
  * ⚠️ CE QU'ON NE MONTRE PAS, sur consigne du brief : le nombre exact de
- * panneaux, le tableau de ROI année par année, le devis chiffré. Tout ce qui
- * permettrait de faire le projet seul ou d'aller comparer ailleurs.
+ * panneaux, le tableau de ROI année par année, le devis chiffré. La courbe
+ * d'amortissement a elle aussi quitté cet écran — elle vit dans le rapport PDF,
+ * dont elle fait la valeur propre.
  *
- * ⚠️ LES CHIFFRES RENDUS AU BUILD SONT UN EXEMPLE, PAS UNE ESTIMATION.
- * Depuis que plus rien n'est pré-coché dans le parcours, ce panneau ne peut pas
- * prétendre parler du visiteur tant qu'il n'a pas répondu. Il porte donc une
- * étiquette explicite, que le script retire au moment où les vraies réponses
- * arrivent. C'est ce que voit un visiteur sans JavaScript — un cas médian
- * honnêtement nommé — et la règle d'or #1 est tenue : le chiffre vit dans le
- * HTML, pas dans le script.
+ * ⚠️ LES CHIFFRES RENDUS AU BUILD SONT UN EXEMPLE, PAS UNE ESTIMATION. Rien
+ * n'étant pré-coché dans le parcours, ce panneau ne peut pas prétendre parler du
+ * visiteur tant qu'il n'a pas répondu. Il porte donc une étiquette explicite,
+ * que le script retire quand les vraies réponses arrivent. C'est ce que voit un
+ * visiteur sans JavaScript — un cas médian honnêtement nommé — et la règle d'or
+ * #1 est tenue : le chiffre vit dans le HTML, pas dans le script.
+ *
+ * ⚠️ LES DEUX TUILES D'AMORTISSEMENT NE PASSENT PLUS PAR `PaybackChart`. Elles
+ * appartiennent à la grille, pas à un graphique — le composant n'a plus rien à
+ * dessiner ici. Elles gardent en revanche ses points d'accroche
+ * (`data-payback-*`) : `renderPayback()` tolère l'absence de tracé et continue
+ * de les remplir. `PaybackChart` reste intact pour la page Amortissement et
+ * pour le rapport.
  */
 
-const initial = simulate({
+const INPUTS = {
   region: REGION_DEFAULT,
   property: 'maison',
   roof: 'inclinee',
@@ -44,7 +62,10 @@ const initial = simulate({
   consumptionMode: 'facture',
   bill: '100-200',
   consumption: CONSUMPTION_DEFAULT,
-});
+};
+
+const initial = simulate(INPUTS);
+const initialProfile = outcomeProfile(initial);
 
 /* Arrondi au demi-cent : une estimation en fourchette n'a pas la précision de
    l'euro, et l'afficher serait la surjouer. */
@@ -54,419 +75,715 @@ const kwh = (r: Range) =>
   `${formatNumber(Math.round(r.low / 50) * 50)} – ${formatNumber(Math.round(r.high / 50) * 50)} kWh`;
 const kwc = (r: Range) =>
   `${r.low.toFixed(1).replace('.', ',')} – ${r.high.toFixed(1).replace('.', ',')} kWc`;
-const years = (r: Range | null) => (r === null ? 'au-delà de 25 ans' : `${r.low} – ${r.high} ans`);
+
+const mid = (r: Range) => (r.low + r.high) / 2;
+const initialGain = netGain(mid(initial.kwc), {
+  region: REGION_DEFAULT,
+  rate: initial.rate,
+  production: mid(initial.production),
+});
 
 const peak = Math.max(...initial.monthly);
 
-/* Le profil du cas médian : c'est la variante de conversion que voit un visiteur
-   sans JavaScript, et celle que le script remplacera dès la première réponse. */
-const initialProfile = outcomeProfile(initial);
+/* Le ton de la carte de conversion suit le verdict : le lime est la couleur
+   d'action du système, il ne porte jamais une mauvaise nouvelle. */
+const warm = initialProfile === 'chaud' || initialProfile === 'tiede';
+
+/**
+ * L'ENCART FLOTTANT (maquette 672:75) — DÉSACTIVÉ.
+ *
+ * ⚠️ Il avait été construit pour rappeler l'action tant qu'elle était hors de
+ * l'écran. Le problème qu'il compensait est réglé autrement, et mieux : le
+ * bouton est monté dans la carte du verdict, où il est visible d'emblée. Un
+ * rappel flottant n'aurait plus fait que doubler un discours déjà présent, en
+ * occupant le bas du viewport en permanence.
+ *
+ * ⚠️ Le code, les styles et les tokens restent en place : le repasser à `true`
+ * suffit à le réactiver. Le jour où on le fait, revérifier qu'il ne propose pas
+ * la même action que la carte du verdict — c'est ce qui l'a condamné.
+ */
+const STICKY_CTA = false;
+
+/**
+ * Les quatre discours de conversion, écrits UNE seule fois.
+ *
+ * ⚠️ Ils sont rendus à DEUX endroits — la carte de la grille et la barre
+ * flottante — et les recopier garantissait qu'un jour les deux ne diraient plus
+ * la même chose. Le script n'a rien de plus à faire : il itère déjà sur tous les
+ * `[data-sim-outcome]` de la page, où qu'ils soient.
+ *
+ * ⚠️ Le profil froid ne reçoit PAS de rendez-vous commercial. Pousser une étude
+ * sur une installation qui ne s'amortit pas serait exactement le travers
+ * d'intermédiaire que le site refuse.
+ */
+const OUTCOMES = [
+  {
+    id: 'chaud',
+    pitch: 'Vos chiffres sont bons. Faites-les vérifier gratuitement.',
+    sub: 'Nos experts certifiés Enphase confirment la puissance et le prix exact, sur place, sans engagement.',
+  },
+  {
+    id: 'tiede',
+    pitch: 'Votre projet tient, mais le retour dépend de vos usages.',
+    sub: 'Cinq questions de plus resserrent la fourchette — un chauffage ou une voiture électriques changent nettement le calcul.',
+  },
+  {
+    id: 'froid',
+    pitch: 'En l’état, cette installation ne se rembourse pas sur 25 ans.',
+    sub: 'Ce n’est pas forcément un non : une puissance mieux calibrée, ou une consommation déplacée vers la journée, retourne souvent le calcul.',
+  },
+  {
+    id: 'hors-perimetre',
+    pitch: 'Un bâtiment professionnel se dimensionne autrement.',
+    sub: 'Notre modèle résidentiel ne s’y applique pas — et publier un chiffre faux ne vous rendrait pas service.',
+  },
+];
 ---
 
 <section class="result" data-sim-result aria-labelledby="resultat-titre">
-  {/* ─────────────────────────────────────────────── 1 · LE VERDICT ───────
-      La ligne de tête, et immédiatement sous elle ce qui l'EXPLIQUE. La phrase
-      régionale traînait au milieu de l'écran, entre la courbe et les barres,
-      là où plus personne ne la reliait au chiffre. En Wallonie elle dit
-      pourtant l'essentiel : « le tarif prosumer est déjà déduit des économies ».
-      C'est la réponse à la question que pose le chiffre. */}
+  {/* ── L'en-tête : le titre, et la sortie la moins engageante ────────────
+      ⚠️ LE PDF EST UN LIEN, PAS UN BOUTON. En pilule pleine il faisait jeu égal
+      avec l'action principale, et en vert — la couleur d'action — il la
+      dominait. Le brief est explicite : un primaire dominant, un secondaire en
+      texte plus petit, sans bouton concurrent. */}
   <header class="result__head">
-    <h2 class="result__title" id="resultat-titre" tabindex="-1">Votre estimation</h2>
-    <p class="result__headline" data-sim-out="savings">{euro(initial.savings)} / an</p>
-    <p class="result__unit">d’économies sur votre facture d’électricité</p>
-    <p class="result__aides" data-sim-aides>{aidesLabel(REGION_DEFAULT)}</p>
-
-    {/* Retiré par le script dès la première réponse du visiteur. */}
-    <p class="result__example" data-sim-example>
-      Exemple pour une maison en <span data-sim-example-region>{regionLabel(REGION_DEFAULT)}</span> :
-      toit incliné plein sud, {AREA_DEFAULT} m², facture de 100 à 200 €/mois.
-      Répondez aux questions pour obtenir la vôtre.
-    </p>
-
-    <p class="result__outofscope" data-sim-outofscope hidden>
-      Un bâtiment professionnel se dimensionne autrement qu’une maison — notre
-      estimation résidentielle ne s’y applique pas.
-      <a href="/contact">Parlons-en directement.</a>
-    </p>
+    {/* ⚠️ C'EST LE H1 DE LA VUE RÉSULTAT. La maquette pose le titre dans le
+        compte rendu, avec la sortie PDF sur la même ligne ; celui de
+        `SimulatorPanels` est donc masqué ici, sinon le titre s'affiche deux
+        fois. Deux `h1` coexistent dans le DOM, un seul est jamais rendu — un
+        `display: none` sort l'autre de l'arbre d'accessibilité. */}
+    <h1 class="result__title" id="resultat-titre" tabindex="-1">
+      Ce que le solaire<br />donnerait chez vous
+    </h1>
+    <a class="result__pdf" href="/rapport" data-sim-report-link>
+      Recevoir cette estimation par e-mail
+    </a>
   </header>
 
-  {/* ──────────────────────────────────────── 2 · LE DIMENSIONNEMENT ───────
-      ⚠️ NI les économies NI le temps de retour ici : les premières occupent la
-      ligne de tête, le second vit dans la timeline. Les répéter donnait le même
-      chiffre à trois endroits.
+  <div class="result__grid">
+    <div class="result__col">
+      {/* ── LE VERDICT ET SON ACTION, dans une même carte blanche ──────────
+          ⚠️ LE BOUTON EST ICI, ET C'EST TOUT L'OBJET DE CETTE MISE EN PAGE. Il
+          était en bas de la colonne droite, à 884px du haut : hors de l'écran
+          sur tout portable de moins de 900px de haut. Le visiteur devait
+          deviner qu'il fallait défiler pour agir. Placé sous le chiffre, il
+          tombe vers 550px — visible partout. */}
+      <section class="result__panel">
+        <section class="result__verdict">
+          <h3 class="result__card-title">Votre estimation</h3>
+          {/* ⚠️ « / an » fait partie de la CHAÎNE, pas du gabarit : le script
+              réécrit ce nœud avec l'unité comprise (`texts().savings`). */}
+          {/* ⚠️ Le chiffre et sa note forment UN bloc, serré à 8px. Sans ce
+              regroupement, le gap de la carte s'appliquait aussi entre le titre
+              et le chiffre : il fallait choisir entre 8px partout (le titre
+              collait) ou 16px partout (la note décollait du chiffre). La
+              maquette pose exactement cette imbrication. */}
+          <div class="result__savings">
+            <p class="result__figure" data-sim-out="savings">{euro(initial.savings)} / an</p>
+            <p class="result__note">
+              d’économies sur votre facture d’électricité<br />
+              <span data-sim-aides>{aidesLabel(REGION_DEFAULT)}</span>
+            </p>
+          </div>
 
-      ⚠️ AUCUNE TUILE EN LIME : l'accent de l'écran est descendu sur
-      l'amortissement. Un seul lime par écran, sinon il ne désigne plus rien. */}
-  <section class="result__block">
-    <h3 class="result__block-title">L’installation qu’il vous faut</h3>
-    <dl class="result__metrics">
-      <div class="result__metric">
-        <dt>Puissance recommandée</dt>
-        <dd data-sim-out="kwc">{kwc(initial.kwc)}</dd>
-      </div>
-      <div class="result__metric">
-        <dt>Production annuelle</dt>
-        <dd data-sim-out="production">{kwh(initial.production)}</dd>
-      </div>
-      <div class="result__metric">
-        <dt>Budget indicatif</dt>
-        <dd data-sim-out="cost">{euro(initial.cost)}</dd>
-      </div>
-    </dl>
-  </section>
 
-  {/* ────────────────────────────────────────── 3 · LA RENTABILITÉ ─────────
-      ⚠️ LA BRIQUE DU CATALOGUE, à son poste. `interactivite-seo.md` lui assigne
-      le rôle « Résultats (ROI) » depuis le début.
+          <div class="result__actions">
+            <Button href="/etude" variant="ink" data-sim-cta-etude hidden={!warm}>
+              Réserver mon étude gratuite
+            </Button>
+            <Button href="/contact" variant="ink" data-sim-cta-contact hidden={warm}>
+              Parler à un conseiller
+            </Button>
+          </div>
+        </section>
 
-      ⚠️ Le tracé est indicatif, le TEXTE porte la fourchette : le script écrit
-      « 4 – 8 ans » dans la lecture chiffrée, pas l'année exacte que dessine la
-      courbe. Le résultat reste en fourchettes, décision validée avec le client. */}
-  <section class="result__block">
-    <h3 class="result__block-title">Quand rentrez-vous dans vos frais&nbsp;?</h3>
-    <PaybackChart
-      kwc={POWER_DEFAULT}
-      region={REGION_DEFAULT}
-      live
-      showCost={false}
-      hypotheses={false}
-      plot={false}
-    />
-  </section>
+        {/* ── LE DISCOURS DE CONVERSION — sans action, désormais ────────────
+            Les quatre variantes sont rendues EN HTML au build, le script en
+            révèle une (`outcomeProfile`). Sans JavaScript, celle du cas médian
+            reste visible et la page tient debout — règle d'or #1.
 
-  {/* ─────────────────────────────────── 4 · LA PRODUCTION DANS L'ANNÉE ────
-      ⚠️ Les barres n'avaient ni échelle ni interprétation : on voyait une forme,
-      pas une quantité, et rien ne disait à quoi elle sert. Le repère haut donne
-      l'ordre de grandeur, la phrase relie le graphique au reste du site — c'est
-      l'écart été/hiver qui explique pourquoi le surplus part au réseau, donc
-      pourquoi l'autoconsommation décide de la rentabilité. */}
-  <section class="result__block">
-    <h3 class="result__block-title">La production dans l’année</h3>
-    <figure class="result__monthly" data-sim-monthly>
-      <div class="result__plot">
-        <p class="result__peak" aria-hidden="true">
-          <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+            ⚠️ Elle n'a plus de bouton : il est monté dans le verdict. Deux fois
+            la même action à l'écran, c'est la concurrence de sorties qu'on a
+            passé du temps à supprimer. */}
+        <section class="result__cta" data-sim-cta data-tone={warm ? 'lime' : 'neutre'}>
+          {OUTCOMES.map(({ id, pitch, sub }) => (
+            <div class="result__outcome" data-sim-outcome={id} hidden={initialProfile !== id}>
+              <p class="result__pitch">{pitch}</p>
+              <p class="result__sub">{sub}</p>
+            </div>
+          ))}
+
+          <p class="result__certif">
+            <Image src={enphaseLogo} alt="" width={27} height={28} />
+            Installateur certifié Enphase
+          </p>
+        </section>
+      </section>
+
+      {/* L'amortissement. `data-payback` reste la racine que le script cherche. */}
+      <section class="result__numbers" data-payback>
+        <h3 class="result__card-title">Quand rentrez-vous dans vos frais&nbsp;?</h3>
+        <dl class="result__tiles result__tiles--payback">
+          {/* ⚠️ L'ACCENT NE SE POSE QUE SUR UNE BONNE NOUVELLE : le lime est la
+              couleur d'action, l'appliquer à « au-delà de 25 ans » mettrait en
+              valeur le verdict le plus défavorable. */}
+          <div class="result__tile" data-accent={initial.roi === null ? undefined : true} data-payback-tile>
+            <dt>Amortissement</dt>
+            <dd class="result__tile-value" data-payback-years>
+              {initial.roi === null
+                ? paybackLabel(null)
+                : `${initial.roi.low} – ${initial.roi.high} ans`}
+            </dd>
+          </div>
+          <div class="result__tile">
+            <dt>Bilan à 25 ans</dt>
+            <dd class="result__tile-value" data-payback-gain>
+              {formatEuro(Math.round(initialGain / 100) * 100)}
+            </dd>
+          </div>
+        </dl>
+
+        {/* ⚠️ L'ÉTAT « JAMAIS AMORTI » DOIT SE DIRE. Sans un mot, le visiteur lit
+            deux tuiles neutres et croit que tout va bien. */}
+        <p class="result__shortfall" hidden={initial.roi !== null} data-payback-shortfall>
+          Sur 25 ans, les économies cumulées n’atteignent pas le coût de
+          l’installation. Une puissance plus faible, ou un chauffage et une
+          voiture qui consomment votre propre production, changent ce calcul.
         </p>
-        <div class="result__bars" aria-hidden="true">
-          {MONTH_LABELS.map((label, index) => (
-            <span class="result__bar" data-sim-bar style={`--bar: ${(initial.monthly[index] / peak) * 100}%`}>
+      </section>
+    </div>
+
+    <div class="result__col">
+      <section class="result__production">
+        <h3 class="result__card-title">La production dans l’année</h3>
+        <figure class="result__chart" data-sim-monthly>
+          {/* ⚠️ LE REPÈRE HAUT. Douze barres sans échelle montrent une FORME, pas
+              une quantité : on voit que l'été produit plus, sans savoir combien.
+              Un seul repère suffit — une graduation fine promettrait une
+              précision que l'estimation n'a pas. */}
+          <p class="result__peak">
+            <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+          </p>
+          {/* ⚠️ DEUX BOUCLES, PAS UNE. Les étiquettes étaient posées en absolu
+              SOUS les barres, ce qui obligeait à réserver leur place avec un
+              `margin-bottom` — une marge fantôme que rien n'expliquait. Émises
+              comme des frères, elles occupent la seconde rangée de la grille. */}
+          <div class="result__bars" aria-hidden="true">
+            {MONTH_LABELS.map((label, index) => (
+              <span class="result__bar" data-sim-bar style={`--bar: ${(initial.monthly[index] / peak) * 100}%`}></span>
+            ))}
+            {MONTH_LABELS.map((label) => (
               <span class="result__bar-label">
                 <span class="result__bar-short">{label.slice(0, 1)}</span>
                 <span class="result__bar-long">{label}</span>
               </span>
-            </span>
-          ))}
-        </div>
+            ))}
+          </div>
+          <figcaption>
+            Un mois d’été produit environ 5,5 fois plus qu’un mois d’hiver. C’est
+            ce creux qui envoie le surplus d’été au réseau — et pourquoi consommer
+            sa propre production change tout au calcul.
+          </figcaption>
+        </figure>
+      </section>
+
+      {/* Le dimensionnement, dans sa propre carte (maquette 673:214). */}
+      <section class="result__install">
+        <h3 class="result__card-title">L’installation qu’il vous faut</h3>
+        <dl class="result__tiles result__tiles--install">
+          <div class="result__tile">
+            <dt>Puissance recommandée</dt>
+            <dd data-sim-out="kwc">{kwc(initial.kwc)}</dd>
+          </div>
+          <div class="result__tile">
+            <dt>Production annuelle</dt>
+            <dd data-sim-out="production">{kwh(initial.production)}</dd>
+          </div>
+          <div class="result__tile">
+            <dt>Budget indicatif</dt>
+            <dd data-sim-out="cost">{euro(initial.cost)}</dd>
+          </div>
+        </dl>
+      </section>
+    </div>
+  </div>
+
+  {/* ── LES DEUX AVERTISSEMENTS, SOUS LA GRILLE ────────────────────────────
+      ⚠️ Ils étaient dans la carte du verdict, où ils ne semblaient porter que
+      sur les économies. Ils portent en fait sur TOUS les chiffres de l'écran —
+      la puissance, le budget, l'amortissement, la production. Sous la grille,
+      leur portée est celle qu'ils ont vraiment.
+
+      ⚠️ Le premier est le garde-fou du rendu statique : le HTML est construit
+      sur un cas médian (Wallonie, plein sud, 40 m², 100-200 €/mois). Sans cette
+      étiquette, un visiteur arrivé ici sans avoir répondu — ou sans JavaScript —
+      lirait ces chiffres comme étant les siens. Le script la retire dès la
+      première réponse. */}
+  <p class="result__example" data-sim-example>
+    Exemple pour une maison en <span data-sim-example-region>{regionLabel(REGION_DEFAULT)}</span> :
+    toit incliné plein sud, {AREA_DEFAULT} m², facture de 100 à 200 €/mois.
+    Répondez aux questions pour obtenir la vôtre.
+  </p>
+
+  <p class="result__example result__example--scope" data-sim-outofscope hidden>
+    Un bâtiment professionnel se dimensionne autrement qu’une maison — notre
+    estimation résidentielle ne s’y applique pas.
+    <a href="/contact">Parlons-en directement.</a>
+  </p>
+
+  {/* ── LA BARRE MOBILE ─────────────────────────────────────────────────
+      Le bouton d'action, rappelé en bas de l'écran dès qu'il sort du champ.
+
+      ⚠️ MOBILE UNIQUEMENT. Sur desktop le bouton est visible d'emblée dans la
+      carte du verdict (mesuré à 614px) : un rappel n'aurait rien à rappeler.
+      Sur mobile la page est longue, et le bouton disparaît dès les premiers
+      défilements.
+
+      ⚠️ LE BOUTON SEUL, pas un encart avec du texte. L'encart desktop a été
+      abandonné parce qu'il redisait un discours déjà présent ; ici on ne répète
+      que l'action.
+
+      ⚠️ Les deux variantes portent les mêmes attributs que celles du verdict :
+      `simulatorWidget` les bascule ensemble par `querySelectorAll`, sans une
+      ligne de plus. */}
+  {/* ⚠️ PAS de `hidden` ici : le masquage se fait en CSS par `visibility`, pour
+      que la barre puisse s'animer. Laisser l'attribut aurait posé `display: none`
+      au chargement — et surtout, personne ne l'aurait jamais retiré, puisque le
+      script bascule désormais `data-shown`. */}
+  <div class="result__dock" data-sim-dock>
+    <Button href="/etude" variant="ink" data-sim-cta-etude hidden={!warm}>
+      Réserver mon étude gratuite
+    </Button>
+    <Button href="/contact" variant="ink" data-sim-cta-contact hidden={warm}>
+      Parler à un conseiller
+    </Button>
+  </div>
+
+  <div class="result__bottom">
+    <section class="result__refine">
+      <h3 class="result__card-title result__card-title--inverted">
+        Voulez-vous un résultat encore plus précis&nbsp;?
+      </h3>
+      {/* ⚠️ Le texte de la maquette était celui des barres mensuelles, recopié
+          par mégarde. Remplacé par ce que l'affinage fait réellement : il porte
+          l'autoconsommation de 38 % à 60-70 %, et c'est le seul levier capable
+          de retourner un mauvais verdict. */}
+      <p class="result__refine-text">
+        Cinq questions de plus — pente du toit, ombrage, pompe à chaleur, voiture
+        électrique, batterie — resserrent la fourchette. Ce sont elles qui
+        décident de la part que vous consommez vous-même, donc du résultat.
+      </p>
+      <Button data-sim-refine-open>Affiner mon estimation</Button>
+    </section>
+
+    <section class="result__legal">
+      <p>
+        Estimation indicative basée sur des moyennes régionales. Nos experts
+        certifiés Enphase l’affinent <strong>gratuitement</strong> avec une étude
+        personnalisée.
+      </p>
+
+      <div class="result__tools">
+        {/* Le parcours remplace les questions par le résultat : sans cette
+            sortie, une réponse mal cliquée serait irrattrapable. */}
+        <button class="result__link" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
+
+        {/* ⚠️ Les hypothèses ne sont PAS dans la maquette, et elles restent : le
+            brief en fait « un pilier de crédibilité encyclopédique ». Repliées,
+            elles ne coûtent rien à l'écran. */}
+        <details class="result__assumptions">
+          <summary>Hypothèses de calcul</summary>
+          <ul>
+            <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
+            <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
+            <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
+            <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
+            <li>Dégradation des panneaux : 0,5 % par an.</li>
+            <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
+          </ul>
+        </details>
       </div>
-      <figcaption>
-        Un mois d’été produit environ {SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois
-        plus qu’un mois d’hiver. C’est ce creux qui envoie le surplus d’été au
-        réseau — et pourquoi consommer sa propre production change tout au calcul.
-      </figcaption>
-    </figure>
-  </section>
+    </section>
+  </div>
 
-  {/* ────────────────────────────────────────────────── 5 · LA SUITE ───────
-      ⚠️ UNE SEULE ACTION PRINCIPALE, CHOISIE SELON LE RÉSULTAT.
+  {/* ── LA BARRE FLOTTANTE (maquette 672:75) — DÉSACTIVÉE ──────────────────
+      ⚠️ Le commentaire est DEHORS de l'expression : dans `{cond && (…)}`, Astro
+      attend une expression unique, et un commentaire JSX suivi d'un élément n'en
+      est pas une. Le compilateur ne le dit pas — il signale « Expected `,` or
+      `)` » vingt lignes plus loin.
 
-      L'écran en proposait cinq de front — deux boutons pleins concurrents, deux
-      liens et une sortie d'édition — là où le brief demande « CTA primaire
-      dominant, CTA secondaire en texte plus petit, sans bouton concurrent ».
-      Pire : il poussait « réservez votre étude » à un visiteur dont
-      l'installation ne s'amortit pas sur 25 ans.
+      Elle rappelait l'action tant qu'elle était hors de l'écran. Le bouton étant
+      monté dans le verdict, elle n'aurait plus fait que le doubler. Le contenu
+      vient de la MÊME constante que la carte et porte les mêmes
+      `data-sim-outcome` : à la réactivation, le script les basculera ensemble
+      sans une ligne de plus. */}
+  {STICKY_CTA && (
+    <aside class="result__sticky" data-sim-sticky data-tone={warm ? 'lime' : 'neutre'} hidden>
+      <div class="result__sticky-text">
+        {OUTCOMES.map(({ id, pitch, sub }) => (
+          <div class="result__outcome" data-sim-outcome={id} hidden={initialProfile !== id}>
+            <p class="result__pitch">{pitch}</p>
+            <p class="result__sub">{sub}</p>
+          </div>
+        ))}
+      </div>
 
-      Les quatre variantes sont rendues EN HTML au build, le script en révèle
-      une (`outcomeProfile`). Sans JavaScript, celle du cas médian reste visible
-      et la page tient debout — règle d'or #1.
-
-      ⚠️ Le bouton « Recevoir mon devis » a disparu : doublon fonctionnel de
-      l'étude, et `funnel.md` tranche — « CTA = étude personnalisée, pas devis ». */}
-  <section class="result__next">
-    <div class="result__outcome" data-sim-outcome="chaud" hidden={initialProfile !== 'chaud'}>
-      <p class="result__pitch">Vos chiffres sont bons. Faites-les vérifier gratuitement.</p>
-      <p class="result__sub">Nos experts certifiés Enphase confirment la puissance et le prix exact, sur place, sans engagement.</p>
-      <Button href="/etude">Réserver mon étude gratuite</Button>
-      <a class="result__second" href="/rapport" data-sim-report-link>Recevoir cette estimation par e-mail</a>
-    </div>
-
-    <div class="result__outcome" data-sim-outcome="tiede" hidden={initialProfile !== 'tiede'}>
-      <p class="result__pitch">Votre projet tient, mais le retour dépend de vos usages.</p>
-      <p class="result__sub">Cinq questions de plus resserrent la fourchette — un chauffage ou une voiture électriques changent nettement le calcul.</p>
-      <Button href="/etude">Réserver mon étude gratuite</Button>
-      <button class="result__second" type="button" data-sim-refine-open>Affiner mon estimation →</button>
-    </div>
-
-    {/* ⚠️ Le profil froid ne reçoit PAS de bouton d'étude en primaire. Pousser un
-        rendez-vous commercial sur un résultat qui ne s'amortit pas serait
-        exactement le travers d'intermédiaire que le positionnement du site
-        refuse. On propose le levier qui peut réellement changer le verdict. */}
-    <div class="result__outcome" data-sim-outcome="froid" hidden={initialProfile !== 'froid'}>
-      <p class="result__pitch">En l’état, cette installation ne se rembourse pas sur 25 ans.</p>
-      <p class="result__sub">Ce n’est pas forcément un non : une puissance mieux calibrée, ou une consommation déplacée vers la journée, retourne souvent le calcul. Précisez votre situation avant de décider.</p>
-      <Button href="#" variant="ink" data-sim-refine-open>Affiner mon estimation</Button>
-      <a class="result__second" href="/contact">En parler à un conseiller</a>
-    </div>
-
-    <div class="result__outcome" data-sim-outcome="hors-perimetre" hidden={initialProfile !== 'hors-perimetre'}>
-      <p class="result__pitch">Un bâtiment professionnel se dimensionne autrement.</p>
-      <p class="result__sub">Notre modèle résidentiel ne s’y applique pas — et publier un chiffre faux ne vous rendrait pas service.</p>
-      <Button href="/contact">Parler à un conseiller</Button>
-    </div>
-
-    <div class="result__reassurance">
-      {/* ⚠️ RATIO NATIF. Le fichier est un pictogramme de 259×267 — quasi carré.
-          Il était déclaré en 96×28 : `astro:assets` produisait une variante
-          écrasée, et le logo s'affichait comme une barre noire. La hauteur suit
-          le token de certification, la largeur suit l'image. */}
-      <Image src={enphaseLogo} alt="Installateur certifié Enphase" width={27} height={28} class="result__enphase" />
-      <p>Installateur certifié Enphase · vous parlez à l’équipe qui pose vos panneaux.</p>
-    </div>
-  </section>
-
-  {/* ──────────────────────────────────────── 6 · LE PIED UTILITAIRE ───────
-      Des OUTILS, pas des offres. Détachés du bloc de conversion, en retrait :
-      c'est ce qui rend l'action principale lisible comme la seule. */}
-  <footer class="result__tools">
-    <p class="result__mention">
-      Estimation indicative basée sur des moyennes régionales. Nos experts certifiés
-      Enphase l’affinent <strong>gratuitement</strong> avec une étude personnalisée.
-    </p>
-
-    <div class="result__links">
-      {/* Le parcours remplace les questions par le résultat : sans cette sortie, une
-          réponse mal cliquée serait irrattrapable autrement qu'en rechargeant. */}
-      <button class="result__link" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
-      <button class="result__link" type="button" data-sim-refine-open data-sim-refine-tool>Affiner mon estimation →</button>
-    </div>
-
-    <details class="result__assumptions">
-      <summary>Hypothèses de calcul</summary>
-      <ul>
-        <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
-        <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
-        <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
-        <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
-        <li>Dégradation des panneaux : 0,5 % par an.</li>
-        <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
-      </ul>
-    </details>
-  </footer>
+      <div class="result__actions">
+        <Button href="/etude" variant="ink" data-sim-cta-etude hidden={!warm}>
+          Réserver mon étude gratuite
+        </Button>
+        <Button href="/contact" variant="ink" data-sim-cta-contact hidden={warm}>
+          Parler à un conseiller
+        </Button>
+      </div>
+    </aside>
+  )}
 </section>
 
 <style>
-  /* ⚠️ LE COMPTE RENDU N'EST PLUS UNE CARTE. C'était une carte blanche posée
-     dans le panneau de verre, et douze blocs y étaient empilés avec le MÊME
-     écart : rien ne disait où un sujet finissait et où le suivant commençait.
-     C'est de là que venait l'impression de confusion, bien plus que du décor.
+  /* ═══════════════════════════════════════════════════════════════════════
+     UNE GRILLE DE CARTES, PAS UNE COLONNE.
 
-     Il devient un document : des blocs titrés, séparés par un vrai silence
-     (`--space-64`), sur le fond uni de la page. */
+     Le cadre qui tient les cartes (`--color-shade-details`) est ce qui fait
+     lire l'ensemble comme un tableau de bord et non comme une suite de
+     paragraphes.
+
+     ⚠️ AUCUNE OMBRE — le système n'en a pas. La profondeur vient des aplats et
+     des rayons, jamais d'un `box-shadow`.
+     ═══════════════════════════════════════════════════════════════════════ */
   .result {
     display: flex;
     flex-direction: column;
-    gap: var(--space-64);
+    gap: var(--space-3);
     max-width: var(--width-sim-panel);
     margin-inline: auto;
   }
 
-  /* Le verdict : titre, chiffre, unité, explication — empilés, pas répartis sur
-     une ligne. La valeur est le sommet de l'écran, elle prend la largeur. */
-  .result__head {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-2);
-  }
-
-  .result__unit {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
-    font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
-  }
-
-  /* Un bloc = un sujet, avec son titre. */
-  .result__block {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .result__block-title {
-    font-family: var(--text-h4-family);
-    font-size: var(--text-h4-size);
-    font-weight: var(--text-h4-weight);
-    line-height: var(--text-h4-line-height);
-  }
-
-  /* ⚠️ PAS de `tabular-nums` : dans Circular Std la chasse tabulaire élargit
-     aussi l'espace et le tiret, et « 200 € – 300 € » s'y délite. */
-  .result__headline {
-    font-family: var(--text-display-mid-family);
-    font-size: var(--text-h3-size);
-    color: var(--color-text-primary);
-    font-weight: var(--text-display-mid-weight);
-    line-height: 1;
-    letter-spacing: var(--text-display-mid-tracking);
-    white-space: nowrap;
-  }
-
-  /* Voir le même garde-fou dans `SimulatorWizard` : `display: flex` l'emporterait
-     sur la règle `[hidden] { display: none }` du navigateur. */
+  /* `display: flex` bat la règle UA sur `[hidden]` : sans ce garde-fou, le
+     compte rendu réapparaît pendant le parcours de questions. */
   .result[hidden] {
     display: none;
   }
 
-  .result__title {
-    font-size: var(--text-h3-size);
-    line-height: var(--text-h3-line-height);
-  }
-
-  /* Le titre reçoit le focus à l'apparition du résultat : sans `outline: none`,
-     un anneau surgirait sur un élément que personne n'a cliqué. Le repère visuel
-     est ici le panneau lui-même, qui vient d'apparaître. */
-  .result__title:focus {
-    outline: none;
-  }
-
-  .result__example {
-    padding: var(--space-3);
-    border-radius: var(--radius-card);
-    background: var(--color-white-clear);
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
-    line-height: var(--text-body-sm-line-height);
-  }
-
-  .result__outofscope {
-    padding: var(--space-3);
-    border-radius: var(--radius-card);
-    background: var(--color-white-clear);
-    color: var(--color-text-secondary);
-    font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
-    line-height: var(--text-body-light-line-height);
-  }
-
-  /* ⚠️ UNE ENTORSE ASSUMÉE À LA RÈGLE DU MODULE. `SliderCalculator` garde ses
-     tuiles « de front à TOUTES les tailles » parce qu'elles portent des nombres
-     courts (« 12 », « 6 500 € »). Les nôtres portent des FOURCHETTES
-     (« 6 400 € – 9 600 € ») : cinq de front à 390px seraient illisibles. Le
-     bandeau se replie donc, et c'est un choix, pas un oubli. */
-  /* ⚠️ LE BANDEAU A SAUTÉ. Un fond `white-clear` tenait les tuiles ensemble tant
-     que le compte rendu était une carte blanche. Sur une page qui est ELLE-MÊME
-     en `white-clear`, il ne sépare plus rien : il ne restait qu'un niveau
-     d'emboîtement de plus. Les tuiles se tiennent maintenant seules, par leur
-     filet — c'est la profondeur du système (aucune ombre n'existe ici). */
-  .result__metrics {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(var(--width-sim-metric), 1fr));
-    gap: var(--gap-cards);
-    margin: 0;
-  }
-
-  .result__metric {
+  /* --- L'en-tête --- */
+  .result__head {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-2);
-    /* Sans `min-width: 0`, la valeur impose sa largeur à la colonne et les
-       tuiles débordent de la grille. */
-    min-width: 0;
-    padding: var(--space-24) var(--space-3);
-    border: var(--border-width) solid var(--color-shade-grey);
-    border-radius: var(--radius-card);
-    background: var(--color-white-primary);
-    text-align: center;
-    background: var(--color-white-primary);
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
   }
 
-  .result__metric--accent {
-    background: var(--color-highlight-primary);
-  }
-
-  .result__metric dt {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-body-sm-size);
-  }
-
-  .result__metric--accent dt {
-    color: var(--color-text-secondary);
-  }
-
-  .result__metric dd {
-    margin: 0;
+  .result__title {
     font-family: var(--text-display-mid-family);
-    font-size: var(--text-power-value-size);
+    font-size: var(--text-display-mid-size);
     font-weight: var(--text-display-mid-weight);
     line-height: 1.05;
     letter-spacing: var(--text-display-mid-tracking);
   }
 
-  .result__aides:empty {
+  .result__pdf {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  /* --- La grille --- */
+  .result__grid,
+  .result__bottom {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  .result__grid {
+    padding: var(--pad-card);
+    border-radius: var(--radius-grid);
+    background: var(--color-shade-details);
+  }
+
+  .result__col {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  /* --- Les cartes --- */
+  /* ⚠️ 20px et 16px, RELEVÉS SUR LA MAQUETTE (665:87) — et déjà présents dans
+     le système : `--pad-card` et `--radius-3`. J'avais pris `--space-24` (24) et
+     `--radius-card` (18), qui sonnaient juste mais décalaient chaque carte de
+     4px et arrondissaient 2px de trop. */
+  .result__panel,
+  .result__verdict,
+  .result__numbers,
+  .result__production,
+  .result__install,
+  .result__cta,
+  .result__refine,
+  .result__legal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+  }
+
+  /* La carte blanche qui tient le verdict et son discours. Elle ajoute un
+     niveau d'emboîtement, assumé par la maquette : c'est ce qui fait lire les
+     deux comme un seul bloc — le chiffre et ce qu'on en fait. */
+  .result__panel {
+    background: var(--color-white-primary);
+  }
+
+  .result__verdict {
+    background: var(--color-main-green);
+  }
+
+  .result__savings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  /* ⚠️ 32px au total entre la note et le bouton (maquette). Le gap de la carte
+     en apporte déjà 16 : la marge n'ajoute que le complément. L'action a besoin
+     de se détacher du texte, sinon elle se lit comme la suite du paragraphe. */
+  .result__verdict .result__actions {
+    margin-top: var(--space-3);
+  }
+
+  /* Les cartes du bas de chaque colonne s'étirent : les deux colonnes finissent
+     alors au même niveau, sans hauteur codée en dur. */
+  /* ⚠️ La DERNIÈRE carte de chaque colonne s'étire, pas la carte de conversion.
+     Les deux colonnes finissent alors au même niveau — la maquette les pose à
+     758 et 740 — sans qu'aucun graphique ni aucune tuile ne se déforme : les
+     tuiles restent calées en haut, seul le fond de la carte s'allonge. */
+  .result__numbers,
+  .result__install {
+    flex: 1;
+    justify-content: flex-start;
+    background: var(--color-white-primary);
+  }
+
+  .result__production {
+    background: var(--color-page-subtle);
+  }
+
+  /* ⚠️ PLUS D'ÉTIREMENT. La carte de conversion absorbait la hauteur restante
+     pour aligner les colonnes, ce qui creusait ~190px de vide entre la pastille
+     et le bouton. Elle n'a plus de bouton à pousser en bas, et les deux colonnes
+     s'équilibrent maintenant par leur contenu. */
+  .result__cta {
+    background: var(--color-highlight-primary);
+  }
+
+  /* ⚠️ 16px PARTOUT DANS LA GRILLE — cadre, cartes et cartes imbriquées. La
+     maquette pose 20px, mais l'emboîtement s'est approfondi depuis (cadre →
+     carte blanche → carte verte → bloc chiffre) : à 20px chaque niveau reprenait
+     40px de large, et le chiffre finissait à 80px des bords du cadre.
+
+     Les tuiles gardent leurs 12px, la rangée basse ses 20px : elle est hors de
+     la grille et n'a qu'un seul niveau. */
+  .result__grid,
+  .result__grid section {
+    padding: var(--space-3);
+  }
+
+  .result__card-title {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .result__card-title--inverted {
+    color: var(--color-text-inverted);
+  }
+
+  /* --- Le verdict --- */
+  /* ⚠️ PAS de `tabular-nums` : dans Circular Std la chasse tabulaire élargit
+     aussi l'espace et le tiret, et « 800 € – 1 200 € » s'y délite. */
+  .result__figure {
+    padding: var(--space-3);
+    border: var(--border-width-thick) solid var(--color-verdict-edge);
+    border-radius: var(--radius-3);
+    background: var(--bg-verdict-fill);
+    color: var(--color-text-primary);
+    font-family: var(--text-display-mid-family);
+    /* ⚠️ `h1-page` (26 → 32px) et non `display-mid` (44px). À 44 le chiffre se
+       cassait en deux lignes dès que la fourchette s'allongeait, et il écrasait
+       le reste de la carte. Ce token porte déjà sa variante mobile — inutile de
+       la redire dans la requête média. */
+    font-size: var(--text-h1-page-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1.1;
+    letter-spacing: var(--text-display-mid-tracking);
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  /* ⚠️ `text-secondary` (ink/800), pas `tertiary` (ink/700) : ce texte est posé
+     sur le vert plein, pas sur un fond clair. Le gris moyen y perdait le peu de
+     contraste qu'il a — sur un aplat saturé, le texte d'appui doit descendre
+     d'un cran. */
+  .result__note {
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* Un bandeau discret entre la grille et la rangée basse : il encadre les
+     chiffres sans leur voler la vedette. */
+  .result__example {
+    padding: var(--space-12) var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    /* Un cran sous le texte courant : c'est une mention, pas une information à
+       lire. Le contraste reste large (#4c5250 sur #f2f6f6), ce qui autorise
+       cette taille — à 14px sur `text-muted` il serait passé sous le seuil AA. */
+    font-size: var(--text-utility-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* Le hors-périmètre n'est pas une note de bas de page : c'est un refus de
+     chiffrer. Il se distingue par son filet. */
+  .result__example--scope {
+    border: var(--border-width) solid var(--color-shade-strong);
+    background: var(--color-white-primary);
+    color: var(--color-text-secondary);
+  }
+
+  .result__example[hidden] {
     display: none;
   }
 
-  .result__aides {
+  /* --- Les tuiles chiffrées --- */
+  .result__tiles {
+    display: grid;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  /* ⚠️ Les tuiles d'amortissement ne prennent PAS toute la largeur : deux
+     chiffres courts étirés sur 500px se perdraient. Elles se calent à gauche,
+     comme sur la maquette. */
+  .result__tiles--payback {
+    grid-template-columns: repeat(2, minmax(0, max-content));
+    justify-content: start;
+  }
+
+  .result__tiles--install {
+    grid-template-columns: repeat(auto-fit, minmax(var(--width-sim-metric), 1fr));
+  }
+
+  .result__tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-12);
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+    text-align: center;
+  }
+
+  /* Style sur ATTRIBUT, pas sur classe : c'est ce que `renderPayback()` bascule,
+     et une classe posée seulement au build ne suivrait jamais le profil. */
+  .result__tile[data-accent] {
+    background: var(--color-highlight-primary);
+  }
+
+  .result__tile dt {
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .result__tile dd {
+    margin: 0;
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+    /* Les libellés longs se replient plutôt que de déborder ; les insécables
+       des fourchettes empêchent « 5 – 9 ans » de se couper en trois. */
+    text-wrap: balance;
+  }
+
+  /* Le chiffre d'amortissement a son propre palier : entre le libellé (18) et le
+     display (44), aucune des deux tailles ne tenait dans la tuile. */
+  .result__tile-value {
+    font-family: var(--text-result-family);
+    font-size: var(--text-result-size);
+    font-weight: var(--text-result-weight);
+    line-height: var(--text-result-line-height);
+    letter-spacing: var(--text-result-tracking);
+  }
+
+  /* ⚠️ `body-sm` comme tout le texte courant de l'écran. Il était resté en
+     `body-light` (Inter 16) quand les autres blocs ont basculé : un seul
+     paragraphe plus gros que ses voisins, sans raison qu'on puisse nommer. */
+  .result__shortfall {
     color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .result__shortfall[hidden] {
+    display: none;
+  }
+
+  /* --- La production dans l'année --- */
+  .result__chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    border-radius: var(--radius-3);
+    background: var(--color-white-primary);
+  }
+
+  .result__peak {
+    padding-bottom: var(--space-2);
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+    color: var(--color-text-primary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
     line-height: var(--text-body-sm-line-height);
   }
 
-  .result__monthly {
-    display: flex;
-    flex-direction: column;
-    /* L'écart laisse passer les étiquettes de mois, posées en absolu SOUS les
-       barres : sans lui, la légende viendrait s'écrire par-dessus. */
-    gap: var(--space-24);
-    padding: var(--space-24) var(--space-3) var(--space-3);
-    border: var(--border-width) solid var(--color-shade-grey);
-    border-radius: var(--radius-card);
-    background: var(--color-white-primary);
-  }
+  /* ⚠️ PAS DE `flex: 1` ICI. Les barres vivaient dans une carte étirée pour
+     aligner les deux colonnes : elles grandissaient avec elle et montaient à
+     plus de 300px, trois fois la hauteur prévue. Hauteur FIXE — celle que le
+     reste du site utilise déjà — et c'est la carte de conversion qui absorbe le
+     reste de la colonne.
 
-  .result__monthly figcaption {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
-    font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
-  }
-
-  /* ⚠️ LE REPÈRE HAUT MANQUAIT. Douze barres sans échelle montrent une FORME,
-     pas une quantité : on voyait que l'été produit plus, sans savoir combien.
-     Un seul repère suffit — le mois le plus fort borne la lecture, et une
-     graduation fine promettrait une précision que l'estimation n'a pas. */
-  .result__plot {
-    position: relative;
-    padding-top: var(--space-24);
-  }
-
-  .result__peak {
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
-    line-height: 1;
-  }
-
+     Deux rangées : les douze barres, puis les douze étiquettes. Le placement
+     automatique de la grille les répartit sans qu'on ait à les numéroter. */
   .result__bars {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: var(--height-sim-bars) auto;
     align-items: end;
-    gap: var(--gap-sim-bars);
-    height: var(--height-sim-bars);
-    /* Le trait du haut matérialise le repère : sans lui, le chiffre flotte. */
-    border-top: var(--border-width) solid var(--color-shade-grey);
+    gap: var(--space-1) var(--gap-sim-bars);
   }
 
   .result__bar {
-    position: relative;
     display: block;
     height: var(--bar);
     border-radius: var(--radius-1) var(--radius-1) 0 0;
@@ -474,155 +791,271 @@ const initialProfile = outcomeProfile(initial);
     transition: height var(--duration-fast) var(--easing-default);
   }
 
-  /* ⚠️ CONTRASTE. Les étiquettes étaient en `--color-text-muted` (#a4acac) sur
-     blanc, à 10px : `design.md` signale déjà UN point du site sous le seuil AA,
-     il n'était pas question d'en ajouter douze. `text-tertiary` (#4c5250) passe
-     largement. */
+  /* ⚠️ CONTRASTE : `--color-text-muted` (#a4acac) sur blanc à 10px passe sous le
+     seuil AA. `design.md` signale déjà un point du site en dessous, il n'était
+     pas question d'en ajouter douze. */
   .result__bar-label {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    padding-top: var(--space-1);
-    text-align: center;
     color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-micro-size);
     line-height: 1;
+    text-align: center;
   }
 
-  /* À 390px, douze fois « Jan Fév Mar… » se chevauchent : chaque colonne fait
-     moins de 25px. L'initiale tient, et l'ordre des mois fait le reste. */
+  /* À 390px chaque colonne fait moins de 25px : « Jan Fév Mar… » se chevauchent.
+     L'initiale tient, et l'ordre des mois fait le reste. */
   .result__bar-short {
     display: none;
   }
 
-  @media (max-width: 767px) {
-    .result__bar-short {
-      display: inline;
-    }
-
-    .result__bar-long {
-      display: none;
-    }
-  }
-
-  .result__reassurance {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3);
-    border-radius: var(--radius-card);
-    background: var(--color-white-clear);
+  .result__chart figcaption {
     color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
+    font-size: var(--text-body-sm-size);
     line-height: var(--text-body-sm-line-height);
   }
 
-  .result__enphase {
-    flex-shrink: 0;
-    width: auto;
-    height: var(--size-certif-logo-sm);
-    object-fit: contain;
-  }
-
-  .result__mention {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
-    line-height: var(--text-body-sm-line-height);
-  }
-
-  /* ═══════════════════════════════════════════════════════════════════════
-     LE BLOC DE CONVERSION — une seule offre à la fois.
-
-     Quatre variantes existent dans le HTML, une seule est visible. C'est la
-     doctrine du projet : « le module rend son état par défaut en HTML, le
-     script réécrit des nœuds existants, il n'en construit aucun ». Sans
-     JavaScript, celle du cas médian reste affichée.
-     ═══════════════════════════════════════════════════════════════════════ */
-  .result__next {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-    padding: var(--pad-card-lg-block);
-    border-radius: var(--radius-panel);
-    background: var(--color-white-primary);
+  /* --- La conversion --- */
+  /* ⚠️ LE LIME NE PORTE JAMAIS UNE MAUVAISE NOUVELLE. Quand l'installation ne
+     s'amortit pas, la carte passe en blanc : annoncer « ça ne se rembourse pas »
+     sur la couleur d'action du système serait un contresens — le même que celui
+     déjà corrigé sur la tuile « Amortissement ». */
+  /* ⚠️ PAS BLANC : la carte vit maintenant DANS une carte blanche. Le ton neutre
+     y devenait invisible — la carte disparaissait purement et simplement sur le
+     profil froid, avec son message. `shade-details` la détache sans lui donner
+     la couleur d'action. */
+  .result__cta[data-tone='neutre'] {
+    background: var(--color-shade-details);
   }
 
   .result__outcome {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
-  /* ⚠️ Garde-fou obligatoire : `display: flex` bat la règle UA sur `[hidden]`,
-     et les quatre variantes s'afficheraient toutes en même temps. Le projet a
-     déjà payé ce piège cinq fois ailleurs. */
+  /* Garde-fou obligatoire : sans lui les quatre variantes s'affichent ensemble. */
   .result__outcome[hidden] {
     display: none;
   }
 
-  .result__outcome :global(.btn) {
-    justify-content: center;
-  }
-
   .result__pitch {
-    font-family: var(--text-h4-family);
-    font-size: var(--text-h4-size);
-    font-weight: var(--text-h4-weight);
-    line-height: var(--text-h4-line-height);
-    letter-spacing: var(--text-h4-tracking);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
   }
 
   .result__sub {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-light-family);
-    font-size: var(--text-body-light-size);
-    font-weight: var(--text-body-light-weight);
-    line-height: var(--text-body-light-line-height);
-  }
-
-  /* Le secondaire est un LIEN, jamais une seconde pilule : c'est exactement ce
-     que demande le brief, et ce que l'écran ne faisait pas. */
-  .result__second {
-    align-self: center;
-    padding: var(--space-2);
-    border: 0;
-    background: none;
-    color: var(--color-text-tertiary);
-    font: inherit;
+    color: var(--color-text-secondary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
-    text-align: center;
-    text-decoration: underline;
-    text-underline-offset: var(--space-1);
-    cursor: pointer;
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
   }
 
-  /* ── Le pied utilitaire : des outils, en retrait ── */
+  .result__certif {
+    display: flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-2) var(--pad-certif-inline);
+    border: var(--border-width-thick) solid var(--color-certif-edge);
+    border-radius: var(--radius-pill);
+    background: var(--bg-certif-fill);
+    color: var(--color-text-primary);
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  /* Le bouton se cale à GAUCHE, sous le chiffre — la maquette l'aligne sur le
+     texte, pas sur le bord de la carte. */
+  .result__actions {
+    display: flex;
+  }
+
+  /* `.btn` est en `inline-flex` : la règle UA sur `[hidden]` ne suffit pas. */
+  .result__actions :global(.btn[hidden]) {
+    display: none;
+  }
+
+  /* --- La barre mobile --- */
+  .result__dock {
+    /* Desktop : jamais. `display: none` l'emporte même si le script retire
+       `hidden` — la garantie qu'elle ne s'invite pas là où elle n'a rien à
+       faire. */
+    display: none;
+  }
+
+  @media (max-width: 767px) {
+    .result__dock {
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      /* Sous la nav (z-index 10), au-dessus du contenu. */
+      z-index: 5;
+      display: flex;
+      padding: var(--space-3);
+      /* ⚠️ `env(safe-area-inset-bottom)` : sans lui, la barre passe sous la
+         barre gestuelle des iPhone récents et le bouton devient à moitié
+         intouchable. Le `max()` garde l'espacement normal sur les écrans qui
+         n'ont pas d'encoche. */
+      padding-bottom: max(var(--space-3), env(safe-area-inset-bottom));
+      /* ⚠️ LE FILET FAIT LE TRAVAIL, PAS LE VERRE. `design.md` : un blanc
+         translucide ne signe le verre que sur une photo ; composé sur le fond
+         clair de la page il donne presque du blanc et la surface disparaît. Ce
+         qui rend la barre lisible, c'est le filet — le flou, lui, se voit quand
+         du contenu défile dessous. */
+      border-top: var(--border-width) solid var(--color-shade-grey);
+      background: var(--bg-glass-fill-menu);
+      backdrop-filter: blur(var(--bg-glass-blur-menu));
+
+      /* ── L'entrée en douceur ──────────────────────────────────────────
+         ⚠️ PAS `hidden` POUR LA MASQUER. `display: none` coupe toute
+         transition : la barre apparaissait d'un coup. `visibility` s'anime, et
+         retire l'élément de l'ordre de tabulation comme du lecteur d'écran —
+         ce qu'un simple `opacity: 0` n'aurait pas fait, laissant un bouton
+         invisible atteignable au clavier. */
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(100%);
+      transition:
+        transform var(--duration-medium) var(--easing-default),
+        opacity var(--duration-medium) var(--easing-default),
+        visibility var(--duration-medium) var(--easing-default);
+    }
+
+    .result__dock[data-shown] {
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ⚠️ Le glissement est un accessoire : coupé, la barre apparaît quand même. */
+    @media (prefers-reduced-motion: reduce) {
+      .result__dock {
+        transition: none;
+        transform: none;
+      }
+    }
+
+    .result__dock :global(.btn) {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .result__dock :global(.btn[hidden]) {
+      display: none;
+    }
+  }
+
+  /* --- La barre flottante (desktop, désactivée) --- */
+  .result__sticky {
+    /* Masquée sur mobile : `display: none` l'emporte sur tout, y compris quand
+       le script retire `hidden`. C'est la garantie qu'elle ne s'invite jamais
+       sur un petit écran, quoi que fasse l'observateur. */
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    /* ⚠️ UN ENCART, PAS UNE BANDE. La première version barrait toute la largeur
+       du conteneur ; celle-ci est plus étroite et calée à droite, ce qui la fait
+       lire comme un rappel posé sur la page. Le `max()` du bord droit l'aligne
+       sur le conteneur quand la fenêtre est large, et sur la marge de page
+       quand elle se resserre — sans jamais sortir de l'écran. */
+    .result__sticky {
+      position: fixed;
+      right: max(var(--container-padding), calc(50% - var(--width-sim-panel) / 2));
+      bottom: var(--space-3);
+      /* Sous la nav (z-index 10), au-dessus du contenu. */
+      z-index: 5;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+      width: min(
+        calc(100% - var(--container-padding) * 2),
+        var(--width-sticky-cta)
+      );
+      padding: var(--pad-card);
+      border-radius: var(--radius-3);
+      background: var(--color-highlight-primary);
+    }
+
+    .result__sticky[data-tone='neutre'] {
+      background: var(--color-white-primary);
+      /* Sur fond blanc la barre se confondrait avec la page : elle a besoin
+         d'un filet que la version lime n'exige pas. */
+      border: var(--border-width) solid var(--color-shade-grey);
+    }
+
+    /* Garde-fou : `display: flex` bat la règle UA sur `[hidden]`. */
+    .result__sticky[hidden] {
+      display: none;
+    }
+
+    .result__sticky-text {
+      min-width: 0;
+    }
+
+    /* La maquette réserve 92px à la rangée du bouton, ce qui pose de l'air entre
+       le texte et l'action. `min-height` plutôt que `height` : si le libellé
+       passait un jour sur deux lignes, la carte s'ouvrirait au lieu de le
+       rogner. */
+    .result__sticky .result__actions {
+      align-items: center;
+      min-height: var(--height-sticky-actions);
+      margin-top: 0;
+    }
+  }
+
+  /* --- La rangée basse --- */
+  /* ⚠️ 16px comme partout ailleurs. La maquette pose 24 pour cette carte, mais
+     un seul titre de l'écran respirant autrement que les quatre autres se lit
+     comme une erreur, pas comme une intention. */
+  .result__refine {
+    background: var(--color-text-secondary);
+    color: var(--color-text-inverted);
+  }
+
+  .result__refine-text {
+    color: var(--color-white-clear);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .result__refine :global(.btn) {
+    align-self: flex-start;
+    margin-top: auto;
+  }
+
+  .result__legal {
+    justify-content: space-between;
+    background: var(--color-shade-grey);
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
   .result__tools {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .result__links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-24);
+    align-items: flex-start;
+    gap: var(--space-2);
   }
 
   .result__link {
     padding: 0;
     border: 0;
     background: none;
-    color: var(--color-text-tertiary);
+    color: var(--color-text-secondary);
     font: inherit;
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-body-sm-size);
     text-decoration: underline;
     text-underline-offset: var(--space-1);
     cursor: pointer;
@@ -632,68 +1065,104 @@ const initialProfile = outcomeProfile(initial);
     display: none;
   }
 
-  .result__assumptions {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-utility-mobile-size);
-    line-height: var(--text-body-sm-line-height);
-  }
-
   .result__assumptions summary {
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
     cursor: pointer;
-    color: var(--color-text-primary);
-    font-weight: var(--text-h4-weight);
   }
 
   .result__assumptions ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
     margin: var(--space-2) 0 0;
     padding-left: var(--space-3);
+    color: var(--color-text-tertiary);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .result__bar {
-      transition: none;
-    }
-  }
+  /* ═══════════════════════════════════════════════════════════════════════
+     MOBILE — une colonne, dans l'ordre de lecture.
 
+     La grille se déplie en verdict → chiffres → production → conversion →
+     affinage → mentions. C'est déjà l'ordre du DOM : rien à réordonner, ce qui
+     évite le piège d'un ordre visuel qui contredirait l'ordre au clavier et au
+     lecteur d'écran.
+     ═══════════════════════════════════════════════════════════════════════ */
   @media (max-width: 767px) {
-    .result {
-      padding: var(--space-12);
+    /* ⚠️ LE CADRE VA BORD À BORD. Quatre niveaux s'emboîtaient — page, cadre,
+       carte blanche, carte verte — et reprenaient 64px de chaque côté : sur
+       390px, le bouton n'avait plus que 262px pour lui. Le cadre déborde donc
+       de la marge de page, et perd son rayon : un rayon sur un bloc collé au
+       bord laisserait deux coins blancs que rien n'expliquerait.
+
+       ⚠️ La marge négative vaut exactement `--container-padding`, celle que
+       `.sim` pose. Les deux doivent rester d'accord : si l'une change, l'autre
+       aussi, sinon le cadre déborde de l'écran et fait apparaître une barre de
+       défilement horizontale. */
+    .result__grid {
+      margin-inline: calc(var(--container-padding) * -1);
+      /* Arrondi en haut seulement : le cadre est collé aux deux bords, un rayon
+         à gauche et à droite laisserait des coins blancs. En haut il n'est
+         collé à rien — l'arrondi y détache le cadre du titre. */
+      border-radius: var(--radius-3) var(--radius-3) 0 0;
+    }
+
+    .result__grid,
+    .result__verdict,
+    .result__numbers,
+    .result__production,
+    .result__cta,
+    .result__refine,
+    .result__legal,
+    .result__chart,
+    .result__figure {
+      padding: var(--space-3);
+    }
+
+
+    .result__title {
+      font-size: var(--text-h3-size);
+    }
+
+    .result__tile {
+      padding: var(--space-3) var(--space-2);
+    }
+
+    .result__bar-short {
+      display: inline;
+    }
+
+    .result__bar-long {
+      display: none;
+    }
+
+    .result__actions {
+      justify-content: stretch;
+    }
+
+    .result__actions :global(.btn) {
+      flex: 1;
+      justify-content: center;
     }
   }
 
   @media (min-width: 768px) {
-    .result__headline {
-      font-size: var(--text-display-mid-size);
+    .result__grid,
+    .result__bottom {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
     }
 
-    /* Le titre du bloc de conversion et son bouton se répartissent la ligne :
-       la promesse à gauche, l'action à droite. Empilés sous 768px, où côte à
-       côte il ne resterait ni assez de place au texte ni assez de surface
-       tactile au bouton. */
-    .result__outcome {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: center;
-      column-gap: var(--space-24);
+    /* Chaque colonne est une pile autonome qui distribue ses cartes sur toute
+       la hauteur disponible. */
+    .result__col {
+      height: 100%;
     }
+  }
 
-    .result__pitch,
-    .result__sub {
-      grid-column: 1;
-    }
-
-    .result__outcome :global(.btn) {
-      grid-column: 2;
-      grid-row: 1 / span 2;
-    }
-
-    .result__second {
-      grid-column: 2;
-      align-self: start;
+  /* Règle compagnon, isolée et en fin de bloc — voir design.md §3. Sans cette
+     séparation, le minifieur en supprime une des deux et le verre disparaît en
+     production, sur Safari et iOS uniquement. */
+  @media (max-width: 767px) {
+    .result__dock {
+      -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
     }
   }
 </style>

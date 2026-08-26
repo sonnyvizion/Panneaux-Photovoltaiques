@@ -425,6 +425,37 @@ const HELP = {
     </aside>
   </div>
 
+    {/* ── L'ÉCRAN DE CALCUL ────────────────────────────────────────────────
+        ⚠️ L'attente est FABRIQUÉE : l'estimation est calculée instantanément.
+        Elle existe pour que le résultat ne surgisse pas sans transition — le
+        compte rendu est le moment que tout le parcours prépare, et il paraissait
+        peu élaboré d'y arriver d'un clic.
+
+        ⚠️ Le texte ANNONCE L'AFFINAGE plutôt que de meubler. C'est le seul
+        levier capable de retourner un mauvais verdict, et il était jusqu'ici
+        enterré dans une carte du compte rendu : ces quelques secondes sont le
+        meilleur endroit pour le faire savoir.
+
+        ⚠️ La barre est décorative (`aria-hidden`) et ne porte pas de
+        `role="progressbar"` : elle ne mesure rien de réel. Un lecteur d'écran
+        reçoit une annonce unique dans `[data-sim-status]`, puis l'estimation.
+
+        ⚠️ Le bloc n'existe que pour le script : sans JavaScript il reste masqué
+        et le compte rendu s'affiche directement. */}
+    <div class="sim__loader" data-sim-loader hidden>
+      <p class="loader__title">Nous calculons votre estimation</p>
+
+      <p class="loader__lede">
+        Vous pourrez l’affiner juste après : cinq questions de plus — pente du
+        toit, ombrage, pompe à chaleur, voiture électrique, batterie — resserrent
+        la fourchette et peuvent changer nettement le résultat.
+      </p>
+
+      <div class="loader__bar" aria-hidden="true">
+        <span class="loader__fill"></span>
+      </div>
+    </div>
+
     <SimulatorResult />
 
     <p class="visually-hidden" data-sim-status role="status" aria-live="polite"></p>
@@ -512,27 +543,147 @@ const HELP = {
      (contrairement à `FigureModule` et `PageHero`) — il ne rendait donc pas sur
      Safari ni iOS. Le problème disparaît avec la surface.
      ═══════════════════════════════════════════════════════════════════════ */
+  /* Le chargement se joue sur le même fond uni que le compte rendu : la photo
+     et le verre appartiennent aux questions, pas à ce qui vient après. */
+  .sim[data-sim-view='chargement'],
   .sim[data-sim-view='resultat'] {
     align-items: stretch;
-    background: var(--color-white-clear);
+  }
+
+  /* ⚠️ Une hauteur minimale, sinon l'écran de calcul ne fait que quelques
+     centaines de pixels et le pied de page remonte se caler dessous : on
+     attendrait quatre secondes en regardant le footer. */
+  .sim[data-sim-view='chargement'] {
+    min-height: 70svh;
+    /* Fond blanc : le compte rendu pose lui-même ses aplats (le cadre gris de
+       la grille, les cartes colorées). Un fond déjà teinté sous eux ajoutait un
+       quatrième niveau de vert très clair et brouillait la lecture. */
+    background: var(--color-white-primary);
   }
 
   /* ⚠️ `.sim__body` DOIT PARTIR, pas seulement les rails. Le script masque les
      deux wizards, mais leur conteneur — une carte blanche de 25px de padding —
      restait affiché : le compte rendu s'ouvrait sous un rectangle blanc vide. */
+  /* ⚠️ `.sim__h1` PART AUSSI. Le compte rendu porte désormais son propre titre,
+     avec la sortie PDF sur la même ligne (maquette 667:296) — le laisser ici
+     l'affichait deux fois de suite. */
+  .sim[data-sim-view='chargement'] .sim__image,
+  .sim[data-sim-view='chargement'] .sim__overlay,
+  .sim[data-sim-view='chargement'] .sim__h1,
+  .sim[data-sim-view='chargement'] .sim__lede,
+  .sim[data-sim-view='chargement'] .sim__body,
   .sim[data-sim-view='resultat'] .sim__image,
   .sim[data-sim-view='resultat'] .sim__overlay,
+  .sim[data-sim-view='resultat'] .sim__h1,
   .sim[data-sim-view='resultat'] .sim__lede,
   .sim[data-sim-view='resultat'] .sim__body {
     display: none;
   }
 
+  .sim[data-sim-view='chargement'] .sim__panel,
   .sim[data-sim-view='resultat'] .sim__panel {
     padding: 0;
     border: 0;
     border-radius: 0;
     background: none;
     backdrop-filter: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     L'ÉCRAN DE CALCUL — un texte, une barre, rien d'autre.
+
+     ⚠️ TOUT EST EN CSS. Un compteur piloté en JavaScript réveillerait le fil
+     principal des dizaines de fois par seconde pour une animation décorative,
+     sur une page dont les Core Web Vitals conditionnent tout le trafic. Le
+     script ne pose qu'un `setTimeout`.
+
+     La durée vient de `--duration-loader`, la même valeur que le script lit :
+     l'animation et la bascule ne peuvent pas diverger.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .sim__loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-24);
+    width: 100%;
+    max-width: var(--width-power-panel);
+    margin-inline: auto;
+    padding: var(--space-64) var(--pad-card);
+    border-radius: var(--radius-grid);
+    background: var(--color-shade-details);
+    text-align: center;
+  }
+
+  /* Le texte garde sa colonne de lecture : sur 768px, une phrase de trois lignes
+     étirée bord à bord se suivrait mal. */
+  .loader__title,
+  .loader__lede,
+  .loader__bar {
+    width: 100%;
+    max-width: var(--width-section-intro);
+  }
+
+  /* `display: flex` bat la règle UA sur `[hidden]`. */
+  .sim__loader[hidden] {
+    display: none;
+  }
+
+  .loader__title {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .loader__lede {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .loader__bar {
+    width: 100%;
+    height: var(--height-loader-bar);
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    /* ⚠️ La piste passe au BLANC, pas au gris. Sur le fond `shade-details` de la
+       carte, `shade-grey` s'en distinguait à peine : la barre semblait flotter
+       sans support, et on ne voyait pas ce qui restait à parcourir. */
+    background: var(--color-white-primary);
+  }
+
+  /* ⚠️ La barre s'anime en `transform`, pas en `width`. Une largeur animée
+     déclenche un recalcul de mise en page à chaque image ; une transformation
+     reste sur le compositeur. Sur quatre secondes et demie, la différence se
+     voit sur un téléphone d'entrée de gamme. */
+  .loader__fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: var(--color-main-green);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: loader-fill var(--duration-loader) linear forwards;
+  }
+
+  @keyframes loader-fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ⚠️ Ce réglage est souvent activé par des personnes sujettes au mal des
+     transports ou aux migraines vestibulaires. L'écran reste — il porte le sens
+     de l'attente — mais la barre s'affiche pleine, sans progression. La durée,
+     elle, ne change pas. */
+  @media (prefers-reduced-motion: reduce) {
+    .loader__fill {
+      animation: none;
+      transform: scaleX(1);
+    }
   }
 
   .sim__body {
