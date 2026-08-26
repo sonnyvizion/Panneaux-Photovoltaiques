@@ -767,8 +767,21 @@ export function initSimulator(root: ParentNode = document): void {
        au navigateur, pas supposé. */
     status.textContent = 'Calcul de votre estimation en cours.';
 
-    const ms =
-      Number.parseFloat(getComputedStyle(loader).getPropertyValue('--duration-loader')) || 4500;
+    /**
+     * ⚠️ L'UNITÉ COMPTE — ce bug n'existait qu'en production.
+     *
+     * Le token est écrit `4500ms` dans `tokens.css`, mais le minifieur CSS le
+     * réécrit `4.5s` : c'est plus court. Un `parseFloat` nu retournait donc
+     * `4.5`, et le `setTimeout` durait quatre millisecondes et demie — l'écran
+     * apparaissait et disparaissait dans la même image. En développement, où le
+     * CSS n'est pas minifié, tout allait bien.
+     *
+     * Deuxième piège du minifieur dans ce projet, après la règle compagnon
+     * `-webkit-backdrop-filter` : les deux se voient uniquement en ligne.
+     */
+    const raw = getComputedStyle(loader).getPropertyValue('--duration-loader').trim();
+    const value = Number.parseFloat(raw);
+    const ms = Number.isFinite(value) ? (raw.endsWith('ms') ? value : value * 1000) : 4500;
     loaderTimer = window.setTimeout(() => {
       loaderTimer = undefined;
       loader.hidden = true;
