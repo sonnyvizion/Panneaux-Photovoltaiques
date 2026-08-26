@@ -862,6 +862,20 @@ const HELP = {
 
   .sim__choice span {
     flex: 1;
+    /* ⚠️ `text-align` NE CENTRE QUE HORIZONTALEMENT. Les réponses d'une même
+       rangée sont étirées à la hauteur de la plus haute : dès qu'une seule
+       d'entre elles passe sur deux lignes (« Copropriété (immeuble) »), les
+       autres gardaient leur mot collé en haut de leur carte. Le centrage
+       vertical demande une grille — `text-align` reste pour recentrer les
+       lignes d'une réponse qui en compte plusieurs. */
+    /* ⚠️ `align-content`, PAS `place-items`. `place-items: center` fait aussi
+       rétrécir la boîte de texte à sa largeur de contenu : les deux lignes de
+       « Copropriété (immeuble) » se retrouvaient calées à gauche l'une sous
+       l'autre, `text-align` n'ayant plus de largeur sur laquelle centrer. En ne
+       centrant que l'axe de bloc, la boîte garde toute la largeur de la carte
+       et les lignes restent centrées. */
+    display: grid;
+    align-content: center;
     padding: var(--space-3);
     border: var(--border-width) solid var(--color-shade-grey);
     border-radius: var(--radius-card);
