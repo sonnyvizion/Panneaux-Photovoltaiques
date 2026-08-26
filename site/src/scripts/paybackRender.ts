@@ -72,6 +72,19 @@ export function renderPayback(
   kwc: number,
   options: SavingsOptions,
   roiText: string,
+  /**
+   * Le bilan à 25 ans, imposé par l'appelant.
+   *
+   * ⚠️ EXISTE POUR LA MONTÉE D'ARRIVÉE. Recalculé depuis un `kwc` intermédiaire,
+   * le gain n'est pas monotone : le coût progresse par paliers de 500 € alors
+   * que les économies croissent en continu. Le chiffre dépassait sa cible puis
+   * redescendait — 16 100 € avant de se poser à 15 600 €. L'appelant interpole
+   * donc la valeur finale et la passe ici.
+   *
+   * Sans ce paramètre, le gain reste calculé depuis la géométrie : c'est ce que
+   * font la page Amortissement et le rapport, qui ne s'animent pas.
+   */
+  gainOverride?: number,
 ): void {
   const g = paybackGeometry(kwc, options);
 
@@ -120,7 +133,10 @@ export function renderPayback(
   nodes.shortfall?.toggleAttribute('hidden', g.payback !== null);
 
   if (nodes.years) nodes.years.textContent = roiText;
-  if (nodes.gain) nodes.gain.textContent = formatEuro(Math.round(g.gain / 100) * 100);
+  if (nodes.gain) {
+    const gain = gainOverride ?? g.gain;
+    nodes.gain.textContent = formatEuro(Math.round(gain / 100) * 100);
+  }
   /* Le coût de départ vient de la MÊME géométrie que la ligne en tirets : c'est
      ce qui garantit que le chiffre écrit et le seuil dessiné sont le même. */
   if (nodes.costValue) nodes.costValue.textContent = formatEuro(g.cost);

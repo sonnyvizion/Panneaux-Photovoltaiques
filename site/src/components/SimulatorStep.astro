@@ -68,9 +68,9 @@ const { id, title, index, total } = Astro.props;
   .step__question {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
     min-width: 0;
-    padding: var(--pad-card-lg-block);
+    padding: var(--pad-card);
     border-radius: var(--radius-panel);
     background: var(--color-white-clear);
   }
@@ -82,36 +82,40 @@ const { id, title, index, total } = Astro.props;
     gap: var(--space-3);
   }
 
+  /* ⚠️ LE STYLE `h3`, PAS `h2`. La balise reste un `h2` — c'est la hiérarchie du
+     document, et elle ne se règle pas à l'apparence. Seul l'habillage change :
+     les cinq propriétés sont posées explicitement pour que rien ne retombe sur
+     les styles `h2` de `global.css`. */
   .step__title {
+    font-family: var(--text-h3-family);
     font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
     line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
   }
 
   /* ⚠️ PAS de `tabular-nums` : dans Circular Std la chasse tabulaire élargit
      aussi l'espace et la barre oblique. La valeur est calée à droite dans un
      `space-between`, elle grandit vers la gauche sans jamais pousser le titre —
      elle n'a donc pas besoin d'une chasse fixe pour rester stable. */
+  /* Le rang suit le titre : même famille, même corps, même graisse. Il l'a
+     toujours accompagné sur la même ligne de base — les découpler ferait
+     bancal. */
   .step__rank {
     color: var(--color-text-tertiary);
-    font-family: var(--text-display-mid-family);
+    font-family: var(--text-h3-family);
     font-size: var(--text-h3-size);
-    font-weight: var(--text-display-mid-weight);
-    line-height: 1;
-    letter-spacing: var(--text-display-mid-tracking);
+    /* ⚠️ Plus léger que le titre : le rang l'accompagne, il ne le concurrence
+       pas. Même corps, même famille — seule la graisse les départage. */
+    font-weight: var(--font-weight-book);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
     white-space: nowrap;
   }
 
   @media (max-width: 767px) {
     .step__question {
       padding: var(--space-12);
-    }
-  }
-
-  @media (min-width: 768px) {
-    .step__title,
-    .step__rank {
-      font-size: var(--text-display-mid-size);
-      line-height: 0.96;
     }
   }
 

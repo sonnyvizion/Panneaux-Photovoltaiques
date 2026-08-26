@@ -25,7 +25,7 @@ import {
   visibleQuestionSteps,
   type WizardKind,
 } from './wizard';
-import { REGION_DEFAULT, regionLabel } from './savings';
+import { REGION_DEFAULT, netGain, regionLabel } from './savings';
 import {
   aidesLabel,
   outcomeProfile,
@@ -219,6 +219,48 @@ export function initSimulator(root: ParentNode = document): void {
      bouton quand il vivait dans la carte de conversion. Il est depuis remonté
      dans le verdict, et ce sélecteur ne trouvait plus rien : l'observateur ne
      s'installait tout simplement pas, sans que rien ne le signale. */
+  /**
+   * LA CARTE DES MENTIONS A DEUX FACES : la mention légale, ou les hypothèses.
+   *
+   * ⚠️ LE SCRIPT MASQUE, LE HTML MONTRE. Les deux faces sont rendues visibles au
+   * build ; c'est ici qu'on en cache une. Sans JavaScript, tout reste lisible —
+   * les hypothèses sont « un pilier de crédibilité encyclopédique » selon le
+   * brief, les rendre inaccessibles les perdrait pour de bon.
+   */
+  const legal = root.querySelector<HTMLElement>('[data-sim-legal]');
+  const faceMention = root.querySelector<HTMLElement>('[data-sim-legal-face="mention"]');
+  const faceHypo = root.querySelector<HTMLElement>('[data-sim-legal-face="hypotheses"]');
+  const openHypo = root.querySelector<HTMLElement>('[data-sim-assumptions]');
+  const closeHypo = root.querySelector<HTMLElement>('[data-sim-assumptions-close]');
+
+  if (legal && faceMention && faceHypo && openHypo && closeHypo) {
+    const showFace = (hypotheses: boolean) => {
+      faceMention.hidden = hypotheses;
+      faceHypo.hidden = !hypotheses;
+      legal.dataset.face = hypotheses ? 'hypotheses' : 'mention';
+      openHypo.setAttribute('aria-expanded', String(hypotheses));
+      /* ⚠️ LE FOCUS SUIT LA BASCULE. Sans cela il resterait sur un bouton qui
+         vient de disparaître : au clavier, on se retrouverait nulle part. */
+      (hypotheses ? closeHypo : openHypo).focus();
+    };
+
+    /* Premier appel sans focus : on masque au chargement, personne n'a encore
+       rien demandé — voler le focus ici ferait sauter la page. */
+    faceHypo.hidden = true;
+    legal.dataset.face = 'mention';
+
+    openHypo.addEventListener('click', () => showFace(true));
+    closeHypo.addEventListener('click', () => showFace(false));
+
+    /* Échap referme, comme partout ailleurs. */
+    legal.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && legal.dataset.face === 'hypotheses') {
+        event.stopPropagation();
+        showFace(false);
+      }
+    });
+  }
+
   const loader = root.querySelector<HTMLElement>('[data-sim-loader]');
   const floats = [...root.querySelectorAll<HTMLElement>('[data-sim-sticky], [data-sim-dock]')];
   const ctaAnchor = root.querySelector<HTMLElement>('.result__verdict .result__actions');
@@ -342,6 +384,54 @@ export function initSimulator(root: ParentNode = document): void {
   let from = current;
   let start = 0;
   let raf = 0;
+  /* La montée d'arrivée est plus longue que le rattrapage d'un curseur : on la
+     REGARDE, alors que `CHASE_DURATION` sert à suivre un doigt. */
+  let span = CHASE_DURATION;
+
+  /* Le bilan à 25 ans, interpolé à part : voir `gainOverride` dans
+     `paybackRender`. Il ne peut pas se déduire d'un `kwc` intermédiaire. */
+  const gainOf = (r: SimulatorResults) =>
+    netGain((r.kwc.low + r.kwc.high) / 2, {
+      region,
+      rate: r.rate,
+      production: (r.production.low + r.production.high) / 2,
+    });
+  let currentGain = gainOf(current);
+  let gainFrom = currentGain;
+  let reveal0 = false;
+
+  /**
+   * LA MONTÉE D'ARRIVÉE — les chiffres partent de zéro et se posent.
+   *
+   * ⚠️ UNE CONSTANTE JS, PAS UN TOKEN CSS. Le minifieur réécrit `2000ms` en
+   * `2s`, et un `parseFloat` lu depuis le CSS renverrait `2` — le bug qui vient
+   * de faire durer l'écran de calcul quatre millisecondes en production. Ici
+   * rien n'oblige à passer par le CSS : la boucle est en JavaScript de bout en
+   * bout.
+   */
+  const REVEAL_DURATION = 2000;
+
+  /**
+   * Le point de départ de la montée : tout à zéro.
+   *
+   * ⚠️ PAS le cas médian du build. Partir de lui ferait glisser les chiffres
+   * depuis des valeurs qui ne sont pas celles du visiteur — il verrait
+   * brièvement une estimation qui n'est pas la sienne.
+   *
+   * ⚠️ `roi` reste `null` : « au-delà de 25 ans » n'a pas de valeur numérique
+   * vers laquelle monter, et interpoler vers `null` n'a aucun sens. Le libellé
+   * s'affiche tel quel.
+   */
+  const zeroed = (target: SimulatorResults): SimulatorResults => ({
+    ...target,
+    kwc: { low: 0, high: 0 },
+    production: { low: 0, high: 0 },
+    savings: { low: 0, high: 0 },
+    cost: { low: 0, high: 0 },
+    roi: target.roi === null ? null : { low: 0, high: 0 },
+    co2Kg: 0,
+    monthly: target.monthly.map(() => 0),
+  });
 
   /**
    * Redessine la timeline pour le projet en cours.
@@ -363,6 +453,7 @@ export function initSimulator(root: ParentNode = document): void {
       mid(current.kwc),
       { region, rate: current.rate, production: mid(current.production) },
       texts(current).roi,
+      currentGain,
     );
   };
 
@@ -431,26 +522,48 @@ export function initSimulator(root: ParentNode = document): void {
   };
 
   const frame = (now: number) => {
-    const progress = Math.min((now - start) / CHASE_DURATION, 1);
+    const progress = Math.min((now - start) / span, 1);
     const target = simulate(read());
     const band = (a: Range, b: Range): Range => ({
       low: chase(a.low, b.low, progress),
       high: chase(a.high, b.high, progress),
     });
+    /* ⚠️ L'amortissement monte AUSSI, et s'arrondit à l'année : une fourchette
+       « 2,7 – 5,4 ans » en cours de route donnerait au chiffre une précision que
+       l'estimation n'a pas. Quand la cible est `null` (jamais amorti), on ne
+       tente rien — le libellé s'affiche directement. */
+    const years = (a: Range | null, b: Range | null): Range | null => {
+      if (b === null) return null;
+      const src = a ?? { low: 0, high: 0 };
+      return {
+        low: Math.round(chase(src.low, b.low, progress)),
+        high: Math.round(chase(src.high, b.high, progress)),
+      };
+    };
     current = {
       ...target,
       kwc: band(from.kwc, target.kwc),
       production: band(from.production, target.production),
       savings: band(from.savings, target.savings),
       cost: band(from.cost, target.cost),
+      roi: years(from.roi, target.roi),
       co2Kg: chase(from.co2Kg, target.co2Kg, progress),
       monthly: target.monthly.map((m, i) => chase(from.monthly[i] ?? m, m, progress)),
     };
+    /* Le gain part de zéro comme le reste, et vise sa valeur finale — pas celle
+       qu'un `kwc` intermédiaire produirait. */
+    currentGain = chase(reveal0 ? 0 : gainFrom, gainOf(target), progress);
     paint();
     raf = progress < 1 ? requestAnimationFrame(frame) : 0;
   };
 
-  const recompute = (animate: boolean) => {
+  /**
+   * `reveal` : la montée d'arrivée sur le compte rendu — depuis zéro, sur deux
+   * secondes. Sans lui, on repart de la valeur courante sur 320 ms, ce qu'il
+   * faut au retour d'affinage : le visiteur y compare deux estimations, il ne
+   * découvre pas la sienne.
+   */
+  const recompute = (animate: boolean, reveal = false) => {
     const target = simulate(read());
     if (!animate || reduced.matches) {
       if (raf) cancelAnimationFrame(raf);
@@ -459,7 +572,10 @@ export function initSimulator(root: ParentNode = document): void {
       paint();
       return;
     }
-    from = current;
+    from = reveal ? zeroed(target) : current;
+    gainFrom = currentGain;
+    reveal0 = reveal;
+    span = reveal ? REVEAL_DURATION : CHASE_DURATION;
     start = performance.now();
     if (!raf) raf = requestAnimationFrame(frame);
   };
@@ -592,6 +708,39 @@ export function initSimulator(root: ParentNode = document): void {
    * JavaScript, rien n'est inerte — et c'est cohérent, puisque tout est alors
    * atteignable en faisant défiler.
    */
+  /**
+   * LE RAIL SUIT L'ÉTAPE AFFICHÉE.
+   *
+   * ⚠️ Le rail est un carrousel : les six questions vivent côte à côte, donc il
+   * prenait la hauteur de la PLUS HAUTE — celle de l'orientation, avec ses cinq
+   * tuiles. Les questions courtes traînaient jusqu'à 124px de vide sous elles,
+   * et le bouton « Suivant » flottait loin de la carte.
+   *
+   * On mesure donc l'étape visible et on impose sa hauteur au rail.
+   *
+   * ⚠️ ON MESURE LA CARTE DE QUESTION, PAS L'ÉTAPE. Le `<li>` est étiré par le
+   * rail (`align-items: stretch` par défaut en flex) : sa hauteur — y compris
+   * son `scrollHeight` — reflète la contrainte du rail, pas son contenu. La
+   * mesure se figeait donc sur elle-même et le rail ne bougeait jamais. La
+   * carte, elle, garde sa hauteur naturelle.
+   */
+  const fitRail = (w: Wizard) => {
+    const active = liveSteps(w).find((node) => !node.hasAttribute('inert'));
+    const card = active?.querySelector<HTMLElement>('.step__question');
+    if (card) w.rail.style.height = `${Math.ceil(card.getBoundingClientRect().height)}px`;
+  };
+
+  /* ⚠️ Une question peut CHANGER de hauteur sans changer d'étape : « Combien
+     consommez-vous ? » déplie ses tranches de facture ou son curseur selon le
+     mode choisi. Sans observateur, le rail resterait à la hauteur d'avant et
+     couperait les sous-champs. */
+  if ('ResizeObserver' in window) {
+    const ro = new ResizeObserver(() => {
+      for (const w of [questions, refine]) if (!w.root.hidden) fitRail(w);
+    });
+    for (const w of [questions, refine]) for (const node of w.steps) ro.observe(node);
+  }
+
   const syncWizard = (w: Wizard, id: string) => {
     const steps = liveSteps(w);
     const index = indexOf(w, id);
@@ -643,6 +792,8 @@ export function initSimulator(root: ParentNode = document): void {
     w.nextLabel.textContent = exit ? 'Parlons-en directement' : last ? w.finalLabel : 'Suivant';
     w.next.setAttribute('href', exit ? '/contact' : last ? '#resultat-titre' : `#etape-${nextId}`);
     w.next.setAttribute('aria-disabled', String(!exit && !isStepAnswered(id, get)));
+
+    fitRail(w);
   };
 
   /* `push` distingue une navigation VOULUE (bouton, segment) d'une remise en
@@ -702,7 +853,12 @@ export function initSimulator(root: ParentNode = document): void {
     }
 
     if (onResult) {
-      recompute(refineVisited);
+      /* ⚠️ ANIMER À CHAQUE ARRIVÉE. C'était `recompute(refineVisited)` : à la
+         première venue le drapeau vaut `false`, donc les chiffres s'affichaient
+         d'un coup — l'animation ne jouait qu'au RETOUR d'affinage, exactement
+         l'inverse du besoin. Le retour d'affinage garde son rattrapage court :
+         on y compare deux estimations, on ne découvre pas la sienne. */
+      recompute(true, !refineVisited);
       const t = texts(simulate(read()));
       status.textContent =
         `Votre estimation : ${t.kwc}, ${t.production} par an, ${t.savings} d'économies, retour ${t.roi}.`;

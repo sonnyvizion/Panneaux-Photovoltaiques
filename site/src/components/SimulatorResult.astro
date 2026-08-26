@@ -376,32 +376,54 @@ const OUTCOMES = [
       <Button data-sim-refine-open>Affiner mon estimation</Button>
     </section>
 
-    <section class="result__legal">
-      <p>
-        Estimation indicative basée sur des moyennes régionales. Nos experts
-        certifiés Enphase l’affinent <strong>gratuitement</strong> avec une étude
-        personnalisée.
-      </p>
+    {/* ⚠️ LA CARTE A DEUX FACES. Les hypothèses ne se déplient plus sous la
+        mention légale : elles la REMPLACENT, sur un fond qui change, avec une
+        croix pour revenir. Dépliées en dessous, elles allongeaient la carte de
+        six lignes et déséquilibraient la rangée.
 
-      <div class="result__tools">
-        {/* Le parcours remplace les questions par le résultat : sans cette
-            sortie, une réponse mal cliquée serait irrattrapable. */}
-        <button class="result__link" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
+        ⚠️ LES DEUX FACES SONT VISIBLES DANS LE HTML. C'est le script qui masque
+        les hypothèses au démarrage et branche la bascule : sans JavaScript, tout
+        reste lisible. Le brief en fait « un pilier de crédibilité
+        encyclopédique » — les rendre inaccessibles sans script les perdrait pour
+        de bon. Le compte rendu étant lui-même masqué pendant les questions, rien
+        ne clignote. */}
+    <section class="result__legal" data-sim-legal>
+      <div class="result__face" data-sim-legal-face="mention">
+        <p>
+          Estimation indicative basée sur des moyennes régionales. Nos experts
+          certifiés Enphase l’affinent <strong>gratuitement</strong> avec une étude
+          personnalisée.
+        </p>
 
-        {/* ⚠️ Les hypothèses ne sont PAS dans la maquette, et elles restent : le
-            brief en fait « un pilier de crédibilité encyclopédique ». Repliées,
-            elles ne coûtent rien à l'écran. */}
-        <details class="result__assumptions">
-          <summary>Hypothèses de calcul</summary>
-          <ul>
-            <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
-            <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
-            <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
-            <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
-            <li>Dégradation des panneaux : 0,5 % par an.</li>
-            <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
-          </ul>
-        </details>
+        <div class="result__tools">
+          {/* Le parcours remplace les questions par le résultat : sans cette
+              sortie, une réponse mal cliquée serait irrattrapable. */}
+          <button class="result__link" type="button" data-sim-edit hidden>← Modifier mes réponses</button>
+          <button class="result__link" type="button" data-sim-assumptions aria-expanded="false">
+            Hypothèses de calcul
+          </button>
+        </div>
+      </div>
+
+      <div class="result__face result__face--assumptions" data-sim-legal-face="hypotheses">
+        <button
+          class="result__close"
+          type="button"
+          data-sim-assumptions-close
+          aria-label="Revenir à la mention légale"
+        >
+          <span aria-hidden="true">✕</span>
+        </button>
+
+        <p class="result__face-title">Hypothèses de calcul</p>
+        <ul>
+          <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation.</li>
+          <li>Autoconsommation : {Math.round(SELF_CONSUMPTION_RATE * 100)} % par défaut (source CWaPE).</li>
+          <li>Électricité à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, vérifié en 2026.</li>
+          <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
+          <li>Dégradation des panneaux : 0,5 % par an.</li>
+          <li>CO₂ évité : <span data-sim-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
+        </ul>
       </div>
     </section>
   </div>
@@ -1065,16 +1087,77 @@ const OUTCOMES = [
     display: none;
   }
 
-  .result__assumptions summary {
-    text-decoration: underline;
-    text-underline-offset: var(--space-1);
+  /* --- Les deux faces de la carte --- */
+  .result__face {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* Garde-fou : `display: flex` bat la règle UA sur `[hidden]`. */
+  .result__face[hidden] {
+    display: none;
+  }
+
+  /* ⚠️ La face des hypothèses est en `position: relative` pour porter sa croix,
+     et ne justifie plus ses blocs aux extrémités : la liste doit suivre son
+     titre, pas s'en écarter. */
+  .result__face--assumptions {
+    position: relative;
+    justify-content: flex-start;
+  }
+
+  .result__face-title {
+    /* La croix occupe le coin : le titre s'arrête avant. */
+    padding-right: var(--space-24);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .result__face--assumptions ul {
+    margin: 0;
+    padding-left: var(--space-3);
+    color: var(--color-text-tertiary);
+  }
+
+  .result__close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: grid;
+    place-items: center;
+    /* ⚠️ 44px : la cible tactile minimale. Une croix dessinée à 16px se rate au
+       doigt, et c'est le seul moyen de revenir en arrière. */
+    width: var(--size-wizard-hit);
+    height: var(--size-wizard-hit);
+    /* La marge négative recentre la cible sur le coin : sans elle, le glyphe
+       tombait 14px trop bas et trop à gauche. */
+    margin: calc(var(--space-12) * -1);
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: var(--text-body-sm-size);
     cursor: pointer;
   }
 
-  .result__assumptions ul {
-    margin: var(--space-2) 0 0;
-    padding-left: var(--space-3);
-    color: var(--color-text-tertiary);
+  /* ⚠️ LE FOND CHANGE POUR DIRE QU'ON A BASCULÉ. Sans ce signal, on remplace un
+     texte par un autre dans une carte identique — le visiteur ne sait pas s'il a
+     cliqué. */
+  .result__legal[data-face='hypotheses'] {
+    background: var(--color-text-secondary);
+    color: var(--color-text-inverted);
+  }
+
+  .result__legal[data-face='hypotheses'] .result__face--assumptions ul {
+    color: var(--color-white-clear);
   }
 
   /* ═══════════════════════════════════════════════════════════════════════

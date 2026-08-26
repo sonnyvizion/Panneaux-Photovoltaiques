@@ -82,7 +82,7 @@ const second = steps[1] ?? steps[0];
   .wizard {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-3);
     min-width: 0;
   }
 
@@ -100,7 +100,12 @@ const second = steps[1] ?? steps[0];
     display: none;
   }
 
+  /* ⚠️ La hauteur est POSÉE PAR LE SCRIPT (`fitRail`), pas par le contenu : le
+     rail portant les six questions côte à côte, il prenait sinon la hauteur de
+     la plus haute. La transition évite que le bouton « Suivant » saute d'un
+     coup quand on passe d'une question longue à une courte. */
   .wizard__rail {
+    transition: height var(--duration-medium) var(--easing-default);
     display: flex;
     gap: var(--gap-cards);
     margin: 0;
@@ -243,6 +248,12 @@ const second = steps[1] ?? steps[0];
   @media (max-width: 767px) {
     .wizard__nav :global([data-wizard-next]) {
       flex: 1;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wizard__rail {
+      transition: none;
     }
   }
 </style>

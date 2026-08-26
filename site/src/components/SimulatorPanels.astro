@@ -415,10 +415,20 @@ const HELP = {
       {Object.values(HELP).map((help) => (
         <div class="sim__help-block" data-help={help.step}>
           <p class="sim__help-body">{help.body}</p>
+          {/* ⚠️ LA FLÈCHE EST DANS LE FLUX, collée au dernier mot par une espace
+              insécable. En élément flex séparé, elle s'alignait sur la première
+              ligne du libellé : dès que « Comprendre l'autoconsommation » se
+              coupait en deux, elle restait en haut à droite, détachée du texte.
+
+              ⚠️ ET ELLE PASSE AVANT LE TEXTE MASQUÉ. `.visually-hidden` est en
+              `display: inline-block` : invisible à l'œil, mais bien dans le flux
+              inline. Intercalé entre le libellé et la flèche, il offrait au
+              navigateur un point de coupure que l'espace insécable ne pouvait
+              pas franchir — la flèche repartait seule à la ligne. Le lecteur
+              d'écran, lui, lit toujours « … (s'ouvre dans un nouvel onglet) » :
+              la flèche qu'il traverse est `aria-hidden`. */}
           <a class="sim__help-link" href={help.href} target="_blank" rel="noopener">
-            {help.label}
-            <span class="visually-hidden"> (s’ouvre dans un nouvel onglet)</span>
-            <span aria-hidden="true">↗</span>
+            {help.label}<span aria-hidden="true">&nbsp;↗</span><span class="visually-hidden"> (s’ouvre dans un nouvel onglet)</span>
           </a>
         </div>
       ))}
@@ -723,11 +733,11 @@ const HELP = {
     line-height: var(--text-body-sm-line-height);
   }
 
+  /* ⚠️ NI `inline-flex` NI `gap` : c'est ce qui détachait la flèche. Un enfant
+     de conteneur flex est de toute façon blockifié — le texte s'enroule et la
+     flèche suit son dernier mot, tenue par l'espace insécable du markup. */
   .sim__help-link {
     align-self: flex-start;
-    display: inline-flex;
-    align-items: baseline;
-    gap: var(--space-1);
     color: var(--color-text-secondary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
@@ -737,16 +747,19 @@ const HELP = {
 
   /* La carte blanche du module : c'est elle qui contient, le verre ne fait
      qu'encadrer. */
+  /* ⚠️ 20px et 16px, comme le compte rendu. À 25px de padding et 24 d'écart, la
+     carte réservait de la place que les questions n'utilisaient pas — le titre
+     étant passé de 44 à 26px, l'écart s'était creusé. */
   .sim__form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-24);
+    gap: var(--space-3);
     /* ⚠️ `min-width: 0` sur un enfant de grille : par défaut il vaut `auto` et
        refuse de descendre sous la largeur intrinsèque de son contenu. Le rail
        porte onze étapes bout à bout — sans cette remise à zéro, la carte prenait
        leur largeur cumulée et débordait du panneau. */
     min-width: 0;
-    padding: var(--pad-card-lg-block);
+    padding: var(--pad-card);
     border-radius: var(--radius-panel);
     background: var(--color-white-primary);
   }
