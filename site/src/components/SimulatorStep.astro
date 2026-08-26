@@ -117,6 +117,25 @@ const { id, title, index, total } = Astro.props;
     .step__question {
       padding: var(--space-12);
     }
+
+    /* ⚠️ UN CRAN PLUS BAS SUR TÉLÉPHONE — `h4`, pas `h3`. Le passage de `h2` à
+       `h3` ne se voyait pas ici : à ce format, l'échelle ne descend que de 28 à
+       26 px, alors qu'elle tombe de 48 à 26 sur grand écran. La question restait
+       donc exactement aussi massive qu'avant, sur deux lignes, écrasant des
+       réponses à 16 px et repoussant les dernières options sous la ligne de
+       flottaison. À 20/24 la hiérarchie redevient lisible : 20 pour la question,
+       16 pour les réponses, 15 pour l'aide. */
+    .step__title {
+      font-size: var(--text-h4-size);
+      line-height: var(--text-h4-line-height);
+    }
+
+    .step__rank {
+      font-size: var(--text-h4-size);
+      line-height: var(--text-h4-line-height);
+      /* La graisse ne suit PAS `h4` : le rang reste plus léger que sa question,
+         comme sur grand écran. Seule la taille change ici. */
+    }
   }
 
 </style>
