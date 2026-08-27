@@ -59,12 +59,13 @@ export const FIGURES: Figure[] = [
     note: 'pour « rembourser » le coût carbone initial',
     tone: 'grey',
   },
-  {
-    label: 'Recyclage',
-    value: 'Largement',
-    note: 'verre, aluminium et silicium sont récupérables',
-    tone: 'ink',
-  },
+];
+
+/* ⚠️ « Largement » a quitté la grille. Les deux cartes qui restent portent de
+   vraies grandeurs — des tonnes de CO₂, des années. Un adverbe posé au même
+   corps se lisait comme une troisième mesure. */
+export const ASIDE: string[] = [
+  'Les panneaux sont largement recyclables — verre, aluminium et silicium sont récupérables via des filières dédiées.',
 ];
 
 export const FACTS: Fact[] = [

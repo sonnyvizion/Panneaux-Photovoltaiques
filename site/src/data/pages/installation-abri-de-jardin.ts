@@ -24,10 +24,17 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut savoir sur cette solution d’appoint.',
 };
 
+/* ⚠️ UNE SEULE CARTE, et c'est « 4-6 » — le seul vrai chiffre des trois.
+   « Complément » et « Au compteur » passent en texte : ce sont des réponses,
+   pas des grandeurs. L'accent passe du rôle au nombre de panneaux, qui est ce
+   que le visiteur vient chercher. */
 export const FIGURES: Figure[] = [
-  { label: 'Rôle', value: 'Complément', note: 'rarement une installation principale', tone: 'lime' },
-  { label: 'Puissance', value: '4-6', note: 'panneaux au maximum, selon la surface', tone: 'grey' },
-  { label: 'Raccordement', value: 'Au compteur', note: 'le même que celui de la maison', tone: 'ink' },
+  { label: 'Puissance', value: '4-6', note: 'panneaux au maximum, selon la surface', tone: 'lime' },
+];
+
+export const ASIDE: string[] = [
+  'Rôle : un complément, rarement une installation principale.',
+  'Raccordement : au même compteur que la maison — la configuration la plus fréquente.',
 ];
 
 export const FACTS: Fact[] = [

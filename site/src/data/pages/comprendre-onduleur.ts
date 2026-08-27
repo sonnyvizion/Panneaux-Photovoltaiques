@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.3 — « Onduleur & micro-onduleur » (`/comprendre/onduleur`).
@@ -30,10 +30,27 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Onduleur string ou micro-onduleur, la vraie question.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Rôle", value: "Convertir", note: "le courant continu en courant alternatif", tone: 'lime' },
-  { label: "Onduleur string", value: "Un seul", note: "pour toute l’installation, le montage le plus courant", tone: 'grey' },
-  { label: "Micro-onduleur", value: "Un par panneau", note: "plus cher, mais limite l’impact de l’ombrage", tone: 'ink' },
+/* ⚠️ PLUS DE CARTES CHIFFRES ICI. « Convertir », « Un seul », « Un par
+   panneau » n'étaient pas des chiffres : posés en corps 44 en bas à droite, ils
+   prenaient le poids visuel d'une statistique sans en être une.
+
+   ⚠️ ET DEUX CARTES, PAS TROIS. La 3ᵉ portait le rôle général de l'onduleur —
+   déjà dit par l'intro de la page. Les deux qui restent sont deux OBJETS
+   distincts, qu'une photo montre mieux qu'un mot. */
+export const FIGURES: Figure[] = [];
+
+export const PHOTOS: PhotoCard[] = [
+  {
+    title: 'L’onduleur string',
+    text: 'Un seul boîtier pour toute l’installation — le montage le plus courant, adapté à la plupart des toitures sans ombrage.',
+    /* Le même objet que sur la page Fonctionnement : une seule photo pour les deux. */
+    image: 'fonctionnement-carte-onduleur.jpg',
+  },
+  {
+    title: 'Le micro-onduleur',
+    text: 'Un boîtier par panneau — plus cher à l’achat, mais limite fortement l’impact d’une ombre partielle sur la production totale.',
+    image: 'onduleur-carte-micro.jpg',
+  },
 ];
 
 export const FACTS: Fact[] = [

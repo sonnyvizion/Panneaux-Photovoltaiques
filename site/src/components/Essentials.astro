@@ -1,8 +1,12 @@
 ---
+import type { SvgComponent } from 'astro/types';
 import Section from './Section.astro';
 import SectionHeading from './SectionHeading.astro';
 import Button from './Button.astro';
-import type { Bridge, Fact, Figure, SectionCopy } from '../data/content';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+import type {
+  Bridge, EssentialsPanel, EssentialsTable, Fact, Figure, IconCard, PhotoCard, SectionCopy,
+} from '../data/content';
 
 /**
  * « L'essentiel » — le bloc scannable et VISIBLE du gabarit
@@ -28,9 +32,39 @@ interface Props extends SectionCopy {
   /** Cartes texte : les conditions, en clair. Peut être vide, comme `figures`. */
   facts: Fact[];
   bridges: Bridge[];
+
+  /* ── Les quatre autres formes du même bloc ──────────────────────────────────
+     ⚠️ ELLES S'EXCLUENT EN PRATIQUE, mais rien ne l'impose au type : une page
+     peut légitimement garder UNE carte chiffre et poser le reste en `aside`
+     (c'est le cas de Poids et d'Abri de jardin). Le choix se fait page par
+     page, sur les cinq questions du cahier de correction — pas ici.
+
+     Ce qu'aucune ne doit permettre : forcer trois cartes uniformes sur un
+     contenu qui ne s'y prête pas. C'est cette contrainte-là qui a produit des
+     « valeurs » comme « Capte » ou « Détaillé » posées en corps 44. */
+
+  /** Trois objets photographiables. Deux cartes de front, ou 2+1 à trois. */
+  photos?: PhotoCard[];
+  /** Trois facettes qualitatives. L'icône est résolue par la page. */
+  icons?: (IconCard & { icon?: SvgComponent })[];
+  /** Une vraie comparaison : mêmes critères sur plusieurs objets. */
+  table?: EssentialsTable;
+  /** Un seul fait et ses conséquences, dans une carte unique. */
+  panel?: EssentialsPanel;
+  /**
+   * Ce qui ne méritait pas une carte.
+   *
+   * Le débouché de la 5ᵉ question du cahier : un seul fait mérite la mise en
+   * avant, le reste redescend en texte simple sous la grille. Deux paragraphes
+   * au plus — au-delà, c'est le bloc « Creuser le sujet » qui prend le relais.
+   */
+  aside?: string[];
 }
 
-const { overline, title, intro, figures, facts, bridges } = Astro.props;
+const {
+  overline, title, intro, figures, facts, bridges,
+  photos = [], icons = [], table, panel, aside = [],
+} = Astro.props;
 ---
 
 <Section tone="default">
@@ -38,7 +72,7 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
 
   <div class="essentials reveal">
     {figures.length > 0 && (
-    <ul class="essentials__figures">
+    <ul class="essentials__figures" data-count={figures.length}>
       {figures.map((figure) => (
         <li class={`essentials__card essentials__card--${figure.tone}`}>
           <p class="essentials__label">{figure.label}</p>
@@ -50,6 +84,84 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
         </li>
       ))}
     </ul>
+    )}
+
+    {/* ⚠️ TROIS OBJETS, TROIS PHOTOS. À trois cartes la grille passe en 2+1 : la
+        troisième prend toute la largeur plutôt que d'ouvrir une colonne vide.
+        À deux, deux colonnes égales — une asymétrie n'aurait rien à équilibrer. */}
+    {photos.length > 0 && (
+    <ul class="essentials__photos" data-count={photos.length}>
+      {photos.map((photo, i) => (
+        <li class="essentials__photo">
+          {/* Tant que la photo n'est pas livrée, l'emplacement se nomme. Une
+              image de stock générique serait pire que le vide (`design.md`).
+
+              ⚠️ LA TROISIÈME CARTE CHANGE DE FORMAT. En 2+1 elle occupe toute
+              la largeur : gardée en 4/3, elle faisait 900 px de haut sur un
+              écran de 1280 — une photo deux fois plus grande que les deux
+              autres réunies, pour un contenu de même importance. Le panoramique
+              lui rend sa place dans la rangée. */}
+          <ImagePlaceholder
+            label={photo.image}
+            ratio={photos.length === 3 && i === 2 ? '21 / 9' : '4 / 3'}
+          />
+          <h3 class="essentials__fact-title">{photo.title}</h3>
+          <p class="essentials__fact-text">{photo.text}</p>
+        </li>
+      ))}
+    </ul>
+    )}
+
+    {/* Trois facettes d'un même sujet : l'icône remplace la valeur géante. */}
+    {icons.length > 0 && (
+    <ul class="essentials__icons">
+      {icons.map((item) => (
+        <li class="essentials__card essentials__card--grey essentials__icon-card">
+          {item.icon && <item.icon class="essentials__icon-mark" aria-hidden="true" width={32} height={32} />}
+          <h3 class="essentials__fact-title">{item.title}</h3>
+          <p class="essentials__fact-text">{item.text}</p>
+        </li>
+      ))}
+    </ul>
+    )}
+
+    {/* ⚠️ UN VRAI TABLEAU, avec ses en-têtes — pas une grille déguisée. Trois
+        garanties comparées sur les mêmes critères se lisent en colonne ; en
+        trois cartes séparées, le lien qui les rend comparables disparaît. */}
+    {table && (
+    <div class="essentials__table-wrap">
+      <table class="essentials__table">
+        <thead>
+          <tr>{table.head.map((cell) => <th scope="col">{cell}</th>)}</tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row) => (
+            <tr>
+              {row.map((cell, i) => (
+                i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    )}
+
+    {/* Un seul fait, ses conséquences en dessous. */}
+    {panel && (
+    <div class="essentials__card essentials__card--lime essentials__panel">
+      {panel.title && <h3 class="essentials__panel-title">{panel.title}</h3>}
+      <ul class="essentials__panel-list">
+        {panel.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    )}
+
+    {/* Ce qui ne méritait pas une carte, sous la grille. */}
+    {aside.length > 0 && (
+    <div class="essentials__aside">
+      {aside.map((text) => <p>{text}</p>)}
+    </div>
     )}
 
     {facts.length > 0 && (
@@ -102,6 +214,61 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
 
   .essentials__figures {
     grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* ⚠️ LA GRILLE SUIT LE NOMBRE DE CARTES. Trois colonnes fixes étaient
+     l'hypothèse de départ — celle qui a poussé des pages à inventer une
+     troisième « valeur » pour remplir la ligne. Depuis qu'une page peut n'avoir
+     qu'un seul vrai chiffre, la grille doit savoir compter : sans ces règles,
+     une carte seule occupait un tiers de la largeur et deux cartes laissaient
+     un trou à droite. */
+  .essentials__figures[data-count='1'] {
+    grid-template-columns: 1fr;
+  }
+
+  .essentials__figures[data-count='2'] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ⚠️ SEULE, LA CARTE CHANGE DE MISE EN PAGE. La colonne `space-between` des
+     cartes chiffres suppose trois voisines : c'est elle qui pousse le libellé
+     en haut et aligne les valeurs en pied. Étirée sur toute la largeur pour une
+     carte unique, elle laissait un L de vide — libellé perdu en haut à gauche,
+     chiffre en bas à droite, et rien entre les deux. En bandeau, le libellé
+     tient la gauche et le chiffre la droite, sur la même ligne. */
+  .essentials__figures[data-count='1'] .essentials__card {
+    display: grid;
+    grid-template-areas:
+      'label value'
+      'label note';
+    grid-template-columns: 1fr auto;
+    align-content: center;
+    align-items: center;
+    gap: 0 var(--space-3);
+    min-height: 0;
+    padding: var(--pad-card);
+  }
+
+  .essentials__figures[data-count='1'] .essentials__label {
+    grid-area: label;
+  }
+
+  .essentials__figures[data-count='1'] .essentials__value {
+    grid-area: value;
+  }
+
+  .essentials__figures[data-count='1'] .essentials__note {
+    grid-area: note;
+  }
+
+  /* Sur téléphone la largeur manque pour deux colonnes : le bandeau redevient
+     une carte, libellé au-dessus du chiffre. */
+  @media (max-width: 767px) {
+    .essentials__figures[data-count='1'] .essentials__card {
+      grid-template-areas: 'label' 'value' 'note';
+      grid-template-columns: 1fr;
+      gap: var(--space-2) 0;
+    }
   }
 
   .essentials__facts {
@@ -228,6 +395,176 @@ const { overline, title, intro, figures, facts, bridges } = Astro.props;
     font-weight: var(--text-petit-p-m-weight);
     line-height: var(--text-petit-p-m-line-height);
     letter-spacing: var(--text-petit-p-m-tracking);
+  }
+
+  /* ── CARTES PHOTO ─────────────────────────────────────────────────────────
+     Pas de fond ni de rayon sur la carte elle-même : c'est la photo qui porte
+     le bloc, le texte se pose dessous à nu. Une carte colorée AUTOUR d'une
+     photo ajouterait une troisième surface là où il n'y a qu'un objet à
+     montrer. */
+  /* ⚠️ ELLES S'EMPILENT SUR TÉLÉPHONE. Deux de front, une carte photo tombe à
+     175 px de large : la photo n'y montre plus rien et son texte casse sur cinq
+     lignes. Les cartes chiffres, elles, restent trois de front à toutes les
+     tailles — parce qu'on les compare d'un coup d'œil. Une photo ne se compare
+     pas, elle se regarde. */
+  .essentials__photos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-cards);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .essentials__photos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* 2+1 : à trois éléments, le dernier prend la largeur entière. */
+    .essentials__photos[data-count='3'] .essentials__photo:last-child {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .essentials__photo {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  .essentials__photo :global(.placeholder),
+  .essentials__photo :global(img) {
+    border-radius: var(--radius-figure-card);
+  }
+
+  /* ── CARTES ICÔNE ─────────────────────────────────────────────────────────
+     ⚠️ ELLES S'EMPILENT SUR MOBILE, contrairement aux cartes chiffres qui
+     restent trois de front. La raison qui interdit d'empiler les chiffres —
+     comparer trois fourchettes d'un coup d'œil — ne s'applique pas ici : il n'y
+     a rien à comparer, seulement trois paragraphes à lire. Trois colonnes de
+     texte sur 390px les rendraient illisibles. */
+  .essentials__icons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-cards);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .essentials__icon-card {
+    /* La hauteur posée des cartes chiffres n'a pas lieu d'être : rien à aligner
+       en pied, le texte commande. */
+    justify-content: flex-start;
+    min-height: 0;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+  }
+
+  .essentials__icon-mark {
+    width: var(--space-4);
+    height: var(--space-4);
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 768px) {
+    .essentials__icons {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ── TABLEAU ──────────────────────────────────────────────────────────────
+     ⚠️ Le conteneur défile, jamais la page (règle des tableaux larges). */
+  .essentials__table-wrap {
+    overflow-x: auto;
+    border-radius: var(--radius-figure-card);
+    background: var(--color-shade-grey);
+  }
+
+  .essentials__table {
+    width: 100%;
+    border-collapse: collapse;
+    /* En dessous, les colonnes se tassent au point d'être illisibles : c'est là
+       que le conteneur prend le relais et défile. */
+    min-width: 32rem;
+    color: var(--color-text-secondary);
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    line-height: var(--text-petit-p-m-line-height);
+    text-align: start;
+  }
+
+  .essentials__table th,
+  .essentials__table td {
+    padding: var(--pad-card);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .essentials__table thead th {
+    color: var(--color-text-primary);
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  /* Le filet ne sépare que les lignes de données : sous l'en-tête il marquerait
+     une bordure de tableau, alors qu'il ne sert qu'à suivre une ligne. */
+  .essentials__table tbody tr + tr th,
+  .essentials__table tbody tr + tr td {
+    border-top: var(--border-width) solid var(--color-shade-strong);
+  }
+
+  .essentials__table tbody th {
+    color: var(--color-text-primary);
+    font-family: var(--text-h3-m-family);
+    font-size: var(--text-h3-m-size);
+    font-weight: var(--text-h3-m-weight);
+    line-height: var(--text-h3-m-line-height);
+  }
+
+  /* ── CARTE UNIQUE À PLUSIEURS LIGNES ─────────────────────────────────────── */
+  .essentials__panel {
+    justify-content: flex-start;
+    min-height: 0;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+  }
+
+  .essentials__panel-title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  .essentials__panel-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: var(--space-3);
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    line-height: var(--text-petit-p-m-line-height);
+  }
+
+  /* ── TEXTE SOUS LA GRILLE ─────────────────────────────────────────────────
+     Volontairement sans carte ni fond : c'est ce qui distingue un fait
+     secondaire d'un fait mis en avant. Lui redonner une surface annulerait la
+     hiérarchie qu'on vient d'établir. */
+  .essentials__aside {
+    display: grid;
+    gap: var(--space-3);
+    max-width: var(--width-prose, 65ch);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-bull-family);
+    font-size: var(--text-body-bull-size);
+    line-height: var(--text-body-bull-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
   }
 
   /* --- Panneau des ponts --- */

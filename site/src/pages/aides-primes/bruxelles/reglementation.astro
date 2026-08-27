@@ -11,7 +11,7 @@ import Certificate from '../../../assets/icons/reglementation-bruxelles/certific
 import AlertTriangle from '../../../assets/icons/reglementation-bruxelles/alert-triangle.svg';
 import Home from '../../../assets/icons/reglementation-bruxelles/home.svg';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  PANEL, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOPICS, TOPICS_COPY,
 } from '../../../data/pages/aides-primes-bruxelles-reglementation';
 
@@ -29,7 +29,7 @@ const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index
 <BaseLayout title="RESCert PV Bruxelles 2026 : l'obligation expliquée | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} panel={PANEL} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur cette obligation." tone="grey" id="faq-rescert" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

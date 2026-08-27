@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, IconCard, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.5 — « Compteur intelligent » (`/comprendre/compteur-intelligent`).
@@ -25,10 +25,15 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Ce que fait un compteur intelligent.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Rôle", value: "Mesurer", note: "séparément la production et la consommation", tone: 'lime' },
-  { label: "Obligation", value: "Nécessaire", note: "pour toute installation raccordée au réseau", tone: 'grey' },
-  { label: "Gestionnaire", value: "Gratuit", note: "demande auprès de votre GRD : ORES, RESA, Fluvius, Sibelga", tone: 'ink' },
+/* ⚠️ « Mesurer », « Nécessaire », « Gratuit » : trois facettes du même
+   compteur, aucune n'est un chiffre. Voir le même passage sur la page
+   Batterie — c'est le même défaut, corrigé de la même façon. */
+export const FIGURES: Figure[] = [];
+
+export const ICONS: IconCard[] = [
+  { title: 'Rôle', text: 'Mesurer séparément la production et la consommation.' },
+  { title: 'Obligation', text: 'Nécessaire pour toute installation raccordée au réseau.' },
+  { title: 'Gestionnaire', text: 'Gratuit : la demande se fait auprès de votre GRD — ORES, RESA, Fluvius ou Sibelga.' },
 ];
 
 export const FACTS: Fact[] = [

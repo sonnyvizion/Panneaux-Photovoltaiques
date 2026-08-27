@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsTable, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.8 — « Garanties (Belgique) » (`/comprendre/garanties`).
@@ -47,11 +47,21 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Les différentes garanties, à ne pas confondre.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Garantie produit", value: "Le matériel", note: "couvre les défauts de fabrication du panneau", tone: 'lime' },
-  { label: "Garantie de performance", value: "Le rendement", note: "un niveau minimum dans le temps, généralement dégressif", tone: 'grey' },
-  { label: "Garantie légale", value: "Le droit commun", note: "s’applique à tout achat en Belgique, quel que soit le secteur", tone: 'ink' },
-];
+/* ⚠️ UNE COMPARAISON, DONC UN TABLEAU. Les trois garanties se comparent sur
+   les mêmes critères — ce que ça couvre, combien de temps. En trois cartes
+   séparées, ce lien-là disparaissait : on lisait trois objets indépendants au
+   lieu d'une même grille de lecture appliquée trois fois. La durée, qui est le
+   vrai chiffre de la page, n'apparaissait nulle part. */
+export const FIGURES: Figure[] = [];
+
+export const TABLE: EssentialsTable = {
+  head: ['Type de garantie', 'Couvre quoi', 'Durée typique'],
+  rows: [
+    ['Garantie produit', 'Défauts de fabrication du panneau', '10 à 15 ans'],
+    ['Garantie de performance', 'Rendement minimum garanti dans le temps', 'Jusqu’à 25 ans'],
+    ['Garantie légale', 'S’applique à tout achat en Belgique', 'Selon le droit commun'],
+  ],
+};
 
 export const FACTS: Fact[] = [
   { title: "Deux durées différentes", text: "Produit et performance ne courent presque jamais sur la même période — lisez les deux séparément dans le devis." },

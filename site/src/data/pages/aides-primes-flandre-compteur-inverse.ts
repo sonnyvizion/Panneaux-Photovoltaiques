@@ -57,6 +57,10 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qui a changé, en résumé.',
 };
 
+/* ⚠️ DEUX CARTES, PAS TROIS. « Janvier 2021 » et « 2029 » sont de vraies
+   dates et gardent leur carte. « Tous » n'en était pas une : c'était une
+   réponse à une question, poussée en corps 44 faute d'une troisième date. Elle
+   redescend en texte sous la grille. */
 export const FIGURES: Figure[] = [
   {
     label: 'Date du changement',
@@ -65,17 +69,15 @@ export const FIGURES: Figure[] = [
     tone: 'lime',
   },
   {
-    label: 'Qui est concerné',
-    value: 'Tous',
-    note: 'y compris les installations antérieures à 2021',
-    tone: 'grey',
-  },
-  {
     label: 'Compteurs digitaux',
     value: '2029',
     note: 'fin du déploiement, ~30 000 poses par mois en 2026',
     tone: 'ink',
   },
+];
+
+export const ASIDE: string[] = [
+  'Qui est concerné ? Tous les propriétaires de panneaux solaires, y compris les installations antérieures à 2021.',
 ];
 
 export const FACTS: Fact[] = [

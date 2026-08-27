@@ -11,7 +11,7 @@ import Stack from '../../assets/icons/abri-de-jardin/stack-2.svg';
 import FileCertificate from '../../assets/icons/abri-de-jardin/file-certificate.svg';
 import Plug from '../../assets/icons/abri-de-jardin/plug.svg';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  ASIDE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOPICS, TOPICS_COPY,
 } from '../../data/pages/installation-abri-de-jardin';
 /** Page 2.11 — « Abri de jardin ». ⚠️ Sans module, sur prescription du cahier. */
@@ -19,7 +19,7 @@ import {
 <BaseLayout title="Panneaux solaires sur un abri de jardin | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} aside={ASIDE} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Stack, FileCertificate, Plug][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur cette solution d'appoint." tone="grey" id="faq-abri" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

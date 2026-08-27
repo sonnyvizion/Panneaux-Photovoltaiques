@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, IconCard, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.4 — « Batterie domestique » (`/comprendre/batterie`).
@@ -29,10 +29,16 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Ce qu’une batterie change concrètement.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Rôle", value: "Stocker", note: "le surplus de journée, pour une consommation différée", tone: 'lime' },
-  { label: "Impact", value: "Autoconso", note: "le taux d’autoconsommation augmente sensiblement", tone: 'grey' },
-  { label: "Installation", value: "Par un pro", note: "l’auto-installation est interdite depuis la révision RGIE 2025", tone: 'ink' },
+/* ⚠️ Rôle, impact et installation sont trois FACETTES d'un même objet, pas
+   trois chiffres ni trois objets à photographier. « Stocker », « Autoconso » et
+   « Par un pro » flottaient en corps 44 comme des statistiques. L'icône tient
+   le repère visuel que la valeur géante tenait mal. */
+export const FIGURES: Figure[] = [];
+
+export const ICONS: IconCard[] = [
+  { title: 'Rôle', text: 'Stocker le surplus de journée, pour une consommation différée.' },
+  { title: 'Impact', text: 'Le taux d’autoconsommation augmente sensiblement.' },
+  { title: 'Installation', text: 'Par un professionnel : l’auto-installation est interdite depuis la révision RGIE 2025.' },
 ];
 
 export const FACTS: Fact[] = [

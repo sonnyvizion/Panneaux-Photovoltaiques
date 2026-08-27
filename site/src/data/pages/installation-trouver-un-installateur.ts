@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 2.16 — « Trouver un pro » (`/installation/trouver-un-installateur`).
@@ -32,10 +32,27 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Les trois critères non négociables.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Certification', value: 'RESCERT', note: 'ou équivalent régional selon votre zone', tone: 'lime' },
-  { label: 'Assurance', value: 'RC pro', note: 'responsabilité civile professionnelle', tone: 'grey' },
-  { label: 'Devis', value: 'Détaillé', note: 'remis avant le début des travaux', tone: 'ink' },
+/* ⚠️ « RESCERT », « RC pro » et « Détaillé » ne sont pas des chiffres : le
+   format carte chiffre leur donnait une échelle qu'ils n'ont pas. Trois
+   documents à réclamer, ça se montre. */
+export const FIGURES: Figure[] = [];
+
+export const PHOTOS: PhotoCard[] = [
+  {
+    title: 'Certification',
+    text: 'RESCert ou équivalent régional selon votre zone — la garantie que l’installateur est reconnu par les autorités.',
+    image: 'trouver-pro-carte-certification.jpg',
+  },
+  {
+    title: 'Assurance',
+    text: 'Responsabilité civile professionnelle — à vérifier avant de signer, ça vous protège en cas de problème.',
+    image: 'trouver-pro-carte-assurance.jpg',
+  },
+  {
+    title: 'Devis',
+    text: 'Détaillé et remis avant le début des travaux — jamais un chiffrage approximatif de dernière minute.',
+    image: 'trouver-pro-carte-devis.jpg',
+  },
 ];
 
 export const FACTS: Fact[] = [

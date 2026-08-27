@@ -58,6 +58,77 @@ export interface Fact {
 }
 
 /**
+ * Carte PHOTO de « L'essentiel » : un objet physique, montré.
+ *
+ * ⚠️ POURQUOI CE TYPE EXISTE. La carte chiffre pousse sa `value` en très gros
+ * en bas à droite — un format taillé pour « 20-22 kg » ou « 6 ans ». Appliqué à
+ * du texte qualitatif (« Capte », « Détaillé », « Un par panneau »), il fait
+ * flotter un mot sans échelle à la place d'un chiffre : l'œil lui accorde le
+ * poids d'une statistique, et ce n'en est pas une. Quand les trois cartes
+ * désignent trois OBJETS distincts et photographiables, c'est la photo qui
+ * porte l'information, pas une valeur géante.
+ */
+export interface PhotoCard {
+  title: string;
+  text: string;
+  /**
+   * Nom du fichier attendu, ex. `onduleur-carte-micro.jpg`.
+   *
+   * ⚠️ Tant que la photo n'est pas livrée, c'est un `ImagePlaceholder` étiqueté
+   * de ce nom qui s'affiche — voir le principe « pas de stock générique » de
+   * `design.md`. Le jour de la livraison, seul le composant change.
+   */
+  image: string;
+}
+
+/**
+ * Carte ICÔNE de « L'essentiel » : une facette qualitative, sans chiffre.
+ *
+ * Le cas de figure où les trois cartes sont trois facettes parallèles d'un même
+ * sujet (rôle / impact / installation) : rien à photographier séparément, et
+ * rien à mesurer non plus. L'icône tient le rôle de repère visuel que la valeur
+ * géante tenait mal.
+ *
+ * ⚠️ L'icône est un COMPOSANT passé par la page, jamais une clé résolue ici —
+ * même raison que `TopicCard` : chaque page a son jeu d'icônes, et un registre
+ * central les importerait toutes dans chacune.
+ */
+export interface IconCard {
+  title: string;
+  text: string;
+}
+
+/**
+ * Tableau de « L'essentiel » : une vraie comparaison.
+ *
+ * Trois objets comparés sur les mêmes critères ne sont pas trois cartes : les
+ * cartes cassent justement le lien qui rend la comparaison lisible. Le tableau
+ * le rétablit — on lit une colonne de haut en bas.
+ */
+export interface EssentialsTable {
+  /** En-têtes de colonnes. La première nomme la ligne. */
+  head: string[];
+  rows: string[][];
+}
+
+/**
+ * Carte unique de « L'essentiel », à plusieurs lignes.
+ *
+ * Pour le cas où les « trois informations » sont en réalité trois conséquences
+ * d'un seul fait. Les séparer en trois cartes leur donne une indépendance
+ * qu'elles n'ont pas.
+ */
+export interface EssentialsPanel {
+  /**
+   * Optionnel : quand le titre de section dit déjà la même chose, la carte s'en
+   * passe. C'est le cas de la réglementation bruxelloise, où le titrer aurait
+   * fait lire trois fois « ce qui change concrètement depuis 2026 » d'affilée.
+   */
+  title?: string;
+  items: string[];
+}
+
+/**
  * Pont contextualisé vers une autre page ou vers le simulateur
  * (`pages-contenu.md` § « La boucle contenu ↔ simulateur »).
  */

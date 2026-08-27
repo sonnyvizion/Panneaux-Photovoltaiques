@@ -12,7 +12,7 @@ import ReceiptOff from '../../../assets/icons/compteur-inverse/receipt-off.svg';
 import Progress from '../../../assets/icons/compteur-inverse/progress.svg';
 import Ban from '../../../assets/icons/compteur-inverse/ban.svg';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  ASIDE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOGGLE_COPY, TOGGLE_STATES, TOPICS, TOPICS_COPY,
 } from '../../../data/pages/aides-primes-flandre-compteur-inverse';
 
@@ -41,7 +41,7 @@ const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index
     selected={0}
     id="bascule-compteur"
   />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} aside={ASIDE} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur ce changement." tone="default" id="faq-compteur-inverse" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />

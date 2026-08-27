@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsPanel, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Contenu de la page « Réglementation bruxelloise 2026 »
@@ -36,17 +36,26 @@ export const LEAD = {
 export const ESSENTIALS_COPY: SectionCopy = {
   overline: 'En bref',
   title: 'Ce qui change concrètement',
-  intro: 'Ce qui change concrètement depuis 2026.',
+  /* ⚠️ L'intro reprenait le titre MOT POUR MOT, et la carte allait le répéter
+     une troisième fois. Elle dit maintenant ce que le titre ne dit pas : d'où
+     vient la règle et sur quoi elle pèse. */
+  intro: 'Un seul certificat commande désormais l’accès aux certificats verts en Région bruxelloise.',
 };
 
-/* ⚠️ L'accent porte sur l'obligation elle-même : c'est ce que le visiteur est
-   venu vérifier. La carte sombre isole la révision des coefficients — une date
-   à surveiller, pas une règle à respecter. */
-export const FIGURES: Figure[] = [
-  { label: 'RESCert PV', value: 'Obligatoire', note: 'pour toute installation ≤ 5 kWc', tone: 'lime' },
-  { label: 'Sans ce certificat', value: 'Aucun CV', note: 'même si l’installation fonctionne', tone: 'grey' },
-  { label: 'Coefficients de CV', value: 'Révisés', note: 'à partir du 1ᵉʳ avril 2026 par Brugel', tone: 'ink' },
-];
+/* ⚠️ UN SEUL FAIT, TROIS CONSÉQUENCES — donc une seule carte. « Obligatoire »,
+   « Aucun CV » et « Révisés » découlent tous du même RESCert : les répartir sur
+   trois cartes leur donnait une indépendance qu'ils n'ont pas, et suggérait
+   trois choses à retenir là où il n'y en a qu'une. */
+export const FIGURES: Figure[] = [];
+
+/* Sans titre : celui de la section le dit déjà. */
+export const PANEL: EssentialsPanel = {
+  items: [
+    'RESCert PV obligatoire pour toute installation ≤ 5 kWc',
+    'Sans ce certificat, aucun accès aux certificats verts',
+    'Coefficients de CV révisés à partir du 1ᵉʳ avril 2026 par Brugel',
+  ],
+};
 
 export const FACTS: Fact[] = [
   {

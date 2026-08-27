@@ -26,10 +26,16 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut vérifier avant de s’inquiéter.',
 };
 
+/* ⚠️ UNE SEULE CARTE. « 20-22 kg » est le chiffre que la page existe pour
+   donner. « Diffuse » et « À vérifier » ne sont pas des grandeurs — leur donner
+   le même corps qu'au poids mettait trois faits au même niveau alors qu'un seul
+   répond à la question posée. */
 export const FIGURES: Figure[] = [
   { label: 'Poids par panneau', value: '20-22 kg', note: 'soit 280 à 310 kg pour 14 panneaux', tone: 'lime' },
-  { label: 'Répartition', value: 'Diffuse', note: 'sur toute la surface, jamais en un point', tone: 'grey' },
-  { label: 'Cas particulier', value: 'À vérifier', note: 'toitures anciennes ou déjà fragilisées', tone: 'ink' },
+];
+
+export const ASIDE: string[] = [
+  'Ce poids se répartit sur toute la surface du toit, jamais en un seul point. Sur les toitures anciennes ou déjà fragilisées, une vérification reste recommandée.',
 ];
 
 export const FACTS: Fact[] = [
