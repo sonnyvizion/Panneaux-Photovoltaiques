@@ -509,6 +509,18 @@ const {
       flex: none;
       aspect-ratio: 16 / 9;
     }
+
+    /* Le texte des cartes photo prend le style des cartes conditions : c'est
+       `petit_p-m`, le style que Figma publie POUR LE MOBILE (14/16). Les deux
+       blocs se suivent sur un téléphone, à 15 px contre 14 ils se ressemblaient
+       sans se répondre. */
+    .essentials__photo-body {
+      font-family: var(--text-petit-p-m-family);
+      font-size: var(--text-petit-p-m-size);
+      font-weight: var(--text-petit-p-m-weight);
+      line-height: var(--text-petit-p-m-line-height);
+      letter-spacing: var(--text-petit-p-m-tracking);
+    }
   }
 
   /* ── CARTES ICÔNE ─────────────────────────────────────────────────────────
