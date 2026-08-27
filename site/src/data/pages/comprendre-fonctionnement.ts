@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, FlowStep, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, FlowStep, PhotoCard, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.1 — « Fonctionnement des panneaux » (`/comprendre/fonctionnement`).
@@ -70,10 +70,31 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Le trajet de l’électricité, en 3 étapes.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Cellule photovoltaïque', value: 'Capte', note: 'la lumière, et libère des électrons (courant continu)', tone: 'lime' },
-  { label: 'Onduleur', value: 'Convertit', note: 'le continu en alternatif, utilisable', tone: 'grey' },
-  { label: 'Compteur', value: 'Mesure', note: 'ce qui est consommé et ce qui est injecté', tone: 'ink' },
+/* ⚠️ « Capte », « Convertit », « Mesure » n'étaient pas des chiffres : posés en
+   corps 44 en bas à droite, ces trois verbes prenaient le poids visuel d'une
+   statistique. Ce sont trois OBJETS — la maquette 695:490 les montre en photo.
+
+   Textes repris mot pour mot de cette maquette. */
+export const FIGURES: Figure[] = [];
+
+export const PHOTOS: PhotoCard[] = [
+  {
+    title: 'La cellule photovoltaïque',
+    text: 'Capte la lumière du soleil et libère des électrons — c’est la naissance du courant continu. Le matériau qui rend ça possible : le silicium, à la base de la quasi-totalité des panneaux du marché.',
+    image: 'fonctionnement-carte-cellule.jpg',
+  },
+  {
+    /* La maquette écrit « L'Onduleur » ; la capitale au milieu de la phrase est
+       une coquille, pas une intention — les deux autres titres n'en ont pas. */
+    title: 'L’onduleur',
+    text: 'Convertit le continu en alternatif, utilisable',
+    image: 'fonctionnement-carte-onduleur.jpg',
+  },
+  {
+    title: 'Le compteur',
+    text: 'Mesure ce qui est consommé et ce qui est injecté',
+    image: 'fonctionnement-carte-compteur.jpg',
+  },
 ];
 
 export const FACTS: Fact[] = [

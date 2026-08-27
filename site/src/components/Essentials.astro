@@ -86,30 +86,34 @@ const {
     </ul>
     )}
 
-    {/* ⚠️ TROIS OBJETS, TROIS PHOTOS. À trois cartes la grille passe en 2+1 : la
-        troisième prend toute la largeur plutôt que d'ouvrir une colonne vide.
-        À deux, deux colonnes égales — une asymétrie n'aurait rien à équilibrer. */}
+    {/* ⚠️ TROIS OBJETS, TROIS PHOTOS (Figma 695:490).
+        Un cadre gris qui tient la grille, des cartes blanches dedans, et dans
+        chaque carte le TEXTE À GAUCHE, LA PHOTO À DROITE. À trois cartes la
+        grille passe en 2+1 : la troisième prend toute la largeur plutôt que
+        d'ouvrir une colonne vide. À deux, deux colonnes égales — une asymétrie
+        n'aurait rien à équilibrer. */}
     {photos.length > 0 && (
-    <ul class="essentials__photos" data-count={photos.length}>
-      {photos.map((photo, i) => (
-        <li class="essentials__photo">
-          {/* Tant que la photo n'est pas livrée, l'emplacement se nomme. Une
-              image de stock générique serait pire que le vide (`design.md`).
+    <div class="essentials__board">
+      <ul class="essentials__photos" data-count={photos.length}>
+        {photos.map((photo) => (
+          <li class="essentials__photo">
+            <div class="essentials__photo-text">
+              <h3 class="essentials__photo-title">{photo.title}</h3>
+              <p class="essentials__photo-body">{photo.text}</p>
+            </div>
+            {/* Tant que la photo n'est pas livrée, l'emplacement se nomme. Une
+                image de stock générique serait pire que le vide (`design.md`).
 
-              ⚠️ LA TROISIÈME CARTE CHANGE DE FORMAT. En 2+1 elle occupe toute
-              la largeur : gardée en 4/3, elle faisait 900 px de haut sur un
-              écran de 1280 — une photo deux fois plus grande que les deux
-              autres réunies, pour un contenu de même importance. Le panoramique
-              lui rend sa place dans la rangée. */}
-          <ImagePlaceholder
-            label={photo.image}
-            ratio={photos.length === 3 && i === 2 ? '21 / 9' : '4 / 3'}
-          />
-          <h3 class="essentials__fact-title">{photo.title}</h3>
-          <p class="essentials__fact-text">{photo.text}</p>
-        </li>
-      ))}
-    </ul>
+                ⚠️ `ratio="auto"` : ici la photo ne se donne pas une hauteur, elle
+                REMPLIT celle de la carte. Un ratio imposé rouvrait l'écart que la
+                hauteur commune vient de fermer. */}
+            <div class="essentials__photo-media">
+              <ImagePlaceholder label={photo.image} ratio="auto" />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
     )}
 
     {/* Trois facettes d'un même sujet : l'icône remplace la valeur géante. */}
@@ -397,25 +401,41 @@ const {
     letter-spacing: var(--text-petit-p-m-tracking);
   }
 
-  /* ── CARTES PHOTO ─────────────────────────────────────────────────────────
-     Pas de fond ni de rayon sur la carte elle-même : c'est la photo qui porte
-     le bloc, le texte se pose dessous à nu. Une carte colorée AUTOUR d'une
-     photo ajouterait une troisième surface là où il n'y a qu'un objet à
-     montrer. */
-  /* ⚠️ ELLES S'EMPILENT SUR TÉLÉPHONE. Deux de front, une carte photo tombe à
-     175 px de large : la photo n'y montre plus rien et son texte casse sur cinq
-     lignes. Les cartes chiffres, elles, restent trois de front à toutes les
-     tailles — parce qu'on les compare d'un coup d'œil. Une photo ne se compare
-     pas, elle se regarde. */
+  /* ── CARTES PHOTO (Figma 695:490) ────────────────────────────────────────
+     Un cadre gris tient la grille, les cartes sont blanches dedans. C'est la
+     recette du compte rendu du simulateur, appliquée ici : sans le cadre, trois
+     cartes blanches posées sur un fond blanc n'auraient plus de contour. */
+  .essentials__board {
+    padding: var(--space-3);
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
   .essentials__photos {
     display: grid;
     grid-template-columns: 1fr;
-    gap: var(--gap-cards);
+    gap: var(--space-3);
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
+  /* ⚠️ TEXTE À GAUCHE, PHOTO À DROITE — pas la photo au-dessus. La maquette
+     couche la carte : c'est ce qui lui donne sa hauteur contenue et permet d'en
+     aligner trois. Empilées, les mêmes cartes faisaient 520 px de haut. */
+  .essentials__photo {
+    display: flex;
+    gap: var(--space-3);
+    align-items: stretch;
+    justify-content: space-between;
+    min-width: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  /* Hauteur posée, comme les cartes chiffres : les textes vont de trois à six
+     lignes, et sans elle la rangée serait bancale. */
   @media (min-width: 768px) {
     .essentials__photos {
       grid-template-columns: repeat(2, 1fr);
@@ -425,18 +445,70 @@ const {
     .essentials__photos[data-count='3'] .essentials__photo:last-child {
       grid-column: 1 / -1;
     }
+
+    .essentials__photo {
+      min-height: var(--height-photo-card);
+    }
   }
 
-  .essentials__photo {
+  .essentials__photo-text {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
     min-width: 0;
   }
 
-  .essentials__photo :global(.placeholder),
-  .essentials__photo :global(img) {
-    border-radius: var(--radius-figure-card);
+  /* `display-little` de la maquette : Circular Book 22/24. Ce n'est PAS le `h3`
+     du système (Medium 22/26) — le titre d'une carte photo accompagne l'image,
+     il ne la commande pas. */
+  .essentials__photo-title {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .essentials__photo-body {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .essentials__photo-media {
+    flex: 0 0 var(--width-photo-media);
+    min-width: 0;
+  }
+
+  /* La carte pleine largeur ne donne pas 40 % à sa photo : ça ferait 460 px de
+     large contre 220 aux deux autres, pour un contenu de même importance. */
+  .essentials__photos[data-count='3'] .essentials__photo:last-child .essentials__photo-media {
+    flex-basis: calc(var(--width-photo-media) - 10%);
+  }
+
+  /* La photo remplit la hauteur de la carte plutôt que de l'imposer. */
+  .essentials__photo-media :global(.placeholder),
+  .essentials__photo-media :global(img) {
+    height: 100%;
+    border-radius: var(--radius-card);
+    object-fit: cover;
+  }
+
+  /* ⚠️ SUR TÉLÉPHONE LA CARTE SE REDRESSE. Couchée sur 358 px, la photo tombe à
+     143 px de large : elle ne montre plus son objet, ce qui est toute sa raison
+     d'être ici. Elle repasse au-dessus du texte, en panoramique. */
+  @media (max-width: 767px) {
+    .essentials__photo {
+      flex-direction: column-reverse;
+    }
+
+    .essentials__photo-media {
+      flex: none;
+      aspect-ratio: 16 / 9;
+    }
   }
 
   /* ── CARTES ICÔNE ─────────────────────────────────────────────────────────

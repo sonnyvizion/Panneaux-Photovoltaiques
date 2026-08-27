@@ -706,6 +706,13 @@
      24px passent — c'est en dessous qu'il faut redescendre. */
   --text-figure-value-size: 20px;
   --height-figure-card: 158px;
+  /* Carte photo de « L'essentiel » (Figma 695:757). La hauteur est posée et non
+     déduite : c'est elle qui aligne les trois cartes de la grille 2+1, dont les
+     textes vont de six lignes à trois. */
+  --height-photo-card: 244px;
+  /* Part de la carte prise par la photo. La maquette la fait varier de 37 à
+     51 % au gré du texte ; une seule valeur tient la rangée droite. */
+  --width-photo-media: 40%;
   /* Hauteur intérieure de la carte chiffre. Elle est POSÉE et non déduite :
      c'est elle qui pousse le libellé en haut et la valeur en bas
      (`justify-content: space-between`), et qui garantit que les trois cartes
