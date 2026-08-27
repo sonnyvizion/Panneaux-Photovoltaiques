@@ -479,7 +479,11 @@ const {
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    padding: var(--space-4);
+    /* ⚠️ Le haut garde les 32px de la maquette, les côtés et le bas tombent à
+       16 : le cadre serrait moins qu'il ne creusait, et la photo touchait
+       presque son bord bas quand elle flottait au milieu à gauche et à droite.
+       Le retrait supérieur reste plus large, il fait respirer le titre. */
+    padding: var(--space-4) var(--space-3) var(--space-3);
     border-radius: var(--radius-panel);
     background: var(--color-white-clear);
   }
