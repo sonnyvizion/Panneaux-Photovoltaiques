@@ -513,7 +513,8 @@ const {
     /* Le texte des cartes photo prend le style des cartes conditions : c'est
        `petit_p-m`, le style que Figma publie POUR LE MOBILE (14/16). Les deux
        blocs se suivent sur un téléphone, à 15 px contre 14 ils se ressemblaient
-       sans se répondre. */
+       sans se répondre. Même traitement pour les ponts, plus bas — leur règle
+       de base vient après celle-ci, l'override doit la suivre. */
     .essentials__photo-body {
       font-family: var(--text-petit-p-m-family);
       font-size: var(--text-petit-p-m-size);
@@ -709,6 +710,24 @@ const {
     font-weight: var(--text-body-bull-weight);
     line-height: var(--text-body-bull-line-height);
     letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* ⚠️ APRÈS la règle de base, pas avant. Posée plus haut dans la feuille — à
+     côté de celle des cartes photo, où sa place logique aurait été — elle
+     perdait contre `.essentials__bridge-text` : même spécificité, et une
+     `@media` n'en ajoute pas. C'est l'ordre de source qui tranche.
+
+     Les ponts descendent de `body_bull` (Circular 16/20) à `petit_p-m`
+     (Inter 14/16) : le même style que les cartes conditions et les cartes photo
+     prennent déjà sur téléphone. */
+  @media (max-width: 767px) {
+    .essentials__bridge-text {
+      font-family: var(--text-petit-p-m-family);
+      font-size: var(--text-petit-p-m-size);
+      font-weight: var(--text-petit-p-m-weight);
+      line-height: var(--text-petit-p-m-line-height);
+      letter-spacing: var(--text-petit-p-m-tracking);
+    }
   }
 
   /* Le panneau de ponts perd ses deux épaisseurs de 25px sur mobile
