@@ -710,6 +710,11 @@
      déduite : c'est elle qui aligne les trois cartes de la grille 2+1, dont les
      textes vont de six lignes à trois. */
   --height-photo-card: 244px;
+  /* Tableau de « L'essentiel » (Figma 699:832). Deux écarts qui ne tombent sur
+     aucun palier de l'échelle — repris tels quels de la maquette, où ils
+     séparent trois colonnes larges et trois lignes qui doivent respirer. */
+  --gap-table-col: 54px;
+  --gap-table-row: 37px;
   /* Part de la carte prise par la photo. La maquette la fait varier de 37 à
      51 % au gré du texte ; une seule valeur tient la rangée droite. */
   --width-photo-media: 40%;

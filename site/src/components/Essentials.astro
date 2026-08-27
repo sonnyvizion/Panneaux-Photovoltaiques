@@ -133,21 +133,29 @@ const {
         garanties comparées sur les mêmes critères se lisent en colonne ; en
         trois cartes séparées, le lien qui les rend comparables disparaît. */}
     {table && (
-    <div class="essentials__table-wrap">
-      <table class="essentials__table">
-        <thead>
-          <tr>{table.head.map((cell) => <th scope="col">{cell}</th>)}</tr>
-        </thead>
-        <tbody>
-          {table.rows.map((row) => (
-            <tr>
-              {row.map((cell, i) => (
-                i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>
+    <div class="essentials__board">
+      <div class="essentials__table-card">
+        <div class="essentials__table-wrap">
+          <table class="essentials__table">
+            <thead>
+              <tr>{table.head.map((cell) => <th scope="col">{cell}</th>)}</tr>
+            </thead>
+            {/* ⚠️ LE PANNEAU TEINTÉ EST LE `tbody`, et il est peint CELLULE PAR
+                CELLULE. Un fond posé sur `<tbody>` s'affiche, mais un
+                `border-radius` sur `<tbody>` est ignoré : les coins arrondis de
+                la maquette ne peuvent venir que des cellules des quatre angles. */}
+            <tbody>
+              {table.rows.map((row) => (
+                <tr>
+                  {row.map((cell, i) => (
+                    i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>
+                  ))}
+                </tr>
               ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
     )}
 
@@ -560,55 +568,129 @@ const {
     }
   }
 
-  /* ── TABLEAU ──────────────────────────────────────────────────────────────
-     ⚠️ Le conteneur défile, jamais la page (règle des tableaux larges). */
-  .essentials__table-wrap {
-    overflow-x: auto;
-    border-radius: var(--radius-figure-card);
-    background: var(--color-shade-grey);
+  /* ── TABLEAU (Figma 699:832) ──────────────────────────────────────────────
+     Même emboîtement que les cartes photo : cadre gris, carte blanche dedans.
+     L'en-tête reste sur le blanc, les lignes descendent dans un panneau teinté.
+     C'est cette séparation qui distingue les critères des valeurs — le filet
+     entre lignes de ma première version ne disait pas la même chose : il
+     découpait le tableau au lieu de l'isoler du reste. */
+  .essentials__table-card {
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
   }
 
+  /* ⚠️ Le conteneur défile, jamais la page. Trois colonnes ne tiennent pas sur
+     un téléphone : elles s'y lisent en poussant le tableau, pas en le tassant
+     au point de casser chaque cellule sur cinq lignes. */
+  .essentials__table-wrap {
+    overflow-x: auto;
+  }
+
+  /* `separate` et non `collapse` : avec `collapse`, un `border-radius` sur une
+     cellule est ignoré, et les quatre angles du panneau teinté avec lui. */
   .essentials__table {
     width: 100%;
-    border-collapse: collapse;
-    /* En dessous, les colonnes se tassent au point d'être illisibles : c'est là
-       que le conteneur prend le relais et défile. */
-    min-width: 32rem;
-    color: var(--color-text-secondary);
-    font-family: var(--text-petit-p-m-family);
-    font-size: var(--text-petit-p-m-size);
-    line-height: var(--text-petit-p-m-line-height);
+    min-width: 34rem;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--color-text-primary);
     text-align: start;
   }
 
   .essentials__table th,
   .essentials__table td {
-    padding: var(--pad-card);
     text-align: start;
     vertical-align: top;
   }
 
+  /* Les critères, en `display-little` — le style des titres de carte photo.
+     C'est la même famille d'objets : un intitulé qui coiffe un contenu. */
   .essentials__table thead th {
-    color: var(--color-text-primary);
-    font-family: var(--text-overline-family);
-    font-size: var(--text-overline-size);
-    font-weight: var(--text-overline-weight);
-    letter-spacing: var(--text-overline-tracking);
+    padding-bottom: var(--pad-card);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
   }
 
-  /* Le filet ne sépare que les lignes de données : sous l'en-tête il marquerait
-     une bordure de tableau, alors qu'il ne sert qu'à suivre une ligne. */
-  .essentials__table tbody tr + tr th,
-  .essentials__table tbody tr + tr td {
-    border-top: var(--border-width) solid var(--color-shade-strong);
+  .essentials__table tbody th,
+  .essentials__table tbody td {
+    background: var(--color-shade-details);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-body-sm-line-height);
   }
 
+  /* Souligné, pas gras : c'est ce qui désigne la ligne dans la maquette. Le
+     gras aurait fait un second niveau de titre à côté de l'en-tête. */
   .essentials__table tbody th {
-    color: var(--color-text-primary);
-    font-family: var(--text-h3-m-family);
-    font-size: var(--text-h3-m-size);
-    font-weight: var(--text-h3-m-weight);
-    line-height: var(--text-h3-m-line-height);
+    text-decoration: underline;
+  }
+
+  /* Les gouttières viennent du padding des cellules, pas d'un `border-spacing` —
+     celui-ci écarte AUSSI les cellules du bord du tableau, ce qui aurait décalé
+     le panneau teinté vers l'intérieur. */
+  .essentials__table th,
+  .essentials__table td {
+    padding-right: var(--gap-table-col);
+  }
+
+  .essentials__table th:last-child,
+  .essentials__table td:last-child {
+    padding-right: 0;
+  }
+
+  /* Les 20px de marge intérieure du panneau, portés par les cellules de bord —
+     et d'UN SEUL CÔTÉ chacune. En `padding-inline`, la dernière colonne gagnait
+     aussi 20px à gauche : sa boîte restait alignée sur l'en-tête, mais son
+     texte partait 20px plus loin que l'intitulé qui le coiffe. */
+  .essentials__table tbody th {
+    padding-left: var(--pad-card);
+    padding-right: var(--gap-table-col);
+  }
+
+  .essentials__table tbody td:last-child {
+    padding-right: var(--pad-card);
+  }
+
+  .essentials__table tbody tr:first-child > * {
+    padding-top: var(--pad-card);
+  }
+
+  .essentials__table tbody tr:last-child > * {
+    padding-bottom: var(--pad-card);
+  }
+
+  .essentials__table tbody tr:not(:last-child) > * {
+    padding-bottom: var(--gap-table-row);
+  }
+
+  /* Les quatre angles du panneau. */
+  .essentials__table tbody tr:first-child > *:first-child {
+    border-start-start-radius: var(--radius-3);
+  }
+
+  .essentials__table tbody tr:first-child > *:last-child {
+    border-start-end-radius: var(--radius-3);
+  }
+
+  .essentials__table tbody tr:last-child > *:first-child {
+    border-end-start-radius: var(--radius-3);
+  }
+
+  .essentials__table tbody tr:last-child > *:last-child {
+    border-end-end-radius: var(--radius-3);
+  }
+
+  /* L'en-tête s'aligne sur les cellules du panneau : sans ce décalage, la
+     première colonne aurait son intitulé 20px à gauche de son contenu.
+     ⚠️ Écart assumé à la maquette, qui laisse ce décalage. Dans un tableau, un
+     intitulé qui ne tombe pas sur sa colonne est une gêne de lecture. */
+  .essentials__table thead th:first-child {
+    padding-left: var(--pad-card);
   }
 
   /* ── CARTE UNIQUE À PLUSIEURS LIGNES ─────────────────────────────────────── */
