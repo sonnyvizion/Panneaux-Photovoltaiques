@@ -713,6 +713,11 @@
   /* Tableau de « L'essentiel » (Figma 699:832). Deux écarts qui ne tombent sur
      aucun palier de l'échelle — repris tels quels de la maquette, où ils
      séparent trois colonnes larges et trois lignes qui doivent respirer. */
+  /* Bloc éditorial de « L'essentiel » (Figma 699:1140) : colonne de texte,
+     photo, et le rapport de la photo. Le `space-between` absorbe le reste. */
+  --width-editorial-text: 420px;
+  --width-editorial-image: 597px;
+  --ratio-editorial-image: 597 / 690;
   --gap-table-col: 54px;
   --gap-table-row: 37px;
   /* Part de la carte prise par la photo. La maquette la fait varier de 37 à

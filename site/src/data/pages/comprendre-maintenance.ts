@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.9 — « Maintenance & nettoyage » (`/comprendre/maintenance`).
@@ -28,11 +28,19 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Ce qu’il faut surveiller, et à quelle fréquence.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Nettoyage", value: "Rarement", note: "la pluie suffit dans la plupart des cas, en Belgique", tone: 'lime' },
-  { label: "Contrôle visuel", value: "1-2 fois/an", note: "pour repérer un défaut visible", tone: 'grey' },
-  { label: "Suivi de production", value: "En continu", note: "via l’application de l’onduleur, pour détecter une anomalie tôt", tone: 'ink' },
-];
+/* ⚠️ « Rarement » et « En continu » n'étaient pas des chiffres, et
+   « 1-2 fois/an » est une fréquence, pas une grandeur qu'on lit de loin. Les
+   trois disaient la même chose — que l'entretien est léger — ce qu'une phrase
+   dit mieux que trois cartes. */
+export const FIGURES: Figure[] = [];
+
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Maintenance',
+  text:
+    'Un des avantages sous-estimés du solaire : il ne demande presque rien. Le nettoyage est rarement nécessaire — en Belgique, la pluie fait l’essentiel du travail. Un contrôle visuel une à deux fois par an suffit pour repérer un défaut, et l’application de l’onduleur permet de suivre la production au quotidien sans rien faire de plus. Pas de contrat d’entretien obligatoire, juste un œil de temps en temps.',
+  imageAlt:
+    'Gros plan sur des panneaux solaires couverts de gouttes de pluie',
+};
 
 export const FACTS: Fact[] = [
   { title: "Le contrat d’entretien n’est pas indispensable", text: "Le besoin réel est faible ; certains installateurs le proposent pour la tranquillité d’esprit." },

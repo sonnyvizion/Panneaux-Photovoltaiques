@@ -1,11 +1,13 @@
 ---
 import type { SvgComponent } from 'astro/types';
+import { Image } from 'astro:assets';
 import Section from './Section.astro';
 import SectionHeading from './SectionHeading.astro';
 import Button from './Button.astro';
 import ImagePlaceholder from './ImagePlaceholder.astro';
 import type {
-  Bridge, EssentialsPanel, EssentialsTable, Fact, Figure, IconCard, PhotoCard, SectionCopy,
+  Bridge, EssentialsEditorial, EssentialsPanel, EssentialsTable,
+  Fact, Figure, IconCard, PhotoCard, SectionCopy,
 } from '../data/content';
 
 /**
@@ -52,6 +54,13 @@ interface Props extends SectionCopy {
   /** Un seul fait et ses conséquences, dans une carte unique. */
   panel?: EssentialsPanel;
   /**
+   * Un paragraphe et une photo, en pleine largeur.
+   *
+   * ⚠️ IL REMPLACE L'EN-TÊTE DE SECTION : son titre devient le `h2`. Passer à
+   * la fois `editorial` et un `title` de section afficherait deux titres.
+   */
+  editorial?: EssentialsEditorial & { image: ImageMetadata };
+  /**
    * Ce qui ne méritait pas une carte.
    *
    * Le débouché de la 5ᵉ question du cahier : un seul fait mérite la mise en
@@ -63,14 +72,39 @@ interface Props extends SectionCopy {
 
 const {
   overline, title, intro, figures, facts, bridges,
-  photos = [], icons = [], table, panel, aside = [],
+  photos = [], icons = [], table, panel, aside = [], editorial,
 } = Astro.props;
 ---
 
 <Section tone="default">
-  <SectionHeading overline={overline} title={title} intro={intro} />
+  {/* Le bloc éditorial porte son propre titre : lui superposer l'en-tête de
+      section ferait lire deux fois la même chose. */}
+  {!editorial && <SectionHeading overline={overline} title={title} intro={intro} />}
 
   <div class="essentials reveal">
+    {editorial && (
+    <div class="essentials__editorial">
+      <div class="essentials__editorial-text">
+        <h2 class="essentials__editorial-title">{editorial.title}</h2>
+        <div class="essentials__editorial-card">
+          <p>{editorial.text}</p>
+        </div>
+      </div>
+      {/* ⚠️ La photo est PORTRAIT (1744×2336) pour un créneau de 597×690 :
+          `object-fit: cover` recadre, la largeur déclarée reste celle du
+          fichier pour qu'`astro:assets` génère les bonnes variantes. */}
+      <Image
+        class="essentials__editorial-image"
+        src={editorial.image}
+        alt={editorial.imageAlt}
+        width={1744}
+        widths={[600, 900, 1200, 1744]}
+        sizes="(min-width: 768px) 597px, 100vw"
+        loading="lazy"
+      />
+    </div>
+    )}
+
     {figures.length > 0 && (
     <ul class="essentials__figures" data-count={figures.length}>
       {figures.map((figure) => (
@@ -432,6 +466,106 @@ const {
     font-weight: var(--text-petit-p-m-weight);
     line-height: var(--text-petit-p-m-line-height);
     letter-spacing: var(--text-petit-p-m-tracking);
+  }
+
+  /* ── BLOC ÉDITORIAL (Figma 699:1140) ──────────────────────────────────────
+     Une réponse d'un seul tenant et sa photo, sur le fond vert clair du
+     système. La grille de trois cartes ne convenait à ces pages ni de près ni
+     de loin : leurs chiffres sont trop peu nombreux pour la remplir, et les en
+     extraire les coupait de la phrase qui les rend compréhensibles.
+
+     ⚠️ MOBILE D'ABORD, comme le tableau. Les colonnes n'arrivent qu'à 768px. */
+  .essentials__editorial {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-clear);
+  }
+
+  .essentials__editorial-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pad-card);
+    min-width: 0;
+  }
+
+  /* ⚠️ `h2` DU SYSTÈME SUR TÉLÉPHONE, `display-mid` au-delà. La maquette pose
+     44px ; à cette taille un titre occupe le tiers d'un écran de 390. Le `h2`
+     mobile (28/30) est la taille que prennent déjà tous les titres de section
+     du site à ce format — ce titre EN EST un. */
+  .essentials__editorial-title {
+    font-family: var(--text-h2-family);
+    font-size: var(--text-h2-size);
+    font-weight: var(--text-h2-weight);
+    line-height: var(--text-h2-line-height);
+    letter-spacing: var(--text-h2-tracking);
+  }
+
+  .essentials__editorial-card {
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-white-primary);
+  }
+
+  /* ⚠️ `body_bull` sur téléphone, `display-little` au-delà. La maquette pose
+     22/24 : sur 390px, ce paragraphe de cinq cents signes y tiendrait sur
+     vingt-cinq lignes. `body_bull` (16/20) est le cran juste en dessous dans la
+     MÊME famille — la carte garde son allure, elle se lit simplement. */
+  .essentials__editorial-card p {
+    font-family: var(--text-body-bull-family);
+    font-size: var(--text-body-bull-size);
+    font-weight: var(--text-body-bull-weight);
+    line-height: var(--text-body-bull-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* Portrait sur téléphone aussi, mais moins haut : la photo doit tenir dans
+     l'écran avec un morceau du texte, sinon elle coupe la lecture en deux. */
+  .essentials__editorial-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-3);
+    object-fit: cover;
+  }
+
+  @media (min-width: 768px) {
+    /* `space-between` comme la maquette : le texte à gauche sur 420px, la photo
+       à droite sur 597, et l'écart absorbe la largeur restante. */
+    .essentials__editorial {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .essentials__editorial-text {
+      flex: 0 0 var(--width-editorial-text);
+      /* Le texte s'étire à la hauteur de la photo, qui commande le bloc. */
+      align-self: stretch;
+    }
+
+    .essentials__editorial-title {
+      font-family: var(--text-display-mid-family);
+      font-size: var(--text-display-mid-size);
+      font-weight: var(--text-display-mid-weight);
+      line-height: var(--text-display-mid-line-height);
+      letter-spacing: var(--text-display-mid-tracking);
+    }
+
+    .essentials__editorial-card p {
+      font-family: var(--text-display-little-family);
+      font-size: var(--text-display-little-size);
+      font-weight: var(--text-display-little-weight);
+      line-height: var(--text-display-little-line-height);
+      letter-spacing: var(--text-display-little-tracking);
+    }
+
+    .essentials__editorial-image {
+      flex: 0 1 var(--width-editorial-image);
+      aspect-ratio: var(--ratio-editorial-image);
+    }
   }
 
   /* ── CARTES PHOTO (Figma 695:490) ────────────────────────────────────────

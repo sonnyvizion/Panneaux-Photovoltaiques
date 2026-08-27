@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 4.6 — « Borne de recharge » (`/comprendre/borne-de-recharge`).
@@ -32,11 +32,18 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Pourquoi une borne plutôt qu’une prise classique.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Vitesse", value: "Bien plus", note: "rapide qu’une prise domestique standard", tone: 'lime' },
-  { label: "Sécurité", value: "Dédiée", note: "une installation prévue pour un usage répété", tone: 'grey' },
-  { label: "Couplage solaire", value: "Adaptatif", note: "certaines bornes suivent la production disponible en temps réel", tone: 'ink' },
-];
+/* ⚠️ « Bien plus », « Dédiée » et « Adaptatif » : trois adjectifs posés en
+   corps 44 à la place de chiffres. La page n'en a aucun à donner — c'est une
+   comparaison qualitative avec la prise domestique, et elle se raconte. */
+export const FIGURES: Figure[] = [];
+
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Borne de recharge',
+  text:
+    'Une borne de recharge n’est pas obligatoire pour recharger une voiture électrique, mais elle change tout. La vitesse d’abord, nettement supérieure à une prise domestique classique. La sécurité ensuite, avec une installation dédiée plutôt qu’un branchement de fortune. Et pour qui a des panneaux solaires, le vrai plus : certains modèles ajustent automatiquement leur puissance selon ce que le toit produit à l’instant T — la voiture se recharge quand le soleil donne, pas au hasard.',
+  imageAlt:
+    'Voiture électrique grise branchée à une borne de recharge murale blanche, sur la façade d’une maison, à côté de la porte de garage',
+};
 
 export const FACTS: Fact[] = [
   { title: "Indépendante du solaire", text: "Une borne fonctionne sans panneaux — le couplage relève de l’économie, pas de la technique." },

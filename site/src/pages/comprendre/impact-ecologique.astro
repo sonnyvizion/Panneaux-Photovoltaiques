@@ -11,8 +11,9 @@ import BuildingFactory from '../../assets/icons/impact-ecologique/building-facto
 import Recycle from '../../assets/icons/impact-ecologique/recycle.svg';
 import Leaf from '../../assets/icons/impact-ecologique/leaf.svg';
 import heroImage from '../../assets/pages/4.10-impact-ecologique-hero.webp';
+import editorialImage from '../../assets/pages/4.10-impact-ecologique-editorial.webp';
 import {
-  ASIDE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  EDITORIAL, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOPICS, TOPICS_COPY,
 } from '../../data/pages/comprendre-impact-ecologique';
 
@@ -30,7 +31,7 @@ import {
 <BaseLayout title="Impact écologique des panneaux solaires : le vrai bilan | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} aside={ASIDE} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, image: editorialImage }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Scale, BuildingFactory, Recycle, Leaf][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'écologie du solaire." tone="grey" id="faq-impact-ecologique" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

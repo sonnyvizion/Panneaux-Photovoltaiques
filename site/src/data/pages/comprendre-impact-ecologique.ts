@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 import { GRID_CO2_G_PER_KWH, residentialRange, standardCase } from '../../scripts/co2';
 
 /**
@@ -46,27 +46,20 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'L’impact réel, sans survendre.',
 };
 
-export const FIGURES: Figure[] = [
-  {
-    label: 'CO₂ évité',
-    value: `${residentialRange()}`,
-    note: `par an, selon la puissance — soit ${standardCase()} pour une installation standard`,
-    tone: 'lime',
-  },
-  {
-    label: 'Fabrication',
-    value: '1-3 ans',
-    note: 'pour « rembourser » le coût carbone initial',
-    tone: 'grey',
-  },
-];
+/* ⚠️ ⚠️ CETTE PAGE AVAIT DÉJÀ ÉTÉ CORRIGÉE une première fois — deux cartes
+   chiffres et un texte sous la grille. Les deux grandeurs qu'elle mettait en
+   avant sont maintenant DANS le paragraphe, à leur place : « 0,5 à 1,5 tonne »
+   ne veut rien dire sans « le réseau belge étant déjà peu carboné », et la
+   grille séparait précisément l'un de l'autre. */
+export const FIGURES: Figure[] = [];
 
-/* ⚠️ « Largement » a quitté la grille. Les deux cartes qui restent portent de
-   vraies grandeurs — des tonnes de CO₂, des années. Un adverbe posé au même
-   corps se lisait comme une troisième mesure. */
-export const ASIDE: string[] = [
-  'Les panneaux sont largement recyclables — verre, aluminium et silicium sont récupérables via des filières dédiées.',
-];
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Impact écologique',
+  text:
+    'Le solaire réduit vraiment les émissions de CO₂, mais pas dans les proportions qu’on imagine parfois : le réseau belge étant déjà peu carboné, comptez 0,5 à 1,5 tonne évitée par an pour une installation résidentielle standard. La fabrication a elle-même un coût carbone, remboursé en 1 à 3 ans de production sur une durée de vie de 25 à 30 ans. Et en fin de vie, l’essentiel — verre, aluminium, silicium — reste recyclable.',
+  imageAlt:
+    'Maison en brique dont le toit porte des panneaux solaires, vue depuis un jardin planté de haies et d’arbustes',
+};
 
 export const FACTS: Fact[] = [
   {

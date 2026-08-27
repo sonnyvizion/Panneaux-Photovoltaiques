@@ -11,8 +11,9 @@ import Gauge from '../../assets/icons/borne-de-recharge/gauge.svg';
 import Car from '../../assets/icons/borne-de-recharge/car.svg';
 import FileCertificate from '../../assets/icons/borne-de-recharge/file-certificate.svg';
 import heroImage from '../../assets/pages/4.6-borne-de-recharge-hero.webp';
+import editorialImage from '../../assets/pages/4.6-borne-de-recharge-editorial.webp';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  EDITORIAL, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOPICS, TOPICS_COPY,
 } from '../../data/pages/comprendre-borne-de-recharge';
 
@@ -30,7 +31,7 @@ import {
 <BaseLayout title="Borne de recharge et panneaux solaires | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, image: editorialImage }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Bolt, Gauge, Car, FileCertificate][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la borne de recharge." tone="grey" id="faq-borne-de-recharge" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

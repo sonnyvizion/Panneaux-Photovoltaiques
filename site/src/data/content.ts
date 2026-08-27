@@ -112,6 +112,27 @@ export interface EssentialsTable {
 }
 
 /**
+ * Bloc ÉDITORIAL de « L'essentiel » (Figma 699:1140).
+ *
+ * ⚠️ CELUI-CI REMPLACE L'EN-TÊTE DE SECTION, il ne s'y ajoute pas. Son titre
+ * EST le `h2` de la section — d'où l'absence de surtitre et de chapô sur les
+ * pages qui l'emploient. Les leur laisser aurait fait trois titres d'affilée.
+ *
+ * Le cas de figure : une page dont la réponse tient en un paragraphe, et dont
+ * les chiffres sont trop peu nombreux ou trop dispersés pour faire une grille.
+ * Sur Impact écologique, les deux vraies grandeurs (tonnes de CO₂, années
+ * d'amortissement carbone) sont désormais DANS le texte, à leur place — une
+ * grille les sortait de la phrase qui les rendait compréhensibles.
+ */
+export interface EssentialsEditorial {
+  /** Devient le `h2` de la section. */
+  title: string;
+  /** Le paragraphe, dans sa carte blanche. Un seul, volontairement. */
+  text: string;
+  imageAlt: string;
+}
+
+/**
  * Carte unique de « L'essentiel », à plusieurs lignes.
  *
  * Pour le cas où les « trois informations » sont en réalité trois conséquences
