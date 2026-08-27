@@ -136,19 +136,44 @@ const {
     <div class="essentials__board">
       <div class="essentials__table-card">
         <div class="essentials__table-wrap">
-          <table class="essentials__table">
-            <thead>
-              <tr>{table.head.map((cell) => <th scope="col">{cell}</th>)}</tr>
+          {/* ⚠️ LES RÔLES SONT ÉCRITS, alors qu'ils sont ceux qu'un tableau
+              porte déjà. C'est parce que sur téléphone le tableau se REPLIE :
+              les cellules passent en `display: block`, et ce changement SUPPRIME
+              les rôles implicites `table` / `row` / `cell`. Un lecteur d'écran
+              n'annoncerait plus « Garantie produit, Durée typique, 10 à 15 ans »
+              mais une suite de blocs sans lien. Écrits, ils survivent.
+              Inertes sur grand écran, porteurs sur mobile. */}
+          <table class="essentials__table" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                {table.head.map((cell) => <th scope="col" role="columnheader">{cell}</th>)}
+              </tr>
             </thead>
             {/* ⚠️ LE PANNEAU TEINTÉ EST LE `tbody`, et il est peint CELLULE PAR
                 CELLULE. Un fond posé sur `<tbody>` s'affiche, mais un
                 `border-radius` sur `<tbody>` est ignoré : les coins arrondis de
                 la maquette ne peuvent venir que des cellules des quatre angles. */}
-            <tbody>
+            <tbody role="rowgroup">
               {table.rows.map((row) => (
-                <tr>
+                <tr role="row">
                   {row.map((cell, i) => (
-                    i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>
+                    i === 0 ? <th scope="row" role="rowheader">{cell}</th> : (
+                      <td role="cell">
+                        {/* L'intitulé de la colonne, répété dans la cellule pour
+                            le jour où le tableau se replie.
+
+                            ⚠️ `aria-hidden`, et un VRAI élément plutôt qu'un
+                            `::before`. Le `<thead>` reste dans l'arbre
+                            d'accessibilité même replié (il est masqué à l'œil,
+                            pas retiré) : l'association colonne↔cellule y est
+                            déjà, et sans ce masquage l'intitulé serait annoncé
+                            deux fois. Quant au pseudo-élément, `content:
+                            attr(...)` est annoncé de façon inégale selon les
+                            lecteurs — autant ne pas laisser ça au hasard. */}
+                        <span class="essentials__table-label" aria-hidden="true">{table.head[i]}</span>
+                        {cell}
+                      </td>
+                    )
                   ))}
                 </tr>
               ))}
@@ -572,17 +597,25 @@ const {
      Même emboîtement que les cartes photo : cadre gris, carte blanche dedans.
      L'en-tête reste sur le blanc, les lignes descendent dans un panneau teinté.
      C'est cette séparation qui distingue les critères des valeurs — le filet
-     entre lignes de ma première version ne disait pas la même chose : il
-     découpait le tableau au lieu de l'isoler du reste. */
+     entre lignes d'une première version ne disait pas la même chose : il
+     découpait le tableau au lieu de l'isoler du reste.
+
+     ⚠️ CE BLOC EST ÉCRIT MOBILE D'ABORD. Le tableau REPLIÉ est l'état de base ;
+     la grille à trois colonnes n'arrive qu'à partir de 768px. L'ordre inverse a
+     été essayé et abandonné : les gouttières, les marges du panneau et les
+     quatre rayons d'angle sont posés sur les cellules par des sélecteurs du
+     genre `tbody tr:first-child > *`, plus spécifiques que toute remise à zéro
+     raisonnable. La version repliée héritait d'un coin arrondi isolé et de
+     37px de padding fantôme sous chaque cellule. Borner les règles à leur
+     palier vaut mieux que de surenchérir en spécificité. */
   .essentials__table-card {
     padding: var(--space-3);
     border-radius: var(--radius-card);
     background: var(--color-white-primary);
   }
 
-  /* ⚠️ Le conteneur défile, jamais la page. Trois colonnes ne tiennent pas sur
-     un téléphone : elles s'y lisent en poussant le tableau, pas en le tassant
-     au point de casser chaque cellule sur cinq lignes. */
+  /* Inerte tant que rien ne déborde — filet de sécurité si un contenu plus
+     large arrive un jour. Le conteneur défilerait, jamais la page. */
   .essentials__table-wrap {
     overflow-x: auto;
   }
@@ -591,7 +624,6 @@ const {
      cellule est ignoré, et les quatre angles du panneau teinté avec lui. */
   .essentials__table {
     width: 100%;
-    min-width: 34rem;
     border-collapse: separate;
     border-spacing: 0;
     color: var(--color-text-primary);
@@ -607,7 +639,6 @@ const {
   /* Les critères, en `display-little` — le style des titres de carte photo.
      C'est la même famille d'objets : un intitulé qui coiffe un contenu. */
   .essentials__table thead th {
-    padding-bottom: var(--pad-card);
     font-family: var(--text-display-little-family);
     font-size: var(--text-display-little-size);
     font-weight: var(--text-display-little-weight);
@@ -617,7 +648,6 @@ const {
 
   .essentials__table tbody th,
   .essentials__table tbody td {
-    background: var(--color-shade-details);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
     font-weight: var(--font-weight-medium);
@@ -630,67 +660,215 @@ const {
     text-decoration: underline;
   }
 
-  /* Les gouttières viennent du padding des cellules, pas d'un `border-spacing` —
-     celui-ci écarte AUSSI les cellules du bord du tableau, ce qui aurait décalé
-     le panneau teinté vers l'intérieur. */
+  /* ── L'ÉTAT DE BASE : LE TABLEAU REPLIÉ ───────────────────────────────────
+     ⚠️ POURQUOI ON REPLIE PLUTÔT QUE DE FAIRE DÉFILER. Trois colonnes sur
+     390px donnaient un tableau de 544px dans un cadre de 294 : la colonne
+     « Durée typique » tombait 129px après le bord droit, sans rien pour
+     signaler qu'elle existait. Or ces durées sont les seuls vrais chiffres de
+     la page — c'est pour les faire apparaître que ce tableau a remplacé trois
+     cartes qui n'en montraient aucun. Le défilement les recachait.
+
+     Même doctrine que `OptionComparator.astro`, qui refuse lui aussi trois
+     colonnes de texte à cette taille. Par un autre moyen : ses colonnes sont
+     les objets comparés, quand ici ce sont les lignes. */
+  .essentials__table,
+  .essentials__table thead,
+  .essentials__table tbody,
+  .essentials__table tr,
   .essentials__table th,
   .essentials__table td {
-    padding-right: var(--gap-table-col);
+    display: block;
   }
 
-  .essentials__table th:last-child,
-  .essentials__table td:last-child {
-    padding-right: 0;
+  /* ⚠️ MASQUÉ À L'ŒIL, PAS RETIRÉ. `display: none` sortirait l'en-tête de
+     l'arbre d'accessibilité et emporterait avec lui l'association
+     colonne↔cellule — celle-là même que les rôles écrits servent à préserver.
+     C'est la recette `.visually-hidden` de `global.css`. */
+  .essentials__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
-  /* Les 20px de marge intérieure du panneau, portés par les cellules de bord —
-     et d'UN SEUL CÔTÉ chacune. En `padding-inline`, la dernière colonne gagnait
-     aussi 20px à gauche : sa boîte restait alignée sur l'en-tête, mais son
-     texte partait 20px plus loin que l'intitulé qui le coiffe. */
+  .essentials__table tbody {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* Replié, le fond et le rayon appartiennent à la LIGNE : une garantie devient
+     une carte. Déplié, ils repasseront aux cellules — seules capables de porter
+     les angles d'un panneau qui couvre tout le `tbody`. */
+  .essentials__table tbody tr {
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+  }
+
+  /* Les cellules n'ont plus de garniture propre : c'est la ligne qui la porte.
+     Sans cela, le `padding: 1px` que le navigateur applique par défaut à une
+     cellule décale tout d'un pixel. */
+  .essentials__table th,
+  .essentials__table td {
+    padding: 0;
+  }
+
   .essentials__table tbody th {
-    padding-left: var(--pad-card);
-    padding-right: var(--gap-table-col);
+    margin-bottom: var(--space-3);
   }
 
-  .essentials__table tbody td:last-child {
-    padding-right: var(--pad-card);
+  .essentials__table tbody td + td {
+    margin-top: var(--space-3);
   }
 
-  .essentials__table tbody tr:first-child > * {
-    padding-top: var(--pad-card);
+  /* ⚠️ PAS `overline`, malgré le rôle identique en apparence. Ce style vaut
+     18px en Circular Medium : il est taillé pour coiffer un chiffre de 44px sur
+     une carte chiffre. Posé sur une valeur de 15px, il pesait PLUS LOURD que ce
+     qu'il annonce — « Couvre quoi » écrasait « Défauts de fabrication du
+     panneau ». `petit_p-m` remet l'intitulé sous sa valeur : plus petit, plus
+     clair, et sans concurrence de graisse (400 contre 500). */
+  .essentials__table-label {
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    font-weight: var(--text-petit-p-m-weight);
+    line-height: var(--text-petit-p-m-line-height);
+    letter-spacing: var(--text-petit-p-m-tracking);
   }
 
-  .essentials__table tbody tr:last-child > * {
-    padding-bottom: var(--pad-card);
-  }
+  /* ── LE TABLEAU DÉPLIÉ (768px et au-delà) ─────────────────────────────────
+     Trois colonnes, l'en-tête sur le blanc et les lignes dans le panneau. */
+  @media (min-width: 768px) {
+    .essentials__table {
+      display: table;
+      min-width: 34rem;
+    }
 
-  .essentials__table tbody tr:not(:last-child) > * {
-    padding-bottom: var(--gap-table-row);
-  }
+    .essentials__table thead {
+      position: static;
+      display: table-header-group;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      white-space: normal;
+    }
 
-  /* Les quatre angles du panneau. */
-  .essentials__table tbody tr:first-child > *:first-child {
-    border-start-start-radius: var(--radius-3);
-  }
+    .essentials__table tbody {
+      display: table-row-group;
+      gap: 0;
+    }
 
-  .essentials__table tbody tr:first-child > *:last-child {
-    border-start-end-radius: var(--radius-3);
-  }
+    /* ⚠️ TOUTES les lignes, pas seulement celles du corps. Restaurée sur le
+       seul `tbody`, la ligne d'en-tête restait en `display: block` : ses trois
+       cellules sortaient du modèle de colonnes et se calaient sur leur contenu,
+       à 325 et 496px quand le corps était à 638 et 1006. Le tableau semblait
+       intact — chaque moitié était alignée sur elle-même. */
+    .essentials__table tr {
+      display: table-row;
+    }
 
-  .essentials__table tbody tr:last-child > *:first-child {
-    border-end-start-radius: var(--radius-3);
-  }
+    .essentials__table th,
+    .essentials__table td {
+      display: table-cell;
+    }
 
-  .essentials__table tbody tr:last-child > *:last-child {
-    border-end-end-radius: var(--radius-3);
-  }
+    /* Le fond et le rayon quittent la ligne pour les cellules. */
+    .essentials__table tbody tr {
+      padding: 0;
+      border-radius: 0;
+      background: none;
+    }
 
-  /* L'en-tête s'aligne sur les cellules du panneau : sans ce décalage, la
-     première colonne aurait son intitulé 20px à gauche de son contenu.
-     ⚠️ Écart assumé à la maquette, qui laisse ce décalage. Dans un tableau, un
-     intitulé qui ne tombe pas sur sa colonne est une gêne de lecture. */
-  .essentials__table thead th:first-child {
-    padding-left: var(--pad-card);
+    .essentials__table tbody th,
+    .essentials__table tbody td {
+      background: var(--color-shade-details);
+    }
+
+    .essentials__table tbody th {
+      margin-bottom: 0;
+    }
+
+    .essentials__table tbody td + td {
+      margin-top: 0;
+    }
+
+    /* L'intitulé répété ne sert qu'au tableau replié : ici, la colonne a son
+       en-tête. */
+    .essentials__table-label {
+      display: none;
+    }
+
+    .essentials__table thead th {
+      padding-bottom: var(--pad-card);
+    }
+
+    /* Les gouttières viennent du padding des cellules, pas d'un
+       `border-spacing` — celui-ci écarte AUSSI les cellules du bord du tableau,
+       ce qui aurait décalé le panneau teinté vers l'intérieur. */
+    .essentials__table th,
+    .essentials__table td {
+      padding-right: var(--gap-table-col);
+    }
+
+    .essentials__table th:last-child,
+    .essentials__table td:last-child {
+      padding-right: 0;
+    }
+
+    /* Les 20px de marge intérieure du panneau, portés par les cellules de bord —
+       et d'UN SEUL CÔTÉ chacune. En `padding-inline`, la dernière colonne
+       gagnait aussi 20px à gauche : sa boîte restait alignée sur l'en-tête, mais
+       son texte partait 20px plus loin que l'intitulé qui le coiffe. */
+    .essentials__table tbody th {
+      padding-left: var(--pad-card);
+      padding-right: var(--gap-table-col);
+    }
+
+    .essentials__table tbody td:last-child {
+      padding-right: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:first-child > * {
+      padding-top: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:last-child > * {
+      padding-bottom: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:not(:last-child) > * {
+      padding-bottom: var(--gap-table-row);
+    }
+
+    /* Les quatre angles du panneau. */
+    .essentials__table tbody tr:first-child > *:first-child {
+      border-start-start-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:first-child > *:last-child {
+      border-start-end-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:last-child > *:first-child {
+      border-end-start-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:last-child > *:last-child {
+      border-end-end-radius: var(--radius-3);
+    }
+
+    /* L'en-tête s'aligne sur les cellules du panneau : sans ce décalage, la
+       première colonne aurait son intitulé 20px à gauche de son contenu.
+       ⚠️ Écart assumé à la maquette, qui laisse ce décalage. Dans un tableau, un
+       intitulé qui ne tombe pas sur sa colonne est une gêne de lecture. */
+    .essentials__table thead th:first-child {
+      padding-left: var(--pad-card);
+    }
   }
 
   /* ── CARTE UNIQUE À PLUSIEURS LIGNES ─────────────────────────────────────── */
