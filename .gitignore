@@ -27,3 +27,12 @@ npm-debug.log*
 
 # Git worktrees
 .worktrees/
+
+# Outillage agent — hors dépôt
+# `settings.local.json` porte « local » dans son nom : ce sont les préférences
+# d'UNE machine (autorisations Bash accordées), pas du projet. Versionné, il
+# imposerait ces choix à tout le monde et entrerait en conflit à chaque poste.
+.claude/settings.local.json
+# Skills installées, réinstallables — `skills-lock.json`, lui, EST suivi et
+# suffit à retrouver les mêmes versions.
+.agents/
