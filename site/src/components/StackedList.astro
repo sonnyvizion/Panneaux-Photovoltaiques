@@ -128,18 +128,20 @@ const { rows, image, imageAlt } = Astro.props;
     letter-spacing: var(--text-display-little-tracking);
   }
 
-  /* ⚠️ `body_bull` sur téléphone, `display-little` au-delà — même arbitrage que
-     la carte du bloc éditorial. La maquette pose 22/24 ; sur 390px, trois
-     paragraphes à cette taille font défiler le module sur deux écrans. */
+  /* ⚠️ `body_sm` AUX DEUX TAILLES, pas le `display-little` de la maquette. Celle-
+     ci pose 22/24 : trois paragraphes à ce corps font défiler le module sur deux
+     écrans de téléphone, et sur grand écran ils pèsent autant que le titre
+     qu'ils sont censés développer. Le titre garde `display-little`, seul de sa
+     ligne à ce corps — c'est ce qui fait la hiérarchie. */
   .stacked__card {
     padding: var(--pad-card);
     border-radius: var(--radius-3);
     background: var(--color-white-primary);
-    font-family: var(--text-body-bull-family);
-    font-size: var(--text-body-bull-size);
-    font-weight: var(--text-body-bull-weight);
-    line-height: var(--text-body-bull-line-height);
-    letter-spacing: var(--text-body-bull-tracking);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
   }
 
   .stacked__image {
@@ -161,14 +163,6 @@ const { rows, image, imageAlt } = Astro.props;
     .stacked__media {
       flex: 1;
       min-width: 0;
-    }
-
-    .stacked__card {
-      font-family: var(--text-display-little-family);
-      font-size: var(--text-display-little-size);
-      font-weight: var(--text-display-little-weight);
-      line-height: var(--text-display-little-line-height);
-      letter-spacing: var(--text-display-little-tracking);
     }
 
     /* ⚠️ `height: 100%` ET un parent étiré : c'est la colonne de texte qui
