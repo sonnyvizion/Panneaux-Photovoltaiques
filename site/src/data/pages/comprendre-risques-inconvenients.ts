@@ -63,7 +63,7 @@ export const STACKED_ROWS: StackedRow[] = [
 ];
 
 export const STACKED_ALT =
-  'Vue aérienne d’une maison en brique dont le versant de toit porte des panneaux solaires noirs, entourée de prairies';
+  'Panneaux solaires noirs posés sur le versant d’un toit de tuiles, sous un ciel de nuages';
 
 export const FACTS: Fact[] = [
   { title: "Le déménagement change le calcul", text: "L’installation valorise le bien à la revente, mais la rentabilité prévue ne se réalise pas si vous partez avant le seuil." },

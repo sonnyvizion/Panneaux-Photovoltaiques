@@ -56,7 +56,7 @@ export const STACKED_ROWS: StackedRow[] = [
 ];
 
 export const STACKED_ALT =
-  'Batterie domestique blanche fixée au mur d’un garage clair, l’onduleur et le tableau électrique visibles au fond';
+  'Batterie domestique blanche fixée au mur d’un garage, une étagère de rangement à gauche et une baie vitrée donnant sur une haie à droite';
 
 export const FACTS: Fact[] = [
   { title: "Une rentabilité à part", text: "Plus longue à atteindre que celle des panneaux seuls : elle dépend du prix de l’électricité et de votre profil de consommation." },

@@ -54,9 +54,10 @@ const { rows, image, imageAlt } = Astro.props;
   </ol>
 
   <div class="stacked__media">
-    {/* ⚠️ Le hero de la page, RECADRÉ EN CSS — aucune image n'est produite pour
-        ce module. `object-fit: cover` sur un cadre qui prend la hauteur de la
-        liste retient la bande centrale d'une photo panoramique. */}
+    {/* ⚠️ Une photo DÉDIÉE, livrée en portrait (1360×2048). Le module recadrait
+        auparavant le hero panoramique de la page : `object-fit: cover` retenait
+        alors une bande centrale, ce qui coupait souvent l'objet en deux. Le
+        recadrage reste en place, il n'a simplement plus grand-chose à faire. */}
     <Image
       class="stacked__image"
       src={image}
@@ -187,10 +188,19 @@ const { rows, image, imageAlt } = Astro.props;
       min-width: 0;
     }
 
-    /* ⚠️ `height: 100%` ET un parent étiré : c'est la colonne de texte qui
-       commande la hauteur, la photo la remplit. Sans la hauteur explicite,
-       l'image garde son ratio et laisse un vide sous elle. */
+    /* ⚠️ L'IMAGE EST SORTIE DU FLUX. C'est ce qui empêche sa hauteur naturelle
+       de commander le bloc : les photos livrées sont en portrait (1360×2048),
+       et en flux elles étiraient la rangée à 813px pour une liste qui en fait
+       578 — 235px de vide s'ouvraient sous la dernière carte. Hors flux, le
+       média n'a plus de hauteur propre, il est étiré par la rangée, et c'est la
+       liste qui décide. Le `cover` rogne ce qui dépasse. */
+    .stacked__media {
+      position: relative;
+    }
+
     .stacked__image {
+      position: absolute;
+      inset: 0;
       height: 100%;
       aspect-ratio: auto;
     }

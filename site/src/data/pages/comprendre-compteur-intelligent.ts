@@ -52,7 +52,7 @@ export const STACKED_ROWS: StackedRow[] = [
 ];
 
 export const STACKED_ALT =
-  'Compteur électrique communicant fixé à un mur clair, son écran numérique visible, près d’une baie vitrée';
+  'Compteur électrique communicant blanc fixé à un mur clair, son écran numérique allumé, dans la lumière rasante d’une fenêtre';
 
 export const FACTS: Fact[] = [
   { title: "Sans lui, pas de valorisation", text: "La pose des panneaux reste possible, mais les mécanismes régionaux ne peuvent pas s’activer." },
