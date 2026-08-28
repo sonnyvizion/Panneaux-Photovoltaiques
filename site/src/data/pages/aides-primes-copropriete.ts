@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Contenu de la page « Installation en copropriété »
@@ -47,26 +47,36 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut savoir avant d’en parler en assemblée générale.',
 };
 
-export const FIGURES: Figure[] = [
+/* ⚠️ « À vérifier », « Pas requis », « À définir » : trois cartes chiffres qui
+   ne portaient aucun chiffre — et qui, pire, disaient toutes « ça dépend ».
+   C'était le cas le plus vide du site. Ces trois points forment un ordre de
+   marche : ce qu'il faut obtenir, ce dont on peut se passer, ce qu'il reste à
+   fixer. Une suite, donc la liste empilée. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
   {
-    label: 'Règlement de copropriété',
-    value: 'À vérifier',
-    note: 'il doit autoriser l’installation et la répartition',
-    tone: 'lime',
+    eyebrow: 'RÈGLEMENT DE COPROPRIÉTÉ',
+    title: 'L’accord de l’assemblée d’abord',
+    text:
+      'La toiture est une partie commune — c’est l’assemblée générale qui autorise l’installation, et le règlement de copropriété qui fixe la majorité requise et la répartition de l’électricité produite.',
   },
   {
-    label: 'Permis d’urbanisme',
-    value: 'Pas requis',
-    note: 'si l’aspect extérieur n’est pas modifié visiblement',
-    tone: 'grey',
+    eyebrow: 'PERMIS D’URBANISME',
+    title: 'Pas toujours nécessaire',
+    text:
+      'Les mêmes règles qu’ailleurs s’appliquent : pas de permis si l’installation ne modifie pas l’aspect extérieur visible depuis la rue.',
   },
   {
-    label: 'Répartition',
-    value: 'À définir',
-    note: 'entre copropriétaires participants',
-    tone: 'ink',
+    eyebrow: 'RÉPARTITION',
+    title: 'À définir entre copropriétaires',
+    text:
+      'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun — à fixer dans le règlement avant de lancer le projet.',
   },
 ];
+
+export const STACKED_ALT =
+  'Immeuble en brique de plusieurs étages dont le toit plat est entièrement couvert de panneaux solaires, avec des balcons en façade';
 
 export const FACTS: Fact[] = [
   {

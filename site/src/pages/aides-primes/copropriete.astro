@@ -8,12 +8,13 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/1.11-copropriete-hero.webp';
+import listeImage from '../../assets/pages/1.11-copropriete-liste.webp';
 import Users from '../../assets/icons/copropriete/users.svg';
 import Bolt from '../../assets/icons/copropriete/bolt.svg';
 import FileCertificate from '../../assets/icons/copropriete/file-certificate.svg';
 import Cash from '../../assets/icons/copropriete/cash.svg';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  STACKED_ROWS, STACKED_ALT, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
 } from '../../data/pages/aides-primes-copropriete';
 
@@ -33,7 +34,7 @@ const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} placeholder={MODULE.placeholder} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: listeImage, imageAlt: STACKED_ALT }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent en copropriété." tone="grey" id="faq-copropriete" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
