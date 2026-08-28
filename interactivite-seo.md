@@ -26,6 +26,56 @@
 | Tooltips au tap | Libellés techniques | 3-4 termes jargon : onduleur, kWc, prosumer | Parcimonie (3-4 max) |
 | Carte des aides par région | Sélecteur région | Home + pages aides | Léger, fallback liste |
 
+## Registre des modules — les familles telles qu'elles existent en code
+
+> ⚠️ Ce registre était jusqu'ici une convention **orale** : chaque composant
+> déclarait sa lettre dans son en-tête, sans que la liste existe nulle part. Il
+> fallait grepper « famille » pour savoir laquelle était libre. Le voici.
+
+| Famille | Composant | Ce que c'est |
+|---|---|---|
+| A | `SliderCalculator` | Calculateur à curseur(s) — la formule change, le module non |
+| B | `OptionComparator` | Comparateur multi-options — tableau à colonne mise en évidence |
+| C | `StateToggle` | Bascule à deux états |
+| D | `StepsTimeline` | Timeline de démarches |
+| E | `FigureModule` | Module illustré non interactif — la famille la plus nombreuse |
+| F | `TopicCards` | Grille de cartes-liens (2, 3 ou 4 colonnes) |
+| G | `PhotonFlow` | Schéma animé du trajet de l'énergie |
+| H | `StackedList` | **Liste empilée à média plein** — trois lignes à gauche, une seule photo à droite sur toute la hauteur |
+
+### Famille H — liste empilée à média plein (Figma 700:1813)
+
+Employée sur Batterie, Compteur intelligent et Risques & inconvénients, à la
+place de la grille de cartes de « L'essentiel ».
+
+Chaque ligne : un surtitre en capitales, un titre, et le paragraphe dans sa
+carte blanche. Le tout dans un cadre vert clair, la photo occupant la moitié
+droite sur toute la hauteur.
+
+Quand la choisir plutôt qu'une grille de cartes : quand les trois éléments
+forment un **raisonnement en trois temps** — rôle, impact, installation — et non
+trois objets indépendants.
+
+⚠️ **UNE photo pour toute la liste, jamais une par ligne.** C'est ce qui la
+distingue des cartes photo : là-bas trois objets différents, ici trois facettes
+d'un même sujet. Aucune image n'est produite pour ce module — il recadre le hero
+de la page en CSS.
+
+⚠️ **La photo s'étire, elle ne colle pas.** Une première version la posait en
+`position: sticky`. Mesuré : avec trois lignes le bloc tient dans un écran, il
+n'y a rien à faire défiler, donc rien à coller — la règle était appliquée et
+sans effet. `height: 100%` dans une rangée étirée donne le même résultat visuel
+sans promettre un comportement inexistant.
+
+⚠️ **Pas de filet entre les lignes.** Les cartes blanches suffisent à les
+séparer ; un trait par-dessus marquait deux fois la même coupure.
+
+⚠️ **Deux colonnes à partir de 1024px, pas 768.** En dessous, la colonne de
+texte tombe sous 340px et chaque titre casse sur trois lignes — ce qui annule le
+rythme que le module existe pour créer.
+
+Zéro JavaScript.
+
 ## Verdicts sur les idées initiales
 
 - **Pop-ups au survol** → à convertir en **tooltips au tap** (le survol n'existe pas sur mobile),
