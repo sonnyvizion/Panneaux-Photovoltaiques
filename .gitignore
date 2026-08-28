@@ -36,3 +36,8 @@ npm-debug.log*
 # Skills installées, réinstallables — `skills-lock.json`, lui, EST suivi et
 # suffit à retrouver les mêmes versions.
 .agents/
+# Liens symboliques vers `.agents/skills/`, posés à l'installation. Versionnés,
+# ils pointeraient vers un dossier absent chez les autres.
+# ⚠️ On n'ignore PAS `.claude/` en entier : la config PROJET qu'il accueille
+# (settings.json, commandes) a vocation à être partagée.
+.claude/skills/
