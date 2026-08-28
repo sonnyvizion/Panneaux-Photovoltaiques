@@ -5,9 +5,10 @@ import Section from './Section.astro';
 import SectionHeading from './SectionHeading.astro';
 import Button from './Button.astro';
 import ImagePlaceholder from './ImagePlaceholder.astro';
+import StackedList from './StackedList.astro';
 import type {
   Bridge, EssentialsEditorial, EssentialsPanel, EssentialsTable,
-  Fact, Figure, IconCard, PhotoCard, SectionCopy,
+  Fact, Figure, IconCard, PhotoCard, SectionCopy, StackedRow,
 } from '../data/content';
 
 /**
@@ -49,6 +50,12 @@ interface Props extends SectionCopy {
   photos?: PhotoCard[];
   /** Trois facettes qualitatives. L'icône est résolue par la page. */
   icons?: (IconCard & { icon?: SvgComponent })[];
+  /**
+   * Liste empilée à média fixe — le module de la famille H, posé ici à la place
+   * de la grille de cartes. L'en-tête de section, les cartes conditions et les
+   * ponts restent : seul le tableau de cartes change de forme.
+   */
+  stacked?: { rows: StackedRow[]; image: ImageMetadata; imageAlt: string };
   /** Une vraie comparaison : mêmes critères sur plusieurs objets. */
   table?: EssentialsTable;
   /** Un seul fait et ses conséquences, dans une carte unique. */
@@ -72,7 +79,7 @@ interface Props extends SectionCopy {
 
 const {
   overline, title, intro, figures, facts, bridges,
-  photos = [], icons = [], table, panel, aside = [], editorial,
+  photos = [], icons = [], table, panel, aside = [], editorial, stacked,
 } = Astro.props;
 ---
 
@@ -148,6 +155,10 @@ const {
         ))}
       </ul>
     </div>
+    )}
+
+    {stacked && (
+      <StackedList rows={stacked.rows} image={stacked.image} imageAlt={stacked.imageAlt} />
     )}
 
     {/* Trois facettes d'un même sujet : l'icône remplace la valeur géante. */}

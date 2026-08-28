@@ -112,6 +112,21 @@ export interface EssentialsTable {
 }
 
 /**
+ * Une ligne de la liste empilée — famille H du registre des modules.
+ *
+ * ⚠️ CE N'EST PAS UNE CARTE. Pas de fond, pas de rayon : les lignes sont
+ * séparées par un filet pointillé et rien d'autre. C'est ce qui les fait lire
+ * comme une suite — un raisonnement en trois temps — plutôt que comme trois
+ * objets indépendants posés côte à côte.
+ */
+export interface StackedRow {
+  /** Le mot en capitales, à gauche du titre : rôle, impact, installation… */
+  eyebrow: string;
+  title: string;
+  text: string;
+}
+
+/**
  * Bloc ÉDITORIAL de « L'essentiel » (Figma 699:1140).
  *
  * ⚠️ CELUI-CI REMPLACE L'EN-TÊTE DE SECTION, il ne s'y ajoute pas. Son titre

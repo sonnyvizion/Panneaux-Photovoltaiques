@@ -14,7 +14,7 @@ import heroImage from '../../assets/pages/4.5-compteur-intelligent-hero.webp';
 import ChartBar from '../../assets/icons/compteur-intelligent/chart-bar.svg';
 import Tag from '../../assets/icons/compteur-intelligent/tag.svg';
 import {
-  ICONS, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  STACKED_ROWS, STACKED_ALT, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, TOPICS, TOPICS_COPY,
 } from '../../data/pages/comprendre-compteur-intelligent';
 
@@ -32,7 +32,7 @@ import {
 <BaseLayout title="Compteur intelligent et panneaux solaires : à quoi ça sert | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} icons={ICONS.map((c, i) => ({ ...c, icon: [ChartBar, ShieldLock, Tag][i] }))} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: heroImage, imageAlt: STACKED_ALT }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, Clock, ShieldLock, Ban][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le compteur intelligent." tone="grey" id="faq-compteur-intelligent" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

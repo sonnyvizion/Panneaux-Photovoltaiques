@@ -1,4 +1,4 @@
-import type { Bridge, Fact, FaqItem, Figure, IconCard, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 4.4 — « Batterie domestique » (`/comprendre/batterie`).
@@ -29,17 +29,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Ce qu’une batterie change concrètement.",
 };
 
-/* ⚠️ Rôle, impact et installation sont trois FACETTES d'un même objet, pas
-   trois chiffres ni trois objets à photographier. « Stocker », « Autoconso » et
-   « Par un pro » flottaient en corps 44 comme des statistiques. L'icône tient
-   le repère visuel que la valeur géante tenait mal. */
+/* ⚠️ Rôle, impact et installation forment un raisonnement en trois temps,
+   pas trois objets indépendants. Les cartes icône les posaient côte à côte ;
+   la liste empilée les enchaîne, séparés par un filet et rien d'autre. */
 export const FIGURES: Figure[] = [];
 
-export const ICONS: IconCard[] = [
-  { title: 'Rôle', text: 'Stocker le surplus de journée, pour une consommation différée.' },
-  { title: 'Impact', text: 'Le taux d’autoconsommation augmente sensiblement.' },
-  { title: 'Installation', text: 'Par un professionnel : l’auto-installation est interdite depuis la révision RGIE 2025.' },
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'RÔLE',
+    title: 'Stocker le surplus, pas le perdre',
+    text:
+      'Une batterie domestique conserve l’électricité produite en journée pour la restituer le soir — le surplus qui partait sur le réseau reste chez vous.',
+  },
+  {
+    eyebrow: 'IMPACT',
+    title: 'L’autoconsommation grimpe',
+    text:
+      'Consommer sa propre production plutôt que la revendre au réseau est ce qui change le plus la rentabilité d’une installation solaire.',
+  },
+  {
+    eyebrow: 'INSTALLATION',
+    title: 'Toujours par un professionnel',
+    text:
+      'L’auto-installation d’une batterie domestique est interdite depuis la révision RGIE 2025 — un point à anticiper dans votre budget et votre planning.',
+  },
 ];
+
+export const STACKED_ALT =
+  'Batterie domestique blanche fixée au mur d’un garage clair, l’onduleur et le tableau électrique visibles au fond';
 
 export const FACTS: Fact[] = [
   { title: "Une rentabilité à part", text: "Plus longue à atteindre que celle des panneaux seuls : elle dépend du prix de l’électricité et de votre profil de consommation." },

@@ -1,4 +1,4 @@
-import type { Bridge, Fact, FaqItem, Figure, IconCard, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 4.5 — « Compteur intelligent » (`/comprendre/compteur-intelligent`).
@@ -25,16 +25,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Ce que fait un compteur intelligent.",
 };
 
-/* ⚠️ « Mesurer », « Nécessaire », « Gratuit » : trois facettes du même
-   compteur, aucune n'est un chiffre. Voir le même passage sur la page
-   Batterie — c'est le même défaut, corrigé de la même façon. */
+/* ⚠️ Même raisonnement en trois temps que sur la page Batterie : ce que fait
+   l'appareil, pourquoi il est obligatoire, qui le pose. Une suite, pas un
+   catalogue. */
 export const FIGURES: Figure[] = [];
 
-export const ICONS: IconCard[] = [
-  { title: 'Rôle', text: 'Mesurer séparément la production et la consommation.' },
-  { title: 'Obligation', text: 'Nécessaire pour toute installation raccordée au réseau.' },
-  { title: 'Gestionnaire', text: 'Gratuit : la demande se fait auprès de votre GRD — ORES, RESA, Fluvius ou Sibelga.' },
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'RÔLE',
+    title: 'Mesurer, pas seulement compter',
+    text:
+      'Le compteur intelligent distingue ce que vous consommez de ce que vous injectez sur le réseau — une donnée que l’ancien compteur ne pouvait pas fournir.',
+  },
+  {
+    eyebrow: 'OBLIGATION',
+    title: 'Nécessaire pour toute installation',
+    text:
+      'Sans compteur communicant, les mécanismes régionaux de valorisation (tarif prosumer, tarif d’injection, certificats verts) ne peuvent pas s’activer.',
+  },
+  {
+    eyebrow: 'GESTIONNAIRE',
+    title: 'Gratuit, via votre GRD',
+    text:
+      'La demande et l’installation sont prises en charge par votre gestionnaire de réseau — ORES, RESA, Fluvius ou Sibelga selon votre région.',
+  },
 ];
+
+export const STACKED_ALT =
+  'Compteur électrique communicant fixé à un mur clair, son écran numérique visible, près d’une baie vitrée';
 
 export const FACTS: Fact[] = [
   { title: "Sans lui, pas de valorisation", text: "La pose des panneaux reste possible, mais les mécanismes régionaux ne peuvent pas s’activer." },

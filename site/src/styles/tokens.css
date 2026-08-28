@@ -718,6 +718,12 @@
   --width-editorial-text: 420px;
   --width-editorial-image: 597px;
   --ratio-editorial-image: 597 / 690;
+  /* Liste empilée à média fixe (famille H). La photo tient une colonne étroite
+     et un format vertical : elle accompagne la lecture, elle ne la commande pas.
+     Le décalage haut dégage le header collant (102px) et laisse respirer. */
+  --width-stacked-media: 420px;
+  --ratio-stacked-media: 3 / 4;
+  --top-stacked-media: 118px;
   --gap-table-col: 54px;
   --gap-table-row: 37px;
   /* Part de la carte prise par la photo. La maquette la fait varier de 37 à

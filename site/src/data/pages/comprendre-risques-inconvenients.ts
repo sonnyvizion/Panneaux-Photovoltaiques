@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 4.11 — « Risques & inconvénients » (`/comprendre/risques-inconvenients`).
@@ -33,11 +33,37 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: "Les limites réelles à anticiper.",
 };
 
-export const FIGURES: Figure[] = [
-  { label: "Investissement initial", value: "7-12 ans", note: "plusieurs milliers d’euros, amortis sur cette durée", tone: 'lime' },
-  { label: "Dépendance météo", value: "Variable", note: "selon la saison, l’ensoleillement et l’ombrage", tone: 'grey' },
-  { label: "Toiture", value: "Pas toutes", note: "certaines demandent des travaux, ou une solution adaptée", tone: 'ink' },
+/* ⚠️ ⚠️ « 7-12 ans » disparaît de la mise en avant, et c'est voulu : la carte
+   était étiquetée « Investissement initial » pour une valeur qui donnait une
+   DURÉE. Le libellé annonçait un montant, la valeur répondait autre chose. Le
+   texte dit maintenant les deux sans les confondre.
+
+   « Variable » et « Pas toutes » n'étaient de toute façon pas des chiffres. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'INVESTISSEMENT',
+    title: 'Un coût initial réel',
+    text:
+      'Plusieurs milliers d’euros à avancer, avec un retour sur investissement qui varie fortement selon votre région et votre profil de consommation.',
+  },
+  {
+    eyebrow: 'MÉTÉO',
+    title: 'Une production qui varie',
+    text:
+      'Le rendement dépend de la saison, de l’ensoleillement et de l’ombrage — pas de production stable garantie au jour le jour.',
+  },
+  {
+    eyebrow: 'TOITURE',
+    title: 'Pas toutes compatibles',
+    text:
+      'Orientation défavorable, ombrage important ou structure fragile peuvent limiter ou empêcher une installation standard sur certains toits.',
+  },
 ];
+
+export const STACKED_ALT =
+  'Vue aérienne d’une maison en brique dont le versant de toit porte des panneaux solaires noirs, entourée de prairies';
 
 export const FACTS: Fact[] = [
   { title: "Le déménagement change le calcul", text: "L’installation valorise le bien à la revente, mais la rentabilité prévue ne se réalise pas si vous partez avant le seuil." },
