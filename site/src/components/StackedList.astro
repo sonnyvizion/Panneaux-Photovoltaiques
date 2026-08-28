@@ -78,7 +78,10 @@ const { rows, image, imageAlt } = Astro.props;
     display: flex;
     flex-direction: column-reverse;
     gap: var(--space-3);
-    padding: var(--space-4);
+    /* 16px tant que le module est en une colonne, 32 quand il en prend deux —
+       voir le palier plus bas. Les 32px de la maquette sont dessinés pour la
+       version large ; sur 390px ils prenaient 64px des 358 disponibles. */
+    padding: var(--space-3);
     border-radius: var(--radius-panel);
     background: var(--color-white-clear);
   }
@@ -156,6 +159,7 @@ const { rows, image, imageAlt } = Astro.props;
     .stacked {
       flex-direction: row;
       align-items: stretch;
+      padding: var(--space-4);
     }
 
     /* Moitié-moitié : la liste et la photo pèsent le même poids. */
