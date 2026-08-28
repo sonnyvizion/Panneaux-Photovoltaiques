@@ -1,14 +1,15 @@
 # État du projet — où on en est
 
-> Mis à jour le 25 août 2026. Décrit **l'état réel du code**, pas l'intention.
+> Mis à jour le 28 août 2026. Décrit **l'état réel du code**, pas l'intention.
 > Quand ce document et un doc de cadrage divergent, c'est le code qui a raison —
 > et la divergence est signalée ici.
 
 ## En une phrase
 
 Le front Astro est construit : 58 pages, un simulateur en parcours, un compte
-rendu refondu et un rapport imprimable. **La démo est en ligne**
-(https://belgreen-demo.pages.dev), sans protection d'accès et en `noindex`.
+rendu refondu, un rapport imprimable et une recherche interne. **La démo est en
+ligne** (https://belgreen-demo.pages.dev), sans protection d'accès et en
+`noindex`.
 **Aucun formulaire n'envoie quoi que ce soit** — deux décisions client manquent.
 
 ---
@@ -44,12 +45,14 @@ donnent l'arborescence, pas la réponse : une loupe ferme désormais l'îlot de 
 | `site/src/scripts/scrollLock.ts` | Verrou de défilement partagé et **nommé**, 6 tests |
 | `site/src/components/SearchOverlay.astro` | Le `<dialog>` et ses styles |
 
-**État de livraison au 28 août 2026 : POUSSÉE, PAS ENCORE EN LIGNE.** Le code
-est sur `design-systeme-astro` (commit `d767245`) et la doc de nav sur `main`
-(`e6f7296`). La démo https://belgreen-demo.pages.dev tourne toujours sur la
-version du 25 août, SANS la recherche : le déploiement s'arrête faute de jeton
-Cloudflare dans l'environnement (voir « Le déploiement » plus bas). Un
-`npm run deploy` avec le jeton exporté suffit à la mettre en ligne.
+**En ligne depuis le 28 août 2026** sur https://belgreen-demo.pages.dev (460
+fichiers). Code sur `design-systeme-astro`, doc de nav sur `main` (`e6f7296`).
+
+Vérifié SUR LE SITE DÉPLOYÉ, pas seulement au build : les deux déclencheurs et
+le `<dialog>` sont dans le HTML livré, `search-index.json` répond avec ses 43
+entrées en `Cache-Control: max-age=300` et `X-Robots-Tag: noindex`, rien de la
+recherche n'est chargé au repos, et la recette navigateur passe en ligne — y
+compris le cas Lenis, qui ne se reproduit qu'avec un vrai trackpad sur desktop.
 
 **Coût en performance : nul au chargement.** Le module (5 Ko) et l'index (23 Ko
 brotli) partent en `import()` dynamique au premier clic sur la loupe. Vérifié au
