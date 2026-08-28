@@ -29,6 +29,27 @@ const CACHE = `/fonts/*
   Cache-Control: public, max-age=31536000, immutable
 `;
 
+/* Index de la recherche interne.
+ *
+ * ⚠️ PAS DE CACHE IMMUABLE ICI, contrairement à tout le reste. Polices et
+ * `_astro/*` portent un hachage dans leur nom : un contenu nouveau est un nom
+ * nouveau, donc un an de cache est sans risque. L'index, lui, change à chaque
+ * modification de contenu SOUS UN NOM FIXE — mis en cache un an, la recherche
+ * continuerait de servir l'ancien sitemap des mois après une refonte, et de
+ * renvoyer vers des pages disparues.
+ *
+ * Cinq minutes : assez pour qu'une session de navigation ne le retélécharge
+ * pas, assez court pour qu'un déploiement soit visible tout de suite.
+ *
+ * `X-Robots-Tag` en plus du `Disallow` de robots.txt, pour la même raison que
+ * partout ailleurs dans ce fichier : l'un refuse l'exploration, l'autre
+ * l'indexation, et une URL partagée hors crawl échappe au premier.
+ */
+const SEARCH_INDEX = `/search-index.json
+  Cache-Control: public, max-age=300, must-revalidate
+  X-Robots-Tag: noindex
+`;
+
 const NOINDEX = `# ⚠️ DÉMO — indexation interdite.
 # Pour la production : PUBLIC_INDEXABLE=true npm run build
 /*
@@ -36,7 +57,7 @@ const NOINDEX = `# ⚠️ DÉMO — indexation interdite.
 
 `;
 
-const headers = (INDEXABLE ? '' : NOINDEX) + CACHE;
+const headers = (INDEXABLE ? '' : NOINDEX) + CACHE + '\n' + SEARCH_INDEX;
 const target = join(process.cwd(), 'dist', '_headers');
 
 await writeFile(target, headers, 'utf8');

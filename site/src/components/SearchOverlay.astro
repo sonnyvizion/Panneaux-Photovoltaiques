@@ -1,0 +1,463 @@
+---
+import { PHONE, PRIMARY_CTA } from '../data/site';
+import { POPULAR } from '../data/searchSources';
+
+/**
+ * Recherche interne — la surface, sans son comportement.
+ *
+ * Le site compte ~55 pages et chacune replie ses sous-sections : les méga-menus
+ * donnent l'arborescence, pas la réponse. Cette recherche raccourcit le chemin
+ * « je cherche X » → « je suis sur la page X ».
+ *
+ * ⚠️ UN `<dialog>` NATIF, ET C'EST TOUT L'INTÉRÊT. Il apporte gratuitement ce
+ * qu'un overlay maison rate presque toujours : le piège de focus, l'inertie du
+ * reste de la page, la fermeture par Échap, le retour du focus sur le
+ * déclencheur, et la couche supérieure (« top layer ») — laquelle passe
+ * au-dessus du panneau mobile et du burger épinglé SANS entrer dans la course au
+ * `z-index` du header. Il n'y a donc pas de niveau à ajouter au tableau de
+ * `nav.md` : la couche supérieure n'a pas de rang, elle est au-dessus.
+ *
+ * ⚠️ AUCUN CONTENU D'INDEX ICI. Le markup est vide au rendu ; `searchOverlay.ts`
+ * est chargé en `import()` dynamique au premier clic sur la loupe, et l'index
+ * n'est `fetch()` qu'à ce moment-là. Une page qui ne cherche rien ne paie rien
+ * (règle d'or #1). Les sujets populaires font exception, mais ils sont huit
+ * liens : ils tiennent lieu d'état d'attente sans coûter une requête.
+ */
+---
+
+<dialog class="search" id="site-search" aria-labelledby="search-title">
+  <h2 class="visually-hidden" id="search-title">Rechercher sur le site</h2>
+
+  {/* `role="search"` sur le formulaire, pas sur le dialogue : c'est la zone de
+      saisie qui est un point de repère, pas la fenêtre entière. */}
+  <form class="search__bar" role="search" novalidate>
+    <svg class="search__icon" width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+      <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+      <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    </svg>
+
+    {/* ⚠️ `type="text"` ET NON `type="search"`, malgré les apparences.
+
+        Un champ `type="search"` détourne la touche Échap : tant qu'il contient
+        du texte, Chrome et Safari la consomment pour VIDER LE CHAMP, et elle
+        n'atteint jamais le `<dialog>`. Le visiteur qui a tapé sa question doit
+        alors appuyer deux fois pour refermer, et la première pression a l'air
+        de n'avoir rien fait — le champ se vide sans que la fenêtre bouge.
+        Constaté au navigateur, ce n'est pas une précaution théorique.
+
+        Rien n'est perdu au change : le clavier de recherche mobile vient
+        d'`inputmode`, le libellé de la touche d'entrée d'`enterkeyhint`, et la
+        croix native de `type="search"` était de toute façon retirée en CSS
+        (Safari la dessine à sa façon) au profit du bouton de fermeture.
+
+        ⚠️ La taille du champ est verrouillée à 16px en CSS : en dessous, iOS
+        zoome au focus et la mise en page se déforme sans retour possible. */}
+    <input
+      class="search__input"
+      type="text"
+      name="q"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      inputmode="search"
+      enterkeyhint="search"
+      placeholder="Rechercher une page, une question…"
+      aria-label="Rechercher sur le site"
+      role="combobox"
+      aria-expanded="false"
+      aria-controls="search-results"
+      aria-autocomplete="list"
+      data-search-input
+    />
+
+    <button type="button" class="search__close" data-search-close>
+      <span class="visually-hidden">Fermer la recherche</span>
+      <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <path d="M5 5l10 10M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+    </button>
+  </form>
+
+  {/* ⚠️ `data-lenis-prevent` — SANS LUI LES RÉSULTATS NE DÉFILENT PAS.
+
+      Lenis pilote le défilement de la page au trackpad sur desktop. Quand la
+      recherche est ouverte on le suspend (`stop()` dans `searchOverlay.ts`),
+      sinon la page continue de filer derrière le dialogue. Mais son mode
+      suspendu appelle `preventDefault()` sur CHAQUE molette — ce qui tuerait
+      aussi le défilement natif de cette liste.
+
+      Cet attribut est justement testé AVANT le mode suspendu dans le
+      gestionnaire de Lenis, et en sort sans `preventDefault()`. Les deux sont
+      donc nécessaires et ne se remplacent pas : l'attribut rend la liste
+      défilable, `stop()` fige la page derrière. */}
+  <div class="search__body" data-lenis-prevent>
+    {/* Le nombre de résultats est ANNONCÉ, pas seulement affiché : sans lui, un
+        lecteur d'écran voit le champ se remplir et n'apprend jamais que la liste
+        dessous a changé. */}
+    <p class="visually-hidden" role="status" aria-live="polite" data-search-status></p>
+
+    {/* Avant la première frappe. Un champ vide qui ne propose rien renvoie le
+        visiteur à sa question de départ — or c'est parce qu'il ne savait pas où
+        chercher qu'il a ouvert la loupe. */}
+    <div class="search__intro" data-search-intro>
+      <p class="search__overline">Sujets populaires</p>
+      <ul class="search__chips">
+        {POPULAR.map((topic) => (
+          <li><a class="search__chip" href={topic.href}>{topic.label}</a></li>
+        ))}
+      </ul>
+    </div>
+
+    {/* Raccourci vers le simulateur, épinglé au-dessus des résultats quand la
+        requête demande un CHIFFRE (« combien ça coûte », « rentabilité »). La
+        meilleure réponse n'est alors pas un article, c'est SON estimation —
+        le simulateur est la colonne vertébrale du site (règle d'or #3). */}
+    <a class="search__action" href={PRIMARY_CTA.href} data-search-action hidden>
+      <span class="search__action-label">Obtenir mon estimation</span>
+      <span class="search__action-note">Votre chiffre en quelques questions, sans coordonnées</span>
+      <span class="search__arrow" aria-hidden="true">→</span>
+    </a>
+
+    <ul class="search__results" id="search-results" role="listbox" aria-label="Résultats" data-search-results hidden></ul>
+
+    {/* Jamais un cul-de-sac : même sans résultat, il reste les deux portes du
+        modèle direct — l'estimation et le téléphone (règle d'or #7). */}
+    <div class="search__empty" data-search-empty hidden>
+      <p class="search__empty-title">Aucune page ne correspond à <span data-search-echo></span>.</p>
+      <p class="search__empty-text">
+        Essayez un mot plus court — « prime », « batterie », « toit plat » — ou
+        posez directement votre question à l’équipe.
+      </p>
+      <div class="search__empty-actions">
+        <a class="search__empty-cta" href={PRIMARY_CTA.href}>{PRIMARY_CTA.label}</a>
+        <a class="search__empty-link" href={PHONE.href}>{PHONE.label}</a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* ── La fenêtre ─────────────────────────────────────────────────────────── */
+
+  .search {
+    /* Sur mobile, elle occupe tout : on cherche à une main, le clavier prend la
+       moitié basse, et une carte flottante n'y gagnerait rien. */
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search::backdrop {
+    background: rgba(25, 28, 27, 0.4);
+    backdrop-filter: blur(4px);
+  }
+
+  /* `[open]` et non `.search` : un `<dialog>` fermé est `display: none`, il n'y
+     a rien à animer tant qu'il ne s'ouvre pas. */
+  @media (prefers-reduced-motion: no-preference) {
+    .search[open] {
+      animation: search-in var(--duration-medium) var(--easing-expand);
+    }
+  }
+
+  @keyframes search-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (min-width: 768px) {
+    .search {
+      /* Posée haut plutôt que centrée : la liste grandit vers le bas et la
+         fenêtre ne bouge donc jamais au fil de la frappe. Centrée, elle
+         remonterait à chaque résultat de plus. */
+      width: min(640px, calc(100vw - var(--space-4) * 2));
+      height: auto;
+      max-height: min(70vh, 640px);
+      margin: 12vh auto auto;
+      border-radius: var(--radius-panel);
+      box-shadow: 0 24px 60px rgba(25, 28, 27, 0.18);
+    }
+  }
+
+  /* ── La barre de saisie ─────────────────────────────────────────────────── */
+
+  .search__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3);
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+    /* Elle ne défile pas avec les résultats : le champ reste joignable quelle
+       que soit la longueur de la liste. */
+    flex: none;
+  }
+
+  .search__icon { color: var(--color-text-tertiary); flex: none; }
+
+  .search__input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-family: var(--font-family-body);
+    /* ⚠️ 16px MINIMUM, en dur et non par jeton : iOS zoome sur tout champ sous
+       cette taille, et ne dézoome jamais seul. C'est une contrainte de la
+       plateforme, pas un choix typographique — un jeton la rendrait modifiable
+       par inadvertance. */
+    font-size: 16px;
+    line-height: 1.4;
+  }
+
+  .search__input::placeholder { color: var(--color-text-muted); }
+  .search__input:focus { outline: none; }
+
+  .search__close {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+  }
+
+  /* ── Le corps ───────────────────────────────────────────────────────────── */
+
+  .search__body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--space-3);
+  }
+
+  /* Le bandeau d'annonce (`role="status"`) est en `.visually-hidden`, que
+     `global.css` tient délibérément DANS le flux en `inline-block` — un
+     `position: absolute` y provoquait un défilement horizontal de 2700px sur la
+     home. En tête d'un conteneur en flux, un `inline-block` ouvre une boîte de
+     ligne de pleine hauteur : d'où une bande vide entre la barre et le premier
+     résultat. En bloc, il ne prend plus que son pixel, sans qu'on ait à toucher
+     à l'utilitaire partagé. */
+  .search__body > .visually-hidden {
+    display: block;
+  }
+
+  .search__overline {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-nav-size);
+    color: var(--color-text-tertiary);
+  }
+
+  .search__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .search__chip {
+    display: inline-block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+    color: var(--color-text-primary);
+    text-decoration: none;
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-nav-size);
+    transition: background var(--duration-fast) var(--easing-default);
+  }
+
+  /* `:active` accompagne `:hover` — règle d'or #6, pas d'effet réservé au
+     survol : au doigt, la puce doit réagir aussi. Même appairage que `.btn`. */
+  .search__chip:hover,
+  .search__chip:active {
+    background: var(--color-highlight-primary);
+  }
+
+  /* ⚠️ TOUT BLOC QU'ON MASQUE ET QUI PORTE UN `display` DOIT FIGURER ICI.
+
+     Une déclaration `display` d'auteur l'emporte sur le `[hidden] {display:none}`
+     de la feuille du navigateur, quelle que soit la spécificité — les styles
+     d'auteur passent avant ceux de l'agent utilisateur. `.search__action` porte
+     `display: block` : le raccourci simulateur restait donc affiché en
+     PERMANENCE, y compris sur « voiture » ou « batterie », alors que le script
+     le masquait bien. Vu à l'écran, invisible pour un test qui ne lit que
+     l'attribut.
+
+     Les trois autres n'ont pas de `display` aujourd'hui et fonctionneraient sans
+     cette règle ; ils y sont quand même, pour que l'ajout d'un `display: flex`
+     dans six mois ne ressuscite pas le même défaut en silence. Même liste, même
+     raison que dans `SimulatorWizard.astro`. */
+  .search__action[hidden],
+  .search__results[hidden],
+  .search__intro[hidden],
+  .search__empty[hidden] {
+    display: none;
+  }
+
+  /* ── Les résultats ──────────────────────────────────────────────────────── */
+
+  .search__results {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ⚠️ `:global()` OBLIGATOIRE SUR TOUT CE BLOC — NE PAS « NETTOYER ».
+
+     Astro scope ses styles en réécrivant chaque sélecteur avec un attribut
+     (`[data-astro-cid-…]`) qu'il pose sur le markup AU BUILD. Or ces nœuds-ci
+     n'existent pas au build : `resultNode()` dans `scripts/searchOverlay.ts`
+     les fabrique à chaque frappe avec `document.createElement`, et ils n'ont
+     donc jamais cet attribut. Sans `:global()`, AUCUNE de ces règles ne les
+     atteint — les résultats s'affichent en liens bleus soulignés, les trois
+     lignes collées bout à bout. Constaté à l'écran.
+
+     L'ancêtre `.search__results`, lui, est du markup statique : il reste scopé
+     et retient les règles à l'intérieur du dialogue. C'est le motif employé
+     partout ailleurs dans le projet pour la même raison — voir
+     `SimulatorWizard.astro` (`.wizard__nav :global(.btn)`). */
+  .search__results :global(.search__result) {
+    display: block;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  /* Une seule classe pour le survol ET le parcours au clavier : les deux
+     désignent la même chose — « c'est cette ligne qu'Entrée ouvrira ». Deux
+     traitements distincts feraient croire à deux sélections concurrentes.
+
+     ⚠️ C'est bien UNE SEULE ligne à la fois, et c'est le script qui le garantit :
+     survoler un résultat le rend actif (voir `searchOverlay.ts`). Sans cela, la
+     première ligne — présélectionnée pour qu'Entrée ouvre le meilleur résultat
+     sans toucher aux flèches — gardait son fond pendant qu'on en survolait une
+     autre, et deux lignes paraissaient retenues en même temps.
+
+     Le corollaire compte autant : la ligne mise en avant est TOUJOURS celle
+     qu'Entrée ouvre. Traiter le survol en CSS seul aurait dissocié les deux —
+     on aurait survolé la troisième ligne et ouvert la première. */
+  .search__results :global(.search__result:hover),
+  .search__results :global(.search__result.is-active) {
+    background: var(--color-white-clear);
+  }
+
+  .search__results :global(.search__result-pillar) {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 13px;
+    color: var(--color-text-tertiary);
+  }
+
+  .search__results :global(.search__result-title) {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-family-body);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .search__results :global(.search__result-answer) {
+    margin-top: 4px;
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-sm-size);
+    color: var(--color-text-tertiary);
+    /* Deux lignes : de quoi juger sans transformer la liste en article. */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* ── Le raccourci simulateur ────────────────────────────────────────────── */
+
+  .search__action {
+    display: block;
+    position: relative;
+    margin-bottom: var(--space-2);
+    padding: var(--space-3);
+    padding-right: var(--space-4);
+    border-radius: var(--radius-card);
+    background: var(--color-highlight-primary);
+    color: var(--color-ink-900);
+    text-decoration: none;
+  }
+
+  .search__action-label {
+    display: block;
+    font-family: var(--font-family-body);
+    font-size: 16px;
+    font-weight: var(--font-weight-medium);
+  }
+
+  .search__action-note {
+    display: block;
+    margin-top: 2px;
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-sm-size);
+  }
+
+  .search__arrow {
+    position: absolute;
+    top: 50%;
+    right: var(--space-3);
+    transform: translateY(-50%);
+  }
+
+  /* ── L'état vide ────────────────────────────────────────────────────────── */
+
+  .search__empty-title,
+  .search__empty-text {
+    margin: 0 0 var(--space-2);
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-sm-size);
+  }
+
+  .search__empty-title { font-weight: var(--font-weight-medium); }
+  .search__empty-text { color: var(--color-text-tertiary); }
+
+  .search__empty-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+  }
+
+  .search__empty-cta {
+    display: inline-block;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--color-ink-900);
+    color: var(--color-text-inverted);
+    text-decoration: none;
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-nav-size);
+  }
+
+  .search__empty-link {
+    color: var(--color-text-primary);
+    font-family: var(--font-family-body);
+    font-size: var(--text-body-nav-size);
+  }
+</style>

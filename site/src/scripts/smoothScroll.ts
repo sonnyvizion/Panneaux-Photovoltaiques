@@ -15,6 +15,16 @@
 interface SmoothScroll {
   targetScroll: number;
   scrollTo(target: number, options?: Record<string, unknown>): void;
+  /**
+   * Suspendre / reprendre — pour les surfaces qui couvrent l'écran.
+   *
+   * ⚠️ Un `body { overflow: hidden }` NE SUFFIT PAS à figer la page quand Lenis
+   * tourne : il ne bloque que le défilement natif, alors que Lenis déplace la
+   * page en JavaScript sur les événements de molette. Sans `stop()`, ouvrir un
+   * dialogue laissait le trackpad faire défiler la page derrière lui.
+   */
+  stop(): void;
+  start(): void;
 }
 
 /* Exposée aux défileurs imbriqués qui doivent rendre un geste à la page : leur

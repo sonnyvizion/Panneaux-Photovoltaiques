@@ -45,6 +45,11 @@ Disallow: /rapport
 Disallow: /devis
 Disallow: /etude
 Disallow: /design-system
+
+# Index de la recherche INTERNE. Ce n'est pas une page : il n'a rien à faire
+# dans des résultats Google, où il paraîtrait comme un fichier de texte brut
+# reprenant le contenu du site.
+Disallow: /search-index.json
 `;
 
 export const GET: APIRoute = () =>

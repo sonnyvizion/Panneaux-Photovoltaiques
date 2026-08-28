@@ -21,8 +21,86 @@ rendu refondu et un rapport imprimable. **La démo est en ligne**
 | Le simulateur (parcours de questions) | Fonctionnel, 6 étapes + 5 d'affinage |
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
-| Les calculs | 303 tests verts |
-| Le build de production | 59 pages, ~40 Mo |
+| Les calculs | 333 tests verts |
+| La recherche interne | **Nouveau** — loupe dans la nav, 43 pages indexées |
+| Le build de production | 59 pages + `search-index.json`, ~40 Mo |
+
+---
+
+## La recherche interne (août 2026)
+
+Le site compte ~55 pages qui replient chacune leurs sous-sections. Les méga-menus
+donnent l'arborescence, pas la réponse : une loupe ferme désormais l'îlot de la nav
+(desktop) et ouvre le panneau mobile.
+
+**Ce qui existe**
+
+| Pièce | Rôle |
+|---|---|
+| `site/src/pages/search-index.json.ts` | Génère l'index au build + **garde-fou anti-dérive** |
+| `site/src/data/searchSources.ts` | Jointure `href` → fichier de données, exclusions, sujets populaires |
+| `site/src/scripts/search.ts` | Normalisation, appariement, classement — pur, 24 tests |
+| `site/src/scripts/searchOverlay.ts` | Câblage du dialogue, chargé à la demande |
+| `site/src/scripts/scrollLock.ts` | Verrou de défilement partagé et **nommé**, 6 tests |
+| `site/src/components/SearchOverlay.astro` | Le `<dialog>` et ses styles |
+
+**Coût en performance : nul au chargement.** Le module (5 Ko) et l'index (23 Ko
+brotli) partent en `import()` dynamique au premier clic sur la loupe. Vérifié au
+navigateur : rien ne se charge au repos, tout arrive à l'ouverture.
+
+**Trois pièges rencontrés, corrigés, et qui méritent d'être connus**
+
+1. **`<input type="search">` détourne Échap.** Tant que le champ contient du texte,
+   Chrome et Safari consomment la touche pour VIDER le champ ; elle n'atteint jamais
+   le `<dialog>`. Le visiteur devait appuyer deux fois, et la première pression avait
+   l'air de ne rien faire. → `type="text"` + `inputmode="search"` + `enterkeyhint`,
+   qui donnent le même clavier mobile sans le détournement.
+2. **Échap fermait la recherche ET le panneau mobile.** Le gestionnaire du burger
+   écoutait la touche sans savoir qu'un dialogue était ouvert au-dessus. Or on ouvre
+   la recherche DEPUIS le panneau : on doit revenir au menu. → garde `searchOpen()`
+   sur les gestionnaires du panneau et des méga-menus.
+3. **Lenis faisait défiler la page derrière le dialogue.** Un
+   `body { overflow: hidden }` ne bloque que le défilement NATIF ; Lenis, lui,
+   déplace la page en JavaScript sur les événements de molette et passe donc au
+   travers. Sur trackpad, faire défiler les résultats faisait filer la page
+   floutée derrière. → **deux** mesures, et aucune ne suffit seule :
+   `getSmoothScroll()?.stop()` à l'ouverture fige la page, et
+   `data-lenis-prevent` sur la zone défilante rend la liste défilable — car la
+   branche « suspendu » de Lenis appelle `preventDefault()` sur chaque molette
+   et tuerait aussi le défilement natif de la liste. Vérifié par contre-épreuve :
+   attribut retiré à chaud, la liste ne défile plus.
+4. **Le focus restait piégé dans le dialogue fermé**, sur un champ devenu invisible :
+   la tabulation repartait d'un point invisible et le raccourci `/` cessait de
+   fonctionner (son garde-fou voyait un `<input>` actif). → `blur()` + restitution à
+   l'ouvreur, faite **deux fois** (tout de suite et en `setTimeout`), l'ordre entre
+   notre écouteur et la gestion du navigateur variant d'un moteur à l'autre.
+
+⚠️ **La leçon commune à ces quatre pièges** : mes tests vérifiaient le
+MÉCANISME et non le RÉSULTAT — la classe est-elle posée (le bouton restait
+invisible), `body.style.overflow` vaut-il `hidden` (Lenis passait au travers).
+Sur une surface dont le DOM et le comportement naissent en JavaScript, il faut
+asserter le **style calculé** et envoyer de **vrais événements** (molette,
+souris), jamais lire un attribut. La recette navigateur le fait désormais.
+
+**Ce qui n'est pas indexé, et pourquoi.** On n'indexe que ce qui répond : les pages
+encore en « Page en cours de rédaction » (`/comprendre`, `/aides-primes`,
+`/installation`, `/a-propos`, `/realisations`, `/contact`) sont dans `NOT_INDEXED`
+avec leur raison. **À retirer au fur et à mesure de la rédaction** — c'est une ligne
+par page. `/aides-primes/entreprises` en est absente pour une autre raison : elle est
+`hidden` dans `site.ts` tant que son volet fiscal n'est pas validé, et la recherche
+suit ce drapeau.
+
+**Dette connue**
+
+- **Mesure non câblée.** Aucun analytics n'est installé (voir `stack.md`). Le point de
+  branchement est prévu dans `render()` de `searchOverlay.ts` : le jour où Plausible
+  arrive, envoyer un événement par requête et surtout par **requête sans résultat** —
+  c'est le détecteur de trous de contenu le moins cher du projet.
+- **NL non traité.** L'index est mono-langue. À la bascule FR/NL il en faudra un par
+  langue (`/nl/search-index.json`) — le générateur est à paramétrer, pas à réécrire.
+- **Pas de tolérance aux fautes de frappe.** Le préfixe et une table de synonymes du
+  domaine couvrent l'essentiel sur 43 pages ; une distance d'édition serait à ajouter
+  seulement si les requêtes sans résultat le montrent (d'où le point précédent).
 
 ---
 

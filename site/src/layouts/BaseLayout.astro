@@ -6,6 +6,7 @@ import '../styles/tokens.css';
 import '../styles/fonts.css';
 import '../styles/global.css';
 import NavBar from '../components/NavBar.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
 import Footer from '../components/Footer.astro';
 
 interface Props {
@@ -43,6 +44,11 @@ const { title, noindex = false, transparentHeader = false, bare = false } = Astr
 	</head>
 	<body>
 		{!bare && <NavBar overHero={transparentHeader} />}
+		{/* La recherche vit ici et non dans `NavBar` : elle est ouverte depuis le
+		    header, mais c'est un dialogue de PAGE, pas un morceau de navigation.
+		    Rendue dans la nav, elle aurait hérité de son empilement et de son
+		    repli au défilement. */}
+		{!bare && <SearchOverlay />}
 		<slot />
 		{!bare && <Footer />}
 		{!bare && (

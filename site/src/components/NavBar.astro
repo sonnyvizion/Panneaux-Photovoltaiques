@@ -298,6 +298,34 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
             </div>
           </li>
         ))}
+
+        {/* La loupe FERME l'îlot, après le dernier pilier.
+
+            Elle porte `header__link` par nécessité et non par style :
+            `initNavPill()` collecte ses cibles par `.header__link`, la loupe
+            hérite donc du voile de survol et se comporte comme les autres
+            entrées, sans une ligne de script en plus.
+
+            ⚠️ Rendue INERTE puis révélée par le script (`is-ready`). Sans
+            JavaScript, un bouton de recherche n'ouvrirait rien : mieux vaut
+            qu'il n'apparaisse pas. C'est `visibility` et non `display` — sa
+            place reste réservée, donc les piliers ne se décalent pas quand elle
+            paraît (même parti pris que les méga-menus et le panneau). */}
+        <li class="header__search-item">
+          <button
+            type="button"
+            class="header__link header__search"
+            aria-haspopup="dialog"
+            aria-controls="site-search"
+            data-search-open
+          >
+            <span class="visually-hidden">Rechercher sur le site</span>
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+              <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            </svg>
+          </button>
+        </li>
       </ul>
     </nav>
 
@@ -339,6 +367,27 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
       les méga-menus — un élément qui passe de « non rendu » à « rendu » n'a pas
       d'état de départ, donc pas de transition. */}
   <div class="header__panel" id="header-panel">
+    {/* La recherche OUVRE le panneau, avant même « Accueil ».
+
+        Dessinée comme un champ et non comme une icône : sur mobile le panneau
+        est une liste de destinations, et une loupe seule s'y lirait comme une
+        rubrique de plus. Le faux champ dit ce qu'il fait.
+
+        ⚠️ Ce n'est PAS un `<input>` : la saisie a lieu dans le dialogue, qui se
+        pose par-dessus. Deux champs — un ici, un dans l'overlay — voudraient
+        dire deux états à synchroniser, et sur iOS le clavier s'ouvrirait sur le
+        premier avant que le second ne prenne le focus.
+
+        Même réserve que sur desktop : inerte tant que le script n'a pas
+        confirmé qu'il tourne. */}
+    <button type="button" class="header__panel-search" aria-haspopup="dialog" aria-controls="site-search" data-search-open>
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
+        <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </svg>
+      Rechercher sur le site
+    </button>
+
     <ul class="header__panel-list">
       <li>
         <a href={HOME_LINK.href} class="header__panel-link">{HOME_LINK.label}</a>
@@ -465,6 +514,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     type ScrollDirection,
   } from '../scripts/navScrollState';
   import { initNavPill } from '../scripts/navPill';
+  import { lock, unlock } from '../scripts/scrollLock';
 
   const navList = document.querySelector<HTMLElement>('.header__list');
   if (navList) initNavPill(navList);
@@ -638,6 +688,8 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
 
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape' || !anyMenuOpen()) return;
+    // Même raison que pour le panneau : la recherche ouverte capte l'Échap.
+    if (document.querySelector<HTMLDialogElement>('#site-search')?.open) return;
     // Le focus est peut-être dans le panneau que l'on referme : on le ramène
     // sur l'entrée qui l'ouvrait, sinon il retombe sur le <body> et la
     // tabulation repart du haut de la page.
@@ -676,17 +728,38 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     burger.setAttribute('aria-expanded', String(open));
     panel.classList.toggle('is-open', open);
     if (burgerLabel) burgerLabel.textContent = open ? 'Fermer le menu' : 'Ouvrir le menu';
-    // Le panneau couvre l'écran : sans ce verrou, la page continue de défiler
-    // derrière lui et on la retrouve ailleurs en refermant.
-    document.body.style.overflow = open ? 'hidden' : '';
+
+    /* Le panneau couvre l'écran : sans ce verrou, la page continue de défiler
+       derrière lui et on la retrouve ailleurs en refermant.
+
+       ⚠️ Il passe par le VERROU PARTAGÉ et non par `body.style.overflow` en
+       direct. La recherche s'ouvre depuis ce panneau, donc les deux surfaces
+       sont posées en même temps : écrit en direct, le déverrouillage de la
+       recherche rendrait le défilement au panneau resté ouvert.
+
+       Le nom rend l'opération idempotente — `setPanel(false)` est appelé aussi
+       bien à la fermeture qu'au passage en desktop, parfois sur un panneau déjà
+       fermé, et cela ne coûte rien. Voir `scripts/scrollLock.ts`. */
+    if (open) lock('nav-panel');
+    else unlock('nav-panel');
   };
 
   burger?.addEventListener('click', () => {
     setPanel(burger.getAttribute('aria-expanded') !== 'true');
   });
 
+  /* Un `<dialog>` modal est au-dessus de TOUT, y compris de ce panneau : quand
+     la recherche est ouverte, l'Échap lui appartient. */
+  const searchOpen = () =>
+    document.querySelector<HTMLDialogElement>('#site-search')?.open === true;
+
   document.addEventListener('keydown', (event) => {
     if (event.key !== 'Escape') return;
+    /* ⚠️ Sans ce garde, UNE pression d'Échap refermait les DEUX : la recherche
+       par le comportement natif du dialogue, et le panneau par ici. Or on ouvre
+       la recherche DEPUIS le panneau — on doit revenir au menu, pas se retrouver
+       sur la page. Constaté au navigateur en émulation mobile. */
+    if (searchOpen()) return;
     if (burger?.getAttribute('aria-expanded') !== 'true') return;
     setPanel(false);
     burger.focus();
@@ -697,6 +770,52 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
   window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
     if (event.matches) setPanel(false);
   });
+
+  /* ── Recherche ──────────────────────────────────────────────────────────────
+
+     ⚠️ `import()` DYNAMIQUE, et c'est tout l'enjeu de perf. Le moteur, le
+     câblage de l'overlay et les 23 Ko de l'index ne partent qu'au premier geste
+     de recherche. Un `import` statique en tête de ce fichier les enverrait sur
+     les 55 pages du site, à tous les visiteurs, y compris ceux qui ne cherchent
+     jamais rien (règle d'or #1).
+
+     Ce qui reste ici est le strict minimum : deux écouteurs et un test de
+     touche. */
+  const openSearch = async () => {
+    const module = await import('../scripts/searchOverlay');
+    await module.openSearch();
+  };
+
+  const searchTriggers = document.querySelectorAll<HTMLElement>('[data-search-open]');
+
+  for (const trigger of searchTriggers) {
+    // Révélation : les déclencheurs sont rendus inertes, faute de quoi un
+    // visiteur sans JavaScript verrait un bouton qui n'ouvre rien.
+    trigger.classList.add('is-ready');
+    trigger.addEventListener('click', openSearch);
+  }
+
+  /* Raccourcis desktop. `/` est la convention des sites de contenu, ⌘K celle
+     des palettes — les deux coûtent trois lignes et servent ceux qui cherchent
+     vite. Ils n'existent que si un déclencheur existe. */
+  if (searchTriggers.length > 0) {
+    document.addEventListener('keydown', (event) => {
+      // Jamais pendant une saisie : « / » s'écrit dans un code postal, et le
+      // champ de la recherche elle-même est un champ comme un autre.
+      const target = event.target;
+      const typing =
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
+      if (typing) return;
+
+      const palette = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      if (event.key !== '/' && !palette) return;
+
+      event.preventDefault();
+      void openSearch();
+    });
+  }
 </script>
 
 <style>
@@ -918,6 +1037,35 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     margin: 0;
     padding: var(--pad-badge) var(--pad-button-start);
   }
+
+  /* ── La loupe, dernière entrée de l'îlot ─────────────────────────────────
+     Elle hérite de `.header__link` (couleur, police, chip de survol) et ne
+     redéfinit que ce qui distingue une icône d'un libellé : une boîte carrée,
+     et pas de texte à aligner. */
+  .header__search {
+    justify-content: center;
+    /* Le padding de `.header__link` est horizontal et taillé pour un mot ; une
+       icône seule y flotterait de travers. Rendu symétrique, avec la marge
+       négative correspondante pour ne pas écarter les piliers. */
+    padding: var(--space-2);
+    margin: calc(var(--space-2) * -1);
+    border: 0;
+    background: none;
+    cursor: pointer;
+
+    /* ⚠️ INERTE PAR DÉFAUT, révélée par le script (voir le markup). En
+       `visibility` et non `display` : la place reste tenue, donc les piliers ne
+       bougent pas d'un pixel quand elle paraît — même raisonnement que pour les
+       méga-menus et le panneau, qui ne sont jamais `hidden`. */
+    visibility: hidden;
+  }
+
+  .header__search.is-ready {
+    visibility: visible;
+  }
+
+  /* Elle ne se montre jamais sous 1024px : `.header__nav` y est `display: none`
+     tout entier, et c'est la rangée du panneau qui prend le relais. */
 
   /* ⚠️ Le verre de la pilule vit sur cette couche, et NON sur `.header__list`.
      Un `backdrop-filter` crée un « backdrop root » : ses descendants ne voient
@@ -1746,6 +1894,43 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
     visibility: visible;
     opacity: 1;
     --panel-hide-delay: 0s;
+  }
+
+  /* ── La rangée de recherche, en tête du panneau ──────────────────────────
+     Dessinée comme un champ, pour dire ce qu'elle fait dans une liste qui n'est
+     faite que de destinations. Elle n'apparaît, elle aussi, que si le script
+     tourne — et sa rangée entière disparaît alors, filet compris : un liseré
+     seul en haut du panneau se lirait comme une séparation orpheline. */
+  .header__panel-search {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+    padding: var(--space-3);
+    margin-bottom: var(--space-2);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-pill);
+    background: var(--color-white-primary);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  /* ⚠️ SANS CETTE RÈGLE, LE BOUTON N'APPARAÎT JAMAIS. Il est rendu en
+     `display: none` — comme la loupe desktop est rendue en `visibility: hidden`
+     — pour qu'un visiteur sans JavaScript ne voie pas un déclencheur qui
+     n'ouvre rien. C'est le script qui pose `is-ready`, et c'est donc ici que le
+     bouton reprend sa place.
+
+     Elle avait été perdue lors d'une consolidation de ce bloc : la classe était
+     bien posée par le script, mais plus rien ne la lisait. Le défaut n'était
+     visible qu'à l'œil, sous 1024px. */
+  .header__panel-search.is-ready {
+    display: flex;
   }
 
   .header__panel-list,
