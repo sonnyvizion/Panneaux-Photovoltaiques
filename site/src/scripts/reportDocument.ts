@@ -5,6 +5,7 @@ import { formatCo2 } from './co2';
 import { formatEuro, formatNumber } from './format';
 import { aidesLabel, simulate, type Range, type SimulatorResults } from './simulator';
 import { regionLabel } from './savings';
+import { formatPower } from './powerEstimate';
 
 /**
  * Le rapport, peint à partir des réponses transportées dans l'URL.
@@ -91,6 +92,10 @@ export function initReportDocument(root: ParentNode = document): void {
   });
   const peakNode = doc.querySelector<HTMLElement>('[data-report-peak]');
   if (peakNode) peakNode.textContent = formatNumber(Math.round(peak / 10) * 10);
+  /* Le scénario que les barres dessinent, nommé sous le graphe — sinon elles se
+     lisent comme la borne haute des fourchettes annoncées ailleurs. */
+  const basisNode = doc.querySelector<HTMLElement>('[data-report-basis]');
+  if (basisNode) basisNode.textContent = formatPower(results.kwcTypical);
 
   /* --- Le taux d'autoconsommation réellement retenu --- */
   const rate = doc.querySelector<HTMLElement>('[data-report-rate]');

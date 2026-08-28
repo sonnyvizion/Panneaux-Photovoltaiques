@@ -4,6 +4,7 @@ import { reportHref } from './reportParams';
 import { chase, CHASE_DURATION } from './sliderCalculator';
 import { formatEuro, formatNumber } from './format';
 import { formatCo2 } from './co2';
+import { formatPower } from './powerEstimate';
 import {
   applyRegionToLinks,
   isRegion,
@@ -151,6 +152,7 @@ export function initSimulator(root: ParentNode = document): void {
      est révélée. */
   const outcomes = [...root.querySelectorAll<HTMLElement>('[data-sim-outcome]')];
   const peakOut = root.querySelector<HTMLElement>('[data-sim-peak]');
+  const basisOut = root.querySelector<HTMLElement>('[data-sim-basis]');
   /* ⚠️ `querySelectorAll` : le discours de conversion est rendu DEUX fois — dans
      la carte de la grille et dans la barre flottante. Un `querySelector` n'en
      aurait mis à jour qu'un, et la barre serait restée sur le profil du build. */
@@ -474,6 +476,15 @@ export function initSimulator(root: ParentNode = document): void {
          il annoncerait l'échelle du cas médian du build. Arrondi à la dizaine —
          la précision réelle du modèle ne justifie pas mieux. */
       if (peakOut) peakOut.textContent = formatNumber(Math.round(peak / 10) * 10);
+      /* Le scénario nommé sous le graphe suit le projet, comme le repère :
+         sinon la légende continuerait d'annoncer le cas médian du build alors
+         que les barres, elles, auraient changé de forme.
+
+         ⚠️ PAS DANS L'ANIMATION. `kwcTypical` traverse `zeroed()` et la frame
+         d'interpolation intact (tous deux partent d'un `{...target}`) : c'est
+         voulu. Cette ligne est une LÉGENDE — elle dit de quelle installation
+         on parle — pas une métrique qui doit monter depuis zéro. */
+      if (basisOut) basisOut.textContent = formatPower(current.kwcTypical);
     }
 
     /* ⚠️ UNE SEULE SORTIE VISIBLE. Le profil décide de l'offre : pousser une

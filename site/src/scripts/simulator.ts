@@ -254,6 +254,17 @@ export interface SimulatorResults {
   cost: Range;
   roi: Range | null;
   monthly: number[];
+  /**
+   * La puissance centrale, AVANT mise en fourchette : le scénario que le graphe
+   * mensuel dessine réellement.
+   *
+   * ⚠️ NE PAS la reconstituer par `(kwc.low + kwc.high) / 2`. C'est exact au
+   * build, mais l'animation de révélation arrondit les bornes à l'entier — un
+   * projet à 6,3 kWc afficherait 5 / 8, soit un milieu à 6,5. Le libellé
+   * dériverait pendant l'animation, et nommerait une autre installation que
+   * celle que les barres dessinent.
+   */
+  kwcTypical: number;
   co2Kg: number;
   rate: number;
   consumption: number;
@@ -361,6 +372,7 @@ export function simulate(inputs: SimulatorInputs): SimulatorResults {
         ? null
         : { low: Math.max(1, Math.floor(payback * (1 - width))), high: Math.ceil(payback * (1 + width)) },
     monthly: monthlyProduction(kwc).map((m) => m * factor),
+    kwcTypical: kwc,
     co2Kg: avoidedCo2Kg(kwc) * factor,
     rate,
     consumption,

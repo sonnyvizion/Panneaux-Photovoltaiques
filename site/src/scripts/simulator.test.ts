@@ -102,6 +102,24 @@ describe('le résultat est en fourchettes', () => {
     expect(SPREAD_REFINED).toBeLessThan(SPREAD_QUICK);
     expect(affine.refined).toBe(true);
   });
+
+  /* ⚠️ LE GRAPHE MENSUEL ET SA LÉGENDE DOIVENT PARLER DE LA MÊME INSTALLATION.
+     Les barres sont dessinées sur la puissance centrale ; la légende la nomme
+     (« environ 10 kWc »). Si les deux divergeaient, le graphe illustrerait un
+     projet que le texte n'annonce pas — c'est précisément l'ambiguïté que la
+     ligne de scénario est là pour lever. */
+  it('nomme sous le graphe la puissance que les barres dessinent', () => {
+    for (const inputs of [BASE, { ...BASE, orientation: 'est-ouest', roof: 'plat' }]) {
+      const r = simulate(inputs);
+      expect(r.kwcTypical).toBe(sizedPower(inputs));
+    }
+  });
+
+  it('place le scénario du graphe à l’intérieur de la fourchette annoncée', () => {
+    const r = simulate(BASE);
+    expect(r.kwcTypical).toBeGreaterThan(r.kwc.low);
+    expect(r.kwcTypical).toBeLessThan(r.kwc.high);
+  });
 });
 
 describe('dimensionnement', () => {
@@ -227,6 +245,9 @@ describe('continuité entre le mode rapide et l’affinage', () => {
     expect(mid(refined.savings)).toBeCloseTo(mid(quick.savings), 6);
     expect(mid(refined.production)).toBeCloseTo(mid(quick.production), 6);
     expect(mid(refined.kwc)).toBeCloseTo(mid(quick.kwc), 6);
+    /* La légende du graphe ne bouge pas non plus : affiner resserre, cela ne
+       renomme pas l'installation dont on parle. */
+    expect(refined.kwcTypical).toBeCloseTo(quick.kwcTypical, 6);
     expect(refined.rate).toBe(quick.rate);
 
     /* Seul bénéfice promis, et il est mesurable. */

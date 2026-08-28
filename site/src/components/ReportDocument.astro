@@ -3,7 +3,13 @@ import { Image } from 'astro:assets';
 import Logo from './Logo.astro';
 import PaybackChart from './PaybackChart.astro';
 import enphaseLogo from '../assets/reassurance/enphase-logo.png';
-import { MONTH_LABELS, KWH_PER_KWC_YEAR, POWER_DEFAULT } from '../scripts/powerEstimate';
+import {
+  MONTH_LABELS,
+  KWH_PER_KWC_YEAR,
+  POWER_DEFAULT,
+  SUMMER_WINTER_RATIO,
+  formatPower,
+} from '../scripts/powerEstimate';
 import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
 import {
   ELECTRICITY_PRICE,
@@ -137,7 +143,7 @@ const medianAnswers = new Map(
     <figure class="doc__monthly" data-report-monthly>
       <div class="doc__plot">
         <p class="doc__peak" aria-hidden="true">
-          <span data-report-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+          Pic mensuel estimé&nbsp;: <span data-report-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
         </p>
         <div class="doc__bars" aria-hidden="true">
           {MONTH_LABELS.map((label, index) => (
@@ -148,9 +154,22 @@ const medianAnswers = new Map(
         </div>
       </div>
       <figcaption>
-        Un mois d’été produit environ 5,5 fois plus qu’un mois d’hiver. C’est ce
-        creux qui envoie le surplus d’été au réseau — et pourquoi consommer sa
-        propre production change tout au calcul.
+        {/* ⚠️ LE GRAPHE DESSINE LE CAS CENTRAL, le reste du rapport parle en
+            fourchettes. Le scénario se nomme, sinon les barres se lisent comme
+            la borne haute. Même correction qu'à l'écran. */}
+        <p class="doc__basis">
+          Profil mensuel basé sur une installation intermédiaire d’environ{' '}
+          <span data-report-basis>{formatPower(initial.kwcTypical)}</span>.
+        </p>
+        {/* ⚠️ C'EST LA BOSSE D'ÉTÉ qui envoie le surplus au réseau, pas le
+            creux d'hiver — la version précédente disait l'inverse. */}
+        <p>
+          Un mois d’été produit environ {SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois
+          plus qu’un mois d’hiver. En été, la production peut dépasser la
+          consommation instantanée du bâtiment&nbsp;: le surplus est alors
+          injecté sur le réseau. Plus vous autoconsommez votre production, plus
+          l’installation est rentable.
+        </p>
       </figcaption>
     </figure>
   </section>
@@ -378,6 +397,18 @@ const medianAnswers = new Map(
     font-family: var(--text-body-sm-family);
     font-size: var(--text-micro-size);
     line-height: 1;
+  }
+
+  /* Deux paragraphes dans la légende : rythme explicite, marges par défaut
+     neutralisées. Les deux autres sélecteurs du groupe ne sont pas concernés. */
+  .doc__monthly figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .doc__monthly figcaption p {
+    margin: 0;
   }
 
   .doc__monthly figcaption,

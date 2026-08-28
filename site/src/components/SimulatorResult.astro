@@ -2,7 +2,12 @@
 import { Image } from 'astro:assets';
 import Button from './Button.astro';
 import enphaseLogo from '../assets/reassurance/enphase-logo.png';
-import { MONTH_LABELS, KWH_PER_KWC_YEAR } from '../scripts/powerEstimate';
+import {
+  MONTH_LABELS,
+  KWH_PER_KWC_YEAR,
+  SUMMER_WINTER_RATIO,
+  formatPower,
+} from '../scripts/powerEstimate';
 import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
 import {
   ELECTRICITY_PRICE,
@@ -262,7 +267,7 @@ const OUTCOMES = [
               Un seul repère suffit — une graduation fine promettrait une
               précision que l'estimation n'a pas. */}
           <p class="result__peak">
-            <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+            Pic mensuel estimé&nbsp;: <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
           </p>
           {/* ⚠️ DEUX BOUCLES, PAS UNE. Les étiquettes étaient posées en absolu
               SOUS les barres, ce qui obligeait à réserver leur place avec un
@@ -280,9 +285,25 @@ const OUTCOMES = [
             ))}
           </div>
           <figcaption>
-            Un mois d’été produit environ 5,5 fois plus qu’un mois d’hiver. C’est
-            ce creux qui envoie le surplus d’été au réseau — et pourquoi consommer
-            sa propre production change tout au calcul.
+            {/* ⚠️ LE GRAPHE DESSINE LE CAS CENTRAL, le texte à côté annonce une
+                fourchette ±20 %. Sans cette ligne, rien ne dit au visiteur que
+                les barres illustrent le MILIEU de la fourchette — il les lit
+                comme la borne haute. Le scénario se nomme. */}
+            <p class="result__basis">
+              Profil mensuel basé sur une installation intermédiaire d’environ{' '}
+              <span data-sim-basis>{formatPower(initial.kwcTypical)}</span>.
+            </p>
+            {/* ⚠️ C'EST LA BOSSE D'ÉTÉ qui envoie le surplus au réseau, pas le
+                creux d'hiver. La version précédente disait littéralement
+                l'inverse du mécanisme — le commentaire d'intention plus haut
+                dit, lui, la bonne chose : c'est l'ÉCART qui explique le surplus. */}
+            <p>
+              Un mois d’été produit environ {SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois
+              plus qu’un mois d’hiver. En été, la production peut dépasser la
+              consommation instantanée du bâtiment&nbsp;: le surplus est alors
+              injecté sur le réseau. Plus vous autoconsommez votre production,
+              plus l’installation est rentable.
+            </p>
           </figcaption>
         </figure>
       </section>
@@ -830,11 +851,20 @@ const OUTCOMES = [
     display: none;
   }
 
+  /* Deux paragraphes : le scénario, puis l'explication. Le `gap` les sépare
+     sans marge par défaut du navigateur, qui casserait le rythme de la carte. */
   .result__chart figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
     color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
     font-size: var(--text-body-sm-size);
     line-height: var(--text-body-sm-line-height);
+  }
+
+  .result__chart figcaption p {
+    margin: 0;
   }
 
   /* --- La conversion --- */
