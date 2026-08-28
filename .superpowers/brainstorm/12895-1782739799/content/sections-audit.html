@@ -1,0 +1,84 @@
+<style>
+  .section-list { display: flex; flex-direction: column; gap: 10px; max-width: 720px; margin: 0 auto; }
+  .section-row { display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 10px; border: 1.5px solid #2a2a3a; background: #16161f; }
+  .section-row.changed { border-color: #f59e0b; background: #1e1a10; }
+  .section-row.removed { border-color: #ef4444; background: #1e1010; opacity: 0.8; }
+  .section-row.added { border-color: #10b981; background: #101e17; }
+  .badge { font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
+  .badge.changed { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; }
+  .badge.removed { background: #ef444422; color: #ef4444; border: 1px solid #ef444444; }
+  .badge.kept { background: #6366f122; color: #818cf8; border: 1px solid #6366f144; }
+  .badge.unknown { background: #6b728022; color: #9ca3af; border: 1px solid #6b728044; }
+  .num { font-size: 13px; color: #6b7280; font-weight: 600; min-width: 24px; }
+  .section-name { font-weight: 600; font-size: 14px; color: #e5e7eb; flex: 1; }
+  .section-note { font-size: 12px; color: #9ca3af; margin-left: auto; }
+  .legend { display: flex; gap: 16px; margin-bottom: 24px; font-size: 12px; color: #9ca3af; flex-wrap: wrap; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+</style>
+
+<h2>Structure actuelle de la home — audit des sections</h2>
+<p class="subtitle">Ce que je sais déjà depuis ta maquette. Dis-moi dans le terminal ce qui reste à changer.</p>
+
+<div class="legend">
+  <span><span class="dot" style="background:#818cf8;"></span>Inchangé</span>
+  <span><span class="dot" style="background:#f59e0b;"></span>Modifié</span>
+  <span><span class="dot" style="background:#ef4444;"></span>Supprimé</span>
+  <span><span class="dot" style="background:#6b7280;"></span>À confirmer</span>
+</div>
+
+<div class="section-list">
+  <div class="section-row changed">
+    <span class="num">01</span>
+    <span class="section-name">Hero — amorce code postal</span>
+    <span class="badge changed">Modifié</span>
+    <span class="section-note">Full-bleed photo centré · nouveau sous-titre · "Résultat en 2 min"</span>
+  </div>
+  <div class="section-row">
+    <span class="num">02</span>
+    <span class="section-name">Réassurance — 4 chiffres clés</span>
+    <span class="badge kept">À confirmer</span>
+    <span class="section-note">2 400+ instal. · 4.8/5 · 89% rent. · Certifié Enphase</span>
+  </div>
+  <div class="section-row removed">
+    <span class="num">03</span>
+    <span class="section-name">Mini-simulateur (4 questions inline)</span>
+    <span class="badge removed">Supprimé</span>
+    <span class="section-note">Confirmé — le simulateur vit sur /simulateur uniquement</span>
+  </div>
+  <div class="section-row">
+    <span class="num">04</span>
+    <span class="section-name">Pourquoi une estimation ?</span>
+    <span class="badge unknown">À confirmer</span>
+    <span class="section-note">Région · Consommation · Toiture</span>
+  </div>
+  <div class="section-row">
+    <span class="num">05</span>
+    <span class="section-name">Ce que révèle votre estimation</span>
+    <span class="badge unknown">À confirmer</span>
+    <span class="section-note">5 points : économies · budget · aides · ROI · production</span>
+  </div>
+  <div class="section-row">
+    <span class="num">06</span>
+    <span class="section-name">Comment ça marche ?</span>
+    <span class="badge unknown">À confirmer</span>
+    <span class="section-note">3 étapes : questions → estimation → expert</span>
+  </div>
+  <div class="section-row">
+    <span class="num">07</span>
+    <span class="section-name">Témoignages</span>
+    <span class="badge unknown">À confirmer</span>
+    <span class="section-note">Carrousel mobile · 2-3 cartes desktop</span>
+  </div>
+  <div class="section-row">
+    <span class="num">08</span>
+    <span class="section-name">Aides par région</span>
+    <span class="badge unknown">À confirmer</span>
+    <span class="section-note">Tabs : Bruxelles · Wallonie · Flandre</span>
+  </div>
+  <div class="section-row">
+    <span class="num">09</span>
+    <span class="section-name">CTA final</span>
+    <span class="badge kept">À confirmer</span>
+    <span class="section-note">Fond plein · anti-intermédiaire · "Faire mon estimation"</span>
+  </div>
+</div>

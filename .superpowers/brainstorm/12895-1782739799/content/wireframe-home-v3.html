@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Home v3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f17; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px 16px 60px; }
+
+  h1.page-title { font-size: 18px; color: #818cf8; font-weight: 700; margin-bottom: 4px; }
+  p.page-sub { font-size: 13px; color: #6b7280; margin-bottom: 28px; }
+
+  .wf-section { margin-bottom: 10px; border-radius: 12px; overflow: hidden; }
+  .wf-section-header { padding: 9px 14px; display: flex; align-items: center; gap: 10px; }
+  .section-num { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; color: white; }
+  .section-title { font-size: 12px; font-weight: 700; color: #f9fafb; }
+  .section-note { font-size: 10px; color: #6b7280; margin-left: auto; }
+  .wf-body { padding: 14px 14px 18px; }
+
+  /* Color themes per section */
+  .s1 .wf-section-header { background: #1a1a2e; } .s1 .section-num { background: #6366f1; } .s1 .wf-body { background: #131320; border: 1.5px solid #6366f122; border-top: none; border-radius: 0 0 12px 12px; }
+  .s2 .wf-section-header { background: #181f2e; } .s2 .section-num { background: #3b82f6; } .s2 .wf-body { background: #13161f; border: 1.5px solid #3b82f622; border-top: none; border-radius: 0 0 12px 12px; }
+  .s3 .wf-section-header { background: #1e1a10; } .s3 .section-num { background: #f59e0b; color: #0f0f17; } .s3 .wf-body { background: #1a170e; border: 1.5px solid #f59e0b22; border-top: none; border-radius: 0 0 12px 12px; }
+  .s4 .wf-section-header { background: #181e18; } .s4 .section-num { background: #10b981; } .s4 .wf-body { background: #131a14; border: 1.5px solid #10b98122; border-top: none; border-radius: 0 0 12px 12px; }
+  .s5 .wf-section-header { background: #1e181a; } .s5 .section-num { background: #ec4899; } .s5 .wf-body { background: #1a1216; border: 1.5px solid #ec489922; border-top: none; border-radius: 0 0 12px 12px; }
+  .s6 .wf-section-header { background: #1a1a10; } .s6 .section-num { background: #eab308; color: #0f0f17; } .s6 .wf-body { background: #181710; border: 1.5px solid #eab30822; border-top: none; border-radius: 0 0 12px 12px; }
+  .s7 .wf-section-header { background: #1e1010; } .s7 .section-num { background: #ef4444; } .s7 .wf-body { background: #1a0e0e; border: 1.5px solid #ef444422; border-top: none; border-radius: 0 0 12px 12px; }
+
+  /* Nav */
+  .wf-nav { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #111118; border: 1.5px solid #1e1e2e; border-radius: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+  .wf-nav-logo { font-size: 12px; font-weight: 800; color: #f9fafb; margin-right: auto; }
+  .wf-nav-item { font-size: 10px; color: #9ca3af; }
+  .wf-nav-cta { font-size: 10px; font-weight: 700; padding: 5px 14px; background: #6366f122; border: 1.5px solid #6366f1; border-radius: 20px; color: #818cf8; }
+
+  /* Shared elements */
+  .wf-photo { background: #1e1e2e; border: 1.5px dashed #374151; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 11px; flex-direction: column; gap: 4px; }
+  .wf-h1 { font-size: 14px; font-weight: 800; color: #f9fafb; line-height: 1.45; }
+  .wf-sub { font-size: 11px; color: #9ca3af; margin-top: 5px; line-height: 1.5; }
+  .wf-input { background: #ffffff18; border: 1.5px solid #ffffff30; border-radius: 40px; padding: 9px 16px; font-size: 11px; color: #6b7280; letter-spacing: .05em; }
+  .wf-btn { background: #34d399; color: #064e3b; font-size: 11px; font-weight: 800; padding: 9px 18px; border-radius: 40px; display: inline-block; white-space: nowrap; }
+  .wf-btn.sec { background: transparent; color: #34d399; border: 1.5px solid #34d399; }
+  .wf-trust { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+  .wf-trust span { font-size: 10px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
+  .wf-trust span::before { content: '✓'; color: #34d399; font-weight: 800; }
+  .wf-link { font-size: 10px; color: #818cf8; text-decoration: underline; margin-top: 7px; display: block; }
+  .anno { font-size: 10px; color: #6b7280; font-style: italic; }
+  .row { display: flex; gap: 8px; }
+  .card { flex: 1; background: #1e1e2e; border: 1.5px solid #2d2d3e; border-radius: 10px; padding: 12px 10px; }
+  .card .ico { font-size: 18px; margin-bottom: 6px; }
+  .card strong { font-size: 11px; color: #f9fafb; display: block; margin-bottom: 3px; }
+  .card span { font-size: 10px; color: #9ca3af; line-height: 1.4; display: block; }
+  .card a { font-size: 10px; color: #818cf8; text-decoration: underline; margin-top: 6px; display: block; }
+  .metric-row { display: flex; gap: 8px; }
+  .metric { flex: 1; background: #1e1e2e; border: 1.5px solid #2d2d3e; border-radius: 10px; padding: 10px 8px; text-align: center; }
+  .metric .val { font-size: 15px; font-weight: 800; color: #f9fafb; }
+  .metric .lbl { font-size: 9px; color: #9ca3af; margin-top: 2px; line-height: 1.3; }
+  .step { display: flex; gap: 10px; align-items: flex-start; padding: 10px; background: #1e1e2e; border: 1.5px solid #2d2d3e; border-radius: 10px; }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #ec4899; color: white; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+  .step strong { font-size: 12px; color: #f9fafb; display: block; margin-bottom: 2px; }
+  .step span { font-size: 10px; color: #9ca3af; }
+  .steps { display: flex; flex-direction: column; gap: 7px; }
+  .quote-card { background: #1e1e2e; border: 1.5px solid #2d2d3e; border-radius: 10px; padding: 12px; margin-bottom: 8px; }
+  .stars { color: #eab308; font-size: 13px; margin-bottom: 5px; }
+  .quote-text { font-size: 11px; color: #d1d5db; font-style: italic; line-height: 1.55; }
+  .quote-author { font-size: 10px; color: #9ca3af; margin-top: 5px; }
+  .cta-box { background: linear-gradient(135deg, #1a0e0e, #1e101a); border: 1.5px solid #ef444433; border-radius: 10px; padding: 20px 16px; text-align: center; }
+  .cta-box h3 { font-size: 14px; font-weight: 800; color: #f9fafb; margin-bottom: 6px; line-height: 1.4; }
+  .cta-box p { font-size: 11px; color: #9ca3af; margin-bottom: 14px; line-height: 1.5; }
+  .cta-box .fine { font-size: 10px; color: #6b7280; margin-top: 8px; }
+  .section-label { font-size: 10px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 10px; }
+  .divider { border: none; border-top: 1.5px dashed #1f2937; margin: 12px 0; }
+  .badge { display: inline-block; font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+  .badge.new { background: #10b98122; color: #10b981; border: 1px solid #10b98144; }
+  .badge.moved { background: #f59e0b22; color: #f59e0b; border: 1px solid #f59e0b44; }
+  .badge.merged { background: #a855f722; color: #a855f7; border: 1px solid #a855f744; }
+  .badge.removed { background: #ef444422; color: #ef4444; border: 1px solid #ef444444; }
+  .team-block { background: #1e1e2e; border: 1.5px solid #2d2d3e; border-radius: 10px; padding: 12px; }
+  .team-photo { background: #2a2a3e; border: 1.5px dashed #374151; border-radius: 8px; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #6b7280; margin-bottom: 10px; }
+  .enphase-badge { display: inline-flex; align-items: center; gap: 6px; background: #1e2a1e; border: 1.5px solid #10b98144; border-radius: 8px; padding: 6px 10px; font-size: 10px; color: #10b981; font-weight: 700; margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Wireframe Home — v3</h1>
+<p class="page-sub">7 sections · Mini-simulateur supprimé · Pont encyclopédique · Section équipe</p>
+
+<!-- NAV -->
+<div class="wf-nav">
+  <span class="wf-nav-logo">Belgreen / Belectric</span>
+  <span class="wf-nav-item">Comprendre</span>
+  <span class="wf-nav-item">Rentabilité & Prix</span>
+  <span class="wf-nav-item">Aides & primes</span>
+  <span class="wf-nav-item">Installation</span>
+  <span class="wf-nav-cta">Mon estimation →</span>
+</div>
+
+<!-- S1 — HERO -->
+<div class="wf-section s1">
+  <div class="wf-section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Hero — amorce code postal</span>
+    <span class="section-note">Full-bleed · centré · photo toit</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-photo" style="height: 190px; margin-bottom: 12px;">
+      <span style="font-size:28px;">🏠☀️</span>
+      <span>Photo toit + panneaux + installateurs</span>
+      <span class="anno">Overlay dégradé sombre pour lisibilité</span>
+    </div>
+    <div class="wf-h1">"Les panneaux solaires sont-ils<br>rentables pour votre maison ?"</div>
+    <p class="wf-sub">Production, coût, économies, primes de votre région : votre estimation sur mesure, sans laisser vos coordonnées.</p>
+    <div style="display:flex; gap:8px; margin-top:14px; align-items:center; flex-wrap: wrap;">
+      <div class="wf-input" style="flex:1; min-width:140px;">VOTRE CODE POSTAL</div>
+      <div class="wf-btn">Je lance mon estimation →</div>
+    </div>
+    <a class="wf-link">Pour adapter le calcul à votre région et vos primes. En savoir plus ?</a>
+    <div class="wf-trust">
+      <span>Gratuit</span>
+      <span>Sans engagement</span>
+      <span>Résultat en 2 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2 — RÉASSURANCE -->
+<div class="wf-section s2">
+  <div class="wf-section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Réassurance — chiffres clés</span>
+    <span class="section-note">4 metrics + badge Enphase</span>
+  </div>
+  <div class="wf-body">
+    <div class="metric-row">
+      <div class="metric"><div class="val">2 400+</div><div class="lbl">installations réalisées</div></div>
+      <div class="metric"><div class="val">4.8/5</div><div class="lbl">satisfaction client</div></div>
+      <div class="metric"><div class="val">89%</div><div class="lbl">rentable en moyenne</div></div>
+      <div class="metric" style="border-color:#6366f133;"><div class="val" style="font-size:11px;">⚡ Certifié</div><div class="lbl">Enphase</div></div>
+    </div>
+    <p class="anno" style="margin-top:8px; text-align:center;">Zone d'intervention : Bruxelles & périphérie</p>
+  </div>
+</div>
+
+<!-- S3 — PONT ENCYCLOPÉDIQUE -->
+<div class="wf-section s3">
+  <div class="wf-section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Pont encyclopédique — 4 thèmes &nbsp;<span class="badge new">Nouveau</span></span>
+  </div>
+  <div class="wf-body">
+    <p class="section-label">Tout ce que vous devez savoir</p>
+    <div class="row" style="flex-wrap: wrap; gap: 8px;">
+      <div class="card" style="min-width: 130px;">
+        <div class="ico">🔋</div>
+        <strong>Comment ça fonctionne</strong>
+        <span>Du panneau à la prise : comprendre le système en 5 minutes.</span>
+        <a>Comprendre →</a>
+      </div>
+      <div class="card" style="min-width: 130px;">
+        <div class="ico">💶</div>
+        <strong>Rentabilité & coûts</strong>
+        <span>Prix, économies, retour sur investissement selon votre profil.</span>
+        <a>Calculer →</a>
+      </div>
+      <div class="card" style="min-width: 130px;">
+        <div class="ico">🏛️</div>
+        <strong>Aides & primes</strong>
+        <span>Ce à quoi vous avez droit selon votre région belge.</span>
+        <a>Voir les aides →</a>
+      </div>
+      <div class="card" style="min-width: 130px;">
+        <div class="ico">🔧</div>
+        <strong>L'installation</strong>
+        <span>Délais, démarches, ce que ça implique concrètement.</span>
+        <a>En savoir plus →</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 — ÉQUIPE -->
+<div class="wf-section s4">
+  <div class="wf-section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">L'équipe &nbsp;<span class="badge new">Nouveau</span></span>
+    <span class="section-note">Sobre · anti-intermédiaire</span>
+  </div>
+  <div class="wf-body">
+    <div class="team-block">
+      <div class="team-photo">📸 Photo équipe / chantier réel</div>
+      <strong style="font-size: 13px; color: #f9fafb; display:block; margin-bottom:6px;">"Vous parlez directement à l'équipe qui installe."</strong>
+      <p style="font-size: 11px; color: #9ca3af; line-height: 1.6;">
+        Belgreen / Belectric, c'est une équipe d'installateurs basée à Bruxelles.
+        Pas d'intermédiaire, pas de revente de vos données.
+        Quand vous demandez un devis, c'est nous qui répondons — et nous qui venons chez vous.
+      </p>
+      <div class="enphase-badge">⚡ Installateur certifié Enphase</div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 — COMMENT ÇA MARCHE -->
+<div class="wf-section s5">
+  <div class="wf-section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">Comment ça marche ? &nbsp;<span class="badge moved">Allégé</span></span>
+    <span class="section-note">3 étapes · focus parcours client</span>
+  </div>
+  <div class="wf-body">
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <strong>Je renseigne ma maison</strong>
+          <span>Code postal · consommation · orientation du toit — en 2 minutes</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <strong>Je reçois mon estimation personnalisée</strong>
+          <span>Fourchette d'économies · budget estimé · aides de ma région · ROI</span>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <strong>Un expert analyse mon toit — gratuitement</strong>
+          <span>Rendez-vous direct avec l'installateur · chiffrage précis · sans engagement</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top: 14px;">
+      <div class="wf-btn" style="display:inline-block;">Faire mon estimation →</div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 — TÉMOIGNAGES -->
+<div class="wf-section s6">
+  <div class="wf-section-header">
+    <span class="section-num">06</span>
+    <span class="section-title">Témoignages</span>
+    <span class="section-note">Carrousel mobile · 2-3 cartes desktop</span>
+  </div>
+  <div class="wf-body">
+    <p class="section-label" style="margin-bottom:10px;">Ils ont franchi le pas</p>
+    <div class="quote-card">
+      <div class="stars">★★★★★</div>
+      <p class="quote-text">"Résultat reçu en 2 minutes, l'équipe a pris rendez-vous rapidement. Très professionnel."</p>
+      <p class="quote-author">— Marie V., Ixelles</p>
+    </div>
+    <div class="quote-card">
+      <div class="stars">★★★★★</div>
+      <p class="quote-text">"J'étais sceptique mais l'estimation était proche du devis final. Maintenant rentabilisé en 8 ans."</p>
+      <p class="quote-author">— Thomas D., Waterloo</p>
+    </div>
+    <p class="anno" style="text-align:center; margin-top:8px;">[ ● ○ ○ ] swipe mobile</p>
+  </div>
+</div>
+
+<!-- S7 — CTA FINAL -->
+<div class="wf-section s7">
+  <div class="wf-section-header">
+    <span class="section-num">07</span>
+    <span class="section-title">CTA Final</span>
+    <span class="section-note">Fond contrasté · anti-intermédiaire</span>
+  </div>
+  <div class="wf-body">
+    <div class="cta-box">
+      <h3>"Prêt à savoir si le solaire<br>est fait pour vous ?"</h3>
+      <p>Vous parlez directement à l'équipe qui installe.<br>Pas d'intermédiaire. Pas de revente de données.</p>
+      <div class="wf-btn" style="display:inline-block;">Faire mon estimation →</div>
+      <p class="fine">Gratuit · Sans engagement</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

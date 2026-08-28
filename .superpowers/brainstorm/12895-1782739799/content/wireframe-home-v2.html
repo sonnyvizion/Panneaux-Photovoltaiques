@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Home v2</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f17; color: #e5e7eb; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; padding: 24px 16px 60px; }
+
+  h1.page-title { font-size: 18px; color: #818cf8; font-weight: 700; margin-bottom: 6px; }
+  p.page-sub { font-size: 13px; color: #6b7280; margin-bottom: 32px; }
+
+  .split { display: flex; gap: 24px; align-items: flex-start; }
+  .col { flex: 1; }
+  .col-label { font-size: 11px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 12px; }
+
+  /* Section wrapper */
+  .wf-section { margin-bottom: 10px; border-radius: 10px; overflow: hidden; }
+  .wf-section-header { padding: 8px 14px; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; }
+  .section-num { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+  .section-title { font-size: 12px; font-weight: 700; }
+  .section-badge { font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-left: auto; }
+  .wf-body { padding: 12px 14px 16px; }
+
+  /* Section colors */
+  .s-hero .wf-section-header { background: #1a1a2e; }
+  .s-hero .section-num { background: #6366f1; color: white; }
+  .s-hero .wf-body { background: #13132060; border: 1.5px solid #6366f133; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-reassurance .wf-section-header { background: #1a1f2e; }
+  .s-reassurance .section-num { background: #3b82f6; color: white; }
+  .s-reassurance .wf-body { background: #13161f; border: 1.5px solid #3b82f633; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-comment .wf-section-header { background: #1a2a1e; }
+  .s-comment .section-num { background: #10b981; color: white; }
+  .s-comment .wf-body { background: #13201a; border: 1.5px solid #10b98133; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-obtenir .wf-section-header { background: #2a1a2e; }
+  .s-obtenir .section-num { background: #a855f7; color: white; }
+  .s-obtenir .wf-body { background: #1e1320; border: 1.5px solid #a855f733; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-temoignages .wf-section-header { background: #2a2218; }
+  .s-temoignages .section-num { background: #f59e0b; color: #0f0f17; }
+  .s-temoignages .wf-body { background: #1e1b12; border: 1.5px solid #f59e0b33; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-aides .wf-section-header { background: #182a22; }
+  .s-aides .section-num { background: #06b6d4; color: white; }
+  .s-aides .wf-body { background: #12201a; border: 1.5px solid #06b6d433; border-top: none; border-radius: 0 0 10px 10px; }
+
+  .s-cta .wf-section-header { background: #1f1318; }
+  .s-cta .section-num { background: #ef4444; color: white; }
+  .s-cta .wf-body { background: #1a1015; border: 1.5px solid #ef444433; border-top: none; border-radius: 0 0 10px 10px; }
+
+  /* Wireframe elements */
+  .wf-photo { background: #232336; border: 1.5px dashed #4b5563; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #6b7280; font-size: 11px; }
+  .wf-block { background: #1e1e2e; border: 1.5px solid #374151; border-radius: 6px; padding: 8px 12px; font-size: 12px; color: #9ca3af; }
+  .wf-block.dark { background: #2a2a3e; }
+  .wf-h1 { font-size: 13px; font-weight: 700; color: #f9fafb; line-height: 1.4; }
+  .wf-sub { font-size: 11px; color: #9ca3af; margin-top: 4px; }
+  .wf-input { background: #2d2d3d; border: 1.5px solid #4b5563; border-radius: 20px; padding: 8px 14px; font-size: 11px; color: #6b7280; }
+  .wf-btn { background: #34d399; color: #064e3b; font-size: 11px; font-weight: 700; padding: 8px 16px; border-radius: 20px; display: inline-block; }
+  .wf-btn.outline { background: transparent; color: #34d399; border: 1.5px solid #34d399; }
+  .wf-trust { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+  .wf-trust span { font-size: 10px; color: #9ca3af; display: flex; align-items: center; gap: 4px; }
+  .wf-trust span::before { content: '✓'; color: #34d399; font-weight: 700; }
+  .wf-link { font-size: 10px; color: #818cf8; text-decoration: underline; margin-top: 6px; display: block; }
+  .wf-metrics { display: flex; gap: 8px; }
+  .wf-metric { flex: 1; background: #1e1e2e; border: 1.5px solid #374151; border-radius: 8px; padding: 10px 8px; text-align: center; }
+  .wf-metric .val { font-size: 14px; font-weight: 800; color: #f9fafb; }
+  .wf-metric .lbl { font-size: 9px; color: #9ca3af; margin-top: 2px; }
+  .wf-steps { display: flex; flex-direction: column; gap: 8px; }
+  .wf-step { display: flex; gap: 10px; align-items: flex-start; background: #1e1e2e; border: 1.5px solid #374151; border-radius: 8px; padding: 10px; }
+  .wf-step-num { width: 22px; height: 22px; border-radius: 50%; background: #10b981; color: white; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .wf-step-text strong { font-size: 12px; color: #f9fafb; display: block; }
+  .wf-step-text span { font-size: 10px; color: #9ca3af; }
+  .wf-row { display: flex; gap: 8px; }
+  .wf-card { flex: 1; background: #1e1e2e; border: 1.5px solid #374151; border-radius: 8px; padding: 10px; }
+  .wf-card .ico { font-size: 16px; margin-bottom: 4px; }
+  .wf-card strong { font-size: 11px; color: #f9fafb; display: block; }
+  .wf-card span { font-size: 10px; color: #9ca3af; }
+  .wf-output-list { display: flex; flex-direction: column; gap: 6px; }
+  .wf-output { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: #1e1e2e; border: 1.5px solid #374151; border-radius: 6px; font-size: 11px; color: #d1d5db; }
+  .wf-output::before { content: '✓'; color: #a855f7; font-weight: 700; font-size: 12px; }
+  .wf-star { color: #f59e0b; font-size: 12px; }
+  .wf-quote { font-size: 11px; color: #d1d5db; font-style: italic; line-height: 1.5; margin-top: 6px; }
+  .wf-author { font-size: 10px; color: #9ca3af; margin-top: 4px; }
+  .wf-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .wf-tab { padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #1e1e2e; border: 1.5px solid #374151; color: #9ca3af; }
+  .wf-tab.active { background: #06b6d433; border-color: #06b6d4; color: #06b6d4; }
+  .wf-region-content { background: #1e1e2e; border: 1.5px solid #374151; border-radius: 8px; padding: 12px; font-size: 11px; color: #9ca3af; line-height: 1.8; }
+  .wf-cta-box { background: #1a0a12; border: 1.5px dashed #ef444466; border-radius: 8px; padding: 16px; text-align: center; }
+  .wf-cta-h { font-size: 13px; font-weight: 700; color: #f9fafb; margin-bottom: 6px; }
+  .wf-cta-sub { font-size: 11px; color: #9ca3af; margin-bottom: 12px; }
+  .wf-nav { display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: #0f0f17; border: 1.5px solid #1e1e2e; border-radius: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+  .wf-nav-logo { font-size: 12px; font-weight: 700; color: #f9fafb; margin-right: auto; }
+  .wf-nav-item { font-size: 10px; color: #9ca3af; }
+  .wf-nav-cta { font-size: 10px; font-weight: 700; padding: 5px 12px; background: #6366f133; border: 1.5px solid #6366f1; border-radius: 20px; color: #818cf8; }
+
+  .divider { border: none; border-top: 1.5px dashed #1f2937; margin: 8px 0; }
+  .anno { font-size: 10px; color: #6b7280; font-style: italic; padding: 4px 0; }
+  .tag-new { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: #10b98133; color: #10b981; border: 1px solid #10b98166; margin-left: 6px; }
+  .tag-merged { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: #a855f733; color: #a855f7; border: 1px solid #a855f766; margin-left: 6px; }
+  .tag-moved { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 10px; background: #f59e0b33; color: #f59e0b; border: 1px solid #f59e0b66; margin-left: 6px; }
+</style>
+</head>
+<body>
+
+<h1 class="page-title">Wireframe Home — v2</h1>
+<p class="page-sub">7 sections · Mobile-first · Mini-simulateur supprimé · Sections 4+5 fusionnées</p>
+
+<!-- NAV -->
+<div class="wf-nav">
+  <span class="wf-nav-logo">[Logo]</span>
+  <span class="wf-nav-item">Comprendre</span>
+  <span class="wf-nav-item">Rentabilité & Prix</span>
+  <span class="wf-nav-item">Aides & primes</span>
+  <span class="wf-nav-item">Installation</span>
+  <span class="wf-nav-cta">Mon estimation →</span>
+</div>
+
+<!-- SECTION 01 — HERO -->
+<div class="wf-section s-hero">
+  <div class="wf-section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Hero — amorce code postal</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-photo" style="height:180px; flex-direction:column; gap:6px; margin-bottom: 10px;">
+      <span style="font-size:24px;">🏠☀️</span>
+      <span>Photo toit + panneaux · full-bleed</span>
+      <span style="font-size:10px; color:#4b5563;">Overlay sombre pour lisibilité texte</span>
+    </div>
+    <div class="wf-h1">"Les panneaux solaires sont-ils<br>rentables pour votre maison ?"</div>
+    <p class="wf-sub">Production, coût, économies, primes de votre région : votre estimation sur mesure, sans laisser vos coordonnées.</p>
+    <div style="display:flex; gap:8px; margin-top:12px; align-items:center;">
+      <div class="wf-input" style="flex:1;">VOTRE CODE POSTAL</div>
+      <div class="wf-btn">Je lance mon estimation →</div>
+    </div>
+    <a class="wf-link">Pour adapter le calcul à votre région et vos primes. En savoir plus ?</a>
+    <div class="wf-trust" style="margin-top:12px;">
+      <span>Gratuit</span>
+      <span>Sans engagement</span>
+      <span>Résultat en 2 min</span>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 02 — RÉASSURANCE -->
+<div class="wf-section s-reassurance">
+  <div class="wf-section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Réassurance — chiffres clés</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-metrics">
+      <div class="wf-metric"><div class="val">2 400+</div><div class="lbl">installations</div></div>
+      <div class="wf-metric"><div class="val">4.8/5</div><div class="lbl">satisfaction</div></div>
+      <div class="wf-metric"><div class="val">89%</div><div class="lbl">rentable moy.</div></div>
+      <div class="wf-metric" style="border-color:#6366f166;"><div class="val" style="font-size:10px;">⚡ Certifié</div><div class="lbl">Enphase</div></div>
+    </div>
+    <p class="anno" style="margin-top:8px;">Zone d'intervention : Bruxelles & périphérie</p>
+  </div>
+</div>
+
+<!-- SECTION 03 — COMMENT ÇA MARCHE -->
+<div class="wf-section s-comment">
+  <div class="wf-section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Comment ça marche ?<span class="tag-moved">Remonté</span></span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-block dark" style="margin-bottom:10px; font-size:13px; font-weight:700; color:#f9fafb;">3 étapes, 2 minutes</div>
+    <div class="wf-steps">
+      <div class="wf-step">
+        <div class="wf-step-num">1</div>
+        <div class="wf-step-text">
+          <strong>Je renseigne ma maison</strong>
+          <span>Code postal · consommation · orientation toit</span>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-step-num">2</div>
+        <div class="wf-step-text">
+          <strong>Je reçois mon estimation</strong>
+          <span>Fourchette personnalisée · économies · ROI · aides</span>
+        </div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-step-num">3</div>
+        <div class="wf-step-text">
+          <strong>Un expert analyse mon toit</strong>
+          <span>Chiffrage précis gratuit · directement avec l'installateur</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="wf-btn" style="display:inline-block;">Faire mon estimation →</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 04 — CE QUE VOUS OBTENEZ (fusionné) -->
+<div class="wf-section s-obtenir">
+  <div class="wf-section-header">
+    <span class="section-num">04</span>
+    <span class="section-title">Ce que vous obtenez — selon votre maison<span class="tag-merged">Fusionné</span></span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-block dark" style="margin-bottom:10px; font-size:13px; font-weight:700; color:#f9fafb;">"Chaque maison est unique"</div>
+
+    <p class="anno" style="margin-bottom:8px;">3 facteurs qui influencent votre résultat :</p>
+    <div class="wf-row" style="margin-bottom:12px;">
+      <div class="wf-card">
+        <div class="ico">📍</div>
+        <strong>Votre région</strong>
+        <span>Aides & tarifs varient</span>
+      </div>
+      <div class="wf-card">
+        <div class="ico">⚡</div>
+        <strong>Votre conso.</strong>
+        <span>Impact direct sur le ROI</span>
+      </div>
+      <div class="wf-card">
+        <div class="ico">🏠</div>
+        <strong>Votre toiture</strong>
+        <span>Orientation · surface</span>
+      </div>
+    </div>
+
+    <hr class="divider">
+    <p class="anno" style="margin-bottom:8px;">Ce que votre estimation révèle :</p>
+    <div class="wf-output-list">
+      <div class="wf-output">Économies annuelles (fourchette personnalisée)</div>
+      <div class="wf-output">Budget d'investissement estimé</div>
+      <div class="wf-output">Aides auxquelles vous avez droit</div>
+      <div class="wf-output">Retour sur investissement estimé</div>
+      <div class="wf-output">Production solaire estimée</div>
+    </div>
+    <div style="margin-top:12px;">
+      <div class="wf-btn" style="display:inline-block;">Faire mon estimation →</div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 05 — TÉMOIGNAGES -->
+<div class="wf-section s-temoignages">
+  <div class="wf-section-header">
+    <span class="section-num">05</span>
+    <span class="section-title">Témoignages</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-block dark" style="margin-bottom:10px; font-size:13px; font-weight:700; color:#f9fafb;">"Ils ont franchi le pas"</div>
+    <div class="wf-card" style="margin-bottom:8px;">
+      <div class="wf-star">★★★★★</div>
+      <p class="wf-quote">"Résultat reçu en 2 minutes, l'équipe a pris rendez-vous rapidement. Très professionnel."</p>
+      <p class="wf-author">— Marie V., Ixelles</p>
+    </div>
+    <div class="wf-card">
+      <div class="wf-star">★★★★★</div>
+      <p class="wf-quote">"J'étais sceptique mais l'estimation était proche du devis final. Maintenant rentabilisé en 8 ans."</p>
+      <p class="wf-author">— Thomas D., Waterloo</p>
+    </div>
+    <p class="anno" style="margin-top:8px; text-align:center;">[ ● ○ ○ ] — swipe mobile</p>
+  </div>
+</div>
+
+<!-- SECTION 06 — AIDES PAR RÉGION -->
+<div class="wf-section s-aides">
+  <div class="wf-section-header">
+    <span class="section-num">06</span>
+    <span class="section-title">Aides par région</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-block dark" style="margin-bottom:10px; font-size:13px; font-weight:700; color:#f9fafb;">"Les aides disponibles dans votre région"</div>
+    <div class="wf-tabs">
+      <div class="wf-tab active">Bruxelles</div>
+      <div class="wf-tab">Wallonie</div>
+      <div class="wf-tab">Flandre</div>
+    </div>
+    <div class="wf-region-content">
+      Prime énergie · Tarif prosumer · TVA réduite 6%<br>
+      Garantie de raccordement · ...
+      <div style="margin-top:8px;"><span class="wf-btn outline" style="font-size:10px; padding:5px 12px;">Voir le détail pour ma région →</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 07 — CTA FINAL -->
+<div class="wf-section s-cta">
+  <div class="wf-section-header">
+    <span class="section-num">07</span>
+    <span class="section-title">CTA Final</span>
+  </div>
+  <div class="wf-body">
+    <div class="wf-cta-box">
+      <div class="wf-cta-h">"Prêt à savoir si le solaire est fait pour vous ?"</div>
+      <div class="wf-cta-sub">Vous parlez directement à l'équipe qui installe.<br>Pas d'intermédiaire. Pas de revente de données.</div>
+      <div class="wf-btn" style="display:inline-block; margin-bottom:8px;">Faire mon estimation →</div>
+      <div style="font-size:10px; color:#6b7280;">Gratuit · Sans engagement</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
