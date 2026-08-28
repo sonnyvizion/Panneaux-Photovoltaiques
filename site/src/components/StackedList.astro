@@ -123,12 +123,30 @@ const { rows, image, imageAlt } = Astro.props;
     text-transform: uppercase;
   }
 
+  /* ⚠️ MÊME STYLE QUE LES TITRES DE CARTES CONDITIONS (`.essentials__fact-title`),
+     y compris leur bascule : `h3-m` sur téléphone, `h4` à partir de 768px. Les
+     deux blocs se suivent dans la même section — un titre de ligne et un titre
+     de carte y jouent le même rôle, ils doivent se lire pareil.
+
+     ⚠️ LE PALIER EST 768, PAS LE 1024 DU MODULE. C'est celui des cartes
+     conditions : aligné sur 1024, les deux titres auraient divergé entre 768 et
+     1024, exactement là où la section montre les deux à la fois. */
   .stacked__title {
-    font-family: var(--text-display-little-family);
-    font-size: var(--text-display-little-size);
-    font-weight: var(--text-display-little-weight);
-    line-height: var(--text-display-little-line-height);
-    letter-spacing: var(--text-display-little-tracking);
+    font-family: var(--text-h3-m-family);
+    font-size: var(--text-h3-m-size);
+    font-weight: var(--text-h3-m-weight);
+    line-height: var(--text-h3-m-line-height);
+    letter-spacing: var(--text-h3-m-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .stacked__title {
+      font-family: var(--text-h4-family);
+      font-size: var(--text-h4-size);
+      font-weight: var(--text-h4-weight);
+      line-height: var(--text-h4-line-height);
+      letter-spacing: var(--text-h4-tracking);
+    }
   }
 
   /* ⚠️ `body_sm` AUX DEUX TAILLES, pas le `display-little` de la maquette. Celle-
