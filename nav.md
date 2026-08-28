@@ -85,6 +85,15 @@ Elles ne sont **pas** dans la barre principale, pour ne pas concurrencer les
   - Rentabilité & prix
   - Aides & primes
   - Installation
+- **Une loupe, en DERNIÈRE position de l'îlot**, après le 4ᵉ pilier. Icône seule,
+  pas de champ déployé : le CTA reste le seul objet plein de la barre (règle d'or #2),
+  et un champ mangerait la largeur des piliers.
+  - Elle porte la classe `header__link` **par nécessité** : `navPill.ts` collecte ses
+    cibles par cette classe, la loupe hérite donc du voile de survol sans une ligne
+    de script en plus.
+  - **Inerte sans JavaScript**, révélée par le script (`is-ready`) en `visibility` —
+    sa place reste réservée, les piliers ne bougent pas quand elle paraît.
+  - Raccourcis desktop : `/` et `⌘K`.
 - **Un seul bouton CTA (droite)** : **« Mon estimation »** → `/simulateur`.
 - **PAS d'entrée « Simulateur »** dans la barre : elle ferait doublon avec le bouton
   (décision validée — une seule porte d'entrée, parcours non dilué).
@@ -256,6 +265,11 @@ logo doit accompagner le burger en permanence.
 
 ### Ordre du panneau
 
+0. **La recherche**, en tête, avant Accueil. Dessinée comme un champ et non comme
+   une icône : le panneau est une liste de destinations, une loupe seule s'y lirait
+   comme une rubrique de plus. Ce n'est PAS un `<input>` — la saisie a lieu dans le
+   dialogue qui se pose par-dessus ; deux champs voudraient dire deux états à
+   synchroniser, et sur iOS le clavier s'ouvrirait sur le mauvais.
 1. Accueil, puis les 4 piliers en accordéons ;
 2. **le CTA**, juste après le dernier pilier — il clôt la navigation ;
 3. le bas de panneau, repoussé par une marge automatique : cluster confiance et
@@ -270,14 +284,59 @@ Trois niveaux se croisent, et l'ordre n'est pas décoratif :
 
 | Élément | `z-index` |
 |---|---|
+| Overlay de recherche | *couche supérieure* |
 | Rangée logo + burger, épinglée | 30 |
 | Panneau plein écran | 20 |
 | Header | 10 |
 
 Le burger **doit** rester au-dessus du panneau : c'est le seul moyen de refermer.
 
+⚠️ **La recherche n'a pas de rang.** C'est un `<dialog>` ouvert en `showModal()` :
+il vit dans la « couche supérieure » du navigateur, au-dessus de tout, sans entrer
+dans cette échelle. Rien à arbitrer ici — et on gagne au passage le piège de focus,
+l'inertie du reste de la page, Échap et le fond, qu'un overlay maison aurait fallu
+écrire à la main.
+
+⚠️ **Échap appartient à la recherche quand elle est ouverte.** Les gestionnaires
+d'Échap du panneau mobile et des méga-menus doivent l'ignorer dans ce cas, sinon
+UNE pression referme les deux — or on ouvre la recherche DEPUIS le panneau, et on
+doit revenir au menu, pas se retrouver sur la page.
+
+⚠️ **Le verrou de défilement est partagé et NOMMÉ** (`scripts/scrollLock.ts`).
+Panneau et recherche sont posés en même temps ; chacun rend le sien sans toucher à
+celui de l'autre. Écrit en `body.style.overflow` direct, refermer la recherche
+rendait le défilement au panneau resté ouvert.
+
 - Pas d'interaction au survol (le survol n'existe pas sur mobile) — voir tooltips au tap
   dans `interactivite-seo.md`.
+
+## Recherche interne
+
+Le sitemap compte ~55 pages qui replient chacune leurs sous-sections : les méga-menus
+donnent l'arborescence, pas la réponse. La recherche raccourcit « je cherche X » →
+« je suis sur la page X ».
+
+- **Index généré au build** (`src/pages/search-index.json.ts`), depuis les fichiers de
+  `src/data/pages/`. ~74 Ko, **23 Ko en brotli**, et **jamais chargé tant que personne
+  n'ouvre la loupe** : le module (5 Ko) et l'index partent en `import()` dynamique au
+  premier geste. Zéro octet pour les autres visiteurs (règle d'or #1).
+- **Un résultat = une page**, mais l'index ratisse les questions de FAQ et les titres
+  de cartes : « onduleur bruit » trouve la page Onduleur par sa FAQ.
+- **Le résultat affiche la réponse-clé du hero**, pas un extrait surligné. On lit avant
+  de cliquer.
+- **Raccourci simulateur épinglé** quand la requête demande un chiffre (« combien ça
+  coûte », « rentabilité ») : la meilleure réponse est alors SON estimation, pas un
+  article (règle d'or #3).
+- **Jamais de cul-de-sac** : sans résultat, il reste l'estimation et le téléphone.
+- **Aucune URL nouvelle** — rien de plus à indexer. L'index JSON est en `Disallow` et
+  `X-Robots-Tag: noindex`, avec un cache court (5 min) : son nom est fixe, un cache
+  immuable servirait un sitemap périmé après chaque mise à jour de contenu.
+- **Ce qui n'est PAS indexé** est une décision écrite, pas un oubli : les pages encore
+  en « Page en cours de rédaction » (vues d'ensemble des piliers, À propos, Contact,
+  Réalisations) sont listées dans `NOT_INDEXED` avec leur raison. On n'indexe que ce
+  qui répond. À vider au fur et à mesure de la rédaction.
+- **Garde-fou de build** : une page qui rejoint la navigation sans entrer dans la
+  recherche, ou un fichier de données que plus personne ne réclame, **casse le build**.
 
 ## i18n
 Tous les libellés de nav en FR/NL. Le sélecteur de langue est dans la rangée utilitaire.
