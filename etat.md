@@ -44,6 +44,13 @@ donnent l'arborescence, pas la réponse : une loupe ferme désormais l'îlot de 
 | `site/src/scripts/scrollLock.ts` | Verrou de défilement partagé et **nommé**, 6 tests |
 | `site/src/components/SearchOverlay.astro` | Le `<dialog>` et ses styles |
 
+**État de livraison au 28 août 2026 : POUSSÉE, PAS ENCORE EN LIGNE.** Le code
+est sur `design-systeme-astro` (commit `d767245`) et la doc de nav sur `main`
+(`e6f7296`). La démo https://belgreen-demo.pages.dev tourne toujours sur la
+version du 25 août, SANS la recherche : le déploiement s'arrête faute de jeton
+Cloudflare dans l'environnement (voir « Le déploiement » plus bas). Un
+`npm run deploy` avec le jeton exporté suffit à la mettre en ligne.
+
 **Coût en performance : nul au chargement.** Le module (5 Ko) et l'index (23 Ko
 brotli) partent en `import()` dynamique au premier clic sur la loupe. Vérifié au
 navigateur : rien ne se charge au repos, tout arrive à l'ouverture.
@@ -205,6 +212,26 @@ https://belgreen-demo.pages.dev — projet Pages `belgreen-demo`, 421 fichiers.
 ```sh
 cd site && npm run deploy
 ```
+
+⚠️ **IL FAUT UN JETON DANS L'ENVIRONNEMENT.** Wrangler n'a aucun identifiant
+stocké sur la machine (`~/Library/Preferences/.wrangler/config/` est vide) : il
+ouvre normalement une fenêtre d'authentification, ce qu'un terminal non
+interactif — un agent, un CI — ne peut pas faire. Il s'y arrête alors net :
+
+> In a non-interactive environment, it's necessary to set a
+> CLOUDFLARE_API_TOKEN environment variable for wrangler to work.
+
+Deux façons d'y répondre, au choix :
+
+```sh
+export CLOUDFLARE_API_TOKEN=…   # jeton à permission « Cloudflare Pages: Edit »
+# ou, en terminal interactif :
+npx wrangler login
+```
+
+Le jeton n'est volontairement PAS écrit dans le dépôt ni dans un `.env` suivi.
+Le poser dans `~/.zshrc` le rend disponible à tout ce qui tourne depuis un
+shell, agents compris.
 
 Le script porte `--branch=main` : sans lui, Wrangler déduit la branche Git
 courante (`design-systeme-astro`) et publie une *preview* sur une URL à hash,
