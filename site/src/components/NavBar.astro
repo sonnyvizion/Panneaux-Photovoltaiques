@@ -312,15 +312,24 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
             place reste réservée, donc les piliers ne se décalent pas quand elle
             paraît (même parti pris que les méga-menus et le panneau). */}
         <li class="header__search-item">
+          {/* ⚠️ `aria-label` et NON un enfant `.visually-hidden`. Celui-ci est
+              gardé DANS LE FLUX par `global.css` (1px de large), et s'ajoutait
+              au `gap` de 4px de `.header__link` : le chip mesurait 46px pour une
+              icône de 17, qui s'en trouvait poussée de 2,5px vers la droite.
+              Invisible à l'œil, net à la mesure.
+
+              Le burger, lui, garde son span : son libellé CHANGE avec l'état, ce
+              qu'un `aria-label` statique ne saurait pas dire. Ici le libellé est
+              fixe — c'est le motif de `.header__call` juste en dessous. */}
           <button
             type="button"
             class="header__link header__search"
+            aria-label="Rechercher sur le site"
             aria-haspopup="dialog"
             aria-controls="site-search"
             data-search-open
           >
-            <span class="visually-hidden">Rechercher sur le site</span>
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
               <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.6" />
               <path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
             </svg>
@@ -1042,13 +1051,26 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
      Elle hérite de `.header__link` (couleur, police, chip de survol) et ne
      redéfinit que ce qui distingue une icône d'un libellé : une boîte carrée,
      et pas de texte à aligner. */
+  /* ⚠️ Le `<li>` est un CONTENEUR FLEX, et ce n'est pas décoratif.
+
+     Sans lui, le bouton — `inline-flex`, hérité de `.header__link` — est un
+     élément de niveau ligne : il est donc aligné sur la LIGNE DE BASE du texte
+     de son `<li>`. Or une icône n'a pas de ligne de base, et la boîte retombait
+     3px plus bas que les cinq libellés voisins (mesuré : centre à 86,5 contre
+     83,5). En conteneur flex, il n'y a plus de ligne de base ni d'interligne
+     fantôme : `align-items: center` centre pour de bon. */
+  .header__search-item {
+    display: flex;
+    align-items: center;
+  }
+
   .header__search {
     justify-content: center;
-    /* Le padding de `.header__link` est horizontal et taillé pour un mot ; une
-       icône seule y flotterait de travers. Rendu symétrique, avec la marge
-       négative correspondante pour ne pas écarter les piliers. */
-    padding: var(--space-2);
-    margin: calc(var(--space-2) * -1);
+    /* Padding et marge viennent de `.header__link` — 12px de part et d'autre,
+       comme tout autre chip, ce qui garde l'écart de la liste homogène. Ne PAS
+       les redéclarer ici : `.header__link` est défini plus bas dans ce fichier
+       et l'emporterait à spécificité égale. La surcharge qui vivait ici était
+       morte, et le laissait croire le contraire. */
     border: 0;
     background: none;
     cursor: pointer;
