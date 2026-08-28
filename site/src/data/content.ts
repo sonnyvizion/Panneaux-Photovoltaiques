@@ -79,6 +79,12 @@ export interface PhotoCard {
    * `design.md`. Le jour de la livraison, seul le composant change.
    */
   image: string;
+  /**
+   * Alternative textuelle. Requise dès que la photo existe — une image décorée
+   * d'un `alt` vide est invisible pour un lecteur d'écran, ce qui convient à un
+   * ornement mais pas à l'objet dont la carte parle.
+   */
+  alt?: string;
 }
 
 /**

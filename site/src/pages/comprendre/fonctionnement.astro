@@ -12,6 +12,9 @@ import Cloud from '../../assets/icons/fonctionnement/cloud.svg';
 import Moon from '../../assets/icons/fonctionnement/moon.svg';
 import Sunrise from '../../assets/icons/fonctionnement/sunrise.svg';
 import heroImage from '../../assets/pages/4.1-fonctionnement-hero.webp';
+import carteCellule from '../../assets/pages/4.1-fonctionnement-carte-cellule.webp';
+import carteOnduleur from '../../assets/pages/4.1-fonctionnement-carte-onduleur.webp';
+import carteCompteur from '../../assets/pages/4.1-fonctionnement-carte-compteur.webp';
 import {
   PHOTOS, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   FLOW, FLOW_COPY, HERO, LEAD, TOPICS, TOPICS_COPY,
@@ -36,7 +39,7 @@ import {
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <PhotonFlow overline={FLOW_COPY.overline} title={FLOW_COPY.title} intro={FLOW_COPY.intro} steps={FLOW} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS.map((p, i) => ({ ...p, src: [carteCellule, carteOnduleur, carteCompteur][i] }))} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Bolt, Cloud, Moon, Sunrise][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le fonctionnement." tone="default" id="faq-fonctionnement" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />

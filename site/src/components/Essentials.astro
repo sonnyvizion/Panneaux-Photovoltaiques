@@ -46,8 +46,14 @@ interface Props extends SectionCopy {
      contenu qui ne s'y prête pas. C'est cette contrainte-là qui a produit des
      « valeurs » comme « Capte » ou « Détaillé » posées en corps 44. */
 
-  /** Trois objets photographiables. Deux cartes de front, ou 2+1 à trois. */
-  photos?: PhotoCard[];
+  /**
+   * Trois objets photographiables. Deux cartes de front, ou 2+1 à trois.
+   *
+   * `src` est résolu par la page, comme le hero. Tant qu'il manque, c'est un
+   * emplacement nommé du fichier attendu qui s'affiche — jamais une image de
+   * stock, qui serait pire que le vide (`design.md`).
+   */
+  photos?: (PhotoCard & { src?: ImageMetadata })[];
   /** Trois facettes qualitatives. L'icône est résolue par la page. */
   icons?: (IconCard & { icon?: SvgComponent })[];
   /**
@@ -149,7 +155,19 @@ const {
                 REMPLIT celle de la carte. Un ratio imposé rouvrait l'écart que la
                 hauteur commune vient de fermer. */}
             <div class="essentials__photo-media">
-              <ImagePlaceholder label={photo.image} ratio="auto" />
+              {photo.src ? (
+                <Image
+                  class="essentials__photo-img"
+                  src={photo.src}
+                  alt={photo.alt ?? ''}
+                  width={1600}
+                  widths={[420, 700, 1200, 1600]}
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  loading="lazy"
+                />
+              ) : (
+                <ImagePlaceholder label={photo.image} ratio="auto" />
+              )}
             </div>
           </li>
         ))}
@@ -673,7 +691,8 @@ const {
 
   /* La photo remplit la hauteur de la carte plutôt que de l'imposer. */
   .essentials__photo-media :global(.placeholder),
-  .essentials__photo-media :global(img) {
+  .essentials__photo-media :global(img),
+  .essentials__photo-img {
     height: 100%;
     border-radius: var(--radius-card);
     object-fit: cover;

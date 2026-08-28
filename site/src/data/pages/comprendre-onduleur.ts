@@ -44,7 +44,8 @@ export const PHOTOS: PhotoCard[] = [
     title: 'L’onduleur string',
     text: 'Un seul boîtier pour toute l’installation — le montage le plus courant, adapté à la plupart des toitures sans ombrage.',
     /* Le même objet que sur la page Fonctionnement : une seule photo pour les deux. */
-    image: 'fonctionnement-carte-onduleur.jpg',
+    image: '4.1-fonctionnement-carte-onduleur.webp',
+    alt: 'Onduleur gris fixé à un mur, son écran allumé d’un voyant vert, les câbles rouges et noirs raccordés en dessous',
   },
   {
     title: 'Le micro-onduleur',

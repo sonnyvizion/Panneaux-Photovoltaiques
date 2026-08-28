@@ -81,19 +81,22 @@ export const PHOTOS: PhotoCard[] = [
   {
     title: 'La cellule photovoltaïque',
     text: 'Capte la lumière du soleil et libère des électrons — c’est la naissance du courant continu. Le matériau qui rend ça possible : le silicium, à la base de la quasi-totalité des panneaux du marché.',
-    image: 'fonctionnement-carte-cellule.jpg',
+    image: '4.1-fonctionnement-carte-cellule.webp',
+    alt: 'Gros plan sur des cellules photovoltaïques bleu foncé et leurs fines grilles de contact argentées, balayées par un reflet de soleil',
   },
   {
     /* La maquette écrit « L'Onduleur » ; la capitale au milieu de la phrase est
        une coquille, pas une intention — les deux autres titres n'en ont pas. */
     title: 'L’onduleur',
     text: 'Convertit le continu en alternatif, utilisable',
-    image: 'fonctionnement-carte-onduleur.jpg',
+    image: '4.1-fonctionnement-carte-onduleur.webp',
+    alt: 'Onduleur gris fixé à un mur, son écran allumé d’un voyant vert, les câbles rouges et noirs raccordés en dessous',
   },
   {
     title: 'Le compteur',
     text: 'Mesure ce qui est consommé et ce qui est injecté',
-    image: 'fonctionnement-carte-compteur.jpg',
+    image: '4.1-fonctionnement-carte-compteur.webp',
+    alt: 'Compteur électrique sous capot transparent fixé à un mur blanc, son afficheur numérique visible',
   },
 ];
 
