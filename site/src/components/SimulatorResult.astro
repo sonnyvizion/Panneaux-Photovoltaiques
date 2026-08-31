@@ -366,12 +366,29 @@ const OUTCOMES = [
       au chargement — et surtout, personne ne l'aurait jamais retiré, puisque le
       script bascule désormais `data-shown`. */}
   <div class="result__dock" data-sim-dock>
-    <Button href="/etude" variant="ink" data-sim-cta-etude hidden={!warm}>
-      Réserver mon étude gratuite
-    </Button>
-    <Button href="/contact" variant="ink" data-sim-cta-contact hidden={warm}>
-      Parler à un conseiller
-    </Button>
+    <div class="result__dock-actions">
+      <Button href="/etude" variant="ink" data-sim-cta-etude hidden={!warm}>
+        Réserver mon étude gratuite
+      </Button>
+      <Button href="/contact" variant="ink" data-sim-cta-contact hidden={warm}>
+        Parler à un conseiller
+      </Button>
+    </div>
+
+    {/* ⚠️ LA SORTIE DOUCE SUIT L'ACTION JUSQU'EN BAS. Celle de l'en-tête est
+        partie avec le haut de la page dès les premiers défilements ; la barre
+        rappelait donc l'engagement le plus fort sans plus rien offrir à qui
+        n'est pas prêt à le prendre.
+
+        ⚠️ MÊME `data-sim-report-link` que l'en-tête, et c'est tout le câblage :
+        `simulatorWidget` réécrit les href par `querySelectorAll`, ce lien
+        emporte donc les réponses comme l'autre, sans une ligne de script.
+
+        ⚠️ Il reste un LIEN sous le bouton, jamais un second bouton — le brief
+        veut un primaire dominant et un secondaire en texte, sans concurrent. */}
+    <a class="result__pdf result__dock-link" href="/rapport" data-sim-report-link>
+      Recevoir cette estimation par e-mail
+    </a>
   </div>
 
   <div class="result__bottom">
@@ -945,7 +962,11 @@ const OUTCOMES = [
       left: 0;
       /* Sous la nav (z-index 10), au-dessus du contenu. */
       z-index: 5;
+      /* En colonne depuis que la sortie e-mail suit l'action : le bouton garde
+         toute la largeur, le lien se pose dessous. */
       display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
       padding: var(--space-3);
       /* ⚠️ `env(safe-area-inset-bottom)` : sans lui, la barre passe sous la
          barre gestuelle des iPhone récents et le bouton devient à moitié
@@ -990,6 +1011,12 @@ const OUTCOMES = [
       }
     }
 
+    /* La rangée d'actions : les deux variantes s'y partagent la largeur, mais
+       une seule est jamais rendue — l'autre porte `hidden`. */
+    .result__dock-actions {
+      display: flex;
+    }
+
     .result__dock :global(.btn) {
       flex: 1;
       justify-content: center;
@@ -997,6 +1024,15 @@ const OUTCOMES = [
 
     .result__dock :global(.btn[hidden]) {
       display: none;
+    }
+
+    /* ⚠️ Le lien est centré sous le bouton et non au fer à gauche : il légende
+       l'action, il n'ouvre pas une deuxième colonne de lecture. Le rembourrage
+       n'est pas décoratif — sans lui, la cible tactile d'un texte de 14px collée
+       au bas de l'écran devient impossible à viser. */
+    .result__dock-link {
+      padding-block: var(--space-1);
+      text-align: center;
     }
   }
 
