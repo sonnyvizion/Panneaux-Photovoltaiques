@@ -716,13 +716,28 @@ const HELP = {
     display: none;
   }
 
+  /* ⚠️ `page-subtle`, ET C'EST LE SEUL TON QUI RESTE DISPONIBLE ICI.
+
+     L'aide était en `white-primary` — le blanc EXACT de la carte qui porte les
+     questions. Deux surfaces de même valeur côte à côte se lisent au même rang,
+     alors que l'aide est une note de marge : elle lève un doute, elle ne pose
+     pas la question.
+
+     Les deux gris clairs voisins sont pris ou trop proches : `white-clear`
+     (#f0f8f5) est déjà le fond du bloc question dans `SimulatorStep.astro`, et
+     `shade-details` (#f2f6f6) en est indiscernable. `page-subtle` (#e3ece9)
+     existe précisément pour ce cas — sa définition dans `tokens.css` dit « un
+     cran plus soutenu pour qu'elle se détache de son voisin blanc ».
+
+     L'échelle des trois surfaces devient donc lisible sans filet :
+     carte #fffefc → question #f0f8f5 → aide #e3ece9. */
   .sim__help-block {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
     padding: var(--pad-card);
     border-radius: var(--radius-card);
-    background: var(--color-white-primary);
+    background: var(--color-page-subtle);
   }
 
   .sim__help-body {
