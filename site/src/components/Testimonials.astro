@@ -80,15 +80,28 @@ const testimonials = [
 
 /** Repris de la maquette : la course est découpée en trois, pas en pages. */
 const PROGRESS_SEGMENTS = 3;
+
+/**
+ * ⚠️ En-tête PARAMÉTRABLE depuis que le bloc sert deux pages — la home et
+ * « Nos réalisations ». Les valeurs par défaut sont EXACTEMENT celles de la
+ * home : elle ne passe aucun prop et ne change pas d'un caractère.
+ */
+interface Props {
+  overline?: string;
+  title?: string;
+  intro?: string;
+}
+
+const {
+  overline = 'Témoignages',
+  title = 'Ils nous ont fait confiance',
+  intro = "Des propriétaires belges qui ont testé le simulateur, puis rencontré l'équipe qui a posé leurs panneaux.",
+} = Astro.props;
 ---
 
 <Section bleed>
   <div class="testimonials__gutter">
-    <SectionHeading
-    overline="Témoignages"
-    title="Ils nous ont fait confiance"
-      intro="Des propriétaires belges qui ont testé le simulateur, puis rencontré l'équipe qui a posé leurs panneaux."
-    />
+    <SectionHeading overline={overline} title={title} intro={intro} />
   </div>
 
   <div class="testimonials__wrapper reveal">

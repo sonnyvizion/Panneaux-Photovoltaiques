@@ -1,13 +1,82 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import ProjectCards from '../components/ProjectCards.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { heroImage } from '../data/pageHeroes';
+import {
+  FAQ,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  PROJECTS,
+  PROJECTS_COPY,
+  TESTIMONIALS_COPY,
+} from '../data/realisations';
 
-/** Placeholder de Phase 1 — voir le commentaire de `a-propos.astro`. */
+/**
+ * « Nos réalisations » — la page de preuve du cluster confiance.
+ *
+ * Elle remplace le placeholder de Phase 1 : le header, le footer et l'email J+5
+ * de `funnel.md` (« Un chantier près de chez vous → Voir nos réalisations ») y
+ * renvoient tous les trois.
+ *
+ * ⚠️ `noindex` MAINTENU, volontairement. Le gabarit est écrit, les chantiers ne
+ * sont pas livrés : les six fiches sont vides et étiquetées. Indexer une page de
+ * références vide coûte plus cher que son absence (règle d'or #1). Le mode
+ * d'emploi de la publication — quatre gestes — est en tête de
+ * `src/data/realisations.ts`.
+ *
+ * ⚠️ AUCUN CHANTIER INVENTÉ, et pour la même raison que les avis : des
+ * références plausibles mais fausses sur la page qui sert de preuve seraient une
+ * tromperie, pas un placeholder.
+ *
+ * ⚠️ ⚠️ LE CARROUSEL D'AVIS CI-DESSOUS EST DE DÉMONSTRATION — À NE PAS METTRE EN
+ * LIGNE. L'avertissement vit dans `Testimonials.astro` ; il est répété ici parce
+ * que le composant sert désormais DEUX pages, et que c'est la seconde qu'on
+ * oublierait en production.
+ *
+ * ⚠️ Le hero emprunte une photo de toiture (`pageHeroes.ts`) : l'emplacement
+ * `placeholder` de `PageHero` est un aplat gris clair sur lequel la nav
+ * transparente devient illisible.
+ */
 ---
 
-<BaseLayout title="Nos réalisations — Belgreen" noindex>
-  <Section>
-    <h1>Nos réalisations</h1>
-    <p>Page en cours de rédaction.</p>
-  </Section>
+<BaseLayout title="Nos réalisations — Belgreen" noindex transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage('/realisations')}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} />
+
+  <ProjectCards
+    overline={PROJECTS_COPY.overline}
+    title={PROJECTS_COPY.title}
+    intro={PROJECTS_COPY.intro}
+    items={PROJECTS}
+  />
+
+  <Testimonials
+    overline={TESTIMONIALS_COPY.overline}
+    title={TESTIMONIALS_COPY.title}
+    intro={TESTIMONIALS_COPY.intro}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de nous écrire"
+    intro="Ce qu’on nous demande le plus souvent en regardant ces chantiers."
+    tone="grey"
+    id="faq-realisations"
+  />
+
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
 </BaseLayout>

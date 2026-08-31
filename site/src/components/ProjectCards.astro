@@ -1,0 +1,233 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+import type { SectionCopy } from '../data/content';
+import type { Realisation } from '../data/realisations';
+
+/**
+ * Les fiches chantier de « Nos réalisations ».
+ *
+ * ⚠️ POURQUOI UN COMPOSANT DE PLUS. Une fiche chantier, c'est une photo PLUS un
+ * tableau de caractéristiques — ce qu'aucune brique existante ne fait :
+ * `PillarIndex` porte une question sous une photo, `TopicCards` n'a pas d'image,
+ * et les cartes photo de `Essentials` plafonnent à trois et ne portent aucune
+ * grandeur.
+ *
+ * ⚠️ LES CARTES SONT INERTES — pas de lien, pas de survol, pas d'entrée au
+ * clavier : il n'y a pas de page par chantier. Même règle que `TopicCard.href`,
+ * une carte cliquable qui ne mène nulle part est pire qu'une carte inerte.
+ *
+ * ⚠️ UN CHAMP VIDE S'AFFICHE, EN MARQUEUR. C'est la raison d'être du composant
+ * tant que le client n'a pas livré ses chantiers : la page doit montrer
+ * exactement quelles cases restent à remplir, pas les masquer derrière un tiret
+ * muet. Le jour où les fiches sont pleines, ces marqueurs disparaissent d'eux-
+ * mêmes — rien à retirer ici.
+ */
+interface Props extends SectionCopy {
+  /** Les fiches, avec leur photo déjà résolue par la page si elle existe. */
+  items: (Realisation & { image?: ImageMetadata })[];
+  tone?: 'default' | 'grey';
+}
+
+const { overline, title, intro, items, tone = 'default' } = Astro.props;
+
+/** Les caractéristiques d'une fiche, dans l'ordre de lecture de la maquette. */
+const SPECS = [
+  { label: 'Puissance', key: 'puissance' },
+  { label: 'Panneaux', key: 'panneaux' },
+  { label: 'Orientation', key: 'orientation' },
+  { label: 'Matériel', key: 'materiel' },
+  { label: 'Mise en service', key: 'miseEnService' },
+] as const;
+---
+
+<Section tone={tone}>
+  <SectionHeading
+    overline={overline}
+    overlineTone={tone === 'grey' ? 'tertiary' : 'muted'}
+    title={title}
+    intro={intro}
+  />
+
+  <ul class="projects reveal">
+    {items.map((item) => (
+      <li class="projects__item">
+        <article class="projects__card">
+          {item.image ? (
+            <Image
+              src={item.image}
+              alt={item.imageAlt ?? ''}
+              widths={[400, 800]}
+              sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 92vw"
+              format="webp"
+              quality={72}
+              loading="lazy"
+              class="projects__media"
+            />
+          ) : (
+            /* L'emplacement étiqueté du projet, pas un aplat muet : un gris sans
+               légende se lit comme un bug (`design.md`, « pas de stock
+               générique »). Le ratio suit celui des photos livrées. */
+            <ImagePlaceholder label={item.placeholder} ratio="16 / 10" />
+          )}
+
+          <div class="projects__body">
+            <h3 class="projects__title">
+              {item.commune ?? <span class="projects__todo">Commune à fournir</span>}
+            </h3>
+            <p class="projects__roof">
+              {item.toiture ?? <span class="projects__todo">Type de toiture à fournir</span>}
+            </p>
+
+            {/* Une vraie liste de définitions : ce sont des paires
+                libellé/valeur, et un lecteur d'écran doit les apparier. */}
+            <dl class="projects__specs">
+              {SPECS.map((spec) => (
+                <div class="projects__spec">
+                  <dt class="projects__spec-label">{spec.label}</dt>
+                  <dd class="projects__spec-value">
+                    {item[spec.key] ?? <span class="projects__todo">à fournir</span>}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </article>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<style>
+  /* Le creux gris de `TopicCards` et `PillarIndex` : sans fond, des cartes
+     blanches sur une section blanche ne formeraient plus un ensemble. */
+  .projects {
+    display: grid;
+    gap: var(--gap-cards);
+    padding: var(--space-3);
+    margin: 0;
+    list-style: none;
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
+  .projects__item {
+    display: flex;
+    min-width: 0;
+  }
+
+  .projects__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-2);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  .projects__media {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+  }
+
+  .projects__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: 0 var(--space-2) var(--space-2);
+  }
+
+  .projects__title {
+    margin: 0;
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+    color: var(--color-text-primary);
+  }
+
+  .projects__roof {
+    margin: 0;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .projects__specs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin: var(--space-1) 0 0;
+  }
+
+  /* Libellé à gauche, valeur à droite, et un filet pointillé entre les deux —
+     le même vocabulaire que les lignes empilées de « L'essentiel ». */
+  .projects__spec {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-2);
+    padding-block: var(--space-1);
+    border-top: var(--border-width) dashed var(--color-shade-grey);
+  }
+
+  .projects__spec:first-child {
+    border-top: 0;
+  }
+
+  .projects__spec-label {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .projects__spec-value {
+    margin: 0;
+    text-align: end;
+    color: var(--color-text-primary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  /* La donnée manquante, dite et non masquée : le style « marqueur », celui des
+     emplacements photo — c'est la même promesse, « ceci est en attente ». */
+  .projects__todo {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .projects {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .projects {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
