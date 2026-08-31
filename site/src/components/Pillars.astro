@@ -1,0 +1,283 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import ArrowLink from './ArrowLink.astro';
+import step01 from '../assets/pillars/step_01.webp';
+import step02 from '../assets/pillars/step_02.webp';
+import step03 from '../assets/pillars/step_03.webp';
+import step04 from '../assets/pillars/step_04.webp';
+
+/**
+ * Les 4 portes d'entrée encyclopédiques, en accordéon horizontal.
+ *
+ * Conteneur gris (rayon 25, padding 16) portant 4 cartes blanches (rayon 18,
+ * padding 15) — relevé Figma, nœud 356:409. La maquette ne montre que l'état
+ * final : première carte ouverte, les trois autres repliées.
+ *
+ * ⚠️ Les textes des cartes 2 à 4 sont de moi : Figma ne les fournit pas, elles
+ * n'y apparaissent qu'à l'état replié. À faire valider.
+ */
+const cards = [
+  {
+    title: 'Comment ça fonctionne ?',
+    text: 'Du panneau à la prise : comprendre le système en 5 minutes.',
+    cta: 'Comprendre',
+    href: '/comprendre',
+    image: step01,
+    alt: "Installateur présentant une simulation sur tablette à un propriétaire, devant une maison équipée",
+  },
+  {
+    title: 'Rentabilité & coûts',
+    text: 'Prix, économies, retour sur investissement selon votre profil.',
+    cta: 'Calculez',
+    href: '/rentabilite-prix',
+    image: step02,
+    alt: 'Illustration du calcul de rentabilité d’une installation photovoltaïque',
+  },
+  {
+    title: 'Aides & primes',
+    text: 'Ce à quoi vous avez droit selon votre région.',
+    cta: 'Voir les aides',
+    href: '/aides-primes',
+    image: step03,
+    alt: 'Illustration des aides et primes régionales pour le photovoltaïque',
+  },
+  {
+    title: "L'installation",
+    text: 'Délais, démarches, ce que ça implique concrètement.',
+    cta: 'En savoir plus',
+    href: '/installation',
+    image: step04,
+    alt: 'Installateurs posant des panneaux solaires sur une toiture',
+  },
+];
+---
+
+<Section>
+  <SectionHeading
+    overline="Pour aller plus loin"
+    title="Tout ce que vous "
+    highlight="devez"
+    titleEnd=" savoir"
+    intro="Quatre thèmes pour comprendre le photovoltaïque avant de passer à l'estimation."
+  />
+
+  <ul class="pillars reveal">
+    {cards.map((card, index) => (
+      <li class={`pillars__item ${index === 0 ? 'is-open' : ''}`}>
+        <div class="pillars__body">
+          <div class="pillars__top">
+            <h3 class="pillars__title">{card.title}</h3>
+            <p class="pillars__text">{card.text}</p>
+          </div>
+          <div class="pillars__cta">
+            <ArrowLink href={card.href}>{card.cta}</ArrowLink>
+          </div>
+        </div>
+        <div class="pillars__media">
+          <Image
+            src={card.image}
+            alt={card.alt}
+            {/* Le cadre fait 195×242 et l'image est recadrée en `cover` :
+                remplir cette hauteur demande ~322px de source, pas 195. En
+                déclarant 195 le navigateur choisissait une variante trop
+                petite, d'où l'aspect pixelisé. */}
+            widths={[400, 800]}
+            sizes="400px"
+            quality={75}
+            loading="lazy"
+            class="pillars__image"
+          />
+        </div>
+      </li>
+    ))}
+  </ul>
+</Section>
+
+<script>
+  /* L'ouverture suit le survol et y reste : `is-open` se déplace de carte en
+     carte et n'est jamais retirée au départ de la souris. `:hover` en CSS ne
+     peut pas retenir le dernier élément parcouru, d'où ces quelques lignes.
+
+     `focusin` couvre le clavier : atteindre au Tab le lien d'une carte repliée
+     doit en ouvrir le contenu. */
+  const list = document.querySelector('.pillars');
+
+  if (list) {
+    const open = (item: Element) => {
+      if (item.classList.contains('is-open')) return;
+      list.querySelector('.pillars__item.is-open')?.classList.remove('is-open');
+      item.classList.add('is-open');
+    };
+
+    list.querySelectorAll('.pillars__item').forEach((item) => {
+      item.addEventListener('pointerenter', () => open(item));
+      item.addEventListener('focusin', () => open(item));
+    });
+  }
+</script>
+
+<style>
+  /* Le conteneur gris est la liste elle-même. */
+  .pillars {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
+  .pillars__item {
+    display: flex;
+    gap: var(--space-24);
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  .pillars__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pillars__top {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .pillars__title {
+    margin: 0;
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .pillars__text {
+    margin: 0;
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .pillars__cta {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Empilé sous 1024px : tout est déplié, pas d'accordéon.
+     Règle d'or #6 — au doigt, un contenu qui ne s'ouvre qu'au survol est un
+     contenu inaccessible. Les visuels sautent, ils n'apportent rien ici. */
+  .pillars__media {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .pillars {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* --- Accordéon horizontal (desktop) ---
+     `--open` vaut 0 ou 1 et pilote à lui seul la largeur de la carte, celle de
+     l'image et l'opacité du texte. Trois règles suffisent donc à décrire
+     l'état, et les propriétés qui en dépendent transitionnent normalement. */
+  @media (min-width: 1024px) {
+    /* Hauteur figée (valeur Figma) : sans elle, le conteneur se cale sur la
+       carte la plus haute, et son texte passant de trois lignes à deux pendant
+       l'élargissement faisait respirer tout le bloc — le rebond ne faisait
+       qu'amplifier ce mouvement. Seules les largeurs doivent bouger. */
+    .pillars {
+      display: flex;
+      align-items: stretch;
+      height: var(--height-pillars);
+    }
+
+    .pillars__item {
+      --open: 0;
+      /* Rebond à l'ouverture seulement : la courbe est lue sur l'état
+         d'arrivée, donc la remplacer dans les règles « ouvert » suffit.
+         Une carte qui se referme en dépassant ferait un à-coup.
+         C'est l'IMAGE qui portait le rebond visible, pas la carte : le
+         conteneur flex absorbe le dépassement de `flex-grow` (0,0 % mesuré),
+         tandis que la largeur de l'image le montrait en entier. La courbe
+         retenue ne dépasse plus du tout. */
+      --ease-expand: var(--easing-default);
+      flex-grow: calc(1 + var(--open) * 1.2);
+      flex-basis: 0;
+      min-width: 0;
+      overflow: hidden;
+      transition: flex-grow var(--duration-expand) var(--ease-expand);
+    }
+
+    /* La carte ouverte porte `is-open`. Le script la déplace au survol et l'y
+       laisse : c'est la mémoire du dernier survolé, que `:hover` seul ne peut
+       pas tenir. La première la porte au rendu, sans attendre le JS. */
+    .pillars__item.is-open {
+      --open: 1;
+      --ease-expand: var(--easing-expand);
+    }
+
+    /* Repli de sécurité sans JavaScript : le survol ouvre quand même, l'ouverture
+       revient simplement à la première carte quand la souris repart.
+       Règle séparée du sélecteur de classe — l'une ne doit pas dépendre de l'autre. */
+    .pillars__item:hover {
+      --open: 1;
+      --ease-expand: var(--easing-expand);
+    }
+
+    /* Le texte n'apparaît qu'une fois la carte élargie : sinon on le voit se
+       recomposer pendant l'animation de largeur. Le paragraphe garde ses deux
+       lignes, mais sa largeur gagne encore une dizaine de pixels sur la fin, ce
+       qui suffit à déplacer les mots — dix largeurs traversées à l'écran quand
+       le délai était plus court que le déploiement.
+       Le délai vaut donc EXACTEMENT la durée du déploiement, et doit le suivre
+       si elle change. Il suit aussi `--open`, donc il ne joue qu'à l'ouverture :
+       à la fermeture il vaut 0 et le texte s'efface aussitôt, avant que le
+       rétrécissement ne le fasse re-répartir. */
+    .pillars__text {
+      opacity: var(--open);
+      transition: opacity var(--duration-slow) var(--easing-expand)
+        calc(var(--open) * var(--duration-expand));
+    }
+
+    .pillars__media {
+      display: block;
+      flex-shrink: 0;
+      width: calc(var(--open) * var(--width-pillar-image));
+      opacity: var(--open);
+      transition:
+        width var(--duration-expand) var(--ease-expand),
+        opacity var(--duration-slow) var(--easing-expand);
+    }
+
+    .pillars__image {
+      height: 100%;
+      width: var(--width-pillar-image);
+      object-fit: cover;
+      border-radius: var(--radius-card);
+    }
+  }
+
+  /* L'ouverture reste, le glissement disparaît. */
+  @media (prefers-reduced-motion: reduce) {
+    .pillars__item,
+    .pillars__text,
+    .pillars__media {
+      transition: none;
+    }
+  }
+</style>

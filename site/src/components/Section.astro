@@ -1,0 +1,63 @@
+---
+/**
+ * Conteneur de section : rythme vertical et largeur max homogènes.
+ * `tone` pilote le fond — clair par défaut, « muted » pour les sections
+ * alternées (design.md : pas de sections sombres, le contraste vient des nuances).
+ */
+interface Props {
+  /** default = white/primary · muted = white/clear · grey = shade/grey (Figma) */
+  tone?: 'default' | 'muted' | 'grey';
+  id?: string;
+  /** Retire le conteneur centré pour les sections pleine largeur (bande photo). */
+  bleed?: boolean;
+}
+
+const { tone = 'default', id, bleed = false } = Astro.props;
+---
+
+<section class={`section section--${tone} ${bleed ? "section--bleed" : ""}`} id={id}>
+  {bleed ? <slot /> : <div class="section__inner"><slot /></div>}
+</section>
+
+<style>
+  /* La marge latérale est posée ici, hors de la largeur max : le contenu fait
+     donc `--container-max` plein, comme le bloc équipe, le footer et le CTA
+     final. Placée sur `__inner`, elle se serait déduite de la largeur max et
+     les sections auraient été plus étroites que ces trois blocs. */
+  .section {
+    padding-block: var(--section-padding-block);
+    padding-inline: var(--container-padding);
+  }
+
+  /* En pleine largeur, la section ne pose aucune marge : c'est au contenu de
+     gérer son propre alignement — utile pour un rail qui doit défiler d'un
+     bord à l'autre de l'écran.
+     Elle reprend en revanche le rythme vertical de `__inner`, qu'elle
+     remplace : sans lui, l'en-tête collait au contenu. */
+  .section--bleed {
+    padding-inline: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap);
+  }
+
+  .section--default {
+    background: var(--color-white-primary);
+  }
+
+  .section--muted {
+    background: var(--color-white-clear);
+  }
+
+  .section--grey {
+    background: var(--color-shade-grey);
+  }
+
+  .section__inner {
+    max-width: var(--container-max);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--section-gap);
+  }
+</style>

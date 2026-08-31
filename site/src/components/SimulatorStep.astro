@@ -1,0 +1,141 @@
+---
+/**
+ * Une étape du parcours : une question par écran.
+ *
+ * ⚠️ L'aide « en savoir plus » NE VIT PLUS ICI. Elle a quitté le rail pour un
+ * bloc voisin (`SimulatorPanels`) : logée dans l'étape, elle défilait avec elle
+ * et se retrouvait rognée par le découpage horizontal du rail. À côté, elle
+ * reste lisible et l'étape ne porte plus que sa question.
+ */
+interface Props {
+  /** L'identifiant porté par l'URL et par l'ancre (`#etape-3`). */
+  id: string;
+  title: string;
+  /** Rang affiché dans la ligne de tête, sur le total des étapes visibles. */
+  index: number;
+  total: number;
+}
+
+const { id, title, index, total } = Astro.props;
+---
+
+<li class="step" id={`etape-${id}`} data-step={id}>
+  <div class="step__question">
+    {/* ⚠️ La ligne de tête du module : le titre à gauche, une grande valeur à
+        droite. Sur une question il n'y a pas de chiffre à montrer — la décision
+        est « aucune estimation avant la fin » — c'est donc le RANG qui s'y met.
+        La silhouette du module est tenue sans rien dévoiler : « 3/5 » n'est pas
+        une estimation. Au résultat, la vraie valeur reprend cette place. */}
+    <div class="step__head">
+      <h2 class="step__title">{title}</h2>
+      <p class="step__rank" aria-hidden="true">
+        <span data-step-index>{index}</span>/<span data-step-total>{total}</span>
+      </p>
+    </div>
+    <slot />
+  </div>
+
+</li>
+
+<style>
+  /* Voir le garde-fou de `SimulatorWizard` : `display: flex` l'emporterait sur la
+     règle `[hidden] { display: none }`. L'affinage masque son étape
+     « inclinaison » sur un toit plat — sans ceci, elle resterait dans le rail. */
+  .step[hidden] {
+    display: none;
+  }
+
+  .step {
+    /* `0 0 100%` : une question occupe exactement un écran de rail. */
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    /* ⚠️ Sur un parcours, un geste = une question. `Testimonials` s'en passe
+       parce qu'un rail de cartes doit pouvoir filer sur plusieurs lots ; ici
+       sauter une question serait perdre une réponse. */
+    scroll-snap-stop: always;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    /* Le contenu se cale en haut : le rail prend la hauteur de sa plus haute
+       étape, et une question courte ne doit pas flotter au milieu du vide. */
+    justify-content: flex-start;
+    min-width: 0;
+  }
+
+  /* Carte détachée : la question est l'objet actif de l'écran, elle se pose sur
+     le panneau au lieu de s'y fondre. Pas d'ombre — le système n'en a aucune,
+     c'est le fond gris et le rayon qui la décollent. */
+  .step__question {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--pad-card);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-clear);
+  }
+
+  .step__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* ⚠️ LE STYLE `h3`, PAS `h2`. La balise reste un `h2` — c'est la hiérarchie du
+     document, et elle ne se règle pas à l'apparence. Seul l'habillage change :
+     les cinq propriétés sont posées explicitement pour que rien ne retombe sur
+     les styles `h2` de `global.css`. */
+  .step__title {
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+  }
+
+  /* ⚠️ PAS de `tabular-nums` : dans Circular Std la chasse tabulaire élargit
+     aussi l'espace et la barre oblique. La valeur est calée à droite dans un
+     `space-between`, elle grandit vers la gauche sans jamais pousser le titre —
+     elle n'a donc pas besoin d'une chasse fixe pour rester stable. */
+  /* Le rang suit le titre : même famille, même corps, même graisse. Il l'a
+     toujours accompagné sur la même ligne de base — les découpler ferait
+     bancal. */
+  .step__rank {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    /* ⚠️ Plus léger que le titre : le rang l'accompagne, il ne le concurrence
+       pas. Même corps, même famille — seule la graisse les départage. */
+    font-weight: var(--font-weight-book);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+    white-space: nowrap;
+  }
+
+  @media (max-width: 767px) {
+    .step__question {
+      padding: var(--space-12);
+    }
+
+    /* ⚠️ UN CRAN PLUS BAS SUR TÉLÉPHONE — `h4`, pas `h3`. Le passage de `h2` à
+       `h3` ne se voyait pas ici : à ce format, l'échelle ne descend que de 28 à
+       26 px, alors qu'elle tombe de 48 à 26 sur grand écran. La question restait
+       donc exactement aussi massive qu'avant, sur deux lignes, écrasant des
+       réponses à 16 px et repoussant les dernières options sous la ligne de
+       flottaison. À 20/24 la hiérarchie redevient lisible : 20 pour la question,
+       16 pour les réponses, 15 pour l'aide. */
+    .step__title {
+      font-size: var(--text-h4-size);
+      line-height: var(--text-h4-line-height);
+    }
+
+    .step__rank {
+      font-size: var(--text-h4-size);
+      line-height: var(--text-h4-line-height);
+      /* La graisse ne suit PAS `h4` : le rang reste plus léger que sa question,
+         comme sur grand écran. Seule la taille change ici. */
+    }
+  }
+
+</style>

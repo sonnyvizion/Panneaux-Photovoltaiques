@@ -1,0 +1,47 @@
+---
+/**
+ * Emplacement photo en attente d'asset client.
+ *
+ * Volontairement visible et étiqueté : les photos de chantiers, d'équipe et de
+ * réalisations sont listées dans « À compléter » du CLAUDE.md. Tant qu'elles ne
+ * sont pas fournies, mieux vaut un emplacement explicite qu'une image de stock
+ * (principe « pas de stock générique », design.md).
+ *
+ * À remplacer par <Image> d'astro:assets dès réception des fichiers.
+ */
+interface Props {
+  /** Ce que la maquette attend à cet endroit. */
+  label: string;
+  /** Ratio CSS, ex. "4 / 3". */
+  ratio?: string;
+}
+
+const { label, ratio = '4 / 3' } = Astro.props;
+---
+
+<div class="placeholder" style={`aspect-ratio: ${ratio};`} role="img" aria-label={`Photo à fournir : ${label}`}>
+  <span class="placeholder__label">Photo à fournir<br />{label}</span>
+</div>
+
+<style>
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: var(--space-3);
+    background: var(--color-shade-grey);
+    border: var(--border-width) dashed var(--color-shade-strong);
+    border-radius: var(--radius-3);
+    text-align: center;
+  }
+
+  .placeholder__label {
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    color: var(--color-text-tertiary);
+  }
+</style>

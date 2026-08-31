@@ -1,0 +1,121 @@
+---
+/**
+ * En-tête de section : surtitre (style Figma « marker ») + H2 dont un mot est
+ * mis en accent + chapô. Motif repris à l'identique par 6 sections de la home.
+ *
+ * Le mot accentué est passé séparément pour rester dans le HTML (règle d'or #1 :
+ * le texte SEO vit dans le HTML, l'accent est purement visuel).
+ */
+interface Props {
+  overline: string;
+  /** Titre avant le mot accentué. */
+  title: string;
+  /** Mot mis en vert. Optionnel. */
+  highlight?: string;
+  /** Suite du titre après le mot accentué. */
+  titleEnd?: string;
+  /** Seconde ligne, forcée après un retour. Sert quand la maquette impose la
+      coupure au lieu de la laisser au navigateur. */
+  titleLine2?: string;
+  intro?: string;
+  align?: 'center' | 'start';
+  /** Le surtitre alterne entre deux gris selon le fond (relevé Figma). */
+  overlineTone?: 'muted' | 'tertiary';
+}
+
+const {
+  overline,
+  title,
+  highlight,
+  titleEnd,
+  titleLine2,
+  intro,
+  align = 'center',
+  overlineTone = 'muted',
+} = Astro.props;
+---
+
+<header class={`heading reveal heading--${align} heading--overline-${overlineTone}`}>
+  <p class="heading__overline">{overline}</p>
+  <h2 class="heading__title">
+    {title}{highlight && <span class="heading__highlight">{highlight}</span>}{titleEnd}{titleLine2 && (
+      <>
+        <br />
+        {titleLine2}
+      </>
+    )}
+  </h2>
+  {intro && <p class="heading__intro">{intro}</p>}
+</header>
+
+<style>
+  /* Les en-têtes paraissent en FONDU SEUL, sans montée — contrairement aux
+     blocs qui les suivent, qui gardent la leur.
+
+     C'est du texte : le voir glisser oblige l'œil à le suivre avant de pouvoir
+     le lire, alors qu'une carte ou une grille supporte très bien d'arriver en
+     mouvement. Le fondu laisse le titre en place et lisible d'emblée.
+
+     Mise en œuvre par la course elle-même plutôt que par une seconde animation :
+     `reveal-rise` interpole `translateY(var(--reveal-rise))` vers l'identité, et
+     une course nulle ne laisse que l'opacité. Un seul token à poser, aucun
+     mécanisme dupliqué — et la montée revient en changeant cette seule valeur. */
+  .heading {
+    --reveal-rise: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .heading--center {
+    align-items: center;
+    text-align: center;
+  }
+
+  .heading--start {
+    align-items: flex-start;
+    text-align: start;
+  }
+
+  .heading__overline {
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  .heading--overline-muted .heading__overline {
+    color: var(--color-text-muted);
+  }
+
+  .heading--overline-tertiary .heading__overline {
+    color: var(--color-text-tertiary);
+  }
+
+  .heading__title {
+    margin: 0;
+  }
+
+  /* Le mot accentué est GRIS, pas vert : relevé au dev mode Figma
+     (`text-[#a4acac]` sur « certifiée », « devez », « directement »). */
+  .heading__highlight {
+    color: var(--color-shade-strong);
+  }
+
+  /* 16px entre le titre et le chapô. L'écart de la pile vaut 8px et sert au
+     couple surtitre/titre : on n'ajoute ici que le complément, pour ne pas
+     desserrer aussi le surtitre. */
+  .heading__intro {
+    max-width: var(--width-section-intro);
+    margin: calc(var(--space-3) - var(--space-2)) 0 0;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+</style>

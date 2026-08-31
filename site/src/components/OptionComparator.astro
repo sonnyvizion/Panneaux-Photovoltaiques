@@ -1,0 +1,307 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import type { ComparatorRow, SectionCopy } from '../data/content';
+
+/**
+ * Comparateur multi-options — famille B du registre des modules.
+ *
+ * Trois régimes régionaux, quatre critères, une colonne mise en évidence. Le but
+ * du module est de montrer d'un coup d'œil qu'une région n'est identique à
+ * aucune autre — c'est une COMPARAISON, donc un tableau (règle d'or #4), pas
+ * trois paragraphes qui se suivent.
+ *
+ * ⚠️ ZÉRO JAVASCRIPT, comme l'accordéon du site. Les boutons sont des radios,
+ * la mise en évidence est une règle CSS `:has()`. Rien à charger, rien à
+ * hydrater, et le tableau reste entièrement lisible et indexable si le CSS
+ * lui-même ne charge pas.
+ *
+ * ⚠️ C'est un vrai `<table>` avec ses `<th scope>`. Ces données SONT tabulaires :
+ * un lecteur d'écran doit pouvoir annoncer « Certificats verts, Bruxelles, oui »
+ * en naviguant de cellule en cellule. Une grille de `<div>` perdrait cette
+ * lecture croisée, qui est précisément ce que le module apporte.
+ *
+ * ⚠️ Sur téléphone, seule la colonne choisie reste affichée : trois colonnes de
+ * texte sur 390px rendraient chaque cellule illisible. Les boutons cessent d'y
+ * être un simple accent visuel pour devenir la navigation du tableau.
+ */
+interface Props extends SectionCopy {
+  /** En-têtes de colonnes, dans l'ordre — les options comparées. */
+  columns: string[];
+  /** En-tête de la colonne des critères, à gauche. */
+  rowHeader: string;
+  rows: ComparatorRow[];
+  /** Index de la colonne mise en évidence au chargement. */
+  selected?: number;
+  /** Nom du groupe de radios. Unique par page. */
+  id?: string;
+}
+
+const {
+  overline,
+  title,
+  intro,
+  columns,
+  rowHeader,
+  rows,
+  selected = 0,
+  id = 'comparateur',
+} = Astro.props;
+
+/** Ce que chaque état vaut à l'oral. Le signe visible, lui, est décoratif. */
+const STATUS_LABEL = { yes: 'oui', no: 'non', na: 'sans objet' } as const;
+const STATUS_SIGN = { yes: '✓', no: '✕', na: '—' } as const;
+---
+
+<Section tone="grey" id={id}>
+  <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
+
+  <div class="comparator reveal">
+    <fieldset class="comparator__options">
+      <legend class="visually-hidden">Région à mettre en évidence</legend>
+      {/* La grille est ce DIV, pas le `<fieldset>` : une `<legend>` masquée
+          reste dans le flux et occuperait la première cellule. */}
+      <div class="comparator__options-grid" style={`--option-count: ${columns.length}`}>
+        {columns.map((column, index) => (
+          <label class="comparator__option">
+            <input
+              class="comparator__option-input"
+              type="radio"
+              name={`${id}-column`}
+              id={`${id}-col-${index}`}
+              value={index}
+              checked={index === selected}
+            />
+            <span class="comparator__option-label">{column}</span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="comparator__scroll">
+      <table class="comparator__table">
+        <thead>
+          <tr>
+            <th scope="col">{rowHeader}</th>
+            {columns.map((column) => <th scope="col">{column}</th>)}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row) => (
+            <tr>
+              <th scope="row">{row.label}</th>
+              {row.cells.map((cell) => (
+                <td>
+                  {cell.status && (
+                    <>
+                      <span class={`comparator__status comparator__status--${cell.status}`} aria-hidden="true">
+                        {STATUS_SIGN[cell.status]}
+                      </span>
+                      <span class="visually-hidden">{STATUS_LABEL[cell.status]}</span>
+                    </>
+                  )}
+                  {cell.text && <span class="comparator__text">{cell.text}</span>}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</Section>
+
+<style>
+  .comparator {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: var(--width-timeline);
+    margin-inline: auto;
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  /* --- Boutons de sélection --- */
+  .comparator__options {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-inline-size: 0;
+  }
+
+  .comparator__options-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--option-count), 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  .comparator__option {
+    display: flex;
+    min-width: 0;
+  }
+
+  /* Invisible mais focusable — surtout pas `display: none`, qui le sortirait de
+     la navigation clavier. */
+  .comparator__option-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .comparator__option-label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    text-align: center;
+    white-space: nowrap;
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  .comparator__option-input:checked + .comparator__option-label {
+    background: var(--color-highlight-primary);
+  }
+
+  .comparator__option-input:focus-visible + .comparator__option-label {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* --- Tableau --- */
+  .comparator__scroll {
+    overflow-x: auto;
+  }
+
+  /* ⚠️ `table-layout: fixed` : en dimensionnement automatique, la colonne dont
+     une cellule porte la phrase la plus longue (« Tarif prosumer — ~87 €/kWc
+     par an, une charge ») s'élargissait au détriment des deux autres, et les
+     en-têtes ne tombaient plus en face de leurs valeurs. Les options doivent
+     avoir la MÊME largeur : c'est ce qui rend la comparaison lisible. */
+  .comparator__table {
+    width: 100%;
+    table-layout: fixed;
+    border-collapse: collapse;
+    text-align: start;
+  }
+
+  /* La colonne des critères est un libellé court, les trois autres se partagent
+     le reste à parts égales. */
+  .comparator__table :is(th, td):first-child {
+    width: 25%;
+  }
+
+  .comparator__table th,
+  .comparator__table td {
+    padding: var(--space-3) var(--space-2);
+    vertical-align: top;
+    text-align: start;
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .comparator__table thead th {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    text-transform: uppercase;
+  }
+
+  .comparator__table tbody th {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  .comparator__table tbody tr:last-child th,
+  .comparator__table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .comparator__status {
+    display: block;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h4-size);
+    line-height: 1;
+  }
+
+  .comparator__status--yes { color: var(--color-text-primary); }
+  /* Le refus et l'absence sont en gris : ce sont des non-informations, elles ne
+     doivent pas peser autant que ce qui existe. */
+  .comparator__status--no,
+  .comparator__status--na { color: var(--color-text-muted); }
+
+  .comparator__text {
+    display: block;
+    margin-top: var(--space-1);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  /* --- Mise en évidence de la colonne choisie ---
+     Une règle par colonne, en `:has()`. Verbeux mais entièrement statique : pas
+     un octet de JavaScript pour changer une couleur de fond.
+
+     ⚠️ La sélection passe par la POSITION du bouton (`.comparator__option:nth-child(n)`)
+     et non par son `id`. Les deux marchent, mais l'id vient d'une prop : une page
+     qui en passerait un autre casserait silencieusement toutes ces règles. La
+     position, elle, est une propriété du composant.
+
+     Le décalage d'un cran vient de la première colonne, celle des critères. */
+  .comparator:has(.comparator__option:nth-child(1) input:checked) :is(th, td):nth-child(2),
+  .comparator:has(.comparator__option:nth-child(2) input:checked) :is(th, td):nth-child(3),
+  .comparator:has(.comparator__option:nth-child(3) input:checked) :is(th, td):nth-child(4) {
+    background: var(--color-white-clear);
+  }
+
+  @media (max-width: 767px) {
+    .comparator {
+      padding: var(--space-12);
+      gap: var(--space-3);
+    }
+
+    /* ⚠️ Sur téléphone, le tableau ne garde QUE la colonne choisie : trois
+       colonnes de texte sur 390px ne se lisent pas. Les boutons deviennent la
+       navigation du tableau, pas un accent décoratif. */
+    .comparator :is(th, td):nth-child(n + 2) {
+      display: none;
+    }
+
+    .comparator:has(.comparator__option:nth-child(1) input:checked) :is(th, td):nth-child(2),
+    .comparator:has(.comparator__option:nth-child(2) input:checked) :is(th, td):nth-child(3),
+    .comparator:has(.comparator__option:nth-child(3) input:checked) :is(th, td):nth-child(4) {
+      display: table-cell;
+    }
+
+    .comparator__option-label {
+      padding: var(--space-3) var(--space-1);
+      font-size: var(--text-body-sm-size);
+    }
+  }
+</style>

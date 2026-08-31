@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import StateToggle from '../../components/StateToggle.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.6-ombrage-hero.webp';
+import Cloud from '../../assets/icons/ombrage/cloud.svg';
+import Adjustments from '../../assets/icons/ombrage/adjustments.svg';
+import Scissors from '../../assets/icons/ombrage/scissors.svg';
+import {
+  STACKED_ROWS, STACKED_IMAGE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOGGLE_COPY, TOGGLE_STATES, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-ombrage';
+
+/**
+ * Page 2.6 — « Ombrage ».
+ *
+ * Deuxième instance de `StateToggle` (famille C), le composant de la page « Fin
+ * du compteur inversé ». Le cahier le dit lui-même : « même pattern
+ * d'interaction, contenu différent ». Aucune ligne de composant écrite ici.
+ *
+ * La bascule démarre sur l'onduleur string : c'est le montage par défaut, celui
+ * que le visiteur aura si personne ne lui pose la question. Il doit d'abord voir
+ * le problème, puis la réponse.
+ */
+---
+
+<BaseLayout title="Ombrage et panneaux solaires : l'effet domino | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <StateToggle overline={TOGGLE_COPY.overline} title={TOGGLE_COPY.title} intro={TOGGLE_COPY.intro} states={TOGGLE_STATES} selected={0} id="bascule-ombrage" />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Cloud, Adjustments, Scissors][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'ombrage." tone="default" id="faq-ombrage" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />
+</BaseLayout>

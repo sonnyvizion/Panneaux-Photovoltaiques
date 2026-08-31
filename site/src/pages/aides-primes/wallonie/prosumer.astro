@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import LeadStatement from '../../../components/LeadStatement.astro';
+import SliderCalculator from '../../../components/SliderCalculator.astro';
+import Essentials from '../../../components/Essentials.astro';
+import TopicCards from '../../../components/TopicCards.astro';
+import Faq from '../../../components/Faq.astro';
+import FinalCta from '../../../components/FinalCta.astro';
+import heroImage from '../../../assets/pages/1.2-tarif-prosumer-hero.webp';
+/* Icônes livrées pour CETTE page (`img/icones-toutes-pages/1.2-...`). */
+import Bolt from '../../../assets/icons/prosumer-wallonie/bolt.svg';
+import Adjustments from '../../../assets/icons/prosumer-wallonie/adjustments.svg';
+import MapPin from '../../../assets/icons/prosumer-wallonie/map-pin.svg';
+import TrendingUp from '../../../assets/icons/prosumer-wallonie/trending-up.svg';
+import {
+  PROSUMER_DEFAULT,
+  PROSUMER_MAX,
+  PROSUMER_MIN,
+  PROSUMER_STEP,
+} from '../../../scripts/calculators/prosumer';
+import {
+  BRIDGES,
+  ESSENTIALS_COPY,
+  FACTS,
+  FAQ,
+  FIGURES,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  TOPICS,
+  TOPICS_COPY,
+  WIDGET,
+} from '../../../data/pages/aides-primes-wallonie-prosumer';
+
+/**
+ * Page 1.2 du cahier de construction — « Tarif prosumer en Wallonie ».
+ *
+ * Gabarit complet de `pages-contenu.md`, troisième instance : réponse visible →
+ * module → essentiel → creuser → FAQ → pont.
+ *
+ * Module : `SliderCalculator` en modèle `prosumer` (famille A du registre). Le
+ * composant est celui des pages prix et Rénoprêt — seule la formule change, et
+ * elle est passée par son nom.
+ *
+ * ⚠️ Les liens vers `/simulateur` sont écrits SANS paramètre, y compris sur une
+ * page régionale : `scripts/regionLinks.ts` y injecte la région du sélecteur
+ * global. Coder `?region=wallonie` en dur ici le figerait.
+ *
+ * ⚠️ La bande du module REPREND la photo du hero — le client n'a livré que
+ * `1.2-tarif-prosumer-hero`. À réglages `astro:assets` identiques, le navigateur
+ * ne la télécharge qu'une fois : c'est le motif déjà retenu sur la page prix, et
+ * il vaut mieux qu'un emplacement vide.
+ */
+
+/* L'icône est résolue ici, au plus près de son import, alignée sur `TOPICS` par
+   sa position — une carte ajoutée sans icône se voit. */
+const TOPIC_ICONS = [Bolt, Adjustments, MapPin, TrendingUp];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout
+  title="Tarif prosumer Wallonie 2026 : combien ça coûte | Belgreen"
+  transparentHeader
+>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+
+  <SliderCalculator
+    calculator="prosumer"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={PROSUMER_MIN}
+    max={PROSUMER_MAX}
+    step={PROSUMER_STEP}
+    value={PROSUMER_DEFAULT}
+    outputs={WIDGET.outputs}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    image={heroImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+
+  <Essentials
+    overline={ESSENTIALS_COPY.overline}
+    title={ESSENTIALS_COPY.title}
+    intro={ESSENTIALS_COPY.intro}
+    figures={FIGURES}
+    facts={FACTS}
+    bridges={BRIDGES}
+  />
+
+  <TopicCards
+    overline={TOPICS_COPY.overline}
+    title={TOPICS_COPY.title}
+    intro={TOPICS_COPY.intro}
+    items={topics}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de vous décider"
+    intro="Les questions qu'on nous pose le plus souvent sur ce tarif."
+    tone="grey"
+    id="faq-prosumer"
+  />
+
+  <FinalCta
+    title={FINAL_CTA.title}
+    text={FINAL_CTA.text}
+    cta={FINAL_CTA.cta}
+    tone="default"
+  />
+</BaseLayout>

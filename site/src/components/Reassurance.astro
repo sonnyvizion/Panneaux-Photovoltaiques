@@ -1,0 +1,329 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import enphaseImage from '../assets/reassurance/enphase_bloc.webp';
+import enphaseLogo from '../assets/reassurance/enphase-logo.png';
+---
+
+<Section>
+  <SectionHeading
+    overline="Réassurances"
+    title="Une équipe "
+    highlight="certifiée"
+    titleEnd=","
+    titleLine2="des toits qui le prouvent"
+    intro="Plus de 2 400 installations réalisées en Belgique, par une équipe qui connaît vos toits et vos primes régionales."
+  />
+
+  <div class="reassurance reveal">
+    <figure class="reassurance__photo">
+      <Image
+        src={enphaseImage}
+        alt="Deux installateurs Belgreen en tenue de chantier, au coucher du soleil"
+        widths={[400, 800, 1448]}
+        sizes="(min-width: 768px) 33vw, 100vw"
+        quality={75}
+        loading="lazy"
+        class="reassurance__image"
+      />
+      <figcaption class="reassurance__certif">
+        <span class="reassurance__certif-text">
+          <span class="reassurance__certif-label">Certifié</span>
+          <span class="reassurance__certif-name">Enphase</span>
+        </span>
+        <Image
+          src={enphaseLogo}
+          alt=""
+          width={259}
+          height={267}
+          loading="lazy"
+          class="reassurance__certif-logo"
+        />
+      </figcaption>
+    </figure>
+
+    <div class="reassurance__stat">
+      <div class="reassurance__numbers">
+        <p class="reassurance__figure">
+          <span class="reassurance__count" data-count-to="2400">2400</span>+
+        </p>
+        <p class="reassurance__figure-label">installations réalisées</p>
+      </div>
+      <p class="reassurance__text">
+        Une équipe d'installateurs chevronnés, qui connaît les spécificités de
+        chaque toiture belge.
+      </p>
+    </div>
+
+    <div class="reassurance__side">
+      <div class="reassurance__stat reassurance__stat--accent">
+        <div class="reassurance__numbers">
+          <p class="reassurance__figure">
+            <span class="reassurance__count" data-count-to="89">89</span>&nbsp;%
+          </p>
+          <p class="reassurance__figure-label">
+            de nos clients rentabilisés en moins de 10 ans
+          </p>
+        </div>
+        <p class="reassurance__text">Faites des économies sur le long terme.</p>
+      </div>
+
+      <div class="reassurance__rating">
+        <p class="reassurance__rating-score">
+          <span class="reassurance__count" data-count-to="4.8" data-count-decimals="1">4.8</span>/5
+        </p>
+        <p class="reassurance__rating-label">Satisfaction client</p>
+      </div>
+    </div>
+  </div>
+</Section>
+
+<script>
+  import { formatCount, getCountValue } from '../scripts/countUp';
+
+  /** Durée de la montée. Assez longue pour se voir, assez courte pour ne pas retenir. */
+  const COUNT_DURATION = 1400;
+
+  const counts = Array.from(document.querySelectorAll('.reassurance__count'));
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  if (counts.length && !reduced.matches && 'IntersectionObserver' in window) {
+    const run = (el) => {
+      const to = Number(el.dataset.countTo);
+      const decimals = Number(el.dataset.countDecimals ?? 0);
+      if (!Number.isFinite(to)) return;
+
+      // La largeur finale est figée avant de repartir de zéro : sinon la carte
+      // se réagence à chaque chiffre gagné, et c'est du décalage de mise en page.
+      el.style.minWidth = `${el.getBoundingClientRect().width}px`;
+
+      const start = performance.now();
+      const step = (now) => {
+        const progress = Math.min((now - start) / COUNT_DURATION, 1);
+        el.textContent = formatCount(getCountValue(to, progress), decimals);
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          // Une seule fois : un chiffre qui remonte à chaque passage lasse.
+          observer.unobserve(entry.target);
+          run(entry.target);
+        });
+      },
+      { threshold: 0.4 },
+    );
+
+    counts.forEach((el) => observer.observe(el));
+  }
+</script>
+
+<style>
+  .reassurance {
+    display: grid;
+    gap: var(--space-2);
+    grid-template-columns: 1fr;
+  }
+
+  .reassurance__photo {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    margin: 0;
+    padding: var(--pad-card);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    /* Empilé sur mobile, la photo n'a rien pour se donner une hauteur : on
+       reprend celle de la rangée desktop. Au-delà, c'est la grille qui pilote. */
+    min-height: var(--height-rea-block);
+  }
+
+  .reassurance__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Pastille de certification posée sur la photo (Figma : rounded 8, p 15). */
+  .reassurance__certif {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--pad-badge);
+    border-radius: var(--radius-2);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .reassurance__certif-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .reassurance__certif-label {
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .reassurance__certif-name {
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--font-weight-book);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h2-tracking);
+  }
+
+  /* Le logo Enphase est décoratif : le texte porte déjà l'information. */
+  .reassurance__certif-logo {
+    width: auto;
+    height: var(--size-certif-logo);
+    flex-shrink: 0;
+  }
+
+  .reassurance__stat {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border-radius: var(--radius-card);
+    background: var(--color-shade-grey);
+    color: var(--color-ink-900);
+  }
+
+  .reassurance__stat--accent {
+    background: var(--color-main-green);
+    border-radius: var(--radius-3);
+    flex: 1;
+  }
+
+  .reassurance__numbers {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .reassurance__count {
+    display: inline-block;
+    /* Chiffres de largeur constante : sans ça, le nombre tremble à chaque
+       image pendant la montée. */
+    font-variant-numeric: tabular-nums;
+  }
+
+  .reassurance__figure {
+    margin: 0;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-display-mid-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: var(--text-display-mid-line-height);
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .reassurance__figure-label {
+    margin: 0;
+    /* Figma cale cette légende sur 253px : elle passe à la ligne avant le bord
+       de la carte au lieu de s'étirer sur toute la largeur. */
+    max-width: var(--width-figure-label);
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  .reassurance__text {
+    margin: 0;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .reassurance__side {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .reassurance__rating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border-radius: var(--radius-card);
+    background: var(--color-ink-900);
+    min-height: var(--height-rating);
+    flex: 1;
+    color: var(--color-white-clear);
+  }
+
+  .reassurance__rating-score {
+    margin: 0;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-display-mid-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: var(--text-display-mid-line-height);
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .reassurance__rating-label {
+    margin: 0;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  @media (min-width: 768px) {
+    .reassurance {
+      grid-template-columns: repeat(3, 1fr);
+      align-items: stretch;
+      height: var(--height-rea-block);
+    }
+
+    .reassurance__photo {
+      min-height: 0;
+    }
+
+    .reassurance__text {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+
+    .reassurance__side {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .reassurance__rating {
+      flex-direction: row;
+      justify-content: space-between;
+      flex: 0 0 auto;
+      height: var(--height-rating);
+    }
+
+    .reassurance__rating-score {
+      font-family: var(--text-display-little-family);
+      font-size: var(--text-display-little-size);
+      font-weight: var(--text-display-little-weight);
+      line-height: var(--text-display-little-line-height);
+      letter-spacing: var(--text-display-little-tracking);
+    }
+  }
+</style>

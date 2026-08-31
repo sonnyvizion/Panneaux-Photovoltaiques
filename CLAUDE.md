@@ -69,9 +69,11 @@ Boucle visée : lire → simuler → un doute → lire le point précis → repr
 - **Nav** : rangée utilitaire (tél · région · FR/NL) + 4 piliers en méga-menus + 1 bouton.
   Pas d'entrée « Simulateur » (redondante avec le bouton). Méga-menu Aides organisé PAR RÉGION.
   Voir `docs/nav.md`.
-- **Simulateur** : on garde le calculateur live existant. Corrections à faire (CO₂ faux,
-  régionalisation prosumer/Flandre). Réécrire le pont devis (modèle direct, pas « 3 devis »)
-  + ajouter la qualification. Voir `docs/simulateur.md`.
+- **Simulateur** : ⚠️ le code n'est PLUS un calculateur live — c'est un parcours
+  **une question par écran**, et l'estimation n'arrive qu'au bout. `simulateur.md`
+  décrit encore l'ancien fonctionnement et reste à mettre à jour. Le compte rendu a
+  été refondu (fond uni, une seule action adaptée au résultat) et la courbe
+  d'amortissement est passée dans le rapport PDF. Voir `etat.md`.
 - **Pages de contenu** : « colonne vertébrale visible, profondeur repliée ».
   Réponse visible → module → essentiel → accordéons → FAQ balisée → ponts. Voir `docs/pages-contenu.md`.
 - **Interactivité & perf** : catalogue de briques réutilisables + règles Core Web Vitals.
@@ -81,6 +83,7 @@ Boucle visée : lire → simuler → un doute → lire le point précis → repr
 
 | Doc | Contenu |
 |-----|---------|
+| `etat.md` | **Où on en est** — ce qui marche, ce qui bloque, la dette connue |
 | `docs/stack.md` | Choix techniques (Astro + Sanity), perf, hébergement, i18n |
 | `docs/architecture.md` | Sitemap complet, blocs de la home, funnel devis, matched-funnel |
 | `docs/funnel.md` | Segmentation audience, matrice profil×stade, séquences email, métriques |

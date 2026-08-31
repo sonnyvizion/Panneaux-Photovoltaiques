@@ -1,0 +1,494 @@
+---
+import { Image } from 'astro:assets';
+import Logo from './Logo.astro';
+import PaybackChart from './PaybackChart.astro';
+import enphaseLogo from '../assets/reassurance/enphase-logo.png';
+import {
+  MONTH_LABELS,
+  KWH_PER_KWC_YEAR,
+  POWER_DEFAULT,
+  formatPower,
+} from '../scripts/powerEstimate';
+import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
+import {
+  ELECTRICITY_PRICE,
+  INJECTION_PRICE,
+  REGION_DEFAULT,
+  SELF_CONSUMPTION_RATE,
+  regionLabel,
+} from '../scripts/savings';
+import { formatEuro, formatNumber } from '../scripts/format';
+import { AREA_DEFAULT, CONSUMPTION_DEFAULT, aidesLabel, simulate, type Range } from '../scripts/simulator';
+import { ANSWER_LABELS, answerSummary } from '../scripts/reportSummary';
+import { CHART_BASIS_LEAD, CHART_PEAK_LABEL, chartSeasonNote } from '../scripts/chartCopy';
+
+/**
+ * LE RAPPORT — le document que le visiteur reçoit par e-mail.
+ *
+ * ⚠️ CE COMPOSANT *EST* LE PDF, il n'en est pas un aperçu. Le document sera
+ * fabriqué en ouvrant cette page et en l'imprimant — c'est le seul format qui
+ * survive au choix d'hébergeur, encore ouvert : il marche avec un navigateur
+ * sans tête, avec un service tiers de conversion, et même avec un Ctrl+P
+ * manuel en attendant. Aucune bibliothèque de dessin PDF n'entre dans le
+ * bundle du site.
+ *
+ * ⚠️ LES CHIFFRES VIENNENT DE L'URL, ET SONT CALCULÉS DANS LA PAGE. Le site est
+ * statique et le simulateur calcule 100 % côté client (`stack.md`) : le rapport
+ * ne peut pas être pré-rendu par visiteur. Le HTML porte donc un cas médian, et
+ * `reportDocument.ts` le réécrit à partir des réponses transportées. Un moteur
+ * de rendu PDF exécute le JavaScript — c'est ce qui rend l'approche viable.
+ *
+ * ⚠️ CE QU'ON MONTRE ICI ET PAS À L'ÉCRAN : la courbe d'amortissement. Elle a
+ * été retirée du compte rendu (elle y prenait un tiers de la hauteur pour dire
+ * ce que deux tuiles disent en trois mots) et devient la valeur propre du
+ * document.
+ *
+ * ⚠️ TOUJOURS EN FOURCHETTES, comme l'écran. Le rapport ne débloque PAS le
+ * chiffrage précis : c'est l'étude sur place qui le fait, option A validée avec
+ * le client. Un rapport plus précis que l'écran viderait l'étude de sa raison
+ * d'être.
+ */
+
+const initial = simulate({
+  region: REGION_DEFAULT,
+  property: 'maison',
+  roof: 'inclinee',
+  orientation: 'sud',
+  area: AREA_DEFAULT,
+  consumptionMode: 'facture',
+  bill: '100-200',
+  consumption: CONSUMPTION_DEFAULT,
+});
+
+const euro = (r: Range) =>
+  `${formatEuro(Math.round(r.low / 50) * 50)} – ${formatEuro(Math.round(r.high / 50) * 50)}`;
+const kwh = (r: Range) =>
+  `${formatNumber(Math.round(r.low / 50) * 50)} – ${formatNumber(Math.round(r.high / 50) * 50)} kWh`;
+const kwc = (r: Range) =>
+  `${r.low.toFixed(1).replace('.', ',')} – ${r.high.toFixed(1).replace('.', ',')} kWc`;
+
+const peak = Math.max(...initial.monthly);
+
+/* Le cas médian sert de valeur par défaut à chaque ligne ; le script les
+   remplace et masque celles qui n'ont pas lieu d'être. */
+const medianAnswers = new Map(
+  answerSummary({
+    region: REGION_DEFAULT,
+    property: 'maison',
+    roof: 'inclinee',
+    orientation: 'sud',
+    area: AREA_DEFAULT,
+    consumptionMode: 'facture',
+    bill: '100-200',
+    consumption: CONSUMPTION_DEFAULT,
+  }).map(({ label, value }) => [label, value]),
+);
+---
+
+<article class="doc" data-report>
+  {/* ── L'en-tête. Il doit tenir seul : le document circule sans le site. ── */}
+  <header class="doc__head">
+    <div class="doc__brand">
+      {/* ⚠️ `size="footer"`, et ce n'est pas un détail de mise en page : c'est la
+          seule variante qui sert le BLOC COMPLET (pictogramme + nom). La
+          variante `header` bascule sur le pictogramme seul sous 1024px — or une
+          A4 fait ~794px, le document sortait donc avec un soleil anonyme en
+          tête. Un document qui circule seul, souvent relu des semaines plus
+          tard, doit porter le nom de la marque en toutes lettres. */}
+      <Logo size="footer" />
+      <p class="doc__tagline">L’équipe qui installe, pas un comparateur de devis</p>
+    </div>
+    <p class="doc__meta">
+      Estimation du <time data-report-date>—</time><br />
+      <span data-report-region>{regionLabel(REGION_DEFAULT)}</span>
+    </p>
+  </header>
+
+  {/* ── Le verdict ── */}
+  <section class="doc__verdict">
+    <h1 class="doc__title">Votre estimation solaire</h1>
+    <p class="doc__headline" data-report-out="savings">{euro(initial.savings)} / an</p>
+    <p class="doc__unit">d’économies estimées sur votre facture d’électricité</p>
+    <p class="doc__aides" data-report-aides>{aidesLabel(REGION_DEFAULT)}</p>
+  </section>
+
+  {/* ── Le dimensionnement ── */}
+  <section class="doc__section">
+    <h2 class="doc__h2">L’installation qu’il vous faut</h2>
+    <dl class="doc__metrics">
+      <div class="doc__metric">
+        <dt>Puissance recommandée</dt>
+        <dd data-report-out="kwc">{kwc(initial.kwc)}</dd>
+      </div>
+      <div class="doc__metric">
+        <dt>Production annuelle</dt>
+        <dd data-report-out="production">{kwh(initial.production)}</dd>
+      </div>
+      <div class="doc__metric">
+        <dt>Budget indicatif</dt>
+        <dd data-report-out="cost">{euro(initial.cost)}</dd>
+      </div>
+    </dl>
+  </section>
+
+  {/* ── La rentabilité : LA courbe, l'argument propre au document ── */}
+  <section class="doc__section">
+    <h2 class="doc__h2">Quand rentrez-vous dans vos frais&nbsp;?</h2>
+    <PaybackChart kwc={POWER_DEFAULT} region={REGION_DEFAULT} live showCost hypotheses={false} />
+  </section>
+
+  {/* ── La production dans l'année ── */}
+  <section class="doc__section doc__section--break">
+    <h2 class="doc__h2">La production dans l’année</h2>
+    <figure class="doc__monthly" data-report-monthly>
+      <div class="doc__plot">
+        <p class="doc__peak" aria-hidden="true">
+          {CHART_PEAK_LABEL}&nbsp;: <span data-report-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+        </p>
+        <div class="doc__bars" aria-hidden="true">
+          {MONTH_LABELS.map((label, index) => (
+            <span class="doc__bar" data-report-bar style={`--bar: ${(initial.monthly[index] / peak) * 100}%`}>
+              <span class="doc__bar-label">{label}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+      <figcaption>
+        {/* ⚠️ LE GRAPHE DESSINE LE CAS CENTRAL, le reste du rapport parle en
+            fourchettes. Le scénario se nomme, sinon les barres se lisent comme
+            la borne haute. Même correction qu'à l'écran. */}
+        <p class="doc__basis">
+          {CHART_BASIS_LEAD}{' '}
+          <span data-report-basis>{formatPower(initial.kwcTypical)}</span>.
+        </p>
+        {/* ⚠️ C'EST LA BOSSE D'ÉTÉ qui envoie le surplus au réseau, pas le
+            creux d'hiver — la version précédente disait l'inverse. */}
+        <p>{chartSeasonNote()}</p>
+      </figcaption>
+    </figure>
+  </section>
+
+  {/* ── Les réponses : sans elles, le document ne se rattache à rien ── */}
+  <section class="doc__section">
+    <h2 class="doc__h2">Ce sur quoi cette estimation repose</h2>
+    <dl class="doc__answers" data-report-answers>
+      {ANSWER_LABELS.map((label) => (
+        <div class="doc__answer" data-report-answer={label} hidden={!medianAnswers.has(label)}>
+          <dt>{label}</dt>
+          <dd>{medianAnswers.get(label) ?? '—'}</dd>
+        </div>
+      ))}
+    </dl>
+  </section>
+
+  {/* ── Les hypothèses : pilier de crédibilité, dit le brief ── */}
+  <section class="doc__section">
+    <h2 class="doc__h2">Hypothèses de calcul</h2>
+    <ul class="doc__assumptions">
+      <li>Productible : {KWH_PER_KWC_YEAR} kWh par kWc et par an, corrigé de l’orientation et de la pente.</li>
+      <li>Autoconsommation retenue : <span data-report-rate>{Math.round(SELF_CONSUMPTION_RATE * 100)} %</span> (source CWaPE).</li>
+      <li>Électricité achetée à {ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €/kWh, valeur vérifiée en 2026.</li>
+      <li>Surplus injecté valorisé à {(INJECTION_PRICE * 100).toFixed(0)} c€/kWh (tarif de marché).</li>
+      <li>Dégradation des panneaux : 0,5 % par an, sur un horizon de 25 ans.</li>
+      <li>Facteur d’émission du réseau belge : ~{GRID_CO2_G_PER_KWH} g CO₂/kWh (source Elia).</li>
+      <li>CO₂ évité : <span data-report-out="co2">{formatCo2(initial.co2Kg)}</span> par an.</li>
+    </ul>
+  </section>
+
+  {/* ── Le pied. Le document circule seul : il doit savoir d'où il vient. ── */}
+  <footer class="doc__foot">
+    <div class="doc__certif">
+      <Image src={enphaseLogo} alt="Installateur certifié Enphase" width={27} height={28} />
+      <p>Installateur certifié Enphase · vous parlez à l’équipe qui pose vos panneaux.</p>
+    </div>
+    <p class="doc__mention">
+      Estimation indicative, calculée sur des moyennes régionales et sur les
+      réponses rappelées ci-dessus. Elle ne remplace pas une étude sur place :
+      seule la visite d’un toit permet un chiffrage ferme. Ce document n’est pas
+      une offre commerciale.
+    </p>
+  </footer>
+</article>
+
+<style>
+  /* ═══════════════════════════════════════════════════════════════════════
+     UN DOCUMENT, PAS UNE PAGE WEB.
+
+     La largeur est celle d'une A4 utile (210mm moins les marges), en `mm` et
+     non en pixels : c'est la seule unité qui donne le même résultat à l'écran
+     et à l'impression. Le reste du site n'a pas ce problème — lui n'est jamais
+     imprimé.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .doc {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-48);
+    width: 170mm;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: var(--space-48) var(--space-24);
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+  }
+
+  .doc__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-24);
+    padding-bottom: var(--space-24);
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .doc__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .doc__tagline,
+  .doc__meta {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .doc__meta {
+    text-align: end;
+  }
+
+  .doc__verdict {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .doc__title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    color: var(--color-text-tertiary);
+  }
+
+  .doc__headline {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-display-mid-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .doc__unit,
+  .doc__aides {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  .doc__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .doc__h2 {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+  }
+
+  .doc__metrics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--gap-cards);
+    margin: 0;
+  }
+
+  .doc__metric {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    min-width: 0;
+    padding: var(--space-24) var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+    text-align: center;
+  }
+
+  .doc__metric dt,
+  .doc__answer dt {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .doc__metric dd {
+    margin: 0;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  /* --- Les barres mensuelles --- */
+  .doc__monthly {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    padding: var(--space-24) var(--space-3) var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+  }
+
+  .doc__plot {
+    position: relative;
+    padding-top: var(--space-24);
+  }
+
+  .doc__peak {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: 1;
+  }
+
+  .doc__bars {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    align-items: end;
+    gap: var(--gap-sim-bars);
+    height: var(--height-sim-bars);
+    border-top: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .doc__bar {
+    position: relative;
+    display: block;
+    height: var(--bar);
+    border-radius: var(--radius-1) var(--radius-1) 0 0;
+    background: var(--color-ink-700);
+  }
+
+  .doc__bar-label {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    padding-top: var(--space-1);
+    text-align: center;
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-micro-size);
+    line-height: 1;
+  }
+
+  /* Deux paragraphes dans la légende : rythme explicite, marges par défaut
+     neutralisées. Les deux autres sélecteurs du groupe ne sont pas concernés. */
+  .doc__monthly figcaption {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .doc__monthly figcaption p {
+    margin: 0;
+  }
+
+  .doc__monthly figcaption,
+  .doc__assumptions,
+  .doc__mention {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* --- Les réponses --- */
+  .doc__answers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2) var(--space-24);
+    margin: 0;
+  }
+
+  .doc__answer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  /* `display: flex` bat la règle UA sur `[hidden]` — sans ce garde-fou, les
+     lignes sans objet réapparaissent. Le projet l'a déjà payé cinq fois. */
+  .doc__answer[hidden] {
+    display: none;
+  }
+
+  .doc__answer dd {
+    margin: 0;
+    text-align: end;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .doc__assumptions {
+    margin: 0;
+    padding-left: var(--space-3);
+  }
+
+  .doc__foot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-24);
+    border-top: var(--border-width) solid var(--color-shade-grey);
+  }
+
+  .doc__certif {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     L'IMPRESSION — c'est ce mode qui produit le PDF.
+     ═══════════════════════════════════════════════════════════════════════ */
+  @media print {
+    .doc {
+      width: auto;
+      padding: 0;
+      gap: var(--space-24);
+    }
+
+    /* ⚠️ Une section ne doit jamais être coupée entre deux pages : un graphique
+       à cheval sur une pliure est illisible, et un titre orphelin en bas de
+       page fait amateur. */
+    .doc__section,
+    .doc__verdict,
+    .doc__foot {
+      break-inside: avoid;
+    }
+
+    .doc__section--break {
+      break-before: page;
+    }
+  }
+</style>

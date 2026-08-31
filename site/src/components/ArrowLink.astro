@@ -1,0 +1,131 @@
+---
+/**
+ * Lien de carte : libellé souligné + pastille flèche.
+ * Deux teintes de pastille selon le fond de la carte.
+ */
+interface Props {
+  href: string;
+  variant?: 'lime' | 'ink';
+}
+
+const { href, variant = 'lime' } = Astro.props;
+---
+
+<a class={`arrow-link arrow-link--${variant}`} href={href}>
+  <span class="arrow-link__label"><slot /></span>
+  <span class="arrow-link__badge" aria-hidden="true">
+    <svg class="arrow-link__arrow" width="12" height="12" viewBox="0 0 14 14" fill="none">
+      <path
+        d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5"
+        stroke="currentColor"
+        stroke-width="1.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+</a>
+
+<style>
+  .arrow-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    text-decoration: none;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+    color: var(--color-text-primary);
+    transition: opacity var(--duration-medium) var(--easing-expand);
+  }
+
+  .arrow-link__label {
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  .arrow-link__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--size-arrow-badge);
+    height: var(--size-arrow-badge);
+    border-radius: var(--radius-pill);
+    flex-shrink: 0;
+  }
+
+  .arrow-link--lime .arrow-link__badge {
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .arrow-link--ink .arrow-link__badge {
+    background: var(--color-text-primary);
+    color: var(--color-text-inverted);
+  }
+
+  /* Même geste que sur les CTA : la flèche se lève à 45°. La classe n'est pas
+     scopée par hasard — la carte parente la pilote aussi au survol. */
+  .arrow-link__arrow {
+    /* Même registre que l'ouverture des piliers, seul endroit où ce composant
+       est utilisé : à 150ms en `ease`, le relevé de la flèche claquait au
+       milieu d'un déploiement devenu lent. */
+    transition: transform var(--duration-medium) var(--easing-expand);
+  }
+
+  .arrow-link:hover {
+    opacity: var(--opacity-hover);
+  }
+
+  .arrow-link:hover .arrow-link__arrow,
+  .arrow-link:active .arrow-link__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .arrow-link:focus-visible .arrow-link__arrow {
+    transform: rotate(-45deg);
+  }
+
+  @media (max-width: 767px) {
+    .arrow-link {
+      transition: none;
+    }
+
+    .arrow-link:hover {
+      opacity: 1;
+    }
+
+    .arrow-link__arrow {
+      transition: none;
+    }
+
+    .arrow-link:hover .arrow-link__arrow,
+    .arrow-link:active .arrow-link__arrow,
+    .arrow-link:focus-visible .arrow-link__arrow {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .arrow-link__arrow {
+      transition: none;
+    }
+
+    .arrow-link:hover .arrow-link__arrow,
+    .arrow-link:active .arrow-link__arrow {
+      transform: none;
+    }
+
+    .arrow-link:focus-visible .arrow-link__arrow {
+      transform: none;
+    }
+  }
+
+  .arrow-link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+</style>

@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import SliderCalculator from '../../components/SliderCalculator.astro';
+import OrientationModule from '../../components/OrientationModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import MapPin from '../../assets/icons/rendement-production/map-pin.svg';
+import Snowflake from '../../assets/icons/rendement-production/snowflake.svg';
+import TrendingDown from '../../assets/icons/rendement-production/trending-down.svg';
+import Cloud from '../../assets/icons/rendement-production/cloud.svg';
+import heroImage from '../../assets/pages/3.2-rendement-production-hero.webp';
+import { POWER_DEFAULT, POWER_MAX, POWER_MIN, POWER_STEP } from '../../scripts/powerEstimate';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, ORIENT_WIDGET, TOPICS, TOPICS_COPY, WIDGET,
+} from '../../data/pages/rentabilite-rendement-production';
+
+/**
+ * Page 3.2 — « Rendement & production ».
+ *
+ * Troisième page à monter le modèle `power` sur `SliderCalculator`, après la
+ * page prix et « Nombre de panneaux ». Seul l'ACCENT change de tuile : ici
+ * Production/an, parce que c'est le sujet. Zéro ligne de composant.
+
+ */
+---
+<BaseLayout title="Production panneaux solaires Belgique : combien de kWh par an ? | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <SliderCalculator
+    calculator="power"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={POWER_MIN}
+    max={POWER_MAX}
+    step={POWER_STEP}
+    value={POWER_DEFAULT}
+    outputs={WIDGET.outputs}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    image={heroImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+  {/* ⚠️ LA BRIQUE DU CATALOGUE, montée ici pour EXPLIQUER. Le simulateur monte
+      exactement le même composant sur le même modèle, à son étape 3 — c'est le
+      contrat : « on construit chaque brique une fois, on la réutilise dans le
+      simulateur (pour calculer) ET dans le contenu (pour expliquer) ». */}
+  <OrientationModule
+    overline={ORIENT_WIDGET.overline}
+    title={ORIENT_WIDGET.title}
+    intro={ORIENT_WIDGET.intro}
+    bridgeLabel={ORIENT_WIDGET.bridgeLabel}
+    cta={ORIENT_WIDGET.cta}
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [MapPin, Snowflake, TrendingDown, Cloud][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la production." tone="grey" id="faq-rendement" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

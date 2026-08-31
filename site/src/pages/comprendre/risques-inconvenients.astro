@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import Coin from '../../assets/icons/risques-inconvenients/coin.svg';
+import HomeMove from '../../assets/icons/risques-inconvenients/home-move.svg';
+import Cloud from '../../assets/icons/risques-inconvenients/cloud.svg';
+import Home2 from '../../assets/icons/risques-inconvenients/home-2.svg';
+import heroImage from '../../assets/pages/4.11-risques-inconvenients-hero.webp';
+import listeImage from '../../assets/pages/4.11-risques-inconvenients-liste.webp';
+import {
+  STACKED_ROWS, STACKED_ALT, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/comprendre-risques-inconvenients';
+
+/**
+ * Page 4.11 — « Risques & inconvénients ».
+ *
+ * Gabarit standard de famille E : aucun module, sur prescription du cahier.
+ * Aucun composant nouveau — c'est le même assemblage que les quatorze autres
+ * pages de cette famille déjà livrées.
+ *
+ * Photos et icônes du pilier livrées et branchées.
+ */
+---
+
+<BaseLayout title="Inconvénients des panneaux solaires : ce qu'il faut savoir | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: listeImage, imageAlt: STACKED_ALT }} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, HomeMove, Cloud, Home2][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les limites du solaire." tone="grey" id="faq-risques-inconvenients" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

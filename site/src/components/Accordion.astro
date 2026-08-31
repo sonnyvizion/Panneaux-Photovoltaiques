@@ -1,0 +1,212 @@
+---
+/**
+ * Accordéon natif <details>/<summary> — fonctionne sans JavaScript.
+ *
+ * line : séparateur pleine largeur (défaut du site, design.md §5)
+ * card : boîte arrondie qui passe en sombre à l'ouverture (FAQ de la home)
+ */
+interface Props {
+  question: string;
+  variant?: 'line' | 'card';
+  open?: boolean;
+  /**
+   * Couleur de la boîte ouverte (variante `card` uniquement).
+   *
+   * `ink` : sombre, texte inversé — les FAQ.
+   * `lime` : aplat d'accent, texte en encre — « Creuser le sujet ».
+   *
+   * Ce sont les deux traitements de la maquette, pas une palette libre : le
+   * système n'a que ces deux aplats pour marquer un élément ouvert.
+   */
+  openTone?: 'ink' | 'lime';
+  /**
+   * Fond de la boîte FERMÉE (variante `card` uniquement).
+   *
+   * Il dépend de la surface qui porte l'accordéon, pas du composant : sur une
+   * section grise il faut du blanc (la FAQ de la home), sur une section blanche
+   * il faut du gris (la FAQ des pages de contenu), et posé dans un panneau
+   * blanc il ne faut rien du tout (« Creuser le sujet »). D'où un paramètre :
+   * la valeur juste n'est connue que de l'appelant.
+   */
+  closedTone?: 'white' | 'grey' | 'none';
+  /**
+   * Nom de groupe. Deux accordéons qui le partagent deviennent exclusifs :
+   * ouvrir l'un referme l'autre. C'est natif — aucun JavaScript.
+   * Sans support (navigateurs antérieurs à fin 2023), l'attribut est ignoré et
+   * les accordéons restent simplement indépendants.
+   */
+  name?: string;
+}
+
+const {
+  question,
+  variant = 'line',
+  open = false,
+  openTone = 'ink',
+  closedTone = 'white',
+  name,
+} = Astro.props;
+---
+
+<details
+  class={`accordion accordion--${variant} accordion--open-${openTone} accordion--closed-${closedTone}`}
+  open={open}
+  name={name}
+>
+  <summary class="accordion__summary">
+    <span>{question}</span>
+    <svg class="accordion__chevron" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+      <path d="M3 5L7 9L11 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </summary>
+  <div class="accordion__content">
+    <slot />
+  </div>
+</details>
+
+<style>
+  .accordion {
+    color: var(--color-text-primary);
+  }
+
+  .accordion__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .accordion__summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .accordion__summary:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+
+  .accordion__chevron {
+    transition: transform var(--duration-medium) var(--easing-default);
+    flex-shrink: 0;
+  }
+
+  .accordion[open] .accordion__chevron {
+    transform: rotate(180deg);
+  }
+
+  .accordion__content {
+    padding-top: var(--space-3);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  /* --- variante ligne --- */
+  .accordion--line {
+    border-bottom: var(--border-width) solid var(--color-shade-grey);
+    padding: var(--space-3) 0;
+  }
+
+  /* --- variante carte (relevé dev mode Figma, nœuds 441:402 et 466:1477) --- */
+  .accordion--card {
+    padding: var(--space-24) var(--pad-card-lg);
+    border-radius: var(--radius-card);
+    background: var(--accordion-closed-bg, transparent);
+    transition:
+      background var(--duration-medium) var(--easing-default),
+      border-radius var(--duration-medium) var(--easing-default);
+  }
+
+  .accordion--closed-white {
+    --accordion-closed-bg: var(--color-white-primary);
+  }
+
+  .accordion--closed-grey {
+    --accordion-closed-bg: var(--color-shade-grey);
+  }
+
+  .accordion--card .accordion__summary {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  /* L'aplat d'ouverture est porté par une variable : les deux tons ne diffèrent
+     que par leur couple fond/texte, tout le reste du geste est commun.
+     ⚠️ ÉCART ASSUMÉ : la maquette de page pilier agrandit le libellé d'un
+     accordéon ouvert (22 → 26px, nœuds 466:1483 et 466:1458), pas celle de la
+     home (441:412). Il reste ici à sa taille fermée dans les deux cas : changer
+     le corps du titre à l'ouverture décale le texte sous le curseur et fait
+     sauter la pile — c'est exactement le défaut relevé sur l'accordéon des
+     piliers (design.md §6). */
+  .accordion--card[open] {
+    padding: var(--pad-card-lg-block) var(--pad-card-lg);
+    border-radius: var(--radius-panel);
+    background: var(--accordion-open-bg);
+    color: var(--accordion-open-fg);
+  }
+
+  .accordion--open-ink {
+    --accordion-open-bg: var(--color-ink-800);
+    --accordion-open-fg: var(--color-text-inverted);
+  }
+
+  .accordion--open-lime {
+    --accordion-open-bg: var(--color-highlight-primary);
+    --accordion-open-fg: var(--color-text-primary);
+  }
+
+  /* Figma pose du display-little (Circular Book 22) : trop gros pour une
+     réponse de cette longueur — passé en texte courant. */
+  .accordion--card[open] .accordion__content {
+    padding-top: var(--space-64);
+    color: var(--accordion-open-fg);
+  }
+
+  /* La boîte se resserre sur mobile (Figma 466:1915 et 466:1939) : 35px de
+     padding horizontal sur un écran de 390 laissent moins de 300px au libellé,
+     qui passe alors systématiquement à deux lignes. */
+  @media (max-width: 767px) {
+    .accordion--card,
+    .accordion--card[open] {
+      padding: var(--pad-card) var(--space-24);
+    }
+
+    /* L'écart titre → réponse suit : à 64px, l'aplat ouvert occupait la moitié
+       de l'écran pour deux lignes de texte. */
+    .accordion--card[open] .accordion__content {
+      padding-top: var(--space-4);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .accordion__content {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+  }
+
+  /* Le vert du focus ne se voit que sur du sombre : posé sur le lime, deux
+     couleurs vives voisines, l'anneau disparaît. Sur l'aplat clair, c'est
+     l'encre qui marque. */
+  .accordion--open-ink[open] .accordion__summary:focus-visible {
+    outline-color: var(--color-main-green);
+  }
+
+  .accordion--open-lime[open] .accordion__summary:focus-visible {
+    outline-color: var(--color-ink-900);
+  }
+</style>

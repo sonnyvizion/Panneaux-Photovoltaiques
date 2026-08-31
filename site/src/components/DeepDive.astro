@@ -1,0 +1,165 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Accordion from './Accordion.astro';
+import type { DeepDiveItem, SectionCopy } from '../data/content';
+
+/**
+ * « Creuser le sujet » — la profondeur repliée du gabarit
+ * (`pages-contenu.md` §4, Figma 466:1445).
+ *
+ * On replie le long, jamais le cœur : ce qui est ici est secondaire par
+ * construction — cas particuliers, arbitrages techniques, historique. Le
+ * contenu reste dans le HTML et Google l'indexe replié (logique mobile-first) ;
+ * le repli est un choix d'UX, pas un compromis SEO.
+ *
+ * Les accordéons sont exclusifs (attribut `name` natif, aucun JavaScript) :
+ * une seule réponse ouverte à la fois, sinon la colonne s'allonge sous l'image
+ * et la mise en page à deux colonnes perd son équilibre.
+ */
+interface Props extends SectionCopy {
+  items: DeepDiveItem[];
+  image?: ImageMetadata;
+  imageAlt?: string;
+  placeholder?: string;
+  /** Doit être unique dans la page — il nomme le groupe d'exclusivité. */
+  id?: string;
+}
+
+const {
+  overline,
+  title,
+  intro,
+  items,
+  image,
+  imageAlt = '',
+  placeholder,
+  id = 'creuser',
+} = Astro.props;
+---
+
+<Section tone="grey" id={id}>
+  <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
+
+  <div class="deep-dive reveal">
+    <div class="deep-dive__panel">
+      {items.map((item) => (
+        <Accordion
+          question={item.title}
+          variant="card"
+          open={item.open}
+          openTone="lime"
+          closedTone="none"
+          name={`deep-dive-${id}`}
+        >
+          {item.text}
+        </Accordion>
+      ))}
+    </div>
+
+    <div class="deep-dive__media">
+      {image ? (
+        <Image
+          src={image}
+          alt={imageAlt}
+          {/* La colonne fait la moitié du conteneur au-delà de 1024px, et
+              n'est pas rendue du tout en deçà (voir le `display: none` plus
+              bas) — elle ne dépasse donc jamais la moitié de `--container-max`,
+              soit 720px. Plafonner à 800 évite de générer des variantes que ce
+              `sizes` ne demandera jamais. */}
+          width={800}
+          widths={[480, 640, 800]}
+          sizes="(min-width: 1024px) 50vw, 100vw"
+          format="webp"
+          quality={72}
+          loading="lazy"
+          class="deep-dive__image"
+        />
+      ) : (
+        <div class="deep-dive__image deep-dive__image--placeholder" role="img" aria-label={`Photo à fournir : ${placeholder}`}>
+          <span>Photo à fournir<br />{placeholder}</span>
+        </div>
+      )}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .deep-dive {
+    display: grid;
+    gap: var(--pad-card-lg-block);
+    width: 100%;
+  }
+
+  /* Le panneau blanc est le fond des accordéons : eux n'en ont pas
+     (`closedTone="none"`), seul l'élément ouvert pose son aplat lime. C'est ce
+     qui fait que l'ouverture se voit — sur des cartes toutes remplies, elle se
+     lirait comme un simple changement de teinte. */
+  .deep-dive__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pad-card);
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  .deep-dive__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-panel);
+  }
+
+  .deep-dive__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--height-figure-card);
+    padding: var(--space-3);
+    background: var(--color-white-primary);
+    border: var(--border-width) dashed var(--color-shade-strong);
+    text-align: center;
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    color: var(--color-text-tertiary);
+  }
+
+  /* ⚠️ L'image DISPARAÎT sur mobile (Figma 466:1913 : le bloc n'a plus que sa
+     colonne d'accordéons). Elle n'illustre rien de précis — elle équilibre une
+     mise en page à deux colonnes. Empilée sous les accordéons, elle ne ferait
+     qu'ajouter un téléchargement et repousser la FAQ. `display: none` et non
+     un masquage visuel : combiné au `loading="lazy"` de l'image, un conteneur
+     masqué n'entre jamais dans le viewport, donc le fichier n'est pas
+     téléchargé — c'est bien un gain de perf mobile, pas seulement d'affichage. */
+  @media (max-width: 1023px) {
+    .deep-dive__media {
+      display: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .deep-dive__panel {
+      gap: var(--space-2);
+      padding: var(--space-2);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    /* Deux colonnes égales, mais c'est la colonne des accordéons qui commande
+       la hauteur : l'image la suit en `cover`. Une hauteur fixe la ferait
+       déborder dès qu'une réponse s'ouvre. */
+    .deep-dive {
+      grid-template-columns: 1fr 1fr;
+      align-items: stretch;
+    }
+
+    .deep-dive__media {
+      min-height: var(--height-deep-dive);
+    }
+  }
+</style>

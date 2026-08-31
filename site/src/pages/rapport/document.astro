@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ReportDocument from '../../components/ReportDocument.astro';
+
+/**
+ * LA PAGE QUI *EST* LE PDF.
+ *
+ * ⚠️ Ce n'est pas une page du site : ni nav, ni footer, ni fil de lecture. Ce
+ * qu'on ouvre ici, c'est le document — pour le relire, pour le vérifier pendant
+ * le développement, et surtout pour l'imprimer. Le rendu PDF consistera à
+ * charger cette adresse avec les réponses en paramètres, attendre
+ * `data-report-ready` sur `<html>`, puis imprimer.
+ *
+ * ⚠️ `noindex` : cette page n'a de sens qu'accompagnée de réponses, et une URL
+ * nue afficherait un cas médian sans rapport avec qui que ce soit.
+ *
+ * ⚠️ Pourquoi une PAGE et pas une bibliothèque PDF : l'hébergeur n'est pas
+ * tranché (`stack.md` hésite encore entre Cloudflare Pages et Netlify), et le
+ * moteur d'impression en dépendra. Une page imprimable survit à ce choix — elle
+ * marche avec un navigateur sans tête, avec un service tiers de conversion, et
+ * avec un Ctrl+P en attendant. Aucun paquet de dessin PDF n'entre dans le
+ * bundle du site.
+ */
+---
+
+<BaseLayout title="Votre estimation solaire — Belgreen" noindex bare>
+  <ReportDocument />
+</BaseLayout>
+
+<script>
+  import { initReportDocument } from '../../scripts/reportDocument';
+  initReportDocument();
+</script>

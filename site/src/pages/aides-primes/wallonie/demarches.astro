@@ -1,0 +1,76 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import LeadStatement from '../../../components/LeadStatement.astro';
+import StepsTimeline from '../../../components/StepsTimeline.astro';
+import Faq from '../../../components/Faq.astro';
+import FinalCta from '../../../components/FinalCta.astro';
+import heroImage from '../../../assets/pages/1.3-demarches-wallonie-hero.webp';
+/* Icônes livrées pour CETTE page. Le dossier en contient exactement autant que
+   la timeline a d'étapes — elles sont faites pour elle. */
+import FileCheck from '../../../assets/icons/demarches-wallonie/file-check.svg';
+import Home from '../../../assets/icons/demarches-wallonie/home.svg';
+import Tool from '../../../assets/icons/demarches-wallonie/tool.svg';
+import Send from '../../../assets/icons/demarches-wallonie/send.svg';
+import {
+  FAQ,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  TIMELINE,
+  TIMELINE_COPY,
+} from '../../../data/pages/aides-primes-wallonie-demarches';
+
+/**
+ * Page 1.3 du cahier de construction — « Démarches administratives Wallonie ».
+ *
+ * ⚠️ GABARIT ALLÉGÉ : hero → transition → timeline → FAQ → pont. Pas de
+ * « L'essentiel » ni de « Creuser le sujet », contrairement aux autres pages du
+ * pilier. C'est prescrit par le cahier, et c'est juste : une procédure n'a pas
+ * de profondeur à replier, elle a un ordre à respecter.
+ *
+ * ⚠️ Les liens vers `/simulateur` sont écrits SANS paramètre : `regionLinks.ts`
+ * y injecte la région du sélecteur global.
+ */
+
+const TIMELINE_ICONS = [FileCheck, Home, Tool, Send];
+const steps = TIMELINE.map((step, index) => ({ ...step, icon: TIMELINE_ICONS[index] }));
+---
+
+<BaseLayout
+  title="Démarches panneaux solaires Wallonie : le parcours complet | Belgreen"
+  transparentHeader
+>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+
+  <StepsTimeline
+    overline={TIMELINE_COPY.overline}
+    title={TIMELINE_COPY.title}
+    intro={TIMELINE_COPY.intro}
+    steps={steps}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de vous décider"
+    intro="Les questions qu'on nous pose le plus souvent sur ces démarches."
+    tone="default"
+    id="faq-demarches-wallonie"
+  />
+
+  <FinalCta
+    title={FINAL_CTA.title}
+    text={FINAL_CTA.text}
+    cta={FINAL_CTA.cta}
+    tone="grey"
+  />
+</BaseLayout>

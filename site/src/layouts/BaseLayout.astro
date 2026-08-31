@@ -1,0 +1,63 @@
+---
+import '@fontsource/geist-mono/500.css';
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/500.css';
+import '../styles/tokens.css';
+import '../styles/fonts.css';
+import '../styles/global.css';
+import NavBar from '../components/NavBar.astro';
+import SearchOverlay from '../components/SearchOverlay.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  title: string;
+  noindex?: boolean;
+  /**
+   * La page ouvre sur un hero photo, sur lequel la nav se pose en transparence.
+   * Faux partout ailleurs : le header prend alors son état détaché dès le rendu.
+   *
+   * Header et footer vivent ici et non dans les pages : la nav était rendue à
+   * l'intérieur de `Hero`, ce qui interdisait toute navigation sur les ~54
+   * autres pages du sitemap.
+   */
+  transparentHeader?: boolean;
+  /**
+   * La page N'EST PAS une page du site : ni nav, ni footer, ni défilement
+   * piloté. Réservé au rapport (`/rapport/document`), qui est un DOCUMENT
+   * destiné à être imprimé — une nav en haut d'un PDF n'a aucun sens, et le
+   * défilement adouci n'a personne à servir dans un moteur d'impression.
+   */
+  bare?: boolean;
+}
+
+const { title, noindex = false, transparentHeader = false, bare = false } = Astro.props;
+---
+
+<html lang="fr">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		{noindex && <meta name="robots" content="noindex, follow" />}
+		<title>{title}</title>
+	</head>
+	<body>
+		{!bare && <NavBar overHero={transparentHeader} />}
+		{/* La recherche vit ici et non dans `NavBar` : elle est ouverte depuis le
+		    header, mais c'est un dialogue de PAGE, pas un morceau de navigation.
+		    Rendue dans la nav, elle aurait hérité de son empilement et de son
+		    repli au défilement. */}
+		{!bare && <SearchOverlay />}
+		<slot />
+		{!bare && <Footer />}
+		{!bare && (
+			<script>
+				import { initSmoothScroll } from '../scripts/smoothScroll';
+				import { initRegion } from '../scripts/regionLinks';
+				initSmoothScroll();
+				initRegion(document);
+			</script>
+		)}
+	</body>
+</html>

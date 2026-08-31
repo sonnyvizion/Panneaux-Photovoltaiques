@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import FigureModule from '../../components/FigureModule.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.15-camping-car-hero.webp';
+import ArrowsLeftRight from '../../assets/icons/camping-car/arrows-left-right.svg';
+import Bolt from '../../assets/icons/camping-car/bolt.svg';
+import Battery from '../../assets/icons/camping-car/battery.svg';
+import {
+  STACKED_ROWS, STACKED_IMAGE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-camping-car';
+
+/**
+ * Page 2.15 — « Camping-car ».
+ *
+ * ⚠️ PONT FINAL SANS BOUTON (`cta={null}`), sur consigne du cahier : « ce public
+ * n'est pas la cible principale du funnel devis résidentiel ». La page se
+ * termine sur une clôture honnête — nous ne faisons pas de 12 V — plutôt que sur
+ * un CTA qui produirait un lead inexploitable. Voir le fichier de données.
+ */
+---
+<BaseLayout title="Panneau solaire pour camping-car : l'essentiel | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} image={heroImage} />
+  <div id="essentiel-camping-car">
+    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
+  </div>
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Bolt, ArrowsLeftRight, Battery][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le solaire embarqué." tone="grey" id="faq-camping-car" />
+  <FinalCta overline={FINAL_CTA.overline} title={FINAL_CTA.title} text={FINAL_CTA.text} cta={null} tone="default" />
+</BaseLayout>

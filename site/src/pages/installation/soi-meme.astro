@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Essentials from '../../components/Essentials.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.17-installer-soi-meme-hero.webp';
+import UserCheck from '../../assets/icons/installer-soi-meme/user-check.svg';
+import Tool from '../../assets/icons/installer-soi-meme/tool.svg';
+import AlertTriangle from '../../assets/icons/installer-soi-meme/alert-triangle.svg';
+import Coin from '../../assets/icons/installer-soi-meme/coin.svg';
+import {
+  BRIDGES, EDITORIAL, EDITORIAL_IMAGE, ESSENTIALS_COPY, FACTS, FAQ,
+  FIGURES, FINAL_CTA, HERO, LEAD, LIMIT, LIMIT_COPY, TOPICS, TOPICS_COPY
+} from '../../data/pages/installation-soi-meme';
+
+/**
+ * Page 2.17 — « Installer soi-même ».
+ *
+ * Module : les deux colonnes « permis / pas permis » (famille F), rendues par
+ * `TopicCards` avec listes internes — c'est l'usage qui a motivé l'ajout
+ * d'`items` à `TopicCard`.
+ *
+ * ⚠️ CTA final À CONFIRMER par le client (le cahier le signale) : la page
+ * propose d'en parler, elle n'affirme pas que le service partiel existe.
+ */
+---
+<BaseLayout title="Installer ses panneaux solaires soi-même : ce qui est permis | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <div id="limite-autoinstallation">
+    <TopicCards overline={LIMIT_COPY.overline} title={LIMIT_COPY.title} intro={LIMIT_COPY.intro} items={LIMIT} tone="grey" />
+  </div>
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, placeholder: EDITORIAL_IMAGE }} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [UserCheck, Tool, AlertTriangle, Coin][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'auto-installation." tone="grey" id="faq-soi-meme" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

@@ -1,0 +1,212 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Corps de texte en Inter (Figma), titres en Circular Std. */
+body {
+  background: var(--color-white-primary);
+  color: var(--color-text-primary);
+  font-family: var(--text-body-sm-family);
+  font-size: var(--text-body-sm-size);
+  font-weight: var(--text-body-sm-weight);
+  line-height: var(--text-body-sm-line-height);
+  letter-spacing: var(--text-body-sm-tracking);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+
+h1 {
+  font-family: var(--text-h1-family);
+  font-size: var(--text-h1-size);
+  font-weight: var(--text-h1-weight);
+  line-height: var(--text-h1-line-height);
+  letter-spacing: var(--text-h1-tracking);
+}
+
+h2 {
+  font-family: var(--text-h2-family);
+  font-size: var(--text-h2-size);
+  font-weight: var(--text-h2-weight);
+  line-height: var(--text-h2-line-height);
+  letter-spacing: var(--text-h2-tracking);
+}
+
+h3 {
+  font-family: var(--text-h3-family);
+  font-size: var(--text-h3-size);
+  font-weight: var(--text-h3-weight);
+  line-height: var(--text-h3-line-height);
+  letter-spacing: var(--text-h3-tracking);
+}
+
+h4 {
+  font-family: var(--text-h4-family);
+  font-size: var(--text-h4-size);
+  font-weight: var(--text-h4-weight);
+  line-height: var(--text-h4-line-height);
+  letter-spacing: var(--text-h4-tracking);
+}
+
+p {
+  margin: 0;
+}
+
+/* ⚠️ `<figure>` porte une marge par défaut du navigateur — `1em 40px`, soit
+   40px de chaque côté. Elle passait inaperçue parce que `Reassurance` et
+   `Testimonials` la remettaient à zéro chacun de leur côté ; les deux figures
+   ajoutées depuis (le graphique du compte rendu et celui du rapport) ne l'ont
+   pas fait, et se sont retrouvées avec 40px d'air parasite dont rien dans le
+   CSS ne rendait compte. Le reset était incomplet, pas les composants. */
+figure {
+  margin: 0;
+}
+
+/* Texte réservé aux lecteurs d'écran. Les 1px ne sont pas des valeurs de
+   design mais l'idiome standard de masquage accessible.
+
+   ⚠️ PAS de `position: absolute`, volontairement. Sans ancêtre positionné, un
+   élément absolu prend la racine du document pour bloc conteneur : il échappe
+   alors au découpage de toute zone défilante qui le contient, et étire la page
+   jusqu'à sa position dans le rail. C'est ce qui provoquait un défilement
+   horizontal de 2700px sur la home, via les mentions « 5 étoiles sur 5 » des
+   témoignages. En restant dans le flux, l'élément est toujours détouré. */
+.visually-hidden {
+  display: inline-block;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Défilement fluide (Lenis) — reprise de `lenis/dist/lenis.css`.
+   Recopié ici plutôt qu'importé : la bibliothèque n'est chargée qu'en desktop,
+   par import dynamique, et un import dynamique de CSS n'émet aucun asset au
+   build. Ces règles sont inertes tant que la classe `lenis` est absente. */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis:not(.lenis-autoToggle).lenis-stopped {
+  overflow: clip;
+}
+
+.lenis [data-lenis-prevent],
+.lenis [data-lenis-prevent-wheel],
+.lenis [data-lenis-prevent-touch],
+.lenis [data-lenis-prevent-vertical],
+.lenis [data-lenis-prevent-horizontal] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+.lenis.lenis-autoToggle {
+  transition-property: overflow;
+  transition-duration: 1ms;
+  transition-behavior: allow-discrete;
+}
+
+/* Apparition à l'entrée dans l'écran — fondu + légère montée (design.md §6).
+
+   Timeline de vue : aucun JavaScript, aucun observateur, l'animation est
+   portée par le compositeur. `@supports` la rend inoffensive là où ce n'est
+   pas supporté — le bloc reste simplement visible, jamais masqué.
+
+   Volontairement PAS de flou : c'est la propriété la plus coûteuse des trois
+   et elle dégrade la lisibilité du texte pendant le mouvement. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      /* Propriétés détaillées, jamais le raccourci `animation` : le minifieur
+         y replie `animation-timeline`, or Chrome n'accepte pas encore la
+         timeline dans le raccourci — la déclaration entière devient invalide
+         et l'animation ne part pas. */
+      animation-name: reveal-rise;
+      animation-duration: auto;
+      /* Décélération : le bloc arrive vite puis se pose, au lieu d'accompagner
+         le défilement à vitesse constante jusqu'au dernier pixel. */
+      animation-timing-function: ease-out;
+      animation-fill-mode: both;
+      animation-timeline: view();
+      /* La course se compte en `cover`, pas en `entry` : `entry` ne dure que la
+         hauteur de l'élément, donc un titre montait ses 64px en une centaine
+         de pixels de défilement — presque la vitesse de la page, ce qui se lit
+         comme un bond. Étalée sur `cover`, la montée devient une dérive. */
+      animation-range: entry 15% cover 32%;
+    }
+
+    @keyframes reveal-rise {
+      from {
+        opacity: 0;
+        transform: translateY(var(--reveal-rise));
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+}
+
+/* Roulement de libellé — geste partagé.
+   Le libellé sort par le haut, réapparaît par le bas et se repose avec un léger
+   dépassement. Une seule ligne suffit : le saut du haut vers le bas se fait hors
+   du cadre de coupe, à mi-parcours, donc invisible.
+
+   Défini ici et non dans un composant : il sert les CTA (`Button.astro`) ET les
+   liens des méga-menus (`NavBar.astro`). Astro ne renomme pas les keyframes, un
+   composant pourrait donc emprunter celles d'un autre — mais ce serait une
+   dépendance implicite, qui casserait au premier découpage du CSS.
+
+   L'appelant doit fournir le cadre : `overflow: hidden` sur le parent, la ligne
+   en `display: block`. ⚠️ Et `line-height: normal` sur ce cadre — à 1, il rogne
+   les jambages des p, q et j. */
+@keyframes label-roll {
+  0% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+  49.9% {
+    transform: translateY(calc(var(--label-roll-lift) * -1));
+  }
+  50% {
+    transform: translateY(var(--label-roll-lift));
+    animation-timing-function: var(--easing-bounce);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

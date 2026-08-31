@@ -1,0 +1,511 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+
+/**
+ * ⚠️ AVIS DE DÉMONSTRATION — À NE PAS METTRE EN LIGNE.
+ * Les trois premiers viennent de la maquette, les six suivants sont écrits pour
+ * remplir le carrousel. Publier de faux avis clients est une pratique
+ * commerciale trompeuse : à remplacer par des avis authentiques et sourcés
+ * (CLAUDE.md, « À compléter »). Les villes couvrent les trois régions,
+ * conformément au périmètre du projet.
+ *
+ * Valeurs de mise en forme relevées au dev mode Figma (nœud 356:455).
+ */
+const testimonials = [
+  {
+    name: 'Marie V.',
+    city: 'Ixelles',
+    quote:
+      "Résultat reçu en 2 minutes, l'équipe a pris rendez-vous rapidement. Très professionnel.",
+    rating: 5,
+  },
+  {
+    name: 'Thomas D.',
+    city: 'Waterloo',
+    quote:
+      "J'étais sceptique mais l'estimation était proche du devis final. Rentabilisé en 8 ans.",
+    rating: 5,
+  },
+  {
+    name: 'Sophie L.',
+    city: 'Namur',
+    quote:
+      "Pas de démarchage, pas d'intermédiaire : j'ai eu mon devis directement par l'équipe qui a posé les panneaux.",
+    rating: 4,
+  },
+  {
+    name: 'Koen B.',
+    city: 'Gand',
+    quote:
+      "Le calcul tenait compte du régime flamand, ce qu'aucun autre simulateur ne faisait correctement.",
+    rating: 5,
+  },
+  {
+    name: 'Amina R.',
+    city: 'Schaerbeek',
+    quote:
+      "Toit orienté est-ouest, je pensais que c'était perdu. On m'a expliqué le contraire, chiffres à l'appui.",
+    rating: 5,
+  },
+  {
+    name: 'Julien M.',
+    city: 'Liège',
+    quote:
+      'Visite technique une semaine après la simulation, pose en deux jours. Aucun décalage avec ce qui était annoncé.',
+    rating: 4,
+  },
+  {
+    name: 'Els D.',
+    city: 'Louvain',
+    quote:
+      "On m'a dit franchement que ma toiture demandait des travaux avant la pose. J'ai apprécié qu'on ne me vende pas n'importe quoi.",
+    rating: 5,
+  },
+  {
+    name: 'Pierre-Yves C.',
+    city: 'Mons',
+    quote:
+      'La prime wallonne était déjà déduite dans la fourchette. Pas de mauvaise surprise à la facture.',
+    rating: 5,
+  },
+  {
+    name: 'Nadia K.',
+    city: 'Uccle',
+    quote:
+      "Le même interlocuteur du premier appel jusqu'à la mise en service. Ça change de mes expériences précédentes.",
+    rating: 4,
+  },
+];
+
+/** Repris de la maquette : la course est découpée en trois, pas en pages. */
+const PROGRESS_SEGMENTS = 3;
+---
+
+<Section bleed>
+  <div class="testimonials__gutter">
+    <SectionHeading
+    overline="Témoignages"
+    title="Ils nous ont fait confiance"
+      intro="Des propriétaires belges qui ont testé le simulateur, puis rencontré l'équipe qui a posé leurs panneaux."
+    />
+  </div>
+
+  <div class="testimonials__wrapper reveal">
+    {/* `tabindex` : une zone défilante doit être atteignable au clavier, sans
+        quoi son contenu devient inaccessible sans souris. */}
+    <ul
+      class="testimonials"
+      tabindex="0"
+      role="region"
+      aria-label="Avis de clients, faites défiler horizontalement"
+    >
+      {testimonials.map((item) => (
+        <li class="testimonials__item">
+          <figure class="testimonials__figure">
+            <figcaption class="testimonials__author">
+              <span class="testimonials__name">{item.name}</span>
+              <span class="testimonials__city">{item.city}</span>
+            </figcaption>
+            <blockquote class="testimonials__quote">«&nbsp;{item.quote}&nbsp;»</blockquote>
+            <p class="testimonials__rating">
+              <span class="visually-hidden">{item.rating} étoiles sur 5</span>
+              <span aria-hidden="true">{'★'.repeat(item.rating)}{'☆'.repeat(5 - item.rating)}</span>
+            </p>
+          </figure>
+        </li>
+      ))}
+    </ul>
+
+    {/* Commandes, pas simples repères : sans barre de défilement visible, un
+        utilisateur à la souris n'a aucun moyen d'atteindre les lots suivants. */}
+    <div class="testimonials__progress testimonials__gutter">
+      {Array.from({ length: PROGRESS_SEGMENTS }).map((_, index) => (
+        <button
+          type="button"
+          class={`testimonials__progress-step ${index === 0 ? 'is-active' : ''}`}
+          data-segment={index}
+        >
+          <span class="visually-hidden">
+            Voir les avis {index * 3 + 1} à {index * 3 + 3}
+          </span>
+        </button>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<script>
+  import {
+    getNextSegment,
+    getProgressIndex,
+    getSegmentTarget,
+    shouldYieldToPage,
+  } from '../scripts/carouselProgress';
+  import { getSmoothScroll } from '../scripts/smoothScroll';
+
+  /** Cadence de l'avance automatique. */
+  const AUTOPLAY_DELAY = 5000;
+
+  const rail = document.querySelector('.testimonials');
+  const steps = Array.from(document.querySelectorAll('.testimonials__progress-step'));
+  const items = Array.from(document.querySelectorAll('.testimonials__item'));
+
+  if (rail && steps.length) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let current = 0;
+    let ticking = false;
+    let timer = 0;
+
+    /* Une fois arrêtée, l'avance ne repart pas : reprendre la main sur un
+       carrousel qui redémarre tout seul est le pire des deux mondes. */
+    const stopAutoplay = () => {
+      if (!timer) return;
+      window.clearInterval(timer);
+      timer = 0;
+    };
+
+    const update = () => {
+      current = getProgressIndex(
+        rail.scrollLeft,
+        rail.scrollWidth,
+        rail.clientWidth,
+        steps.length,
+      );
+      steps.forEach((step, i) => step.classList.toggle('is-active', i === current));
+      ticking = false;
+    };
+
+    const goTo = (index) => {
+      const target = items[getSegmentTarget(index, items.length, steps.length)];
+      if (!target) return;
+      // Écart mesuré plutôt qu'`offsetLeft` : le rail n'est pas positionné,
+      // son `offsetParent` n'est donc pas celui qu'on croit.
+      // On retranche la gouttière : sans elle, la carte se collerait au bord de
+      // l'écran au lieu de s'aligner sur le reste de la page.
+      const pad = parseFloat(getComputedStyle(rail).scrollPaddingLeft) || 0;
+      const delta =
+        target.getBoundingClientRect().left -
+        rail.getBoundingClientRect().left -
+        pad;
+      rail.scrollTo({
+        left: rail.scrollLeft + delta,
+        behavior: reduced.matches ? 'auto' : 'smooth',
+      });
+    };
+
+    /* Course cumulée avant de changer de lot, et verrou le temps que le
+       défilement doux se pose. */
+    const WHEEL_STEP = 60;
+    const WHEEL_LOCK = 600;
+    let wheelTravel = 0;
+    let wheelLocked = false;
+
+    /* Deux corrections dans un même écouteur, non passif : `preventDefault`
+       est le seul moyen d'empêcher l'accrochage du geste par le rail.
+
+       1. Geste oblique, et seulement sans Lenis. Chrome attribue un geste
+          entier au premier défileur qu'il accroche : un mouvement de trackpad
+          légèrement de travers était happé par le rail, qui ne défile pas
+          verticalement, et la page se figeait. Lenis, lui, neutralise les
+          gestes avant qu'ils n'atteignent le rail — d'où le retrait de
+          `data-lenis-prevent`, qui n'existait que pour le défilement
+          horizontal natif, aujourd'hui remplacé par le pas-à-pas ci-dessous.
+
+       2. Geste horizontal. Les points d'accroche sont posés par lot, donc à
+          près de 1500px l'un de l'autre. En `mandatory`, tout geste qui ne
+          franchit pas la moitié de cet écart est ramené à son point de départ
+          — le rail paraissait bloqué. On traduit donc le geste en changement
+          de lot, en réutilisant le même `goTo` que les puces. Le défilement
+          reste natif, on ne fait que choisir la destination (règle d'or #5). */
+    rail.addEventListener(
+      'wheel',
+      (event) => {
+        if (shouldYieldToPage(event.deltaX, event.deltaY)) {
+          /* Quand Lenis tourne, il neutralise déjà tous les gestes de la page
+             et le rail ne peut pas les accrocher : ne rien faire ici, le
+             renvoyer à la main relançait son animation à chaque événement et
+             le défilement devenait deux fois plus lent au-dessus des avis. */
+          if (getSmoothScroll()) return;
+          event.preventDefault();
+          window.scrollBy(0, event.deltaY);
+          return;
+        }
+
+        // Geste vertical pur : il n'accroche rien, le natif fait déjà le bon
+        // travail.
+        if (event.deltaX === 0) return;
+
+        event.preventDefault();
+        if (wheelLocked) return;
+
+        wheelTravel += event.deltaX;
+        if (Math.abs(wheelTravel) < WHEEL_STEP) return;
+
+        const direction = wheelTravel > 0 ? 1 : -1;
+        wheelTravel = 0;
+        const next = Math.min(
+          Math.max(current + direction, 0),
+          steps.length - 1,
+        );
+        if (next === current) return;
+
+        stopAutoplay();
+        goTo(next);
+        wheelLocked = true;
+        window.setTimeout(() => {
+          wheelLocked = false;
+        }, WHEEL_LOCK);
+      },
+      { passive: false },
+    );
+
+    rail.addEventListener(
+      'scroll',
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(update);
+      },
+      { passive: true },
+    );
+
+    // Le nombre de cartes visibles change avec la largeur : on recale.
+    window.addEventListener('resize', update, { passive: true });
+
+    steps.forEach((step, index) => {
+      step.addEventListener('click', () => {
+        stopAutoplay();
+        goTo(index);
+      });
+    });
+
+    /* Le rail manipulé à la main arrête aussi l'avance : continuer de pousser
+       les cartes pendant que l'utilisateur les fait défiler serait hostile.
+       On écoute la manipulation directe, pas l'événement `scroll` — celui-ci
+       est également émis par nos propres défilements programmés. */
+    ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach((type) => {
+      rail.addEventListener(type, stopAutoplay, { passive: true });
+    });
+
+    // Jamais d'avance automatique si l'utilisateur a demandé moins de mouvement.
+    if (!reduced.matches && items.length > steps.length) {
+      timer = window.setInterval(
+        () => goTo(getNextSegment(current, steps.length)),
+        AUTOPLAY_DELAY,
+      );
+    }
+  }
+</script>
+
+<style>
+  /* Gouttière de page : reproduit l'alignement des autres sections — la marge,
+     ou le centrage au-delà de `--container-max`, selon le plus grand.
+
+     En `vw` et non en `%` : un pourcentage placé dans une variable se résout
+     sur l'élément qui l'UTILISE. Les cartes en tiraient donc une valeur
+     différente de celle du rail, et l'écart entre lots ne tombait pas juste.
+     Aucun risque de débordement : la largeur du rail reste en `100%`, seul cet
+     écart interne est exprimé en `vw`. */
+  .testimonials__gutter,
+  .testimonials {
+    --gutter: max(
+      var(--container-padding),
+      calc((100vw - var(--container-max)) / 2)
+    );
+  }
+
+  .testimonials__gutter {
+    padding-inline: var(--gutter);
+  }
+
+  .testimonials__wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  /* Rail à défilement natif avec accroche : une carte par écran sur mobile,
+     trois en desktop. Pas de carrousel JavaScript — le glissement ne
+     s'explique pas mieux en le réimplémentant (règle d'or #5). */
+  /* Flex et non grille : l'écart entre deux lots est posé en marge sur la 4e
+     et la 7e carte. En grille, cette marge est prise DANS la piste et rétrécit
+     la carte au lieu d'écarter les lots ; en flex elle s'ajoute à la base. */
+  .testimonials {
+    display: flex;
+    gap: var(--space-24);
+    list-style: none;
+    margin: 0;
+    /* Le rail court d'un bord à l'autre de l'écran ; la gouttière en padding
+       aligne la première carte sur le reste de la page, et les suivantes
+       peuvent défiler jusqu'au bord sans être coupées par un conteneur. */
+    padding: 0 var(--gutter) var(--space-2);
+    min-width: 0;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    /* Les cartes s'accrochent sur la gouttière, pas sur le bord de l'écran. */
+    scroll-padding-inline: var(--gutter);
+    /* Explicitement `hidden` : ne poser que `overflow-x: auto` force l'autre
+       axe hors de `visible`, et le rail devient un conteneur de défilement
+       VERTICAL de course nulle. Sur macOS, Chrome réserve son rebond élastique
+       au défileur le plus interne sous le curseur : la section montait puis
+       redescendait avant que la page ne reprenne la main. Rien ne dépasse en
+       hauteur, `hidden` ne rogne donc rien. */
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    /* Sans objet depuis le retrait de `data-lenis-prevent`, conservé comme
+       garde-fou si l'attribut revenait : Lenis pose alors un
+       `overscroll-behavior: contain` en raccourci, donc sur les DEUX axes :
+       le rail absorbait alors la molette verticale sans la transmettre à la
+       page, qui restait bloquée dès qu'on le survolait. */
+    overscroll-behavior-y: auto;
+    /* La barre native ferait doublon avec l'indicateur de la maquette. */
+    scrollbar-width: none;
+  }
+
+  .testimonials::-webkit-scrollbar {
+    display: none;
+  }
+
+  .testimonials:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-card);
+  }
+
+  /* Mobile : une carte par écran, donc chaque carte est un point d'arrêt. */
+  .testimonials__item {
+    flex: 0 0 85%;
+    scroll-snap-align: start;
+  }
+
+  .testimonials__figure {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-24);
+    height: 100%;
+    margin: 0;
+    padding: var(--space-24);
+    border-radius: var(--radius-panel);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .testimonials__author {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    color: var(--color-ink-700);
+  }
+
+  .testimonials__name {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .testimonials__city {
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .testimonials__quote {
+    margin: 0;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .testimonials__rating {
+    margin: 0;
+    text-align: end;
+    font-size: var(--size-star);
+    line-height: var(--text-h1-line-height);
+  }
+
+  .testimonials__progress {
+    display: flex;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+
+  .testimonials__progress-step {
+    width: var(--width-progress-step);
+    height: var(--height-progress-step);
+    border-radius: var(--radius-pill);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    background: var(--color-ink-700);
+    opacity: 0.35;
+    transition:
+      background-color var(--duration-fast) var(--easing-default),
+      opacity var(--duration-fast) var(--easing-default);
+  }
+
+  .testimonials__progress-step.is-active {
+    background: var(--color-ink-900);
+    opacity: 1;
+  }
+
+  .testimonials__progress-step:hover {
+    opacity: 1;
+  }
+
+  .testimonials__progress-step:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  @media (min-width: 768px) {
+    .testimonials__quote {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+
+    /* Trois cartes par écran, les deux écarts déduits pour qu'elles tombent
+       juste : la quatrième commence exactement au bord, sans dépassement. */
+    /* Trois cartes dans la zone de contenu : `100%` y désigne déjà la largeur
+       du rail gouttières exclues, il ne faut pas les retrancher deux fois. */
+    .testimonials__item {
+      flex-basis: calc((100% - var(--space-24) * 2) / 3);
+    }
+
+    /* Défilement par lot de trois : seules les 1re, 4e et 7e cartes sont des
+       points d'arrêt. Avec une accroche sur chacune, le rail se calait carte
+       par carte et les lots se chevauchaient. */
+    .testimonials__item {
+      scroll-snap-align: none;
+    }
+
+    /* Pas de `scroll-snap-stop: always` : il retenait le rail à CHAQUE lot, si
+       bien qu'un geste de retour un peu ample se faisait accrocher trois fois
+       avant d'arriver. L'accroche reste `mandatory`, donc le rail se pose
+       toujours net sur un lot — il peut simplement en traverser plusieurs. */
+    .testimonials__item:nth-child(3n + 1) {
+      scroll-snap-align: start;
+    }
+
+    /* Deux gouttières entre deux lots. Un lot occupe exactement la largeur
+       utile ; avec cet écart, le lot suivant démarre au-delà du bord de
+       l'écran — aucune quatrième carte ne dépasse au repos, alors que le rail
+       reste pleine largeur pendant le défilement. */
+    .testimonials__item:nth-child(3n + 1):not(:first-child) {
+      margin-inline-start: calc(var(--gutter) * 2 - var(--space-24));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .testimonials__progress-step {
+      transition: none;
+    }
+  }
+</style>

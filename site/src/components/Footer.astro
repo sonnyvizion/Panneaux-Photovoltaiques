@@ -1,0 +1,254 @@
+---
+import Logo from './Logo.astro';
+import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES, publishedLinks } from '../data/site';
+
+const year = new Date().getFullYear();
+
+/**
+ * Le footer reste curé : 4 liens par pilier + « Voir tout ». Il ne reprend pas
+ * l'arborescence complète des méga-menus — 42 liens en bas de page ne servent
+ * ni le lecteur ni le maillage. `publishedLinks` garantit qu'il ne diverge
+ * jamais du header sur ce qui est liable.
+ */
+const columns = PILLARS.map((pillar) => ({
+  pillar,
+  links: publishedLinks(pillar).slice(0, 4),
+}));
+---
+
+<footer class="footer">
+  <div class="footer__inner">
+    <div class="footer__brand">
+      <Logo size="footer" />
+      <p class="footer__tagline">
+        L'équipe qui installe, pas un comparateur de devis
+      </p>
+    </div>
+
+    {/* Plan de site complet — profondeur SEO (architecture.md, bloc 8) */}
+    <nav class="footer__columns" aria-label="Plan du site">
+      {columns.map(({ pillar, links }) => (
+        <div class="footer__column">
+          {/* Pas de <h2> ici : 4 titres de colonne de footer pollueraient le
+              plan de titres de la page (règle d'or #1, SEO d'abord). Le repère
+              structurel est porté par le <nav aria-label>. */}
+          <p class="footer__column-title">{pillar.label}</p>
+          <ul class="footer__list">
+            {links.map((link) => (
+              <li><a class="footer__link" href={link.href}>{link.label}</a></li>
+            ))}
+            <li>
+              <a class="footer__link footer__link--all" href={pillar.href}>
+                Voir tout <span aria-hidden="true">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      ))}
+    </nav>
+
+    <nav class="footer__utility" aria-label="Liens transverses">
+      <ul class="footer__utility-list">
+        {UTILITY_LINKS.map((link) => (
+          <li><a class="footer__link" href={link.href}>{link.label}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="footer__legal">
+      <p class="footer__copyright">
+        © {year} Belgreen
+        {LEGAL_LINKS.map((link) => (
+          <>
+            <span aria-hidden="true"> · </span>
+            <a class="footer__link" href={link.href}>{link.label}</a>
+          </>
+        ))}
+      </p>
+      <ul class="footer__locales">
+        {LOCALES.map((locale, index) => (
+          <li>
+            <a
+              class={`footer__link ${index === 0 ? 'is-active' : ''}`}
+              href={locale.href}
+              lang={locale.label.toLowerCase()}
+            >
+              {locale.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<style>
+  /* Figma : le footer est en ink/800, pas ink/900. */
+  .footer {
+    background: var(--color-ink-800);
+    color: var(--color-white-clear);
+    padding: var(--section-padding-block) var(--container-padding);
+  }
+
+  .footer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    max-width: var(--container-max);
+    margin-inline: auto;
+  }
+
+  .footer__brand {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer__tagline {
+    margin: 0;
+    max-width: var(--width-section-intro);
+    opacity: var(--opacity-muted);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  .footer__columns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4) var(--space-3);
+  }
+
+  .footer__column-title {
+    margin: 0 0 var(--space-3);
+    opacity: var(--opacity-muted);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .footer__list,
+  .footer__utility-list,
+  .footer__locales {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .footer__list {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .footer__utility-list {
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .footer__locales {
+    gap: var(--space-2);
+  }
+
+  .footer__link {
+    color: var(--color-white-clear);
+    text-decoration: none;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .footer__link {
+    transition: opacity var(--duration-slow) var(--easing-default);
+  }
+
+  /* Les zones sensibles se touchent : l'écart de 8px entre deux liens était un
+     angle mort où plus aucun n'était survolé, donc toute la colonne revenait au
+     blanc le temps du passage. Le padding comble l'écart, la marge négative le
+     reprend pour que la mise en page ne bouge pas. */
+  .footer__list .footer__link {
+    display: block;
+    padding-block: calc(var(--space-2) / 2);
+    margin-block: calc(var(--space-2) / -2);
+  }
+
+  /* Mise en retrait des voisins : survoler un lien d'une colonne atténue les
+     autres de CETTE colonne, au niveau du gris des titres. Au repos, aucun
+     n'est atténué — la règle ne s'active que si un lien est effectivement
+     survolé, `:has` évitant de réagir au survol des espaces entre eux.
+     Sans support de `:has`, rien ne s'atténue : dégradation sans conséquence. */
+  .footer__list:has(.footer__link:hover) .footer__link:not(:hover) {
+    opacity: var(--opacity-muted);
+  }
+
+  .footer__list .footer__link:hover {
+    opacity: 1;
+  }
+
+  /* « Voir tout → » : souligné et atténué (Figma opacity 60). */
+  .footer__link--all {
+    display: inline-block;
+    padding-block: var(--space-3);
+    opacity: var(--opacity-muted);
+    text-decoration: underline;
+  }
+
+  /* Rangée transverse : Figma la pose en Circular Book 22, à égalité avec les
+     titres de colonnes. Ramenée à 18px — ce sont des liens, pas des titres, et
+     ils ne doivent pas peser autant. Famille et graisse inchangées. */
+  .footer__utility-list .footer__link {
+    opacity: var(--opacity-muted);
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .footer__locales .footer__link.is-active {
+    color: var(--color-white-clear);
+  }
+
+  .footer__locales .footer__link:not(.is-active) {
+    color: var(--color-shade-strong);
+  }
+
+  .footer__link:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-1);
+  }
+
+  .footer__utility,
+  .footer__legal {
+    padding-top: var(--space-4);
+    border-top: var(--border-width) solid var(--color-ink-700);
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  .footer__copyright {
+    margin: 0;
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  @media (min-width: 768px) {
+    .footer__columns {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

@@ -1,0 +1,71 @@
+---
+import Badge from './Badge.astro';
+
+/**
+ * Le grand paragraphe centré qui suit le hero d'une page de contenu, et la
+ * pastille qui annonce le module (Figma 466:1364).
+ *
+ * C'est la « réponse développée » du gabarit : le hero donne la fourchette en
+ * deux phrases, ce bloc explique ce qui la fait varier — donc pourquoi le
+ * module qui suit vaut la peine d'être manipulé. Sans lui, le curseur arrive
+ * sans motif.
+ *
+ * Il n'a ni surtitre ni titre, volontairement : ce n'est pas une section mais
+ * la suite du hero. Une seconde structure de section ici ferait retomber le
+ * lecteur dans un sommaire alors qu'il n'a pas encore lu la réponse.
+ */
+interface Props {
+  text: string;
+  /** Ce que le module qui suit permet de faire. Optionnel. */
+  note?: string;
+}
+
+const { text, note } = Astro.props;
+---
+
+<section class="lead">
+  <div class="lead__inner reveal">
+    <p class="lead__text">{text}</p>
+    {note && <Badge variant="grey" size="lg">{note}</Badge>}
+  </div>
+</section>
+
+<style>
+  .lead {
+    padding: var(--section-padding-block) var(--container-padding);
+    background: var(--color-white-primary);
+  }
+
+  .lead__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: var(--container-max);
+    margin-inline: auto;
+  }
+
+  /* Une seule ligne d'écart entre les lignes (0,96) : c'est un bloc de texte
+     traité comme un display, pas comme du corps de texte. La largeur de 815px
+     est ce qui le tient — sans elle, l'interlignage serré devient illisible. */
+  .lead__text {
+    max-width: var(--width-lead);
+    text-align: center;
+    font-family: var(--text-big-text-family);
+    font-size: var(--text-big-text-size);
+    font-weight: var(--text-big-text-weight);
+    line-height: var(--text-big-text-line-height);
+    letter-spacing: var(--text-big-text-tracking);
+    color: var(--color-text-primary);
+  }
+
+  /* Sur mobile la note occupe toute la colonne (Figma 466:1829) : sa phrase y
+     tient sur deux lignes, et une pastille qui épouse un texte de deux lignes
+     prend une forme de gélule irrégulière. À pleine largeur, elle redevient une
+     bande — et se lit comme une consigne, ce qu'elle est. */
+  @media (max-width: 767px) {
+    .lead__inner :global(.badge) {
+      width: 100%;
+    }
+  }
+</style>

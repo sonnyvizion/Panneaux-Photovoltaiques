@@ -1,0 +1,196 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import teamImage from '../assets/team/team_hero.webp';
+
+/**
+ * Bande pleine largeur : photo de chantier + carte lime.
+ * Porte l'argument différenciateur central du projet (CLAUDE.md : positionnement
+ * anti-intermédiaire). Valeurs relevées au dev mode Figma (nœud 356:418).
+ */
+---
+
+<section class="direct">
+  <div class="direct__frame">
+    <Image
+      src={teamImage}
+      alt="Deux installateurs Belgreen fixant un panneau solaire sur une toiture au coucher du soleil"
+      widths={[768, 1280, 1448]}
+      sizes="100vw"
+      quality={75}
+      loading="lazy"
+      class="direct__media"
+    />
+    <div class="direct__veil" aria-hidden="true"></div>
+
+    <div class="direct__copy">
+      <p class="direct__overline">L'équipe</p>
+      <h2 class="direct__title">
+        Vous parlez <span class="direct__muted">directement</span><br />
+        à l'équipe qui installe
+      </h2>
+    </div>
+
+    <div class="direct__card reveal">
+      <div class="direct__card-body">
+        <h3 class="direct__card-title">Belgreen / Belectric, votre équipe locale</h3>
+        <p class="direct__card-text">
+          Belgreen / Belectric, c'est une équipe d'installateurs basée à
+          Bruxelles. Pas d'intermédiaire, pas de revente de vos données. Quand
+          vous demandez un devis, c'est nous qui répondons — et nous qui venons
+          chez vous.
+        </p>
+      </div>
+      {/* Aligné à droite dans la carte (Figma : `button_hero` en items-end). */}
+      <div class="direct__card-action">
+        <Button variant="ink" href="/a-propos">Découvrir notre équipe</Button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .direct {
+    background: var(--color-white-primary);
+    /* Même rythme vertical que les sections : cette bande s'intercale entre
+       deux d'entre elles, un écart plus court la ferait paraître collée. */
+    padding: var(--section-padding-block) var(--container-padding);
+  }
+
+  /* Bloc arrondi cadré sur le conteneur. Le rayon vit ici, pas sur le voile :
+     `overflow: hidden` détoure d'un coup la photo ET son voile, sinon la photo
+     resterait carrée sous un voile arrondi. */
+  .direct__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    justify-content: space-between;
+    max-width: var(--container-max);
+    margin-inline: auto;
+    padding: var(--pad-card);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+    isolation: isolate;
+    min-height: 75vh;
+  }
+
+  .direct__media,
+  .direct__veil {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .direct__media {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .direct__veil {
+    background: var(--overlay-photo);
+  }
+
+  .direct__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .direct__overline {
+    margin: 0;
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    text-transform: uppercase;
+    color: var(--color-text-inverted);
+  }
+
+  .direct__title {
+    margin: 0;
+    color: var(--color-white-primary);
+  }
+
+  .direct__muted {
+    color: var(--color-shade-strong);
+  }
+
+  .direct__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-4);
+    border-radius: var(--radius-panel);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .direct__card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .direct__card-action {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .direct__card-title {
+    margin: 0;
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+  }
+
+  /* Figma pose du display-little (Circular Book 22) : trop gros pour un
+     paragraphe de cette longueur — passé en texte courant. */
+  .direct__card-text {
+    margin: 0;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .direct__card-text {
+      font-size: var(--text-body-light-size);
+      line-height: var(--text-body-light-line-height);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .direct__frame {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-4);
+      min-height: var(--height-team-frame);
+    }
+
+    .direct__copy {
+      padding-inline: var(--pad-team-copy);
+      align-self: flex-start;
+      flex: 1;
+    }
+
+    /* `min-height` et non `max-height` : la carte tenait sa hauteur de son
+       contenu, et l'allègement du texte en Inter 16 l'avait fait rétrécir sous
+       les 443px de la maquette. Le plancher la rétablit. */
+    .direct__card {
+      width: var(--width-team-card);
+      flex-shrink: 0;
+      padding: var(--pad-team-card) var(--pad-card-lg);
+      align-self: flex-end;
+      min-height: var(--height-team-card);
+    }
+  }
+</style>

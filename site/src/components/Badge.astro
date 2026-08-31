@@ -1,0 +1,169 @@
+---
+/**
+ * Pastille de réassurance.
+ * Gabarit relevé au dev mode Figma (nœud 356:368) : pas de pictogramme sur la
+ * variante verre du hero — l'icône reste disponible en option pour les usages
+ * sur fond clair.
+ */
+interface Props {
+  /**
+   * `glass` / `solid` : pastilles de réassurance du hero de la home.
+   * `lime` / `grey` : pastilles de repère des pages de contenu — l'étiquette de
+   * pilier posée sur le hero (Figma 466:1354) et la note qui annonce le module
+   * (466:1366). Même objet, deux rôles : signaler et annoncer.
+   */
+  variant?: 'glass' | 'solid' | 'lime' | 'grey';
+  icon?: boolean;
+  /** Point coloré en tête, purement décoratif. */
+  dot?: boolean;
+  /**
+   * `lg` : le gabarit des pages de contenu (25/15 au lieu de 18/6, texte au
+   * corps courant). Ces pastilles portent une phrase, pas un mot.
+   */
+  size?: 'sm' | 'lg';
+  /**
+   * La pastille prend toute la largeur disponible et cale son texte à gauche.
+   *
+   * C'est le cas de l'étiquette de pilier du hero de page : elle fait la largeur
+   * de la carte qu'elle annonce (Figma 466:1354), sans quoi elle se lirait comme
+   * un objet flottant à côté au lieu de la coiffer.
+   */
+  block?: boolean;
+}
+
+const {
+  variant = 'solid',
+  icon = false,
+  dot = false,
+  size = 'sm',
+  block = false,
+} = Astro.props;
+---
+
+<span class={`badge badge--${variant} badge--${size} ${block ? 'badge--block' : ''}`}>
+  {dot && <span class="badge__dot" aria-hidden="true"></span>}
+  {icon && (
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+      <path d="M2 6L4.5 8.5L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  )}
+  <slot />
+</span>
+
+<style>
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    border-radius: var(--radius-pill);
+  }
+
+  .badge--sm {
+    padding: var(--pad-pill-block) var(--pad-pill-inline);
+    font-family: var(--text-body-nav-family);
+    font-size: var(--text-body-nav-size);
+    font-weight: var(--text-body-nav-weight);
+    letter-spacing: var(--text-body-nav-tracking);
+  }
+
+  .badge--lg {
+    padding: var(--pad-note-block) var(--pad-note-inline);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+    /* Une phrase, donc un centrage : sur deux lignes en mobile, un alignement
+       au fer à gauche déséquilibrerait la pastille. */
+    text-align: center;
+  }
+
+  /* Rond parfait quoi qu'il arrive : sans `flex-shrink`, il s'aplatirait en
+     ovale dès que le libellé pousse. */
+  .badge__dot {
+    width: var(--size-badge-dot);
+    height: var(--size-badge-dot);
+    flex-shrink: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-main-green);
+  }
+
+  .badge--solid {
+    background: var(--color-white-clear);
+    color: var(--color-text-primary);
+  }
+
+  .badge--block {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    text-align: start;
+  }
+
+  .badge--lime {
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  /* L'étiquette de pilier du hero de page n'est PAS une pilule : elle coiffe une
+     carte à coins arrondis et doit en épouser la géométrie (Figma 466:1818 sur
+     mobile, 466:1354 sur desktop). En pilule, elle se lisait comme un objet
+     étranger posé au-dessus. Son padding suit celui de la carte : 16px sur
+     mobile — les 25px de la pastille de note y mangeaient une largeur qu'un
+     écran de 390 n'a pas. */
+  .badge--lime.badge--lg.badge--block {
+    border-radius: var(--radius-3);
+    padding-inline: var(--space-3);
+    /* Plus grasse que les autres pastilles : celle-ci nomme le pilier, c'est un
+       repère de navigation, pas une note de bas de page.
+       ⚠️ 500 est le PLAFOND — Inter n'est chargée qu'en 400 et 500
+       (`@fontsource/inter/400.css` et `/500.css`). Au-delà, le navigateur
+       synthétiserait la graisse : le tracé s'épaissit de travers et la police
+       cesse de ressembler à elle-même. Monter plus haut demande d'abord de
+       charger le fichier correspondant. */
+    font-weight: var(--font-weight-medium);
+  }
+
+  @media (min-width: 768px) {
+    .badge--lime.badge--lg.badge--block {
+      border-radius: var(--radius-card);
+      padding-inline: var(--pad-note-inline);
+    }
+  }
+
+  .badge--grey {
+    background: var(--color-shade-grey);
+    color: var(--color-text-secondary);
+  }
+
+  /* La note qui annonce un module descend au style mobile de Figma
+     (`petit_p-m`, nœud 466:1830) : 14/16 au lieu de 15/20, et en encre pleine.
+     Sur 358px de large, sa phrase tient alors sur deux lignes serrées au lieu
+     de trois lâches — la pastille redevient une bande, pas un paragraphe. */
+  @media (max-width: 767px) {
+    .badge--grey.badge--lg {
+      font-size: var(--text-petit-p-m-size);
+      line-height: var(--text-petit-p-m-line-height);
+      letter-spacing: var(--text-petit-p-m-tracking);
+      color: var(--color-text-primary);
+    }
+  }
+
+  /* Pas de `backdrop-filter` ici : la bande du hero porte un masque de fondu,
+     qui l'annulerait de toute façon (voir Hero.astro). Le voile et le filet
+     clair suffisent à détacher la pastille de la photo.
+     ⚠️ Texte blanc sur voile clair : 2,31:1 mesuré sur la photo du hero, sous
+     le seuil AA de 4,5:1 pour du 14px. Choix esthétique arbitré par le client,
+     qui a écarté les deux options conformes (texte en encre, 7,11:1 ; voile
+     inversé vers l'encre, 9,77:1). À rouvrir si un audit d'accessibilité le
+     remonte — c'est le seul point du site sous le seuil. */
+  .badge--glass {
+    background: var(--bg-glass-fill-pill);
+    /* Le filet clair est ce qui signe le verre : sans lui, un fond translucide
+       passe pour un aplat (design.md §3). La carte du code postal l'a depuis le
+       début, les pastilles l'avaient perdu. */
+    border: var(--bg-glass-border);
+    color: var(--color-text-inverted);
+  }
+</style>

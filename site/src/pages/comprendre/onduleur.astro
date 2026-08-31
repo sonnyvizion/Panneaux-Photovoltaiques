@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import ArrowsSplit from '../../assets/icons/onduleur/arrows-split.svg';
+import Clock from '../../assets/icons/onduleur/clock.svg';
+import Bolt from '../../assets/icons/onduleur/bolt.svg';
+import MapPin from '../../assets/icons/onduleur/map-pin.svg';
+import heroImage from '../../assets/pages/4.3-onduleur-hero.webp';
+import carteOnduleur from '../../assets/pages/4.1-fonctionnement-carte-onduleur.webp';
+import {
+  PHOTOS, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/comprendre-onduleur';
+
+/**
+ * Page 4.3 — « Onduleur & micro-onduleur ».
+ *
+ * Gabarit standard de famille E : aucun module, sur prescription du cahier.
+ * Aucun composant nouveau — c'est le même assemblage que les quatorze autres
+ * pages de cette famille déjà livrées.
+ *
+ * Photos et icônes du pilier livrées et branchées.
+ */
+---
+
+<BaseLayout title="Onduleur solaire : rôle, durée de vie, string vs micro | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS.map((p, i) => (i === 0 ? { ...p, src: carteOnduleur } : p))} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [ArrowsSplit, Clock, Bolt, MapPin][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'onduleur." tone="grey" id="faq-onduleur" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

@@ -1,0 +1,64 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import SliderCalculator from '../../components/SliderCalculator.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/1.4-bruxelles-certificats-hero.webp';
+import moduleImage from '../../assets/pages/1.4-bruxelles-certificats-module.webp';
+import CalculatorIcon from '../../assets/icons/certificats-bruxelles/calculator.svg';
+import Coin from '../../assets/icons/certificats-bruxelles/coin.svg';
+import Certificate from '../../assets/icons/certificats-bruxelles/certificate.svg';
+import CalendarOff from '../../assets/icons/certificats-bruxelles/calendar-off.svg';
+import {
+  CERT_DEFAULT, CERT_MAX, CERT_MIN, CERT_STEP,
+} from '../../scripts/calculators/greenCert';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY, WIDGET,
+} from '../../data/pages/aides-primes-bruxelles';
+
+/**
+ * Page 1.4 du cahier de construction — « Bruxelles : certificats verts ».
+ *
+ * Module : `SliderCalculator` en modèle `greenCert` (famille A). La rédaction le
+ * dit elle-même : « pas un nouveau composant à développer de zéro, juste une
+ * nouvelle formule de calcul » — c'est exactement ce que la généralisation
+ * permet.
+ *
+ * ⚠️ Le curseur s'arrête à 5 kWc VOLONTAIREMENT : au-delà, le coefficient
+ * d'octroi change et n'est pas vérifié dans les sources de la rédaction. Les
+ * bornes sont dans `greenCert.ts`, sous test.
+ *
+ * ⚠️ Les hypothèses de calcul sont affichées sous le module (la légende du
+ * modèle) : consigne explicite de la rédaction, « transparence = crédibilité ».
+ */
+const TOPIC_ICONS = [CalculatorIcon, Coin, Certificate, CalendarOff];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout title="Certificats verts Bruxelles 2026 : combien ça rapporte | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <SliderCalculator
+    calculator="greenCert"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={CERT_MIN}
+    max={CERT_MAX}
+    step={CERT_STEP}
+    value={CERT_DEFAULT}
+    outputs={WIDGET.outputs}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    image={moduleImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les certificats verts." tone="grey" id="faq-certificats-bruxelles" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

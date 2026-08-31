@@ -1,0 +1,34 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.16-trouver-pro-hero.webp';
+import Certificate from '../../assets/icons/trouver-un-pro/certificate.svg';
+import Files from '../../assets/icons/trouver-un-pro/files.svg';
+import AlertTriangle from '../../assets/icons/trouver-un-pro/alert-triangle.svg';
+import Checklist from '../../assets/icons/trouver-un-pro/checklist.svg';
+import {
+  PHOTOS, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/installation-trouver-un-installateur';
+
+/**
+ * Page 2.16 — « Trouver un pro ».
+ *
+ * ⚠️ SANS MODULE SÉPARÉ : le cahier prescrit que la grille de critères SOIT le
+ * bloc « Creuser le sujet », pas un module de plus. La grille est donc en
+ * position basse, avec sa propre en-tête.
+ */
+---
+<BaseLayout title="Bien choisir son installateur de panneaux solaires | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Certificate, Files, AlertTriangle, Checklist][i] }))} tone="grey" />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le choix d'un installateur." tone="default" id="faq-trouver-pro" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />
+</BaseLayout>

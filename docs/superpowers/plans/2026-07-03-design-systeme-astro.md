@@ -474,7 +474,7 @@ const Tag = href ? 'a' : 'button';
     border-radius: var(--radius-pill);
     font-family: 'Circular Std', system-ui, sans-serif;
     font-weight: 500;
-    font-size: 16px;
+    font-size: var(--font-size-label);
     text-decoration: none;
     cursor: pointer;
     border: none;
@@ -507,6 +507,15 @@ const Tag = href ? 'a' : 'button';
   .btn:active {
     opacity: 0.85;
   }
+
+  .btn:hover:not(:active) {
+    opacity: 0.9;
+  }
+
+  .btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 </style>
 ```
 
@@ -516,6 +525,12 @@ const Tag = href ? 'a' : 'button';
 git add site/src/components/Button.astro
 git commit -m "feat: add Button component (primary split-button + secondary)"
 ```
+
+> **Amended after code review:** the original spec above only had `:active`;
+> a hover state and a `:focus-visible` outline were added in a follow-up
+> commit (`fix: add hover and focus-visible states to Button`) since keyboard
+> focus indicators are a real accessibility requirement (WCAG 2.4.7), not just
+> a nice-to-have.
 
 ---
 
@@ -549,7 +564,7 @@ const { variant = 'solid' } = Astro.props;
     gap: var(--space-2);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-pill);
-    font-size: 14px;
+    font-size: var(--font-size-small);
     font-weight: 500;
   }
 
@@ -595,7 +610,7 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 ---
 
 <div class="card">
-  {imageSrc && <img src={imageSrc} alt={imageAlt} class="card__image" />}
+  {imageSrc && <img src={imageSrc} alt={imageAlt} loading="lazy" class="card__image" />}
   <div class="card__body">
     <slot />
   </div>
@@ -627,6 +642,11 @@ const { imageSrc, imageAlt = '' } = Astro.props;
 git add site/src/components/Card.astro
 git commit -m "feat: add Card component"
 ```
+
+> **Amended after code review:** `loading="lazy"` was added to the `<img>` per
+> `interactivite-seo.md`'s "lazy-load sauf hero" rule — Card is never used in
+> the hero (which uses `astro:assets`' `<Image>` directly), so it should
+> always lazy-load (fixed in commit `fix: add loading=lazy to Card image`).
 
 ---
 
@@ -799,6 +819,7 @@ const items = [
         <a
           href={item.href}
           class={`nav__link ${item.active ? 'nav__link--active' : ''}`}
+          aria-current={item.active ? 'page' : undefined}
         >
           {item.label}
         </a>
@@ -885,6 +906,11 @@ const items = [
   .nav--opaque .nav__link--active {
     background: var(--color-surface-warm);
   }
+
+  .nav__link:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
 </style>
 ```
 
@@ -894,6 +920,13 @@ const items = [
 git add site/src/components/NavBar.astro
 git commit -m "feat: add NavBar component with glass/opaque scroll state"
 ```
+
+> **Amended after final full-branch review:** added `aria-current="page"` to
+> the active nav link — it previously only had a visual `nav__link--active`
+> class with no semantic signal for screen readers. Fixed together with the
+> typography-token amendments in commit
+> `fix: reference typography tokens instead of hardcoded font-size values`
+> (see Task 7/8/13/14's notes).
 
 ---
 
@@ -929,6 +962,11 @@ import Button from './Button.astro';
     border-radius: var(--radius-pill);
     padding: var(--space-2);
     box-shadow: var(--shadow-soft);
+    transition: box-shadow 150ms ease;
+  }
+
+  .postal-form:focus-within {
+    box-shadow: var(--shadow-soft), 0 0 0 2px var(--color-accent);
   }
 
   .postal-form__input {
@@ -936,7 +974,7 @@ import Button from './Button.astro';
     background: transparent;
     padding: var(--space-3) var(--space-5);
     font-family: 'Circular Std', system-ui, sans-serif;
-    font-size: 16px;
+    font-size: var(--font-size-body);
     color: var(--color-text);
     outline: none;
     flex: 1;
@@ -955,6 +993,13 @@ import Button from './Button.astro';
 git add site/src/components/PostalCodeForm.astro
 git commit -m "feat: add PostalCodeForm component (input + CTA combo pill)"
 ```
+
+> **Note on `outline: none` on `.postal-form__input`:** this is intentional, not
+> an accessibility regression — the default browser outline would look broken
+> clipped inside the pill shape. The `:focus-within` ring on the parent
+> `.postal-form` (added above) provides the required visible keyboard-focus
+> indicator instead (same reasoning as the Button/NavBar `:focus-visible` fixes
+> from Tasks 7 and 12).
 
 ---
 
@@ -982,9 +1027,10 @@ import Badge from './Badge.astro';
     height={1479}
     format="webp"
     quality={75}
+    priority
     class="hero__image"
   />
-  <div class="hero__overlay"></div>
+  <div class="hero__overlay" aria-hidden="true"></div>
 
   <div class="hero__content">
     <NavBar />
@@ -1060,7 +1106,7 @@ import Badge from './Badge.astro';
 
   .hero__title {
     color: #fff;
-    font-size: 40px;
+    font-size: var(--font-size-display);
     text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
   }
 
@@ -1087,14 +1133,20 @@ import Badge from './Badge.astro';
     gap: var(--space-3);
     justify-content: center;
   }
-
-  @media (min-width: 768px) {
-    .hero__title {
-      font-size: 56px;
-    }
-  }
 </style>
 ```
+
+> **Amended after final full-branch review:** `.hero__title` hardcoded
+> `font-size: 40px` (mobile), which both bypassed `--font-size-display`
+> (tokens.css) AND contradicted `design.md`'s own "Hero / display: 48–56px"
+> spec. Switched to `var(--font-size-display)`, which resolves to 48px
+> mobile / 56px desktop via its own `@media (min-width: 768px)` rule already
+> in `tokens.css` — the component-level `@media` override became redundant
+> and was removed. Same review also found Button, Badge, and
+> PostalCodeForm's input hardcoding `font-size` values that happened to
+> match a token instead of referencing it (silent-drift risk) — all four
+> fixed together in commit
+> `fix: reference typography tokens instead of hardcoded font-size values`.
 
 - [ ] **Step 2: Commit**
 
@@ -1102,6 +1154,15 @@ import Badge from './Badge.astro';
 git add site/src/components/Hero.astro
 git commit -m "feat: add Hero component matching the client mockup"
 ```
+
+> **Amended after code review:** the `<Image>` above is missing `priority` in
+> this transcript's history — without it, Astro defaults to `loading="lazy"`,
+> which directly violates this project's own "lazy-load sauf hero" rule
+> (`stack.md`, `interactivite-seo.md`) since this image is the page's LCP
+> element. `priority` (sets `loading="eager"` + `fetchpriority="high"`) was
+> added, plus `aria-hidden="true"` on the decorative `.hero__overlay` div for
+> consistency with Badge's decorative-icon convention. Fixed in commit
+> `fix: eager-load hero image (LCP) and hide decorative overlay from a11y tree`.
 
 ---
 
@@ -1284,6 +1345,14 @@ purely for visual QA, it is never linked from the public nav.
 git add site/src/pages/design-system.astro
 git commit -m "feat: add internal design-system QA page"
 ```
+
+> **Amended after code review:** a statically-deployed internal QA page at
+> `/design-system` would otherwise be crawlable/indexable — added an optional
+> `noindex` prop to `BaseLayout.astro` (renders
+> `<meta name="robots" content="noindex, follow" />` when set) and passed
+> `noindex` from this page, so it stays out of search results without needing
+> a robots.txt entry. Fixed in commit
+> `fix: add noindex to internal design-system QA page`.
 
 ---
 

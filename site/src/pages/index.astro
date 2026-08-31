@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import Reassurance from '../components/Reassurance.astro';
+import DirectTeam from '../components/DirectTeam.astro';
+import Pillars from '../components/Pillars.astro';
+import HowItWorks from '../components/HowItWorks.astro';
+import Testimonials from '../components/Testimonials.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { FAQ_HOME } from '../data/faq-home';
+---
+
+<BaseLayout title="Panneaux solaires en Belgique — estimation gratuite" transparentHeader>
+  {/* Ordre des blocs figé par architecture.md § « La home (épurée) ». */}
+  <Hero />
+  <Reassurance />
+  <DirectTeam />
+  <Pillars />
+  <HowItWorks />
+  <Testimonials />
+  <Faq
+    items={FAQ_HOME}
+    intro="Les questions qu'on nous pose le plus souvent, avant même de faire une simulation."
+  />
+  {/* U+00A0 en clair : Astro ne décode PAS les entités HTML dans une valeur
+      d'attribut, `&#160;` s'y afficherait tel quel. */}
+  <FinalCta title="Prêt à savoir si le solaire est fait pour vous ?" />
+</BaseLayout>

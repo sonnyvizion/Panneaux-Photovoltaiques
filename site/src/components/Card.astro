@@ -1,0 +1,36 @@
+---
+interface Props {
+  imageSrc?: string;
+  imageAlt?: string;
+}
+
+const { imageSrc, imageAlt = '' } = Astro.props;
+---
+
+<div class="card">
+  {imageSrc && <img src={imageSrc} alt={imageAlt} loading="lazy" class="card__image" />}
+  <div class="card__body">
+    <slot />
+  </div>
+</div>
+
+<style>
+  /* Pas d'ombre portée dans le système : la carte se détache du fond par un
+     filet. Fond et page partagent --color-white-primary. */
+  .card {
+    background: var(--color-white-primary);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-4);
+    overflow: hidden;
+  }
+
+  .card__image {
+    width: 100%;
+    height: auto;
+    border-radius: var(--radius-4) var(--radius-4) 0 0;
+  }
+
+  .card__body {
+    padding: var(--space-24);
+  }
+</style>

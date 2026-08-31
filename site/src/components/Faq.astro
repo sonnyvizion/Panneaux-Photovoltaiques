@@ -1,0 +1,94 @@
+---
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Accordion from './Accordion.astro';
+import type { FaqItem } from '../data/content';
+
+/**
+ * Bloc FAQ — home et pages de contenu.
+ *
+ * Les réponses vivent dans le HTML (règle d'or #1) et sont balisées FAQPage
+ * pour la longue traîne. Le balisage est généré depuis le MÊME tableau que
+ * l'affichage : il ne peut donc pas diverger du texte visible. Cette garantie
+ * est la raison d'être du composant — ne pas la casser en acceptant un schéma
+ * fourni de l'extérieur.
+ */
+
+interface Props {
+  items: FaqItem[];
+  overline?: string;
+  title?: string;
+  intro?: string;
+  /**
+   * Fond de la section. Il commande le fond des accordéons fermés, qui doit
+   * s'y opposer : gris sur blanc, blanc sur gris (Figma 466:1477 vs 441:402).
+   */
+  tone?: 'default' | 'grey';
+  id?: string;
+}
+
+const {
+  items,
+  overline = 'Avant de vous lancer',
+  title = 'Questions fréquentes',
+  intro,
+  tone = 'grey',
+  id = 'faq',
+} = Astro.props;
+
+/* Un `name` unique par bloc : deux FAQ sur une même page partageraient sinon
+   leur exclusivité, et ouvrir l'une refermerait l'autre. */
+const groupName = `faq-${id}`;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
+---
+
+<Section tone={tone} id={id}>
+  <SectionHeading
+    overline={overline}
+    overlineTone="tertiary"
+    title={title}
+    intro={intro}
+  />
+
+  <div class="faq reveal">
+    {items.map((item) => (
+      <Accordion
+        question={item.question}
+        variant="card"
+        open={item.open}
+        openTone="ink"
+        closedTone={tone === 'grey' ? 'white' : 'grey'}
+        name={groupName}
+      >
+        {item.answer}
+      </Accordion>
+    ))}
+  </div>
+</Section>
+
+<script type="application/ld+json" set:html={JSON.stringify(faqSchema)} is:inline />
+
+<style>
+  .faq {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-24);
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .faq {
+      max-width: var(--width-faq);
+      margin-inline: auto;
+    }
+  }
+</style>

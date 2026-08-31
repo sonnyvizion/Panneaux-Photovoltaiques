@@ -1,0 +1,146 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import SliderCalculator from '../../components/SliderCalculator.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/1.1-wallonie-aides-hero.webp';
+import moduleImage from '../../assets/pages/1.1-wallonie-aides-module.webp';
+/* Icônes livrées par le client pour CETTE page
+   (`img/icones-toutes-pages/1.1-wallonie-aides/`). Importées ici et non dans
+   `TopicCards.astro` : chaque page du sitemap a son propre jeu, et un registre
+   central aurait fini par charger les icônes des cinquante-cinq pages dans
+   chacune d'elles. Elles sont en `stroke="currentColor"` — c'est la carte qui
+   décide de leur couleur. */
+import PigMoney from '../../assets/icons/aides-wallonie/pig-money.svg';
+import Certificate from '../../assets/icons/aides-wallonie/certificate.svg';
+import Calculator from '../../assets/icons/aides-wallonie/calculator.svg';
+import BuildingCommunity from '../../assets/icons/aides-wallonie/building-community.svg';
+import {
+  LOAN_DEFAULT,
+  LOAN_MAX,
+  LOAN_MIN,
+  LOAN_STEP,
+  LOAN_TERMS,
+  LOAN_TERM_DEFAULT,
+} from '../../scripts/loanEstimate';
+import {
+  BRIDGES,
+  ESSENTIALS_COPY,
+  FACTS,
+  FAQ,
+  FIGURES,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  TOPICS,
+  TOPICS_COPY,
+  WIDGET,
+} from '../../data/pages/aides-primes-wallonie';
+
+/**
+ * Page 1.1 du sitemap — « Aides & primes : Wallonie »
+ * (Figma « page pilier » 494:258).
+ *
+ * Deuxième instance du gabarit de `pages-contenu.md` après `rentabilite-prix` :
+ * réponse visible → module → essentiel → creuser → FAQ → pont. Les composants
+ * sont les mêmes, à deux exceptions près, motivées dans
+ * `data/pages/aides-primes-wallonie.ts` :
+ *
+ *  — le module est un `SliderCalculator` en modèle `loan` (le sujet est le prêt,
+ *    pas le prix) ;
+ *  — `TopicCards` remplace `DeepDive` (les quatre sujets ont chacun leur page).
+ *
+ * `transparentHeader` : comme sur la page prix, la nav se pose dans le hero
+ * photo et le bloc de contenu démarre sous elle.
+ *
+ * ⚠️ Les liens vers `/simulateur` sont écrits SANS paramètre, y compris sur une
+ * page régionale : c'est `scripts/regionLinks.ts` qui y injecte la région du
+ * sélecteur global. Coder `?region=wallonie` en dur ici le figerait — et
+ * surtout, contredirait le sélecteur d'un visiteur bruxellois arrivé sur cette
+ * page par une recherche.
+ *
+ * ⚠️ Deux photos DISTINCTES ici, contrairement à la page prix qui réutilise
+ * celle du hero dans sa bande. Le client a livré les deux
+ * (`1.1-wallonie-aides-hero` et `-module`) : la seconde est un second
+ * téléchargement assumé, pas un oubli d'optimisation.
+ */
+
+/* L'icône est résolue ici, au plus près de son import. Chaque entrée reste
+   alignée sur `TOPICS` par sa position — le tableau de données et celui des
+   icônes se lisent côte à côte, et une carte ajoutée sans icône se voit. */
+const TOPIC_ICONS = [PigMoney, Certificate, Calculator, BuildingCommunity];
+const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
+---
+
+<BaseLayout
+  title="Aides et primes panneaux solaires Wallonie 2026 | Belgreen"
+  transparentHeader
+>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+
+  <SliderCalculator
+    calculator="loan"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={LOAN_MIN}
+    max={LOAN_MAX}
+    step={LOAN_STEP}
+    value={LOAN_DEFAULT}
+    options={LOAN_TERMS.map((term) => ({ value: term, label: `${term} ans` }))}
+    optionsLegend="Durée du remboursement"
+    optionDefault={LOAN_TERM_DEFAULT}
+    outputs={WIDGET.outputs}
+    readoutPrefix="≈"
+    readoutSuffix="par mois"
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    {/* Alternative vide : l'image est décorative, tout le sens est dans le
+        panneau de verre posé dessus. */}
+    image={moduleImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+
+  <Essentials
+    overline={ESSENTIALS_COPY.overline}
+    title={ESSENTIALS_COPY.title}
+    intro={ESSENTIALS_COPY.intro}
+    figures={FIGURES}
+    facts={FACTS}
+    bridges={BRIDGES}
+  />
+
+  <TopicCards
+    overline={TOPICS_COPY.overline}
+    title={TOPICS_COPY.title}
+    intro={TOPICS_COPY.intro}
+    items={topics}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de vous décider"
+    intro="Les questions qu'on nous pose le plus souvent sur les aides en Wallonie."
+    tone="grey"
+    id="faq-aides-wallonie"
+  />
+
+  <FinalCta
+    title={FINAL_CTA.title}
+    text={FINAL_CTA.text}
+    cta={FINAL_CTA.cta}
+    tone="default"
+  />
+</BaseLayout>

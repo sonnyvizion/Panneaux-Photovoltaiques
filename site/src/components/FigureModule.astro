@@ -1,0 +1,257 @@
+---
+import { Image } from 'astro:assets';
+import Button from './Button.astro';
+import type { ContentLink } from '../data/content';
+
+/**
+ * Module illustré non interactif — famille E du registre des modules.
+ *
+ * La famille la plus nombreuse du sitemap : quatorze pages dont le sujet n'a
+ * aucune variable à manipuler (une réglementation, un poids, un type de toiture).
+ * Y poser un curseur serait de l'interactivité décorative, ce que la règle d'or
+ * #5 interdit — « interactif = accent, pas défaut ».
+ *
+ * Il occupe la MÊME place et la même largeur que `SliderCalculator` dans le
+ * gabarit : bande pleine largeur, panneau de verre posé sur une photo, pont vers
+ * le simulateur en pied. D'un sujet à l'autre, le lecteur retrouve le même objet
+ * au même endroit — seul son contenu change de nature.
+ *
+ * ⚠️ La légende est du TEXTE, pas une alternative d'image : elle est lue par
+ * tout le monde et indexée (règle d'or #1). L'alternative de la photo, elle,
+ * décrit la photo — les deux ne disent pas la même chose et ne se remplacent
+ * pas.
+ *
+ * ⚠️ Le panneau est en `backdrop-filter` (design.md §3) : aucun `mask-image` sur
+ * un de ses ancêtres, et le préfixe `-webkit-` isolé en fin de bloc.
+ */
+interface Props {
+  title: string;
+  /** Ce que le schéma ou la photo montre, en une à trois phrases. */
+  caption: string;
+  /** Pont vers le simulateur. Absent, le module se termine sur sa légende. */
+  cta?: ContentLink;
+  /** Ce que le pont promet, à gauche du bouton. */
+  bridgeLabel?: string;
+  /** Absente tant que le client n'a pas fourni l'image — voir `placeholder`. */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  /** Ce que la maquette attend à cet endroit, si l'image manque encore. */
+  placeholder?: string;
+  /**
+   * Un SECOND panneau sur la même photo.
+   *
+   * ⚠️ Il n'existait pas : le module n'a jamais porté qu'une carte. Ajouté pour
+   * la page Voiture électrique, dont le sujet appelle deux temps — ce que la
+   * combinaison fait, puis pourquoi elle est intéressante — sur une seule et
+   * même image. Le mécanisme est celui des ponts de « L'essentiel » : un
+   * conteneur, plusieurs blocs dedans, pas deux modules empilés.
+   */
+  extra?: { title: string; text: string };
+}
+
+const {
+  title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder, extra,
+} = Astro.props;
+---
+
+<section class="figure">
+  {image ? (
+    <Image
+      src={image}
+      alt={imageAlt}
+      {/* ⚠️ Réglages IDENTIQUES à ceux de `PageHero` et `SliderCalculator` :
+          plusieurs pages réutilisent la photo du hero en fond de module, et à
+          réglages égaux le navigateur ne la télécharge qu'une fois. L'échelle
+          monte à 2560 pour les écrans Retina : voir PageHero. */}
+      width={2560}
+      widths={[768, 1280, 1920, 2560]}
+      sizes="100vw"
+      format="webp"
+      quality={72}
+      loading="lazy"
+      class="figure__image"
+    />
+  ) : (
+    <div class="figure__image figure__image--placeholder" role="img" aria-label={`Image à fournir : ${placeholder}`}>
+      {/* Étiquette VISIBLE, comme `ImagePlaceholder` et `DeepDive` : un aplat
+          gris muet se lit comme un bug, pas comme une livraison en attente. */}
+      <span>Image à fournir<br />{placeholder}</span>
+    </div>
+  )}
+  <div class="figure__overlay" aria-hidden="true"></div>
+
+  <div class="figure__stack">
+  <div class="figure__panel reveal">
+    <h2 class="figure__title">{title}</h2>
+    <p class="figure__caption">{caption}</p>
+
+    {cta && (
+      <div class="figure__bridge">
+        {bridgeLabel && <p class="figure__bridge-label">{bridgeLabel}</p>}
+        <Button href={cta.href}>{cta.label}</Button>
+      </div>
+    )}
+  </div>
+
+  {extra && (
+    <div class="figure__panel reveal">
+      {/* `h3` : ce panneau prolonge le premier sur la même image, il n'ouvre
+          pas une seconde section. */}
+      <h3 class="figure__title">{extra.title}</h3>
+      <p class="figure__caption">{extra.text}</p>
+    </div>
+  )}
+  </div>
+</section>
+
+<style>
+  .figure {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--section-padding-block) var(--container-padding);
+    overflow: hidden;
+  }
+
+  .figure__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  /* L'emplacement en attente est VISIBLE et étiqueté, comme
+     `ImagePlaceholder` : une image de stock générique serait pire qu'un trou
+     déclaré (design.md). */
+  .figure__image--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+    background: var(--color-shade-grey);
+    text-align: center;
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    color: var(--color-text-tertiary);
+  }
+
+  /* Sans image, le voile sombre n'a plus rien à assombrir : il ne ferait que
+     salir l'étiquette. */
+  .figure__image--placeholder ~ .figure__overlay {
+    display: none;
+  }
+
+  .figure__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--overlay-photo);
+  }
+
+  /* La pile porte la largeur, les panneaux la remplissent. Sans elle, deux
+     panneaux se posaient côte à côte — `.figure` est un conteneur flex. */
+  .figure__stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: var(--width-power-panel);
+  }
+
+  .figure__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    padding: var(--pad-power-panel);
+    border-radius: var(--radius-panel);
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+  }
+
+  .figure__title {
+    /* Le H2 pleine taille déséquilibrait le panneau : ce titre nomme une
+       illustration, il n'ouvre pas une section. Même corps que le titre du
+       module interactif, pour que les deux se répondent. */
+    font-size: var(--text-h3-size);
+    line-height: var(--text-h3-line-height);
+    /* ⚠️ LA GRAISSE EST POSÉE, pas héritée. La règle ne fixait que le corps :
+       la famille et la graisse retombaient sur les styles `h2` et `h3` de
+       `global.css`, qui ne s'accordent pas (Book 450 contre Medium 500). Le
+       second panneau — un `h3` — ressortait donc plus gras que le premier sur
+       la même photo, alors que les deux nomment la même illustration. */
+    font-weight: var(--text-h2-weight);
+  }
+
+  .figure__caption {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  /* Sur mobile, le libellé se centre au-dessus d'un bouton pleine largeur : côte
+     à côte, il ne resterait ni assez de place au texte ni assez de surface
+     tactile au bouton. */
+  .figure__bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+    text-align: center;
+  }
+
+  /* Le bouton est en `inline-flex` : sans cette règle il garderait la largeur de
+     son libellé au lieu de remplir la colonne. */
+  .figure__bridge :global(.btn) {
+    justify-content: center;
+  }
+
+  .figure__bridge-label {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .figure {
+      min-height: var(--height-power-band);
+    }
+
+    .figure__title {
+      font-size: 36px;
+      line-height: 0.96;
+    }
+
+    .figure__bridge {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      text-align: start;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .figure__panel {
+      padding: var(--space-12);
+    }
+  }
+
+  /* Règle compagnon, isolée et en fin de bloc — voir design.md §3. */
+  .figure__panel {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import SliderCalculator from '../components/SliderCalculator.astro';
+import Essentials from '../components/Essentials.astro';
+import DeepDive from '../components/DeepDive.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+/* `renta1` en tête : sa canopée sombre en haut de cadre laisse la nav — qui se
+   pose en transparence sur le hero — lisible en blanc. `renta2`, dont le haut
+   est un ciel bleu vif, y aurait fait tomber le contraste des libellés. */
+import heroImage from '../assets/pages/renta1.webp';
+import deepDiveImage from '../assets/pages/renta2.webp';
+import { POWER_DEFAULT, POWER_MAX, POWER_MIN, POWER_STEP } from '../scripts/powerEstimate';
+import {
+  BRIDGES,
+  DEEP_DIVE,
+  DEEP_DIVE_COPY,
+  DEEP_DIVE_IMAGE_ALT,
+  ESSENTIALS_COPY,
+  FACTS,
+  FAQ,
+  FIGURES,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  WIDGET,
+} from '../data/pages/rentabilite-prix';
+
+/**
+ * Page pilier « Rentabilité & prix ».
+ *
+ * Première instance du gabarit de page de contenu (`pages-contenu.md`) :
+ * réponse visible → module → essentiel → accordéons → FAQ → pont. Les ~54
+ * autres pages du sitemap reprendront ces mêmes composants ; seul le fichier de
+ * données change.
+ *
+ * `transparentHeader` : sur cette maquette, la nav se pose dans le hero photo
+ * et le bloc de contenu démarre sous elle.
+ *
+ * ⚠️ Les liens vers `/simulateur` sont écrits SANS paramètre : c'est
+ * `scripts/regionLinks.ts` qui y injecte la région du sélecteur global, au
+ * chargement et à chaque changement. Coder un `?region=` en dur ici le figerait.
+ *
+ * Photos livrées et branchées depuis `src/assets/pages/`. La bande du widget
+ * reprend **le fichier du hero** : à `quality` égale, `astro:assets` produit les
+ * mêmes variantes et le navigateur ne télécharge qu'une fois.
+ *
+ * Le prop `placeholder` de `PageHero`, `PowerWidget` et `DeepDive` reste en
+ * place pour les ~54 pages dont les photos n'ont pas encore été fournies.
+ */
+---
+
+<BaseLayout title="Prix des panneaux solaires en 2026 — Belgique | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+
+  <SliderCalculator
+    calculator="power"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={POWER_MIN}
+    max={POWER_MAX}
+    step={POWER_STEP}
+    value={POWER_DEFAULT}
+    outputs={WIDGET.outputs}
+    bounds={WIDGET.bounds}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    {/* Même fichier que le hero, recadré par `object-fit`. Alternative vide :
+        l'image est décorative, tout le sens est dans le panneau de verre. */}
+    image={heroImage}
+  />
+
+  <Essentials
+    overline={ESSENTIALS_COPY.overline}
+    title={ESSENTIALS_COPY.title}
+    intro={ESSENTIALS_COPY.intro}
+    figures={FIGURES}
+    facts={FACTS}
+    bridges={BRIDGES}
+  />
+
+  <DeepDive
+    overline={DEEP_DIVE_COPY.overline}
+    title={DEEP_DIVE_COPY.title}
+    intro={DEEP_DIVE_COPY.intro}
+    items={DEEP_DIVE}
+    image={deepDiveImage}
+    imageAlt={DEEP_DIVE_IMAGE_ALT}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de vous décider"
+    intro="Les questions qu'on nous pose le plus souvent sur le prix d'une installation."
+    tone="default"
+    id="faq-prix"
+  />
+
+  <FinalCta
+    title={FINAL_CTA.title}
+    text={FINAL_CTA.text}
+    cta={FINAL_CTA.cta}
+    tone="default"
+  />
+</BaseLayout>

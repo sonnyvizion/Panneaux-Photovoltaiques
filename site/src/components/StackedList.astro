@@ -1,0 +1,230 @@
+---
+import { Image } from 'astro:assets';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+import type { StackedRow } from '../data/content';
+
+/**
+ * Liste empilée à média plein — famille H du registre des modules
+ * (Figma 700:1813).
+ *
+ * Trois lignes à gauche, une seule photo à droite qui tient toute la hauteur du
+ * bloc. Chaque ligne : un surtitre en capitales, un titre, et le paragraphe
+ * dans sa carte blanche.
+ *
+ * ⚠️ UNE PHOTO POUR TOUTE LA LISTE, pas une par ligne. C'est ce qui distingue
+ * ce module des cartes photo de « L'essentiel » : là-bas trois objets
+ * différents, ici trois facettes d'un même sujet. Une image par ligne
+ * suggérerait trois choses là où il n'y en a qu'une.
+ *
+ * ⚠️ LA PHOTO S'ÉTIRE, ELLE NE COLLE PAS. Une première version la posait en
+ * `position: sticky`. Mesuré : avec trois lignes le bloc tient dans un écran,
+ * il n'y a rien à faire défiler, donc rien à coller — la règle était appliquée
+ * et sans effet. La maquette tranche pour l'étirement, qui donne le même
+ * résultat visuel sans promettre un comportement inexistant.
+ *
+ * ⚠️ IL NE PORTE PAS SA `<Section>`. Il rend son contenu et rien d'autre, pour
+ * pouvoir se composer — c'est ainsi qu'il s'insère dans « L'essentiel » à la
+ * place de la grille de cartes, sans y ajouter un second en-tête. Une page qui
+ * l'emploierait seul le pose dans sa propre `<Section>`.
+ *
+ * ⚠️ ZÉRO JAVASCRIPT.
+ */
+interface Props {
+  rows: StackedRow[];
+  /**
+   * UNE image pour toute la liste.
+   *
+   * Absente tant que la photo n'est pas livrée : c'est alors un emplacement
+   * nommé qui s'affiche, jamais une image de stock (`design.md`).
+   */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  /** Le fichier attendu, quand l'image manque encore. */
+  placeholder?: string;
+}
+
+const { rows, image, imageAlt = '', placeholder } = Astro.props;
+---
+
+<div class="stacked">
+  {/* `<ol>` et non `<ul>` : les trois lignes se lisent dans l'ordre, du rôle à
+      l'installation. La numérotation visible est retirée, l'ordre reste. */}
+  <ol class="stacked__rows">
+    {rows.map((row) => (
+      <li class="stacked__row">
+        <div class="stacked__head">
+          <p class="stacked__eyebrow">{row.eyebrow}</p>
+          <h3 class="stacked__title">{row.title}</h3>
+        </div>
+        <p class="stacked__card">{row.text}</p>
+      </li>
+    ))}
+  </ol>
+
+  <div class="stacked__media">
+    {/* ⚠️ Une photo DÉDIÉE, livrée en portrait (1360×2048). Le module recadrait
+        auparavant le hero panoramique de la page : `object-fit: cover` retenait
+        alors une bande centrale, ce qui coupait souvent l'objet en deux. Le
+        recadrage reste en place, il n'a simplement plus grand-chose à faire. */}
+    {image ? (
+      <Image
+        class="stacked__image"
+        src={image}
+        alt={imageAlt}
+        width={1280}
+        widths={[480, 768, 1280]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        loading="lazy"
+      />
+    ) : (
+      <div class="stacked__slot">
+        <ImagePlaceholder label={placeholder ?? 'photo de la liste'} ratio="auto" />
+      </div>
+    )}
+  </div>
+</div>
+
+<style>
+  /* ⚠️ MOBILE D'ABORD : une seule colonne, la photo au-dessus de la liste.
+     Les deux colonnes n'arrivent qu'à 1024px — pas 768. En dessous, la colonne
+     de texte tombe sous 340px et les titres cassent sur trois lignes chacun,
+     ce qui annule le rythme que ce module existe pour créer. */
+  .stacked {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--space-3);
+    /* 16px tant que le module est en une colonne, 32 quand il en prend deux —
+       voir le palier plus bas. Les 32px de la maquette sont dessinés pour la
+       version large ; sur 390px ils prenaient 64px des 358 disponibles. */
+    padding: var(--space-3);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-clear);
+  }
+
+  .stacked__rows {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ⚠️ PLUS DE FILET POINTILLÉ entre les lignes. Les cartes blanches suffisent à
+     les séparer : ajouter un trait par-dessus revenait à marquer deux fois la
+     même coupure. */
+  .stacked__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pad-card);
+    min-width: 0;
+  }
+
+  .stacked__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .stacked__eyebrow {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    /* La chasse est POSITIVE dans ce style — le seul du système. C'est ce qui
+       rend les capitales lisibles ; sans elle, elles se collent. */
+    letter-spacing: var(--text-marker-tracking);
+    text-transform: uppercase;
+  }
+
+  /* ⚠️ MÊME STYLE QUE LES TITRES DE CARTES CONDITIONS (`.essentials__fact-title`),
+     y compris leur bascule : `h3-m` sur téléphone, `h4` à partir de 768px. Les
+     deux blocs se suivent dans la même section — un titre de ligne et un titre
+     de carte y jouent le même rôle, ils doivent se lire pareil.
+
+     ⚠️ LE PALIER EST 768, PAS LE 1024 DU MODULE. C'est celui des cartes
+     conditions : aligné sur 1024, les deux titres auraient divergé entre 768 et
+     1024, exactement là où la section montre les deux à la fois. */
+  .stacked__title {
+    font-family: var(--text-h3-m-family);
+    font-size: var(--text-h3-m-size);
+    font-weight: var(--text-h3-m-weight);
+    line-height: var(--text-h3-m-line-height);
+    letter-spacing: var(--text-h3-m-tracking);
+  }
+
+  @media (min-width: 768px) {
+    .stacked__title {
+      font-family: var(--text-h4-family);
+      font-size: var(--text-h4-size);
+      font-weight: var(--text-h4-weight);
+      line-height: var(--text-h4-line-height);
+      letter-spacing: var(--text-h4-tracking);
+    }
+  }
+
+  /* ⚠️ `body_sm` AUX DEUX TAILLES, pas le `display-little` de la maquette. Celle-
+     ci pose 22/24 : trois paragraphes à ce corps font défiler le module sur deux
+     écrans de téléphone, et sur grand écran ils pèsent autant que le titre
+     qu'ils sont censés développer. Le titre garde `display-little`, seul de sa
+     ligne à ce corps — c'est ce qui fait la hiérarchie. */
+  .stacked__card {
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-white-primary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--text-body-sm-weight);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .stacked__image,
+  .stacked__slot {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-3);
+    object-fit: cover;
+  }
+
+  /* L'emplacement remplit son cadre comme le fera la photo. */
+  .stacked__slot :global(.placeholder) {
+    height: 100%;
+    border-radius: var(--radius-3);
+  }
+
+  @media (min-width: 1024px) {
+    .stacked {
+      flex-direction: row;
+      align-items: stretch;
+      padding: var(--space-4);
+    }
+
+    /* Moitié-moitié : la liste et la photo pèsent le même poids. */
+    .stacked__rows,
+    .stacked__media {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ⚠️ L'IMAGE EST SORTIE DU FLUX. C'est ce qui empêche sa hauteur naturelle
+       de commander le bloc : les photos livrées sont en portrait (1360×2048),
+       et en flux elles étiraient la rangée à 813px pour une liste qui en fait
+       578 — 235px de vide s'ouvraient sous la dernière carte. Hors flux, le
+       média n'a plus de hauteur propre, il est étiré par la rangée, et c'est la
+       liste qui décide. Le `cover` rogne ce qui dépasse. */
+    .stacked__media {
+      position: relative;
+    }
+
+    .stacked__image,
+    .stacked__slot {
+      position: absolute;
+      inset: 0;
+      height: 100%;
+      aspect-ratio: auto;
+    }
+  }
+</style>

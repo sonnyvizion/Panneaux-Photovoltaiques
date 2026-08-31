@@ -1,0 +1,37 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import Certificate from '../../assets/icons/garanties/certificate.svg';
+import Clock from '../../assets/icons/garanties/clock.svg';
+import Tool from '../../assets/icons/garanties/tool.svg';
+import BuildingOff from '../../assets/icons/garanties/building-off.svg';
+import heroImage from '../../assets/pages/4.8-garanties-hero.webp';
+import {
+  TABLE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/comprendre-garanties';
+
+/**
+ * Page 4.8 — « Garanties (Belgique) ».
+ *
+ * Gabarit standard de famille E : aucun module, sur prescription du cahier.
+ * Aucun composant nouveau — c'est le même assemblage que les quatorze autres
+ * pages de cette famille déjà livrées.
+ *
+ * Photos et icônes du pilier livrées et branchées.
+ */
+---
+
+<BaseLayout title="Garanties panneaux solaires en Belgique : ce qui est couvert | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} table={TABLE} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Certificate, Clock, Tool, BuildingOff][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les garanties." tone="grey" id="faq-garanties" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

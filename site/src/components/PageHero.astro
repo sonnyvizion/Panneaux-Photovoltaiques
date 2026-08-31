@@ -1,0 +1,308 @@
+---
+import { Image } from 'astro:assets';
+import Badge from './Badge.astro';
+import Button from './Button.astro';
+import type { ContentLink } from '../data/content';
+
+/**
+ * Hero des pages de contenu (Figma « page pilier », nœud 466:1353).
+ *
+ * Ce n'est PAS le hero de la home : celui-ci est une carte encartée dans le
+ * flux, pas un plein écran, et il n'amorce rien — la carte de verre y porte le
+ * H1 et la « réponse en 1-2 phrases » du gabarit (`pages-contenu.md` §1), qui
+ * est ce qui peut gagner le featured snippet. Elle ne se replie jamais.
+ *
+ * Pas de parallaxe, pas de défilé de pastilles : ces gestes appartiennent à
+ * l'ouverture du site. Répétés sur ~55 pages, ils cesseraient d'être un accent
+ * (règle d'or #5). Question rouverte puis retranchée le 2026-08-14 — le hero de
+ * la home garde l'exclusivité du geste.
+ *
+ * ⚠️ La carte est en `backdrop-filter`. Deux règles s'appliquent (design.md §3) :
+ * aucun `mask-image` sur un de ses ancêtres, et le préfixe `-webkit-` isolé dans
+ * une règle compagnon en fin de bloc.
+ */
+interface Props {
+  /** Étiquette du pilier, en pastille lime posée sur la photo. */
+  badge: string;
+  title: string;
+  /** La réponse en 1-2 phrases. Visible, jamais repliée. */
+  answer: string;
+  cta: ContentLink;
+  /** Absente tant que le client n'a pas fourni la photo — voir `placeholder`. */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  /** Ce que la maquette attend à cet endroit, si l'image manque encore. */
+  placeholder?: string;
+}
+
+const { badge, title, answer, cta, image, imageAlt = '', placeholder } = Astro.props;
+---
+
+{/* ⚠️ `id="hero"` est un CONTRAT avec `NavBar.astro`, pas un ancrage décoratif.
+    La nav observe `#hero` pour basculer entre son état posé sur la photo
+    (absolu, il défile avec le hero) et son état détaché (barre qui suit), et
+    pour faire paraître son CTA au bon moment. Sans cet identifiant, l'observateur
+    ne tourne jamais : le header reste absolu, disparaît au premier défilement et
+    ne revient plus. C'est exactement ce qui est arrivé à cette page.
+    Le hero de la home (`Hero.astro`) le porte pour la même raison. */}
+<section class="page-hero" id="hero">
+  <div class="page-hero__frame">
+    {image ? (
+      /* LCP de la page : `priority` la sort du lazy-loading et la précharge.
+
+         ⚠️ Paliers de largeur SERRÉS, et plafonnés à `--container-max`.
+         Avec [768, 1280, 1920, 2560], une fenêtre de 1440 réclamait 1440px et
+         le navigateur prenait le palier au-dessus : 1920. Sur une photo de
+         canopée — du détail haute fréquence que le WebP compresse très mal —
+         ces 480px de trop coûtaient 500 Ko sur le LCP. Le cadre ne dépasse
+         jamais `--container-max` (1440), inutile d'aller au-delà.
+
+         ⚠️ Qualité 72 et non 85 : sur ce type d'image le curseur qualité ne
+         rend presque rien (611 Ko à q60 contre 727 à q75 en 1920), alors que la
+         largeur, elle, est décisive. 72 est le point où le grain du feuillage
+         cesse de se voir sans que le poids s'envole. */
+      <Image
+        src={image}
+        alt={imageAlt}
+        {/* ⚠️ L'échelle monte à 2560, comme le hero de la home — surtout pas
+            1440. Cette bande est en `sizes="100vw"` : sur un écran Retina de
+            1440px de large, le navigateur réclame ~2880px réels. Plafonnée à
+            1440, la plus grande variante disponible était étirée au double et
+            la photo paraissait pixellisée sur tous les portables récents.
+            Les sources livrées font 2560px : la matière existe. */}
+        width={2560}
+        widths={[768, 1280, 1920, 2560]}
+        sizes="100vw"
+        format="webp"
+        quality={72}
+        priority
+        class="page-hero__image"
+      />
+    ) : (
+      <div class="page-hero__placeholder" role="img" aria-label={`Photo à fournir : ${placeholder}`}>
+        <span>Photo à fournir<br />{placeholder}</span>
+      </div>
+    )}
+    <div class="page-hero__overlay" aria-hidden="true"></div>
+
+    <div class="page-hero__stack">
+      {/* Décorative : le nom du pilier est déjà porté par le fil d'Ariane de la
+          nav et par le H1 qui suit. L'annoncer une troisième fois n'ajoute rien
+          à l'oral. */}
+      <p class="page-hero__badge" aria-hidden="true">
+        <Badge variant="lime" size="lg" block>{badge}</Badge>
+      </p>
+
+      <div class="page-hero__card">
+        <div class="page-hero__copy">
+          <h1 class="page-hero__title">{title}</h1>
+          <p class="page-hero__answer">{answer}</p>
+        </div>
+        <div class="page-hero__action">
+          <Button variant="ink" href={cta.href}>{cta.label}</Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ⚠️ PAS de `width: 100vw` ici, ni sur le cadre.
+     `100vw` compte la largeur de la BARRE DE DÉFILEMENT. Sur un système à
+     barres classiques (Windows, ou macOS réglé sur « Toujours afficher »), le
+     hero devenait ~15px plus large que la page et ouvrait un défilement
+     horizontal parasite — invisible sur un Mac à barres flottantes, donc
+     invisible en test. Une `<section>` est un bloc : elle remplit déjà la
+     largeur de son conteneur, et le cadre déduit la sienne de ses marges. */
+  /* ⚠️ Le hero ne pose PAS sa moitié du rythme vertical, contrairement aux
+     autres sections — et c'est volontaire.
+     Dans la maquette, la photo et le paragraphe qui la suit vivent dans le MÊME
+     bloc (`bloc_hero+display`), séparés de 80px quand les blocs entre eux en
+     ont autant. Ils forment une unité : le hero donne la réponse en deux
+     phrases, le paragraphe la développe. Leur écart doit donc être plus SERRÉ
+     que le rythme inter-blocs, sans quoi le paragraphe se lit comme un sujet
+     nouveau alors qu'il continue le précédent.
+     Le joint vaut ici la seule marge haute du paragraphe : 64px sur mobile,
+     72 sur desktop, contre 128/144 partout ailleurs. */
+  .page-hero {
+    padding: 0;
+    background: var(--color-white-primary);
+  }
+
+  /* `isolation` crée un contexte d'empilement propre : la carte de verre et le
+     voile s'y superposent sans dépendre du reste de la page. */
+  .page-hero__frame {
+    position: relative;
+    isolation: isolate;
+    margin: var(--hero-inset);
+    border-radius: var(--radius-panel);
+    overflow: hidden;
+  }
+
+  .page-hero__image,
+  .page-hero__placeholder {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .page-hero__placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-3);
+    background: var(--color-shade-grey);
+    border: var(--border-width) dashed var(--color-shade-strong);
+    border-radius: var(--radius-panel);
+    text-align: center;
+    font-family: var(--text-marker-family);
+    font-size: var(--text-marker-size);
+    font-weight: var(--text-marker-weight);
+    line-height: var(--text-marker-line-height);
+    letter-spacing: var(--text-marker-tracking);
+    color: var(--color-text-tertiary);
+  }
+
+  /* Voile plus léger que celui de la home (25 %) : ici le texte vit DANS une
+     carte de verre, qui assure déjà son propre contraste. Le voile ne sert
+     qu'à asseoir la pastille lime et à unifier les photos d'une page à l'autre. */
+  .page-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--overlay-photo);
+  }
+
+  /* La pile est dans le flux : c'est elle qui donne sa hauteur au cadre. La
+     photo, en absolu, s'y adapte — pas l'inverse. Une hauteur fixe couperait le
+     texte dès qu'un H1 passe à quatre lignes ou qu'on traduit en néerlandais. */
+  .page-hero__stack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+    gap: var(--gap-page-hero-badge);
+    padding: var(--pad-card-lg);
+  }
+
+  /* Largeur de la carte à toutes les tailles : la pastille la coiffe, elle ne
+     flotte pas à côté. Sans cette largeur, `align-items: flex-start` la
+     réduirait à son texte et le bord droit ne tomberait plus juste. */
+  .page-hero__badge {
+    margin: 0;
+    width: 100%;
+  }
+
+  .page-hero__card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    padding: var(--pad-card-lg);
+    border-radius: var(--radius-panel);
+    /* Dosage le plus couvrant du système : la carte se pose sur une photo
+       chargée et porte du texte long, comme les méga-menus (design.md §3). */
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+    color: var(--color-text-primary);
+  }
+
+  .page-hero__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  /* Le H1 n'hérite pas de `global.css` : dans cette carte, les 60px du hero de
+     la home donneraient six lignes (voir `--text-h1-page-size`). */
+  .page-hero__title {
+    font-size: var(--text-h1-page-size);
+    line-height: var(--text-h1-page-line-height);
+  }
+
+  @media (max-width: 767px) {
+    .page-hero__title {
+      font-size: 22px;
+      line-height: 1;
+    }
+  }
+
+  .page-hero__answer {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+  }
+
+  /* Mobile : la carte photo perd son retrait et ne garde que ses coins bas,
+     comme le hero de la home. Un cadre détaché de 16px de chaque côté sur un
+     écran de 390 mange 8 % de la largeur de la photo, et la maquette téléphone
+     (nœud 466:1817) la pose bien à fleur de bord.
+     `--container-padding` plutôt que `--pad-card-lg` pour la pile : le contenu
+     du hero tombe alors sur la même marge que le reste de la page. */
+  @media (max-width: 767px) {
+    /* `margin: 0` suffit à la mise à fleur de bord — surtout pas `width: 100vw`,
+       qui compterait la barre de défilement et ouvrirait un débordement
+       horizontal sur les systèmes à barres classiques. */
+    .page-hero__frame {
+      margin: 0;
+      border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+    }
+
+    .page-hero__stack {
+      /* La photo doit rester visible au-dessus de la carte : c'est elle qui
+         porte le sujet de la page. Bornée à la hauteur de l'écran — sur un
+         petit téléphone, 707px passeraient sous le pli avant même le premier
+         défilement. `svh` et non `vh` : `vh` compte la barre d'URL rétractée. */
+      min-height: min(var(--height-page-hero-mobile), 88svh);
+      /* Retrait droit plus large que le gauche : le couple pastille + carte est
+         calé à gauche et s'arrête avant le bord (voir `--page-hero-inset-end`).
+         C'est la largeur de la PILE qui le produit, pas une largeur posée sur
+         les deux enfants — ils restent en 100 % et suivent donc l'écran. */
+      padding: var(--container-padding) var(--page-hero-inset-end)
+        var(--container-padding) var(--container-padding);
+      /* 8px et non 18 : sur mobile la pastille est presque collée à la carte,
+         ce qui les lie en un seul objet (Figma 466:1818). */
+      gap: var(--space-2);
+    }
+
+    /* 16px et non 35 : sur 318px de large, le padding desktop laissait moins de
+       250px au titre, qui passait à cinq lignes. */
+    .page-hero__card {
+      padding: var(--space-3);
+    }
+
+    /* Plafonnées à la largeur qu'elles prendront de toute façon dès 768px :
+       sans cela, la carte s'étirait à 695px sur une tablette de 767 puis
+       retombait à 609 au basculement, un saut de 86px pour un pixel d'écran. */
+    .page-hero__badge,
+    .page-hero__card {
+      max-width: var(--width-page-hero-card);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .page-hero__stack {
+      min-height: calc(var(--height-page-hero) + 8vh);
+    }
+
+    /* Les deux partagent bord gauche et largeur : la pastille coiffe la carte,
+       elle ne flotte pas à côté. */
+    .page-hero__badge,
+    .page-hero__card {
+      width: var(--width-page-hero-card);
+    }
+  }
+
+  /* Règle compagnon, en fin de bloc et jamais adjacente à la déclaration non
+     préfixée : dans la même règle, le minifieur n'en garde qu'une des deux et
+     le verre disparaît du build de production (design.md §3). */
+  .page-hero__card {
+    -webkit-backdrop-filter: blur(var(--bg-glass-blur-menu));
+  }
+</style>

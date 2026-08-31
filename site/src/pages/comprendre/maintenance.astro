@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import Droplet from '../../assets/icons/maintenance-nettoyage/droplet.svg';
+import DeviceAnalytics from '../../assets/icons/maintenance-nettoyage/device-analytics.svg';
+import FileText from '../../assets/icons/maintenance-nettoyage/file-text.svg';
+import Tool from '../../assets/icons/maintenance-nettoyage/tool.svg';
+import heroImage from '../../assets/pages/4.9-maintenance-nettoyage-hero.webp';
+import editorialImage from '../../assets/pages/4.9-maintenance-nettoyage-editorial.webp';
+import {
+  EDITORIAL, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY,
+} from '../../data/pages/comprendre-maintenance';
+
+/**
+ * Page 4.9 — « Maintenance & nettoyage ».
+ *
+ * Gabarit standard de famille E : aucun module, sur prescription du cahier.
+ * Aucun composant nouveau — c'est le même assemblage que les quatorze autres
+ * pages de cette famille déjà livrées.
+ *
+ * Photos et icônes du pilier livrées et branchées.
+ */
+---
+
+<BaseLayout title="Entretien des panneaux solaires : ce qu'il faut faire | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, image: editorialImage }} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Droplet, DeviceAnalytics, FileText, Tool][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'entretien." tone="grey" id="faq-maintenance" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

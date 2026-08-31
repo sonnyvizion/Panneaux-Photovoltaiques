@@ -1,0 +1,1237 @@
+---
+import type { SvgComponent } from 'astro/types';
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import Button from './Button.astro';
+import ImagePlaceholder from './ImagePlaceholder.astro';
+import StackedList from './StackedList.astro';
+import type {
+  Bridge, EssentialsEditorial, EssentialsPanel, EssentialsTable,
+  Fact, Figure, IconCard, PhotoCard, SectionCopy, StackedRow,
+} from '../data/content';
+
+/**
+ * « L'essentiel » — le bloc scannable et VISIBLE du gabarit
+ * (`pages-contenu.md` §3, Figma 466:1400).
+ *
+ * C'est la colonne vertébrale de la page : ce que le visiteur pressé doit
+ * pouvoir lire sans rien déplier ni manipuler. Rien de ce qui est ici ne doit
+ * partir en accordéon — la profondeur, c'est le bloc suivant.
+ *
+ * Il se termine sur des ponts : ce que ce bloc ne dit PAS (les aides, le retour
+ * sur investissement) et où aller le lire. Nommer explicitement l'angle mort
+ * vaut mieux qu'un CTA générique — c'est la boucle contenu ↔ contenu.
+ */
+interface Props extends SectionCopy {
+  /**
+   * Cartes chiffres : un cas, un ordre de grandeur.
+   *
+   * ⚠️ Peut être VIDE. Toutes les pages n'ont pas trois grandeurs à comparer —
+   * certaines n'ont que des conditions en clair. Une liste vide rendue quand
+   * même laissait une bande grise sans contenu au milieu de la section.
+   */
+  figures: Figure[];
+  /** Cartes texte : les conditions, en clair. Peut être vide, comme `figures`. */
+  facts: Fact[];
+  bridges: Bridge[];
+
+  /* ── Les quatre autres formes du même bloc ──────────────────────────────────
+     ⚠️ ELLES S'EXCLUENT EN PRATIQUE, mais rien ne l'impose au type : une page
+     peut légitimement garder UNE carte chiffre et poser le reste en `aside`
+     (c'est le cas de Poids et d'Abri de jardin). Le choix se fait page par
+     page, sur les cinq questions du cahier de correction — pas ici.
+
+     Ce qu'aucune ne doit permettre : forcer trois cartes uniformes sur un
+     contenu qui ne s'y prête pas. C'est cette contrainte-là qui a produit des
+     « valeurs » comme « Capte » ou « Détaillé » posées en corps 44. */
+
+  /**
+   * Trois objets photographiables. Deux cartes de front, ou 2+1 à trois.
+   *
+   * `src` est résolu par la page, comme le hero. Tant qu'il manque, c'est un
+   * emplacement nommé du fichier attendu qui s'affiche — jamais une image de
+   * stock, qui serait pire que le vide (`design.md`).
+   */
+  photos?: (PhotoCard & { src?: ImageMetadata })[];
+  /** Trois facettes qualitatives. L'icône est résolue par la page. */
+  icons?: (IconCard & { icon?: SvgComponent })[];
+  /**
+   * Liste empilée à média fixe — le module de la famille H, posé ici à la place
+   * de la grille de cartes. L'en-tête de section, les cartes conditions et les
+   * ponts restent : seul le tableau de cartes change de forme.
+   */
+  stacked?: {
+    rows: StackedRow[];
+    /** Absente tant que la photo n'est pas livrée : voir `placeholder`. */
+    image?: ImageMetadata;
+    imageAlt?: string;
+    /** Le fichier attendu, quand l'image manque encore. */
+    placeholder?: string;
+  };
+  /** Une vraie comparaison : mêmes critères sur plusieurs objets. */
+  table?: EssentialsTable;
+  /** Un seul fait et ses conséquences, dans une carte unique. */
+  panel?: EssentialsPanel;
+  /**
+   * Un paragraphe et une photo, en pleine largeur.
+   *
+   * ⚠️ IL REMPLACE L'EN-TÊTE DE SECTION : son titre devient le `h2`. Passer à
+   * la fois `editorial` et un `title` de section afficherait deux titres.
+   */
+  editorial?: EssentialsEditorial & { image?: ImageMetadata; placeholder?: string };
+  /**
+   * Ce qui ne méritait pas une carte.
+   *
+   * Le débouché de la 5ᵉ question du cahier : un seul fait mérite la mise en
+   * avant, le reste redescend en texte simple sous la grille. Deux paragraphes
+   * au plus — au-delà, c'est le bloc « Creuser le sujet » qui prend le relais.
+   */
+  aside?: string[];
+}
+
+const {
+  overline, title, intro, figures, facts, bridges,
+  photos = [], icons = [], table, panel, aside = [], editorial, stacked,
+} = Astro.props;
+---
+
+<Section tone="default">
+  {/* Le bloc éditorial porte son propre titre : lui superposer l'en-tête de
+      section ferait lire deux fois la même chose. */}
+  {!editorial && <SectionHeading overline={overline} title={title} intro={intro} />}
+
+  <div class="essentials reveal">
+    {editorial && (
+    <div class="essentials__editorial">
+      <div class="essentials__editorial-text">
+        <h2 class="essentials__editorial-title">{editorial.title}</h2>
+        <div class="essentials__editorial-card">
+          <p>{editorial.text}</p>
+        </div>
+      </div>
+      {/* ⚠️ La photo est PORTRAIT (1744×2336) pour un créneau de 597×690 :
+          `object-fit: cover` recadre, la largeur déclarée reste celle du
+          fichier pour qu'`astro:assets` génère les bonnes variantes. */}
+      {editorial.image ? (
+        <Image
+          class="essentials__editorial-image"
+          src={editorial.image}
+          alt={editorial.imageAlt}
+          width={1744}
+          widths={[600, 900, 1200, 1744]}
+          sizes="(min-width: 768px) 597px, 100vw"
+          loading="lazy"
+        />
+      ) : (
+        <div class="essentials__editorial-slot">
+          <ImagePlaceholder label={editorial.placeholder ?? 'photo du bloc'} ratio="auto" />
+        </div>
+      )}
+    </div>
+    )}
+
+    {figures.length > 0 && (
+    <ul class="essentials__figures" data-count={figures.length}>
+      {figures.map((figure) => (
+        <li class={`essentials__card essentials__card--${figure.tone}`}>
+          <p class="essentials__label">{figure.label}</p>
+          <p class="essentials__value">
+            {figure.prefix && <span class="essentials__prefix">{figure.prefix}</span>}
+            {figure.value}
+          </p>
+          {figure.note && <p class="essentials__note">{figure.note}</p>}
+        </li>
+      ))}
+    </ul>
+    )}
+
+    {/* ⚠️ TROIS OBJETS, TROIS PHOTOS (Figma 695:490).
+        Un cadre gris qui tient la grille, des cartes blanches dedans, et dans
+        chaque carte le TEXTE À GAUCHE, LA PHOTO À DROITE. À trois cartes la
+        grille passe en 2+1 : la troisième prend toute la largeur plutôt que
+        d'ouvrir une colonne vide. À deux, deux colonnes égales — une asymétrie
+        n'aurait rien à équilibrer. */}
+    {photos.length > 0 && (
+    <div class="essentials__board">
+      <ul class="essentials__photos" data-count={photos.length}>
+        {photos.map((photo) => (
+          <li class="essentials__photo">
+            <div class="essentials__photo-text">
+              <h3 class="essentials__photo-title">{photo.title}</h3>
+              <p class="essentials__photo-body">{photo.text}</p>
+            </div>
+            {/* Tant que la photo n'est pas livrée, l'emplacement se nomme. Une
+                image de stock générique serait pire que le vide (`design.md`).
+
+                ⚠️ `ratio="auto"` : ici la photo ne se donne pas une hauteur, elle
+                REMPLIT celle de la carte. Un ratio imposé rouvrait l'écart que la
+                hauteur commune vient de fermer. */}
+            <div class="essentials__photo-media">
+              {photo.src ? (
+                <Image
+                  class="essentials__photo-img"
+                  src={photo.src}
+                  alt={photo.alt ?? ''}
+                  width={1600}
+                  widths={[420, 700, 1200, 1600]}
+                  sizes="(min-width: 768px) 40vw, 100vw"
+                  loading="lazy"
+                />
+              ) : (
+                <ImagePlaceholder label={photo.image} ratio="auto" />
+              )}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+    )}
+
+    {stacked && (
+      <StackedList
+        rows={stacked.rows}
+        image={stacked.image}
+        imageAlt={stacked.imageAlt}
+        placeholder={stacked.placeholder}
+      />
+    )}
+
+    {/* Trois facettes d'un même sujet : l'icône remplace la valeur géante. */}
+    {icons.length > 0 && (
+    <ul class="essentials__icons">
+      {icons.map((item) => (
+        <li class="essentials__card essentials__card--grey essentials__icon-card">
+          {item.icon && <item.icon class="essentials__icon-mark" aria-hidden="true" width={32} height={32} />}
+          <h3 class="essentials__fact-title">{item.title}</h3>
+          <p class="essentials__fact-text">{item.text}</p>
+        </li>
+      ))}
+    </ul>
+    )}
+
+    {/* ⚠️ UN VRAI TABLEAU, avec ses en-têtes — pas une grille déguisée. Trois
+        garanties comparées sur les mêmes critères se lisent en colonne ; en
+        trois cartes séparées, le lien qui les rend comparables disparaît. */}
+    {table && (
+    <div class="essentials__board">
+      <div class="essentials__table-card">
+        <div class="essentials__table-wrap">
+          {/* ⚠️ LES RÔLES SONT ÉCRITS, alors qu'ils sont ceux qu'un tableau
+              porte déjà. C'est parce que sur téléphone le tableau se REPLIE :
+              les cellules passent en `display: block`, et ce changement SUPPRIME
+              les rôles implicites `table` / `row` / `cell`. Un lecteur d'écran
+              n'annoncerait plus « Garantie produit, Durée typique, 10 à 15 ans »
+              mais une suite de blocs sans lien. Écrits, ils survivent.
+              Inertes sur grand écran, porteurs sur mobile. */}
+          <table class="essentials__table" role="table">
+            <thead role="rowgroup">
+              <tr role="row">
+                {table.head.map((cell) => <th scope="col" role="columnheader">{cell}</th>)}
+              </tr>
+            </thead>
+            {/* ⚠️ LE PANNEAU TEINTÉ EST LE `tbody`, et il est peint CELLULE PAR
+                CELLULE. Un fond posé sur `<tbody>` s'affiche, mais un
+                `border-radius` sur `<tbody>` est ignoré : les coins arrondis de
+                la maquette ne peuvent venir que des cellules des quatre angles. */}
+            <tbody role="rowgroup">
+              {table.rows.map((row) => (
+                <tr role="row">
+                  {row.map((cell, i) => (
+                    i === 0 ? <th scope="row" role="rowheader">{cell}</th> : (
+                      <td role="cell">
+                        {/* L'intitulé de la colonne, répété dans la cellule pour
+                            le jour où le tableau se replie.
+
+                            ⚠️ `aria-hidden`, et un VRAI élément plutôt qu'un
+                            `::before`. Le `<thead>` reste dans l'arbre
+                            d'accessibilité même replié (il est masqué à l'œil,
+                            pas retiré) : l'association colonne↔cellule y est
+                            déjà, et sans ce masquage l'intitulé serait annoncé
+                            deux fois. Quant au pseudo-élément, `content:
+                            attr(...)` est annoncé de façon inégale selon les
+                            lecteurs — autant ne pas laisser ça au hasard. */}
+                        <span class="essentials__table-label" aria-hidden="true">{table.head[i]}</span>
+                        {cell}
+                      </td>
+                    )
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    )}
+
+    {/* Un seul fait, ses conséquences en dessous. */}
+    {panel && (
+    <div class="essentials__card essentials__card--lime essentials__panel">
+      {panel.title && <h3 class="essentials__panel-title">{panel.title}</h3>}
+      <ul class="essentials__panel-list">
+        {panel.items.map((item) => <li>{item}</li>)}
+      </ul>
+    </div>
+    )}
+
+    {/* Ce qui ne méritait pas une carte, sous la grille. */}
+    {aside.length > 0 && (
+    <div class="essentials__aside">
+      {aside.map((text) => <p>{text}</p>)}
+    </div>
+    )}
+
+    {facts.length > 0 && (
+    <ul class="essentials__facts">
+      {facts.map((fact) => (
+        <li class="essentials__card essentials__card--grey">
+          <h3 class="essentials__fact-title">{fact.title}</h3>
+          <p class="essentials__fact-text">{fact.text}</p>
+        </li>
+      ))}
+    </ul>
+    )}
+
+    <div class="essentials__bridges">
+      {/* Décoratif : « i » dit à l'œil que ce panneau nuance ce qui précède.
+          À l'oral, ce rôle est déjà tenu par les titres des deux colonnes. */}
+      <span class="essentials__icon" aria-hidden="true">i</span>
+      {bridges.map((bridge) => (
+        <div class="essentials__bridge">
+          <h3 class="essentials__bridge-title">{bridge.title}</h3>
+          <p class="essentials__bridge-text">{bridge.text}</p>
+          <Button variant="ink" href={bridge.cta.href} wrap>{bridge.cta.label}</Button>
+        </div>
+      ))}
+    </div>
+  </div>
+</Section>
+
+<style>
+  .essentials {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap-cards);
+    width: 100%;
+  }
+
+  /* ⚠️ La grille NE CHANGE PAS entre mobile et desktop — trois chiffres de
+     front, deux conditions côte à côte, aux deux tailles (Figma 466:1869).
+     Les empiler sur mobile détruirait la seule chose que ce bloc sert à faire :
+     comparer les fourchettes d'un coup d'œil. Ce qui s'adapte, ce sont les
+     paddings, le rayon et la typographie. */
+  .essentials__figures,
+  .essentials__facts {
+    display: grid;
+    gap: var(--gap-cards);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .essentials__figures {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  /* ⚠️ LA GRILLE SUIT LE NOMBRE DE CARTES. Trois colonnes fixes étaient
+     l'hypothèse de départ — celle qui a poussé des pages à inventer une
+     troisième « valeur » pour remplir la ligne. Depuis qu'une page peut n'avoir
+     qu'un seul vrai chiffre, la grille doit savoir compter : sans ces règles,
+     une carte seule occupait un tiers de la largeur et deux cartes laissaient
+     un trou à droite. */
+  .essentials__figures[data-count='1'] {
+    grid-template-columns: 1fr;
+  }
+
+  .essentials__figures[data-count='2'] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* ⚠️ SEULE, LA CARTE CHANGE DE MISE EN PAGE. La colonne `space-between` des
+     cartes chiffres suppose trois voisines : c'est elle qui pousse le libellé
+     en haut et aligne les valeurs en pied. Étirée sur toute la largeur pour une
+     carte unique, elle laissait un L de vide — libellé perdu en haut à gauche,
+     chiffre en bas à droite, et rien entre les deux. En bandeau, le libellé
+     tient la gauche et le chiffre la droite, sur la même ligne. */
+  .essentials__figures[data-count='1'] .essentials__card {
+    display: grid;
+    grid-template-areas:
+      'label value'
+      'label note';
+    grid-template-columns: 1fr auto;
+    align-content: center;
+    align-items: center;
+    gap: 0 var(--space-3);
+    min-height: 0;
+    padding: var(--pad-card);
+  }
+
+  .essentials__figures[data-count='1'] .essentials__label {
+    grid-area: label;
+  }
+
+  .essentials__figures[data-count='1'] .essentials__value {
+    grid-area: value;
+  }
+
+  .essentials__figures[data-count='1'] .essentials__note {
+    grid-area: note;
+  }
+
+  /* Sur téléphone la largeur manque pour deux colonnes : le bandeau redevient
+     une carte, libellé au-dessus du chiffre. */
+  @media (max-width: 767px) {
+    .essentials__figures[data-count='1'] .essentials__card {
+      grid-template-areas: 'label' 'value' 'note';
+      grid-template-columns: 1fr;
+      gap: var(--space-2) 0;
+    }
+  }
+
+  .essentials__facts {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .essentials__card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-4);
+    /* ⚠️ Sans cela, `1fr` ne rétrécit pas : un élément de grille a un
+       `min-width: auto` implicite, et le montant en `nowrap` fixe alors la
+       largeur minimale de sa colonne. Les trois cartes débordaient de la page
+       en dessous de 360px sans qu'aucune règle ne paraisse fautive. */
+    min-width: 0;
+    /* Hauteur posée, pas déduite : c'est elle qui pousse le libellé en haut et
+       la valeur en bas, et qui garantit que les trois cartes alignent leurs
+       valeurs même quand un libellé passe à deux lignes. */
+    min-height: var(--height-figure-card);
+    border-radius: var(--radius-figure-card);
+  }
+
+  /* Les cartes chiffres se resserrent latéralement sur mobile (8px), pas les
+     cartes conditions : les premières sont trois de front, les secondes deux. */
+  .essentials__figures .essentials__card {
+    padding: var(--pad-figure-block) var(--pad-figure-inline);
+  }
+
+  .essentials__facts .essentials__card {
+    padding: var(--pad-card);
+  }
+
+  .essentials__card--grey {
+    background: var(--color-shade-grey);
+    color: var(--color-text-secondary);
+  }
+
+  .essentials__card--lime {
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+  }
+
+  .essentials__card--ink {
+    background: var(--color-ink-800);
+    color: var(--color-white-clear);
+  }
+
+  /* --- Cartes chiffres --- */
+  .essentials__label {
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  .essentials__card--ink .essentials__label {
+    color: var(--color-shade-grey);
+  }
+
+  /* Fer à droite : les trois valeurs s'alignent alors sur un même bord, ce qui
+     rend la progression des montants lisible d'un coup d'œil. Au fer à gauche,
+     « 4 500 » et « 11 500 » ne commençaient pas au même endroit. */
+  .essentials__value {
+    text-align: end;
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-figure-value-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: var(--text-display-mid-line-height);
+    letter-spacing: var(--text-display-mid-tracking);
+    /* Trois colonnes sur un écran de 320px : « 11 500 € » y déborde de sa
+       carte. Le montant reste d'un bloc et se réduit avec elle plutôt que de
+       casser en deux lignes ou de sortir du cadre. */
+    text-wrap: nowrap;
+  }
+
+  /* La condition qui restreint le chiffre, sous lui. Alignée sur la valeur et
+     non sur le libellé : les deux forment une seule unité de lecture, que la
+     `space-between` de la carte pousse déjà en bas.
+
+     ⚠️ Elle ne rentre PAS dans `.essentials__value` : la valeur est en
+     `nowrap` (voir la règle ci-dessus), et une condition de plusieurs mots y
+     déborderait de la carte au lieu de passer à la ligne. */
+  .essentials__note {
+    text-align: end;
+    font-family: var(--text-overline-family);
+    font-size: var(--text-overline-size);
+    font-weight: var(--text-overline-weight);
+    line-height: var(--text-overline-line-height);
+    letter-spacing: var(--text-overline-tracking);
+  }
+
+  /* La carte sombre éclaircit sa condition comme elle éclaircit son libellé,
+     sinon le gris secondaire par défaut y devient illisible. */
+  .essentials__card--ink .essentials__note {
+    color: var(--color-white-clear);
+  }
+
+  .essentials__prefix {
+    display: block;
+    font-family: var(--text-figure-prefix-family);
+    font-size: var(--text-figure-prefix-size);
+    font-weight: var(--text-figure-prefix-weight);
+    line-height: var(--text-figure-prefix-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* --- Cartes conditions ---
+     Deux styles MOBILES publiés par Figma (`h3-m`, `petit_p-m`), pas des
+     réductions inventées. Le second change même de famille — Inter sur mobile,
+     Circular sur desktop : à 14px le Circular Book perd sa lisibilité. */
+  .essentials__fact-title {
+    font-family: var(--text-h3-m-family);
+    font-size: var(--text-h3-m-size);
+    font-weight: var(--text-h3-m-weight);
+    line-height: var(--text-h3-m-line-height);
+    letter-spacing: var(--text-h3-m-tracking);
+  }
+
+  .essentials__fact-text {
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    font-weight: var(--text-petit-p-m-weight);
+    line-height: var(--text-petit-p-m-line-height);
+    letter-spacing: var(--text-petit-p-m-tracking);
+  }
+
+  /* ── BLOC ÉDITORIAL (Figma 699:1140) ──────────────────────────────────────
+     Une réponse d'un seul tenant et sa photo, sur le fond vert clair du
+     système. La grille de trois cartes ne convenait à ces pages ni de près ni
+     de loin : leurs chiffres sont trop peu nombreux pour la remplir, et les en
+     extraire les coupait de la phrase qui les rend compréhensibles.
+
+     ⚠️ MOBILE D'ABORD, comme le tableau. Les colonnes n'arrivent qu'à 768px. */
+  .essentials__editorial {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    /* ⚠️ Le haut garde les 32px de la maquette, les côtés et le bas tombent à
+       16 : le cadre serrait moins qu'il ne creusait, et la photo touchait
+       presque son bord bas quand elle flottait au milieu à gauche et à droite.
+       Le retrait supérieur reste plus large, il fait respirer le titre. */
+    padding: var(--space-4) var(--space-3) var(--space-3);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-clear);
+  }
+
+  .essentials__editorial-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--pad-card);
+    min-width: 0;
+  }
+
+  /* ⚠️ `h2` DU SYSTÈME SUR TÉLÉPHONE, `display-mid` au-delà. La maquette pose
+     44px ; à cette taille un titre occupe le tiers d'un écran de 390. Le `h2`
+     mobile (28/30) est la taille que prennent déjà tous les titres de section
+     du site à ce format — ce titre EN EST un. */
+  .essentials__editorial-title {
+    font-family: var(--text-h2-family);
+    font-size: var(--text-h2-size);
+    font-weight: var(--text-h2-weight);
+    line-height: var(--text-h2-line-height);
+    letter-spacing: var(--text-h2-tracking);
+  }
+
+  .essentials__editorial-card {
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-white-primary);
+  }
+
+  /* ⚠️ `body_bull` sur téléphone, `display-little` au-delà. La maquette pose
+     22/24 : sur 390px, ce paragraphe de cinq cents signes y tiendrait sur
+     vingt-cinq lignes. `body_bull` (16/20) est le cran juste en dessous dans la
+     MÊME famille — la carte garde son allure, elle se lit simplement. */
+  .essentials__editorial-slot :global(.placeholder) {
+    height: 100%;
+    border-radius: var(--radius-3);
+  }
+
+  .essentials__editorial-card p {
+    font-family: var(--text-body-bull-family);
+    font-size: var(--text-body-bull-size);
+    font-weight: var(--text-body-bull-weight);
+    line-height: var(--text-body-bull-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* Portrait sur téléphone aussi, mais moins haut : la photo doit tenir dans
+     l'écran avec un morceau du texte, sinon elle coupe la lecture en deux. */
+  .essentials__editorial-image,
+  .essentials__editorial-slot {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-3);
+    object-fit: cover;
+  }
+
+  @media (min-width: 768px) {
+    /* `space-between` comme la maquette : le texte à gauche sur 420px, la photo
+       à droite sur 597, et l'écart absorbe la largeur restante. */
+    .essentials__editorial {
+      flex-direction: row;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .essentials__editorial-text {
+      flex: 0 0 var(--width-editorial-text);
+      /* Le texte s'étire à la hauteur de la photo, qui commande le bloc. */
+      align-self: stretch;
+    }
+
+    .essentials__editorial-title {
+      font-family: var(--text-display-mid-family);
+      font-size: var(--text-display-mid-size);
+      font-weight: var(--text-display-mid-weight);
+      line-height: var(--text-display-mid-line-height);
+      letter-spacing: var(--text-display-mid-tracking);
+    }
+
+    .essentials__editorial-card p {
+      font-family: var(--text-display-little-family);
+      font-size: var(--text-display-little-size);
+      font-weight: var(--text-display-little-weight);
+      line-height: var(--text-display-little-line-height);
+      letter-spacing: var(--text-display-little-tracking);
+    }
+
+    .essentials__editorial-image,
+    .essentials__editorial-slot {
+      flex: 0 1 var(--width-editorial-image);
+      aspect-ratio: var(--ratio-editorial-image);
+    }
+  }
+
+  /* ── CARTES PHOTO (Figma 695:490) ────────────────────────────────────────
+     Un cadre gris tient la grille, les cartes sont blanches dedans. C'est la
+     recette du compte rendu du simulateur, appliquée ici : sans le cadre, trois
+     cartes blanches posées sur un fond blanc n'auraient plus de contour. */
+  .essentials__board {
+    padding: var(--space-3);
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
+  .essentials__photos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ⚠️ TEXTE À GAUCHE, PHOTO À DROITE — pas la photo au-dessus. La maquette
+     couche la carte : c'est ce qui lui donne sa hauteur contenue et permet d'en
+     aligner trois. Empilées, les mêmes cartes faisaient 520 px de haut. */
+  .essentials__photo {
+    display: flex;
+    gap: var(--space-3);
+    align-items: stretch;
+    justify-content: space-between;
+    min-width: 0;
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  /* Hauteur posée, comme les cartes chiffres : les textes vont de trois à six
+     lignes, et sans elle la rangée serait bancale. */
+  @media (min-width: 768px) {
+    .essentials__photos {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* 2+1 : à trois éléments, le dernier prend la largeur entière. */
+    .essentials__photos[data-count='3'] .essentials__photo:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .essentials__photo {
+      min-height: var(--height-photo-card);
+    }
+  }
+
+  .essentials__photo-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-2);
+    min-width: 0;
+  }
+
+  /* `display-little` de la maquette : Circular Book 22/24. Ce n'est PAS le `h3`
+     du système (Medium 22/26) — le titre d'une carte photo accompagne l'image,
+     il ne la commande pas. */
+  .essentials__photo-title {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .essentials__photo-body {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+    letter-spacing: var(--text-body-sm-tracking);
+  }
+
+  .essentials__photo-media {
+    flex: 0 0 var(--width-photo-media);
+    min-width: 0;
+  }
+
+  /* La carte pleine largeur ne donne pas 40 % à sa photo : ça ferait 460 px de
+     large contre 220 aux deux autres, pour un contenu de même importance. */
+  .essentials__photos[data-count='3'] .essentials__photo:last-child .essentials__photo-media {
+    flex-basis: calc(var(--width-photo-media) - 10%);
+  }
+
+  /* La photo remplit la hauteur de la carte plutôt que de l'imposer. */
+  .essentials__photo-media :global(.placeholder),
+  .essentials__photo-media :global(img),
+  .essentials__photo-img {
+    height: 100%;
+    border-radius: var(--radius-card);
+    object-fit: cover;
+  }
+
+  /* ⚠️ SUR TÉLÉPHONE LA CARTE SE REDRESSE. Couchée sur 358 px, la photo tombe à
+     143 px de large : elle ne montre plus son objet, ce qui est toute sa raison
+     d'être ici. Elle repasse au-dessus du texte, en panoramique. */
+  @media (max-width: 767px) {
+    .essentials__photo {
+      flex-direction: column-reverse;
+    }
+
+    .essentials__photo-media {
+      flex: none;
+      aspect-ratio: 16 / 9;
+    }
+
+    /* Le texte des cartes photo prend le style des cartes conditions : c'est
+       `petit_p-m`, le style que Figma publie POUR LE MOBILE (14/16). Les deux
+       blocs se suivent sur un téléphone, à 15 px contre 14 ils se ressemblaient
+       sans se répondre. Même traitement pour les ponts, plus bas — leur règle
+       de base vient après celle-ci, l'override doit la suivre. */
+    .essentials__photo-body {
+      font-family: var(--text-petit-p-m-family);
+      font-size: var(--text-petit-p-m-size);
+      font-weight: var(--text-petit-p-m-weight);
+      line-height: var(--text-petit-p-m-line-height);
+      letter-spacing: var(--text-petit-p-m-tracking);
+    }
+  }
+
+  /* ── CARTES ICÔNE ─────────────────────────────────────────────────────────
+     ⚠️ ELLES S'EMPILENT SUR MOBILE, contrairement aux cartes chiffres qui
+     restent trois de front. La raison qui interdit d'empiler les chiffres —
+     comparer trois fourchettes d'un coup d'œil — ne s'applique pas ici : il n'y
+     a rien à comparer, seulement trois paragraphes à lire. Trois colonnes de
+     texte sur 390px les rendraient illisibles. */
+  .essentials__icons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--gap-cards);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .essentials__icon-card {
+    /* La hauteur posée des cartes chiffres n'a pas lieu d'être : rien à aligner
+       en pied, le texte commande. */
+    justify-content: flex-start;
+    min-height: 0;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+  }
+
+  .essentials__icon-mark {
+    width: var(--space-4);
+    height: var(--space-4);
+    color: var(--color-text-primary);
+  }
+
+  @media (min-width: 768px) {
+    .essentials__icons {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* ── TABLEAU (Figma 699:832) ──────────────────────────────────────────────
+     Même emboîtement que les cartes photo : cadre gris, carte blanche dedans.
+     L'en-tête reste sur le blanc, les lignes descendent dans un panneau teinté.
+     C'est cette séparation qui distingue les critères des valeurs — le filet
+     entre lignes d'une première version ne disait pas la même chose : il
+     découpait le tableau au lieu de l'isoler du reste.
+
+     ⚠️ CE BLOC EST ÉCRIT MOBILE D'ABORD. Le tableau REPLIÉ est l'état de base ;
+     la grille à trois colonnes n'arrive qu'à partir de 768px. L'ordre inverse a
+     été essayé et abandonné : les gouttières, les marges du panneau et les
+     quatre rayons d'angle sont posés sur les cellules par des sélecteurs du
+     genre `tbody tr:first-child > *`, plus spécifiques que toute remise à zéro
+     raisonnable. La version repliée héritait d'un coin arrondi isolé et de
+     37px de padding fantôme sous chaque cellule. Borner les règles à leur
+     palier vaut mieux que de surenchérir en spécificité. */
+  .essentials__table-card {
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  /* Inerte tant que rien ne déborde — filet de sécurité si un contenu plus
+     large arrive un jour. Le conteneur défilerait, jamais la page. */
+  .essentials__table-wrap {
+    overflow-x: auto;
+  }
+
+  /* `separate` et non `collapse` : avec `collapse`, un `border-radius` sur une
+     cellule est ignoré, et les quatre angles du panneau teinté avec lui. */
+  .essentials__table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--color-text-primary);
+    text-align: start;
+  }
+
+  .essentials__table th,
+  .essentials__table td {
+    text-align: start;
+    vertical-align: top;
+  }
+
+  /* Les critères, en `display-little` — le style des titres de carte photo.
+     C'est la même famille d'objets : un intitulé qui coiffe un contenu. */
+  .essentials__table thead th {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--text-display-little-weight);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .essentials__table tbody th,
+  .essentials__table tbody td {
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* Souligné, pas gras : c'est ce qui désigne la ligne dans la maquette. Le
+     gras aurait fait un second niveau de titre à côté de l'en-tête. */
+  .essentials__table tbody th {
+    text-decoration: underline;
+  }
+
+  /* ── L'ÉTAT DE BASE : LE TABLEAU REPLIÉ ───────────────────────────────────
+     ⚠️ POURQUOI ON REPLIE PLUTÔT QUE DE FAIRE DÉFILER. Trois colonnes sur
+     390px donnaient un tableau de 544px dans un cadre de 294 : la colonne
+     « Durée typique » tombait 129px après le bord droit, sans rien pour
+     signaler qu'elle existait. Or ces durées sont les seuls vrais chiffres de
+     la page — c'est pour les faire apparaître que ce tableau a remplacé trois
+     cartes qui n'en montraient aucun. Le défilement les recachait.
+
+     Même doctrine que `OptionComparator.astro`, qui refuse lui aussi trois
+     colonnes de texte à cette taille. Par un autre moyen : ses colonnes sont
+     les objets comparés, quand ici ce sont les lignes. */
+  .essentials__table,
+  .essentials__table thead,
+  .essentials__table tbody,
+  .essentials__table tr,
+  .essentials__table th,
+  .essentials__table td {
+    display: block;
+  }
+
+  /* ⚠️ MASQUÉ À L'ŒIL, PAS RETIRÉ. `display: none` sortirait l'en-tête de
+     l'arbre d'accessibilité et emporterait avec lui l'association
+     colonne↔cellule — celle-là même que les rôles écrits servent à préserver.
+     C'est la recette `.visually-hidden` de `global.css`. */
+  .essentials__table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .essentials__table tbody {
+    display: grid;
+    gap: var(--space-3);
+  }
+
+  /* Replié, le fond et le rayon appartiennent à la LIGNE : une garantie devient
+     une carte. Déplié, ils repasseront aux cellules — seules capables de porter
+     les angles d'un panneau qui couvre tout le `tbody`. */
+  .essentials__table tbody tr {
+    padding: var(--pad-card);
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+  }
+
+  /* Les cellules n'ont plus de garniture propre : c'est la ligne qui la porte.
+     Sans cela, le `padding: 1px` que le navigateur applique par défaut à une
+     cellule décale tout d'un pixel. */
+  .essentials__table th,
+  .essentials__table td {
+    padding: 0;
+  }
+
+  .essentials__table tbody th {
+    margin-bottom: var(--space-3);
+  }
+
+  .essentials__table tbody td + td {
+    margin-top: var(--space-3);
+  }
+
+  /* ⚠️ PAS `overline`, malgré le rôle identique en apparence. Ce style vaut
+     18px en Circular Medium : il est taillé pour coiffer un chiffre de 44px sur
+     une carte chiffre. Posé sur une valeur de 15px, il pesait PLUS LOURD que ce
+     qu'il annonce — « Couvre quoi » écrasait « Défauts de fabrication du
+     panneau ». `petit_p-m` remet l'intitulé sous sa valeur : plus petit, plus
+     clair, et sans concurrence de graisse (400 contre 500). */
+  .essentials__table-label {
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    font-weight: var(--text-petit-p-m-weight);
+    line-height: var(--text-petit-p-m-line-height);
+    letter-spacing: var(--text-petit-p-m-tracking);
+  }
+
+  /* ── LE TABLEAU DÉPLIÉ (768px et au-delà) ─────────────────────────────────
+     Trois colonnes, l'en-tête sur le blanc et les lignes dans le panneau. */
+  @media (min-width: 768px) {
+    .essentials__table {
+      display: table;
+      min-width: 34rem;
+    }
+
+    .essentials__table thead {
+      position: static;
+      display: table-header-group;
+      width: auto;
+      height: auto;
+      overflow: visible;
+      clip-path: none;
+      white-space: normal;
+    }
+
+    .essentials__table tbody {
+      display: table-row-group;
+      gap: 0;
+    }
+
+    /* ⚠️ TOUTES les lignes, pas seulement celles du corps. Restaurée sur le
+       seul `tbody`, la ligne d'en-tête restait en `display: block` : ses trois
+       cellules sortaient du modèle de colonnes et se calaient sur leur contenu,
+       à 325 et 496px quand le corps était à 638 et 1006. Le tableau semblait
+       intact — chaque moitié était alignée sur elle-même. */
+    .essentials__table tr {
+      display: table-row;
+    }
+
+    .essentials__table th,
+    .essentials__table td {
+      display: table-cell;
+    }
+
+    /* Le fond et le rayon quittent la ligne pour les cellules. */
+    .essentials__table tbody tr {
+      padding: 0;
+      border-radius: 0;
+      background: none;
+    }
+
+    .essentials__table tbody th,
+    .essentials__table tbody td {
+      background: var(--color-shade-details);
+    }
+
+    .essentials__table tbody th {
+      margin-bottom: 0;
+    }
+
+    .essentials__table tbody td + td {
+      margin-top: 0;
+    }
+
+    /* L'intitulé répété ne sert qu'au tableau replié : ici, la colonne a son
+       en-tête. */
+    .essentials__table-label {
+      display: none;
+    }
+
+    .essentials__table thead th {
+      padding-bottom: var(--pad-card);
+    }
+
+    /* Les gouttières viennent du padding des cellules, pas d'un
+       `border-spacing` — celui-ci écarte AUSSI les cellules du bord du tableau,
+       ce qui aurait décalé le panneau teinté vers l'intérieur. */
+    .essentials__table th,
+    .essentials__table td {
+      padding-right: var(--gap-table-col);
+    }
+
+    .essentials__table th:last-child,
+    .essentials__table td:last-child {
+      padding-right: 0;
+    }
+
+    /* Les 20px de marge intérieure du panneau, portés par les cellules de bord —
+       et d'UN SEUL CÔTÉ chacune. En `padding-inline`, la dernière colonne
+       gagnait aussi 20px à gauche : sa boîte restait alignée sur l'en-tête, mais
+       son texte partait 20px plus loin que l'intitulé qui le coiffe. */
+    .essentials__table tbody th {
+      padding-left: var(--pad-card);
+      padding-right: var(--gap-table-col);
+    }
+
+    .essentials__table tbody td:last-child {
+      padding-right: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:first-child > * {
+      padding-top: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:last-child > * {
+      padding-bottom: var(--pad-card);
+    }
+
+    .essentials__table tbody tr:not(:last-child) > * {
+      padding-bottom: var(--gap-table-row);
+    }
+
+    /* Les quatre angles du panneau. */
+    .essentials__table tbody tr:first-child > *:first-child {
+      border-start-start-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:first-child > *:last-child {
+      border-start-end-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:last-child > *:first-child {
+      border-end-start-radius: var(--radius-3);
+    }
+
+    .essentials__table tbody tr:last-child > *:last-child {
+      border-end-end-radius: var(--radius-3);
+    }
+
+    /* L'en-tête s'aligne sur les cellules du panneau : sans ce décalage, la
+       première colonne aurait son intitulé 20px à gauche de son contenu.
+       ⚠️ Écart assumé à la maquette, qui laisse ce décalage. Dans un tableau, un
+       intitulé qui ne tombe pas sur sa colonne est une gêne de lecture. */
+    .essentials__table thead th:first-child {
+      padding-left: var(--pad-card);
+    }
+  }
+
+  /* ── CARTE UNIQUE À PLUSIEURS LIGNES ─────────────────────────────────────── */
+  .essentials__panel {
+    justify-content: flex-start;
+    min-height: 0;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+  }
+
+  .essentials__panel-title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  .essentials__panel-list {
+    display: grid;
+    gap: var(--space-2);
+    margin: 0;
+    padding-left: var(--space-3);
+    font-family: var(--text-petit-p-m-family);
+    font-size: var(--text-petit-p-m-size);
+    line-height: var(--text-petit-p-m-line-height);
+  }
+
+  /* ── TEXTE SOUS LA GRILLE ─────────────────────────────────────────────────
+     Volontairement sans carte ni fond : c'est ce qui distingue un fait
+     secondaire d'un fait mis en avant. Lui redonner une surface annulerait la
+     hiérarchie qu'on vient d'établir. */
+  .essentials__aside {
+    display: grid;
+    gap: var(--space-3);
+    max-width: var(--width-prose, 65ch);
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-bull-family);
+    font-size: var(--text-body-bull-size);
+    line-height: var(--text-body-bull-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* --- Panneau des ponts --- */
+  .essentials__bridges {
+    position: relative;
+    display: grid;
+    gap: var(--space-4);
+    padding: var(--pad-card-lg-block);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-clear);
+  }
+
+  .essentials__icon {
+    position: absolute;
+    top: var(--space-3);
+    left: var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-24);
+    height: var(--space-24);
+    border: var(--border-width) solid var(--color-text-muted);
+    border-radius: var(--radius-pill);
+    color: var(--color-text-muted);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: 1;
+  }
+
+  .essentials__bridge {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--pad-card-lg-block);
+    text-align: center;
+  }
+
+  .essentials__bridge-title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+    color: var(--color-text-primary);
+  }
+
+  /* Le bouton est poussé en pied de colonne : les deux s'alignent même quand un
+     texte fait une ligne de plus que l'autre. */
+  .essentials__bridge :global(.btn) {
+    margin-top: auto;
+  }
+
+  .essentials__bridge-text {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-bull-family);
+    font-size: var(--text-body-bull-size);
+    font-weight: var(--text-body-bull-weight);
+    line-height: var(--text-body-bull-line-height);
+    letter-spacing: var(--text-body-bull-tracking);
+  }
+
+  /* ⚠️ APRÈS la règle de base, pas avant. Posée plus haut dans la feuille — à
+     côté de celle des cartes photo, où sa place logique aurait été — elle
+     perdait contre `.essentials__bridge-text` : même spécificité, et une
+     `@media` n'en ajoute pas. C'est l'ordre de source qui tranche.
+
+     Les ponts descendent de `body_bull` (Circular 16/20) à `petit_p-m`
+     (Inter 14/16) : le même style que les cartes conditions et les cartes photo
+     prennent déjà sur téléphone. */
+  @media (max-width: 767px) {
+    .essentials__bridge-text {
+      font-family: var(--text-petit-p-m-family);
+      font-size: var(--text-petit-p-m-size);
+      font-weight: var(--text-petit-p-m-weight);
+      line-height: var(--text-petit-p-m-line-height);
+      letter-spacing: var(--text-petit-p-m-tracking);
+    }
+  }
+
+  /* Le panneau de ponts perd ses deux épaisseurs de 25px sur mobile
+     (Figma 466:1893 : 8px). Cumulées à la marge de section, elles retiraient
+     66px de chaque côté sur un écran de 320 — il ne restait pas de quoi poser
+     un bouton. */
+  @media (max-width: 767px) {
+    .essentials__bridges {
+      padding: var(--space-2);
+      /* ⚠️ Le haut ne suit PAS les 8px des trois autres côtés : l'icône est en
+         `position: absolute`, elle ne pousse donc rien devant elle. Sur desktop
+         les 25px de padding lui laissaient une gouttière ; réduits à 8px, le
+         titre du premier pont remontait à 16px — exactement le bord haut de
+         l'icône, qu'il recouvrait.
+
+         La valeur est DÉRIVÉE de l'icône (son décalage + sa taille), jamais
+         posée en dur : elle suit si l'un des deux change. Le padding du pont
+         lui-même fournit l'écart sous l'icône. */
+      padding-top: calc(var(--space-3) + var(--space-24));
+      gap: var(--space-24);
+    }
+
+    .essentials__bridge {
+      padding: var(--space-2);
+    }
+  }
+
+  @media (min-width: 768px) {
+    /* Les cartes conditions repassent au display : sur desktop elles portent
+       assez de largeur pour que le Circular reste lisible, et le bloc retrouve
+       la cohérence du reste de la page. */
+    .essentials__fact-title {
+      font-family: var(--text-h4-family);
+      font-size: var(--text-h4-size);
+      font-weight: var(--text-h4-weight);
+      line-height: var(--text-h4-line-height);
+      letter-spacing: var(--text-h4-tracking);
+    }
+
+    .essentials__fact-text {
+      font-family: var(--text-body-bull-family);
+      font-size: var(--text-body-bull-size);
+      font-weight: var(--text-body-bull-weight);
+      line-height: var(--text-body-bull-line-height);
+      letter-spacing: var(--text-body-bull-tracking);
+    }
+
+    /* Seuls les ponts changent de grille : ils portent un titre, un paragraphe
+       et un bouton — impossible à tenir sur une demi-colonne de téléphone. */
+    .essentials__bridges {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

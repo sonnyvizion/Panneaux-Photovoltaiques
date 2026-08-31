@@ -1,0 +1,33 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.5-poids-hero.webp';
+import Building from '../../assets/icons/poids/building.svg';
+import Weight from '../../assets/icons/poids/weight.svg';
+import Tool from '../../assets/icons/poids/tool.svg';
+import {
+  BRIDGES, EDITORIAL, EDITORIAL_IMAGE, ESSENTIALS_COPY, FACTS, FAQ,
+  FIGURES, FINAL_CTA, HERO, LEAD, TOPICS, TOPICS_COPY
+} from '../../data/pages/installation-poids';
+
+/**
+ * Page 2.5 — « Poids ».
+ *
+ * ⚠️ SANS MODULE, sur prescription du cahier (« aucun — accordéon simple
+ * suffit »). Règle d'or #5 : l'interactif est un accent, pas un réflexe.
+ */
+---
+
+<BaseLayout title="Poids des panneaux solaires sur la toiture | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, placeholder: EDITORIAL_IMAGE }} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Building, Weight, Tool][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la solidité du toit." tone="grey" id="faq-poids" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

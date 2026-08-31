@@ -1,0 +1,1106 @@
+---
+import { Image } from 'astro:assets';
+import heroImage from '../assets/hero/hero.webp';
+import SimulatorWizard from './SimulatorWizard.astro';
+import SimulatorStep from './SimulatorStep.astro';
+import SimulatorResult from './SimulatorResult.astro';
+import { ORIENTATIONS, TILTS } from '../scripts/orientation';
+import { formatNumber } from '../scripts/format';
+import {
+  AREA_DEFAULT, AREA_MAX, AREA_MIN, AREA_STEP,
+  BILL_BANDS, CONSUMPTION_DEFAULT, CONSUMPTION_MAX, CONSUMPTION_MIN, CONSUMPTION_STEP,
+  PROPERTY_TYPES, ROOF_TYPES, SHADINGS, YES_NO_SOON,
+} from '../scripts/simulator';
+import { QUESTION_STEPS, REFINE_STEPS } from '../scripts/wizard';
+
+/**
+ * Le simulateur — les questions, le résultat, puis l'affinage.
+ *
+ * ⚠️ UNE QUESTION PAR ÉCRAN. Le rail (`SimulatorWizard`) porte la mécanique, ce
+ * fichier ne fait qu'y ranger les questions dans l'ordre. Les cinq du brief,
+ * plus une SIXIÈME conditionnelle : le code postal, posé uniquement à qui
+ * arrive sans région connue. Le brief veut le code postal « mémorisé, jamais
+ * redemandé » — ici il n'a jamais été donné, on ne le redemande donc pas.
+ * Le PRIX DU kWh, lui, n'est pas une question : c'est `ELECTRICITY_PRICE`,
+ * affiché dans les hypothèses du résultat.
+ *
+ * ⚠️ RIEN N'EST PRÉ-COCHÉ. Le visiteur choisit vraiment à chaque étape, sinon la
+ * barre de progression mentirait et on récolterait des valeurs par défaut au
+ * lieu de réponses. Conséquence assumée : le résultat rendu au build est un
+ * exemple étiqueté — voir `SimulatorResult`.
+ *
+ * ⚠️ UN SEUL FORMULAIRE pour les deux parcours. L'affinage « reprend les
+ * réponses déjà données » sans transfert ni stockage : elles n'ont jamais quitté
+ * le formulaire.
+ *
+ * ⚠️ Le simulateur CALCULE, il ne QUALIFIE pas. Aucun champ e-mail, aucune
+ * coordonnée ici : la qualification vit dans les formulaires de sortie.
+ *
+ * ⚠️ L'HABILLAGE EST CELUI DES MODULES, pas une coquille à part. Bande photo,
+ * calque sombre, panneau de verre, carte blanche : la recette exacte de
+ * `SliderCalculator`, qui habille déjà sept pages. Le simulateur est la colonne
+ * vertébrale du site — il ne peut pas être le seul objet à parler une autre
+ * langue que les modules qui y mènent.
+ */
+
+/* Le texte qui lève le doute, à côté de la question qui le fait naître. C'est la
+   boucle « simulateur → contenu » posée par CLAUDE.md.
+   ⚠️ `step` est le lien explicite avec l'identifiant d'étape : le script s'en
+   sert pour n'afficher que le bloc de la question en cours. Sans ce champ, il
+   faudrait deviner la correspondance depuis le nom de la clé. */
+const HELP = {
+  cp: {
+    step: '0',
+    body: 'Les aides, le tarif d’injection et le tarif prosumer ne se ressemblent pas d’une région à l’autre : le même toit ne donne pas du tout le même résultat à Bruxelles et en Wallonie.',
+    href: '/aides-primes',
+    label: 'Les aides par région',
+  },
+  property: {
+    step: '1',
+    body: 'Une copropriété peut tout à fait s’équiper, mais la décision passe par l’assemblée générale — et cela change le calendrier, pas la rentabilité.',
+    href: '/aides-primes/copropriete',
+    label: 'Le solaire en copropriété',
+  },
+  roof: {
+    step: '2',
+    body: 'Un toit plat n’empêche rien : les panneaux reposent sur des supports lestés qui leur donnent l’inclinaison voulue.',
+    href: '/installation/toit-plat',
+    label: 'Panneaux sur toit plat',
+  },
+  orientation: {
+    step: '3',
+    body: 'Le plein sud produit le plus, mais un toit est/ouest ne perd que 15 % — et étale sa production sur toute la journée, ce qui aide l’autoconsommation.',
+    href: '/rentabilite-prix/rendement',
+    label: 'L’effet de l’orientation',
+  },
+  area: {
+    step: '4',
+    body: 'Comptez environ 2 m² par panneau sur un toit incliné, davantage sur un toit plat où les rangées ne doivent pas s’ombrer entre elles.',
+    href: '/installation/nombre-de-panneaux',
+    label: 'Combien de panneaux ?',
+  },
+  consumption: {
+    step: '5',
+    body: 'Ce qui compte n’est pas ce que vous produisez, mais ce que vous consommez au moment où vous le produisez.',
+    href: '/rentabilite-prix/autoconsommation',
+    label: 'Comprendre l’autoconsommation',
+  },
+  tilt: {
+    step: 'a1',
+    body: 'Autour de 30 à 35°, la production est à son maximum. Un toit très plat ou très pentu perd quelques pourcents, rarement davantage.',
+    href: '/installation/fixation',
+    label: 'Fixation et inclinaison',
+  },
+  shading: {
+    step: 'a2',
+    body: 'Une seule ombre peut pénaliser toute une chaîne de panneaux. Les micro-onduleurs limitent fortement la casse.',
+    href: '/installation/ombrage',
+    label: 'Gérer l’ombrage',
+  },
+  heatPump: {
+    step: 'a3',
+    body: 'Une pompe à chaleur consomme en journée pendant l’hiver : elle relève votre autoconsommation, donc vos économies.',
+    href: '/installation/pompe-a-chaleur',
+    label: 'Panneaux et pompe à chaleur',
+  },
+  car: {
+    step: 'a4',
+    body: 'Recharger en journée transforme un surplus injecté à bas prix en carburant quasi gratuit.',
+    href: '/installation/voiture-electrique',
+    label: 'Recharger sa voiture au solaire',
+  },
+  battery: {
+    step: 'a5',
+    body: 'Une batterie stocke le surplus du jour pour le soir. Elle change votre autoconsommation, jamais votre production.',
+    href: '/comprendre/batterie',
+    label: 'Faut-il une batterie ?',
+  },
+};
+---
+
+<section class="sim" data-sim-view="questions">
+  {/* ⚠️ Réglages d'image IDENTIQUES à ceux de `PageHero` et `SliderCalculator` :
+      à réglages égaux `astro:assets` réutilise le même fichier, alors que la
+      moindre divergence génère en silence un second jeu complet de variantes.
+      L'échelle monte à 2560 pour les écrans Retina.
+
+      ⚠️ Photo empruntée au hero de la home faute de photo dédiée au simulateur :
+      elle figure dans la liste « à fournir par le client ». */}
+  <Image
+    class="sim__image"
+    src={heroImage}
+    alt=""
+    width={2560}
+    widths={[768, 1280, 1920, 2560]}
+    sizes="100vw"
+    loading="eager"
+    fetchpriority="high"
+  />
+  <div class="sim__overlay" aria-hidden="true"></div>
+
+  <div class="sim__panel">
+    <h1 class="sim__h1">Ce que le solaire donnerait chez vous</h1>
+    <p class="sim__lede" data-sim-lede>
+      Quelques questions, une minute. Aucun compte, aucune coordonnée pour voir vos chiffres.
+    </p>
+
+  <div class="sim__body">
+  {/* ⚠️ Un seul `<form>` englobe les deux rails : c'est ce qui fait que
+      l'affinage « reprend les réponses déjà données » sans rien transférer. */}
+  <form class="sim__form" data-sim-form>
+    <SimulatorWizard
+      kind="questions"
+      steps={QUESTION_STEPS}
+      finalLabel="Voir mon estimation"
+      label="Les questions du simulateur"
+    >
+      {/* ⚠️ ÉTAPE CONDITIONNELLE. Elle n'apparaît que si la région est encore
+          inconnue — ni code postal du hero, ni `?region=` d'un méga-menu, ni
+          choix mémorisé. Sans elle, le simulateur retombait en silence sur la
+          Wallonie, la seule des trois régions où l'installation ne s'amortit
+          jamais : un Bruxellois lisait « au-delà de 25 ans » au lieu de
+          « 4 à 8 ans ». Le script la retire dès que la région est connue. */}
+      <SimulatorStep id="0" index={1} total={QUESTION_STEPS.length} title="Où se trouve le bâtiment ?">
+        <div class="sim__field">
+          <label class="sim__label" for="sim-cp">Code postal</label>
+          <input
+            class="sim__text" id="sim-cp" name="cp" type="text"
+            inputmode="numeric" autocomplete="postal-code" maxlength="4"
+            pattern="[0-9]{4}" placeholder="1000"
+          />
+          {/* Le retour immédiat : le visiteur VOIT que son code a été compris,
+              et quelle région en découle. */}
+          <p class="sim__hint" data-sim-region-echo>
+            Les aides et le tarif d’injection changent du tout au tout selon la région.
+          </p>
+        </div>
+      </SimulatorStep>
+
+      <SimulatorStep id="1" index={2} total={QUESTION_STEPS.length} title="De quel bien s’agit-il ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Type de bien</legend>
+          <div class="sim__choices">
+            {PROPERTY_TYPES.map((p) => (
+              <label class="sim__choice">
+                <input type="radio" name="property" value={p.value} />
+                <span>{p.label}</span>
+              </label>
+            ))}
+          </div>
+
+          {/* ⚠️ Filtrer TÔT. `simulateur.md` pose le principe : laisser quelqu'un
+              répondre à quatre questions de plus pour apprendre à la fin que le
+              modèle ne s'applique pas à lui détruit la confiance. Le bouton
+              devient une sortie vers l'équipe, pas une question suivante. */}
+          <p class="sim__notice" data-sim-outofscope-step hidden>
+            Un bâtiment professionnel se dimensionne autrement qu’une maison :
+            notre estimation résidentielle ne s’y applique pas. Parlons-en
+            directement avec vous.
+          </p>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="2" index={3} total={QUESTION_STEPS.length} title="Votre toiture est plutôt…">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Type de toit</legend>
+          <div class="sim__choices sim__choices--row">
+            {ROOF_TYPES.map((r) => (
+              <label class="sim__choice">
+                <input type="radio" name="roof" value={r.value} />
+                <span>{r.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      {/* ⚠️ DES BOUTONS, PAS UN CURSEUR. Le curseur du catalogue a été monté ici
+          puis retiré : sur une question de parcours, quatre réponses nommées se
+          lisent et se cliquent plus vite qu'un soleil qu'il faut déplacer pour
+          découvrir ce qu'on choisit. La brique reste montée sur la page
+          « Rendement », où elle a le temps d'expliquer — c'est là qu'elle sert. */}
+      <SimulatorStep id="3" index={4} total={QUESTION_STEPS.length} title="Vers où regarde votre toit ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Orientation principale</legend>
+          <div class="sim__choices">
+            {ORIENTATIONS.map((o) => (
+              <label class="sim__choice">
+                <input type="radio" name="orientation" value={o.value} />
+                <span>{o.label}</span>
+              </label>
+            ))}
+            {/* ⚠️ « Je ne sais pas » vaut Sud-Est/Sud-Ouest : une hypothèse
+                prudente, jamais le plein sud qui flatterait le résultat. */}
+            <label class="sim__choice">
+              <input type="radio" name="orientation" value="sud-est-ouest" />
+              <span>Je ne sais pas</span>
+            </label>
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="4" index={5} total={QUESTION_STEPS.length} title="Quelle surface pouvez-vous couvrir ?">
+        <div class="sim__field">
+          <label class="sim__label" for="sim-area">
+            Surface disponible
+            <output class="sim__value" data-sim-echo="area">{AREA_DEFAULT} m²</output>
+          </label>
+          <input
+            class="sim__range" id="sim-area" name="area" type="range"
+            min={AREA_MIN} max={AREA_MAX} step={AREA_STEP} value={AREA_DEFAULT}
+          />
+          {/* Le brief signale que peu de gens connaissent leurs m² : on donne un
+              repère plutôt qu'un champ nu. */}
+          <p class="sim__hint">Repère : une place de parking fait environ 12 m², un pan de toiture courant 30 à 50 m².</p>
+        </div>
+      </SimulatorStep>
+
+      <SimulatorStep id="5" index={6} total={QUESTION_STEPS.length} title="Combien consommez-vous ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Votre consommation</legend>
+          <div class="sim__choices sim__choices--row">
+            <label class="sim__choice">
+              <input type="radio" name="consumptionMode" value="facture" />
+              <span>Ma facture</span>
+            </label>
+            <label class="sim__choice">
+              <input type="radio" name="consumptionMode" value="kwh" />
+              <span>Mes kWh</span>
+            </label>
+            <label class="sim__choice">
+              <input type="radio" name="consumptionMode" value="inconnue" />
+              <span>Je ne sais pas</span>
+            </label>
+          </div>
+
+          <div class="sim__sub" data-sim-mode="facture" hidden>
+            <div class="sim__choices">
+              {BILL_BANDS.map((b) => (
+                <label class="sim__choice">
+                  <input type="radio" name="bill" value={b.value} />
+                  <span>{b.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div class="sim__sub" data-sim-mode="kwh" hidden>
+            <label class="sim__label" for="sim-consumption">
+              Consommation annuelle
+              <output class="sim__value" data-sim-echo="consumption">{formatNumber(CONSUMPTION_DEFAULT)} kWh</output>
+            </label>
+            <input
+              class="sim__range" id="sim-consumption" name="consumption" type="range"
+              min={CONSUMPTION_MIN} max={CONSUMPTION_MAX} step={CONSUMPTION_STEP} value={CONSUMPTION_DEFAULT}
+            />
+          </div>
+
+          <p class="sim__notice" data-sim-needsbill hidden>
+            Nous n’avons pas de moyenne pour ce type de bien — indiquez votre facture
+            pour obtenir une estimation.
+          </p>
+        </fieldset>
+      </SimulatorStep>
+    </SimulatorWizard>
+
+    {/* --- L'affinage : cinq options de plus, le même résultat mis à jour ---
+        ⚠️ 100 % OPTIONNEL. Le résultat est complet sans lui ; l'affinage ne fait
+        que RESSERRER les fourchettes (`SPREAD_REFINED` contre `SPREAD_QUICK`).
+        C'est le seul bénéfice promis, et il est mesurable. */}
+    {/* ⚠️ PAS de `hidden` ici, volontairement : sans JavaScript, les cinq options
+        restent atteignables en faisant défiler leur rail, comme les cinq
+        questions. C'est le script qui masque ce parcours tant qu'on ne l'a pas
+        demandé. (Un `hidden` posé sur le composant serait de toute façon resté
+        sans effet : Astro ne reporte pas les attributs inconnus sur la racine.) */}
+    <SimulatorWizard
+      kind="affinage"
+      steps={REFINE_STEPS}
+      finalLabel="Mettre à jour mon estimation"
+      label="Les cinq options d’affinage"
+    >
+      {/* Même parti que l'orientation : des réponses nommées, pas un curseur. */}
+      <SimulatorStep id="a1" index={1} total={REFINE_STEPS.length} title="Quelle pente a votre toit ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Inclinaison du toit</legend>
+          <div class="sim__choices sim__choices--row">
+            {TILTS.map((t) => (
+              <label class="sim__choice">
+                <input type="radio" name="tilt" value={t.value} />
+                <span>{t.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="a2" index={2} total={REFINE_STEPS.length} title="Votre toit est-il ombragé ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Ombrage</legend>
+          <div class="sim__choices sim__choices--row">
+            {SHADINGS.map((s) => (
+              <label class="sim__choice">
+                <input type="radio" name="shading" value={s.value} />
+                <span>{s.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="a3" index={3} total={REFINE_STEPS.length} title="Avez-vous une pompe à chaleur ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Pompe à chaleur</legend>
+          <div class="sim__choices sim__choices--row">
+            {YES_NO_SOON.map((o) => (
+              <label class="sim__choice">
+                <input type="radio" name="heatPump" value={o.value} />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="a4" index={4} total={REFINE_STEPS.length} title="Roulez-vous à l’électrique ?">
+        <fieldset class="sim__field">
+          <legend class="visually-hidden">Voiture électrique</legend>
+          <div class="sim__choices sim__choices--row">
+            {YES_NO_SOON.map((o) => (
+              <label class="sim__choice">
+                <input type="radio" name="car" value={o.value} />
+                <span>{o.label}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+      </SimulatorStep>
+
+      <SimulatorStep id="a5" index={5} total={REFINE_STEPS.length} title="Ajouter une batterie ?">
+        <div class="sim__field">
+          {/* Toggle produit : on l'active pour VOIR l'effet, pas pour cocher une
+              case de formulaire. Ses deux états sont des réponses — c'est pour
+              cela que cette étape ne verrouille jamais « Suivant ». */}
+          <label class="sim__toggle">
+            <input type="checkbox" name="battery" />
+            <span class="sim__toggle-box" aria-hidden="true"></span>
+            <span class="sim__toggle-copy">
+              <strong>Ajouter une batterie domestique</strong>
+              <em>Stocke le surplus du jour pour le soir : l’autoconsommation monte fortement.</em>
+            </span>
+          </label>
+          {/* ⚠️ Le surcoût de la batterie n'est PAS modélisé — aucune source du
+              projet ne le chiffre. On montre l'effet, et on le dit. */}
+          <p class="sim__hint">
+            Le budget affiché n’inclut pas la batterie : son coût se chiffre lors de l’étude.
+          </p>
+        </div>
+      </SimulatorStep>
+    </SimulatorWizard>
+  </form>
+
+    {/* ⚠️ L'AIDE VIT À CÔTÉ DU PARCOURS, pas dedans. Logée dans l'étape, elle
+        défilait avec le rail et se faisait rogner par son découpage horizontal.
+        Ici elle reste en place pendant que les questions glissent — et c'est
+        aussi ce que fait le panneau latéral du wireframe `analyse-personnalisee`.
+
+        ⚠️ Les onze blocs sont TOUS rendus au build ; le script n'affiche que
+        celui de l'étape en cours. Sans JavaScript, l'aside se lit comme la liste
+        des clarifications, en regard des onze questions du rail — le contenu vit
+        dans le HTML, jamais dans le script (règle d'or #1).
+
+        ⚠️ Les liens ouvrent un NOUVEL ONGLET : les réponses vivent dans le
+        formulaire, pas dans l'URL. Quitter la page pour lever un doute les
+        effacerait toutes. */}
+    <aside class="sim__help" data-sim-help>
+      {Object.values(HELP).map((help) => (
+        <div class="sim__help-block" data-help={help.step}>
+          <p class="sim__help-body">{help.body}</p>
+          {/* ⚠️ LA FLÈCHE EST DANS LE FLUX, collée au dernier mot par une espace
+              insécable. En élément flex séparé, elle s'alignait sur la première
+              ligne du libellé : dès que « Comprendre l'autoconsommation » se
+              coupait en deux, elle restait en haut à droite, détachée du texte.
+
+              ⚠️ ET ELLE PASSE AVANT LE TEXTE MASQUÉ. `.visually-hidden` est en
+              `display: inline-block` : invisible à l'œil, mais bien dans le flux
+              inline. Intercalé entre le libellé et la flèche, il offrait au
+              navigateur un point de coupure que l'espace insécable ne pouvait
+              pas franchir — la flèche repartait seule à la ligne. Le lecteur
+              d'écran, lui, lit toujours « … (s'ouvre dans un nouvel onglet) » :
+              la flèche qu'il traverse est `aria-hidden`. */}
+          <a class="sim__help-link" href={help.href} target="_blank" rel="noopener">
+            {help.label}<span aria-hidden="true">&nbsp;↗</span><span class="visually-hidden"> (s’ouvre dans un nouvel onglet)</span>
+          </a>
+        </div>
+      ))}
+    </aside>
+  </div>
+
+    {/* ── L'ÉCRAN DE CALCUL ────────────────────────────────────────────────
+        ⚠️ L'attente est FABRIQUÉE : l'estimation est calculée instantanément.
+        Elle existe pour que le résultat ne surgisse pas sans transition — le
+        compte rendu est le moment que tout le parcours prépare, et il paraissait
+        peu élaboré d'y arriver d'un clic.
+
+        ⚠️ Le texte ANNONCE L'AFFINAGE plutôt que de meubler. C'est le seul
+        levier capable de retourner un mauvais verdict, et il était jusqu'ici
+        enterré dans une carte du compte rendu : ces quelques secondes sont le
+        meilleur endroit pour le faire savoir.
+
+        ⚠️ La barre est décorative (`aria-hidden`) et ne porte pas de
+        `role="progressbar"` : elle ne mesure rien de réel. Un lecteur d'écran
+        reçoit une annonce unique dans `[data-sim-status]`, puis l'estimation.
+
+        ⚠️ Le bloc n'existe que pour le script : sans JavaScript il reste masqué
+        et le compte rendu s'affiche directement. */}
+    <div class="sim__loader" data-sim-loader hidden>
+      <p class="loader__title">Nous calculons votre estimation</p>
+
+      <p class="loader__lede">
+        Vous pourrez l’affiner juste après : cinq questions de plus — pente du
+        toit, ombrage, pompe à chaleur, voiture électrique, batterie — resserrent
+        la fourchette et peuvent changer nettement le résultat.
+      </p>
+
+      <div class="loader__bar" aria-hidden="true">
+        <span class="loader__fill"></span>
+      </div>
+    </div>
+
+    <SimulatorResult />
+
+    <p class="visually-hidden" data-sim-status role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<script>
+  import { initSimulator } from '../scripts/simulatorWidget';
+  initSimulator(document);
+</script>
+
+<style>
+  /* --- La bande, calquée sur `.calc` de `SliderCalculator` --- */
+  .sim {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--section-padding-block) var(--container-padding);
+    overflow: hidden;
+  }
+
+  .sim__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+
+  .sim__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--overlay-photo);
+  }
+
+  /* Le panneau de verre. Il ne prend PAS `--width-power-panel` (768px) : la
+     question et son « en savoir plus » doivent tenir de front en desktop, ce que
+     768px interdisent. On reprend l'esthétique du module, pas sa largeur. */
+  .sim__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    width: 100%;
+    max-width: var(--width-sim-panel);
+    padding: var(--pad-power-panel);
+    border-radius: var(--radius-panel);
+    background: var(--bg-glass-fill-menu);
+    backdrop-filter: blur(var(--bg-glass-blur-menu));
+    border: var(--bg-glass-border);
+  }
+
+  .sim__h1 {
+    font-size: var(--text-h3-size);
+    line-height: var(--text-h3-line-height);
+  }
+
+  .sim__lede {
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    line-height: var(--text-body-light-line-height);
+  }
+
+  /* Le corps : la carte du parcours, et l'aide qui l'accompagne. */
+  /* ═══════════════════════════════════════════════════════════════════════
+     LE COMPTE RENDU N'EST PAS UN MODULE — il ne porte donc pas son habillage.
+
+     Le parcours de questions est une carte posée sur une photo : le décor y
+     tient le visiteur pendant qu'il répond. Le compte rendu, lui, est un
+     DOCUMENT — cinq blocs, deux graphiques, une décision à prendre. Lu à
+     travers un verre translucide posé sur des feuillages, il devenait illisible :
+     photo → voile → verre → carte blanche → bandeau → tuiles, six surfaces
+     empilées pour lire un chiffre.
+
+     Sur la vue « résultat », le décor s'efface donc entièrement et la page
+     redevient un fond uni. Rien n'est déplacé dans le DOM : c'est le même
+     panneau qui cesse d'être une carte.
+
+     ⚠️ Bénéfice collatéral : plus aucun `backdrop-filter` sur ce chemin. Celui
+     de `.sim__panel` n'avait pas sa règle compagnon `-webkit-backdrop-filter`
+     (contrairement à `FigureModule` et `PageHero`) — il ne rendait donc pas sur
+     Safari ni iOS. Le problème disparaît avec la surface.
+     ═══════════════════════════════════════════════════════════════════════ */
+  /* Le chargement se joue sur le même fond uni que le compte rendu : la photo
+     et le verre appartiennent aux questions, pas à ce qui vient après. */
+  .sim[data-sim-view='chargement'],
+  .sim[data-sim-view='resultat'] {
+    align-items: stretch;
+  }
+
+  /* ⚠️ Une hauteur minimale, sinon l'écran de calcul ne fait que quelques
+     centaines de pixels et le pied de page remonte se caler dessous : on
+     attendrait quatre secondes en regardant le footer. */
+  .sim[data-sim-view='chargement'] {
+    min-height: 70svh;
+    /* Fond blanc : le compte rendu pose lui-même ses aplats (le cadre gris de
+       la grille, les cartes colorées). Un fond déjà teinté sous eux ajoutait un
+       quatrième niveau de vert très clair et brouillait la lecture. */
+    background: var(--color-white-primary);
+  }
+
+  /* ⚠️ `.sim__body` DOIT PARTIR, pas seulement les rails. Le script masque les
+     deux wizards, mais leur conteneur — une carte blanche de 25px de padding —
+     restait affiché : le compte rendu s'ouvrait sous un rectangle blanc vide. */
+  /* ⚠️ `.sim__h1` PART AUSSI. Le compte rendu porte désormais son propre titre,
+     avec la sortie PDF sur la même ligne (maquette 667:296) — le laisser ici
+     l'affichait deux fois de suite. */
+  .sim[data-sim-view='chargement'] .sim__image,
+  .sim[data-sim-view='chargement'] .sim__overlay,
+  .sim[data-sim-view='chargement'] .sim__h1,
+  .sim[data-sim-view='chargement'] .sim__lede,
+  .sim[data-sim-view='chargement'] .sim__body,
+  .sim[data-sim-view='resultat'] .sim__image,
+  .sim[data-sim-view='resultat'] .sim__overlay,
+  .sim[data-sim-view='resultat'] .sim__h1,
+  .sim[data-sim-view='resultat'] .sim__lede,
+  .sim[data-sim-view='resultat'] .sim__body {
+    display: none;
+  }
+
+  .sim[data-sim-view='chargement'] .sim__panel,
+  .sim[data-sim-view='resultat'] .sim__panel {
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    backdrop-filter: none;
+  }
+
+  /* ═══════════════════════════════════════════════════════════════════════
+     L'ÉCRAN DE CALCUL — un texte, une barre, rien d'autre.
+
+     ⚠️ TOUT EST EN CSS. Un compteur piloté en JavaScript réveillerait le fil
+     principal des dizaines de fois par seconde pour une animation décorative,
+     sur une page dont les Core Web Vitals conditionnent tout le trafic. Le
+     script ne pose qu'un `setTimeout`.
+
+     La durée vient de `--duration-loader`, la même valeur que le script lit :
+     l'animation et la bascule ne peuvent pas diverger.
+     ═══════════════════════════════════════════════════════════════════════ */
+  .sim__loader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-24);
+    width: 100%;
+    max-width: var(--width-power-panel);
+    margin-inline: auto;
+    padding: var(--space-64) var(--pad-card);
+    border-radius: var(--radius-grid);
+    background: var(--color-shade-details);
+    text-align: center;
+  }
+
+  /* Le texte garde sa colonne de lecture : sur 768px, une phrase de trois lignes
+     étirée bord à bord se suivrait mal. */
+  .loader__title,
+  .loader__lede,
+  .loader__bar {
+    width: 100%;
+    max-width: var(--width-section-intro);
+  }
+
+  /* `display: flex` bat la règle UA sur `[hidden]`. */
+  .sim__loader[hidden] {
+    display: none;
+  }
+
+  .loader__title {
+    font-family: var(--text-display-little-family);
+    font-size: var(--text-display-little-size);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--text-display-little-line-height);
+    letter-spacing: var(--text-display-little-tracking);
+  }
+
+  .loader__lede {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .loader__bar {
+    width: 100%;
+    height: var(--height-loader-bar);
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    /* ⚠️ La piste passe au BLANC, pas au gris. Sur le fond `shade-details` de la
+       carte, `shade-grey` s'en distinguait à peine : la barre semblait flotter
+       sans support, et on ne voyait pas ce qui restait à parcourir. */
+    background: var(--color-white-primary);
+  }
+
+  /* ⚠️ La barre s'anime en `transform`, pas en `width`. Une largeur animée
+     déclenche un recalcul de mise en page à chaque image ; une transformation
+     reste sur le compositeur. Sur quatre secondes et demie, la différence se
+     voit sur un téléphone d'entrée de gamme. */
+  .loader__fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-pill);
+    background: var(--color-main-green);
+    transform: scaleX(0);
+    transform-origin: left center;
+    animation: loader-fill var(--duration-loader) linear forwards;
+  }
+
+  @keyframes loader-fill {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  /* ⚠️ Ce réglage est souvent activé par des personnes sujettes au mal des
+     transports ou aux migraines vestibulaires. L'écran reste — il porte le sens
+     de l'attente — mais la barre s'affiche pleine, sans progression. La durée,
+     elle, ne change pas. */
+  @media (prefers-reduced-motion: reduce) {
+    .loader__fill {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
+  .sim__body {
+    display: grid;
+    gap: var(--gap-cards);
+    align-items: start;
+    min-width: 0;
+  }
+
+  .sim__help {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
+  /* Le même garde-fou que partout ailleurs : `display: flex` l'emporterait sur
+     la règle `[hidden] { display: none }` du navigateur. */
+  .sim__help[hidden],
+  .sim__help-block[hidden] {
+    display: none;
+  }
+
+  .sim__help-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--pad-card);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+  }
+
+  .sim__help-body {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  /* ⚠️ NI `inline-flex` NI `gap` : c'est ce qui détachait la flèche. Un enfant
+     de conteneur flex est de toute façon blockifié — le texte s'enroule et la
+     flèche suit son dernier mot, tenue par l'espace insécable du markup. */
+  .sim__help-link {
+    align-self: flex-start;
+    color: var(--color-text-secondary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    text-decoration: underline;
+    text-underline-offset: var(--space-1);
+  }
+
+  /* La carte blanche du module : c'est elle qui contient, le verre ne fait
+     qu'encadrer. */
+  /* ⚠️ 20px et 16px, comme le compte rendu. À 25px de padding et 24 d'écart, la
+     carte réservait de la place que les questions n'utilisaient pas — le titre
+     étant passé de 44 à 26px, l'écart s'était creusé. */
+  .sim__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    /* ⚠️ `min-width: 0` sur un enfant de grille : par défaut il vaut `auto` et
+       refuse de descendre sous la largeur intrinsèque de son contenu. Le rail
+       porte onze étapes bout à bout — sans cette remise à zéro, la carte prenait
+       leur largeur cumulée et débordait du panneau. */
+    min-width: 0;
+    padding: var(--pad-card);
+    border-radius: var(--radius-panel);
+    background: var(--color-white-primary);
+  }
+
+  .sim__field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-inline-size: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+  }
+
+  /* Voir le garde-fou de `SimulatorWizard` : `display: flex` l'emporterait sur
+     la règle `[hidden] { display: none }` du navigateur. */
+  .sim__sub[hidden],
+  .sim__field[hidden] {
+    display: none;
+  }
+
+  .sim__sub {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .sim__label {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+  }
+
+  /* Pas de `tabular-nums` : dans Circular Std, il élargit l'espace et la virgule,
+     et « 3 800 kWh » se disloque. */
+  .sim__value {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-display-mid-weight);
+    white-space: nowrap;
+  }
+
+  /* ⚠️ Deux colonnes, et ce n'est pas décoratif : le rail prend la hauteur de sa
+     plus haute étape, donc les cinq choix d'orientation dictaient la hauteur des
+     quatre autres questions et laissaient un grand vide sous chacune. Ranger en
+     grille les ramène à trois rangées et resserre tout le parcours. */
+  .sim__choices {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  /* Un choix seul sur sa rangée prend toute la largeur plutôt que la moitié. */
+  .sim__choices > .sim__choice:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  /* Les rangées courtes (2 ou 3 choix brefs) restent en ligne : une grille les
+     forcerait à deux colonnes inégales. */
+  .sim__choices--row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  /* ⚠️ `min-width: min-content` et non `0` : à `0`, les choix se partagent la
+     largeur à parts égales et un libellé long est rogné. Ici la tuile ne descend
+     jamais sous son mot le plus long — si la rangée ne tient plus, elle passe à
+     la ligne au lieu de tronquer. */
+  .sim__choices--row .sim__choice {
+    flex: 1 1 auto;
+    min-width: min-content;
+  }
+
+  .sim__choice {
+    display: flex;
+  /* ⚠️ `position: relative` — SANS LUI, LA PAGE PART SUR LE CÔTÉ.
+     L'input masqué juste en dessous est en `position: absolute` sans décalage :
+     il se pose donc à sa position statique, dans le bloc conteneur du premier
+     ancêtre POSITIONNÉ. Sans ancre ici, cet ancêtre est le document lui-même —
+     l'input s'échappe alors du découpage du rail et va se placer jusqu'à
+     6 400 px sur la droite. Deux dégâts : `<html>` gagne une barre de
+     défilement horizontale invisible, et surtout cliquer une réponse donne le
+     focus à cet input, que le navigateur ramène en vue en faisant glisser TOUTE
+     LA PAGE. D'où l'écran blanc. Le rail n'y était pour rien. */
+    position: relative;
+  }
+
+  .sim__choice input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sim__choice span {
+    flex: 1;
+    /* ⚠️ `text-align` NE CENTRE QUE HORIZONTALEMENT. Les réponses d'une même
+       rangée sont étirées à la hauteur de la plus haute : dès qu'une seule
+       d'entre elles passe sur deux lignes (« Copropriété (immeuble) »), les
+       autres gardaient leur mot collé en haut de leur carte. Le centrage
+       vertical demande une grille — `text-align` reste pour recentrer les
+       lignes d'une réponse qui en compte plusieurs. */
+    /* ⚠️ `align-content`, PAS `place-items`. `place-items: center` fait aussi
+       rétrécir la boîte de texte à sa largeur de contenu : les deux lignes de
+       « Copropriété (immeuble) » se retrouvaient calées à gauche l'une sous
+       l'autre, `text-align` n'ayant plus de largeur sur laquelle centrer. En ne
+       centrant que l'axe de bloc, la boîte garde toute la largeur de la carte
+       et les lignes restent centrées. */
+    display: grid;
+    align-content: center;
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    cursor: pointer;
+    text-align: center;
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  .sim__choice input:checked + span {
+    background: var(--color-highlight-primary);
+    border-color: var(--color-ink-900);
+  }
+
+  .sim__choice input:focus-visible + span {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .sim__text {
+    width: 100%;
+    max-width: var(--width-sim-text);
+    padding: var(--space-3);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-display-mid-weight);
+    /* Un code postal se lit chiffre à chiffre : l'espacement les sépare sans
+       recourir à `tabular-nums`, qui disloque les espaces dans Circular Std. */
+    letter-spacing: var(--tracking-sim-cp);
+  }
+
+  .sim__text:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .sim__hint,
+  .sim__notice {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .sim__notice {
+    padding: var(--space-3);
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  /* --- Curseurs --- */
+  .sim__range {
+    width: 100%;
+    height: var(--height-power-track);
+    appearance: none;
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+    cursor: pointer;
+  }
+
+  .sim__range::-webkit-slider-thumb {
+    appearance: none;
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    border: var(--border-width) solid var(--color-ink-900);
+  }
+
+  .sim__range::-moz-range-thumb {
+    width: var(--size-power-knob);
+    height: var(--size-power-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    border: var(--border-width) solid var(--color-ink-900);
+  }
+
+  .sim__range:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+    border-radius: var(--radius-pill);
+  }
+
+  /* --- Toggle produit (batterie) --- */
+  .sim__toggle {
+    /* Même ancre que `.sim__choice` : voir le commentaire qui l'accompagne. */
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--pad-card);
+    border: var(--border-width) solid var(--color-shade-grey);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+  }
+
+  .sim__toggle input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .sim__toggle-box {
+    position: relative;
+    flex-shrink: 0;
+    width: var(--width-sim-toggle);
+    height: var(--height-sim-toggle);
+    border-radius: var(--radius-pill);
+    background: var(--color-shade-grey);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  .sim__toggle-box::after {
+    content: '';
+    position: absolute;
+    top: var(--space-1);
+    left: var(--space-1);
+    width: var(--size-sim-toggle-knob);
+    height: var(--size-sim-toggle-knob);
+    border-radius: var(--radius-pill);
+    background: var(--color-white-primary);
+    transition: transform var(--duration-fast) var(--easing-default);
+  }
+
+  .sim__toggle input:checked + .sim__toggle-box {
+    background: var(--color-main-green);
+  }
+
+  .sim__toggle input:checked + .sim__toggle-box::after {
+    transform: translateX(var(--shift-sim-toggle));
+  }
+
+  .sim__toggle input:focus-visible + .sim__toggle-box {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  .sim__toggle-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .sim__toggle-copy strong {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+  }
+
+  .sim__toggle-copy em {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-utility-mobile-size);
+    font-style: normal;
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sim__choice span,
+    .sim__toggle-box,
+    .sim__toggle-box::after {
+      transition: none;
+    }
+  }
+
+  /* L'aide se pose à côté du parcours dès qu'il y a la place, et devient
+     collante : elle reste en vue pendant qu'on répond. */
+  @media (min-width: 1024px) {
+    .sim__body {
+      grid-template-columns: minmax(0, 1fr) minmax(0, var(--width-wizard-help));
+    }
+
+    .sim__help {
+      position: sticky;
+      top: var(--space-4);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .sim__h1 {
+      font-size: var(--text-display-mid-size);
+      line-height: 0.96;
+    }
+  }
+
+  /* ⚠️ Panneau et carte perdent leurs 25px de padding au profit de 12, comme sur
+     la maquette mobile du module : imbriqués, ils retiraient 100px de largeur à
+     un écran de 320. */
+  @media (max-width: 767px) {
+    .sim {
+      padding-inline: var(--container-padding);
+      /* ⚠️ MOITIÉ MOINS D'AIR AU-DESSUS ET EN DESSOUS. `--section-padding-block`
+         vaut 64 px : c'est le rythme des pages de contenu, où une section
+         respire entre ses voisines. Ici le panneau EST la page, et ces 128 px
+         cumulés repoussaient la première question hors de l'écran d'entrée.
+         Valeur posée sur `.sim` seul — le token reste intact pour le reste du
+         site. */
+      padding-block: var(--space-4);
+    }
+
+    .sim__panel,
+    .sim__form {
+      padding: var(--space-12);
+    }
+
+    /* Titre, accroche et parcours se resserrent : 32 px entre trois blocs qui
+       se lisent d'un trait, c'est un écart de section appliqué à l'intérieur
+       d'une carte. */
+    .sim__panel {
+      gap: var(--space-3);
+    }
+
+    /* Les réponses aussi : 16 px de garniture sur une carte qui n'en contient
+       qu'un mot. À 12 px la cible tactile reste à 46 px de haut, au-dessus du
+       minimum de 44. */
+    .sim__choice span {
+      padding: var(--space-12);
+    }
+  }
+</style>

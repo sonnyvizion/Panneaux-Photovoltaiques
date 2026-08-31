@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import PageHero from '../../../components/PageHero.astro';
+import LeadStatement from '../../../components/LeadStatement.astro';
+import StepsTimeline from '../../../components/StepsTimeline.astro';
+import Faq from '../../../components/Faq.astro';
+import FinalCta from '../../../components/FinalCta.astro';
+import {
+  FAQ, FINAL_CTA, HERO, LEAD, TIMELINE, TIMELINE_COPY,
+} from '../../../data/pages/aides-primes-bruxelles-demarches';
+
+/**
+ * Page 1.6 du cahier — « Démarches administratives Bruxelles ».
+ *
+ * Gabarit allégé, troisième et dernière page « Démarches » du pilier. Elle n'a
+ * demandé AUCUN code : le composant `StepsTimeline` était déjà écrit pour la
+ * Wallonie et la Flandre. C'est le résultat que visait le registre des modules.
+ *
+ * ⚠️ Deux manques d'assets sur cette page, et sur elle seule :
+ *  — pas de photo de hero livrée (`img/pages/` n'a rien en `1.6-`), d'où
+ *    l'emplacement étiqueté ;
+ *  — pas de dossier d'icônes (`img/icones-toutes-pages/` en compte 29 pour 30
+ *    pages, celui-ci manque). Les étapes s'affichent donc sans icône — le
+ *    composant les rend optionnelles, la timeline reste complète et lisible.
+ */
+---
+
+<BaseLayout title="Certificats verts Bruxelles : les démarches 2026 | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    placeholder={HERO.imagePlaceholder}
+  />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <StepsTimeline
+    overline={TIMELINE_COPY.overline}
+    title={TIMELINE_COPY.title}
+    intro={TIMELINE_COPY.intro}
+    steps={TIMELINE}
+  />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur ces démarches." tone="default" id="faq-demarches-bruxelles" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />
+</BaseLayout>

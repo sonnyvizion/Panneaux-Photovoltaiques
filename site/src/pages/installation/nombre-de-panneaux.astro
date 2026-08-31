@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import LeadStatement from '../../components/LeadStatement.astro';
+import SliderCalculator from '../../components/SliderCalculator.astro';
+import Essentials from '../../components/Essentials.astro';
+import TopicCards from '../../components/TopicCards.astro';
+import Faq from '../../components/Faq.astro';
+import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/2.2-nombre-panneaux-hero.webp';
+import Stack from '../../assets/icons/nombre-panneaux/stack-2.svg';
+import Plus from '../../assets/icons/nombre-panneaux/plus.svg';
+import Tag from '../../assets/icons/nombre-panneaux/tag.svg';
+import Bolt from '../../assets/icons/nombre-panneaux/bolt.svg';
+import { POWER_DEFAULT, POWER_MAX, POWER_MIN, POWER_STEP } from '../../scripts/powerEstimate';
+import {
+  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  HERO, LEAD, TOPICS, TOPICS_COPY, WIDGET,
+} from '../../data/pages/installation-nombre-de-panneaux';
+
+/**
+ * Page 2.2 — « Nombre de panneaux ».
+ *
+ * ⚠️ Le module est le MÊME que celui de la page prix, modèle `power` : le cahier
+ * le prescrit (« `billSlider` réutilisé »). Seul l'accent change de tuile — ici
+ * c'est le NOMBRE DE PANNEAUX qui porte l'aplat, pas le prix, parce que c'est
+ * la question de cette page. Un composant, deux pages, un drapeau de données.
+ *
+ * ⚠️ La bande du module reprend la photo du hero, à réglages `astro:assets`
+ * identiques : le navigateur ne la télécharge qu'une fois.
+ */
+---
+
+<BaseLayout title="Combien de panneaux solaires pour ma maison ? | Belgreen" transparentHeader>
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
+  <LeadStatement text={LEAD.text} note={LEAD.note} />
+  <SliderCalculator
+    calculator="power"
+    title={WIDGET.title}
+    sliderLabel={WIDGET.sliderLabel}
+    min={POWER_MIN}
+    max={POWER_MAX}
+    step={POWER_STEP}
+    value={POWER_DEFAULT}
+    outputs={WIDGET.outputs}
+    bridgeLabel={WIDGET.bridgeLabel}
+    cta={WIDGET.cta}
+    image={heroImage}
+    imageAlt={WIDGET.imageAlt}
+  />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+  <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Stack, Plus, Tag, Bolt][i] }))} />
+  <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le nombre de panneaux." tone="grey" id="faq-nombre-panneaux" />
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>
