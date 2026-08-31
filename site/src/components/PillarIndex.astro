@@ -1,0 +1,289 @@
+---
+import { Image } from 'astro:assets';
+import Section from './Section.astro';
+import SectionHeading from './SectionHeading.astro';
+import ArrowLink from './ArrowLink.astro';
+import type { SectionCopy } from '../data/content';
+import type { IndexGroup } from '../data/pillarIndex';
+
+/**
+ * L'inventaire d'un pilier : ses pages en cartes-photos, groupées par catégorie.
+ *
+ * C'est le cœur des pages « vue d'ensemble » (`/comprendre`, `/aides-primes`,
+ * `/installation`), annoncées depuis toujours par le « Vue d'ensemble → » des
+ * méga-menus et le « Voir tout → » du footer.
+ *
+ * ⚠️ POURQUOI PAS `TopicCards`. Le bloc « Creuser le sujet » porte quatre sujets
+ * CHOISIS, décrits en une phrase, sans image. Un hub en aligne onze et n'a rien
+ * à en dire : ce qui distingue deux pages ici, c'est leur photo et leur
+ * question. Le titre y passe donc en H4 plein (et non en overline) — sur une
+ * page dont c'est le seul contenu, ce texte-là EST le maillage interne.
+ *
+ * Ce qui est repris de `TopicCards`, en revanche, parce que c'est juste :
+ *  — la CARTE ENTIÈRE est le lien, la flèche n'est qu'un signe `aria-hidden`
+ *    (une pastille de 32px au fond d'une carte est une cible qu'on rate,
+ *    règle d'or #6) ;
+ *  — le creux gris qui porte les cartes blanches et leur donne une silhouette ;
+ *  — survol et transitions retirés sous 768px : sur écran tactile il n'y a pas
+ *    de survol, seulement un état qui reste collé après le tap.
+ *
+ * Les groupes, leurs libellés, leur ordre et leurs rampes viennent de `site.ts`
+ * via `pillarGroups()` : le hub montre exactement l'arborescence du méga-menu,
+ * sans l'écrire une seconde fois.
+ */
+interface Props extends SectionCopy {
+  groups: IndexGroup[];
+  /** Fond de la section — `grey` quand le bloc suit une section blanche. */
+  tone?: 'default' | 'grey';
+  id?: string;
+}
+
+const { overline, title, intro, groups, tone = 'default', id } = Astro.props;
+---
+
+<Section tone={tone} id={id}>
+  <SectionHeading
+    overline={overline}
+    overlineTone={tone === 'grey' ? 'tertiary' : 'muted'}
+    title={title}
+    intro={intro}
+  />
+
+  <div class="index">
+    {groups.map((group) => (
+      <div class="index__group">
+        {(group.label || group.ramp) && (
+          <div class="index__head">
+            {group.label && <h3 class="index__group-title">{group.label}</h3>}
+            {/* La rampe du groupe, telle que `site.ts` l'accroche à la colonne
+                du méga-menu — c'est ce qui donne aux trois colonnes régionales
+                d'Aides & primes leur « Calculer ma prime » régionalisé. */}
+            {group.ramp && (
+              <ArrowLink href={group.ramp.href} variant="ink">{group.ramp.label}</ArrowLink>
+            )}
+          </div>
+        )}
+
+        <ul class="index__grid reveal">
+          {group.cards.map((card) => (
+            <li class="index__item">
+              <a class="index__card" href={card.href}>
+                {card.image ? (
+                  /* ⚠️ `alt=""` : la photo est ILLUSTRATIVE ici. C'est la
+                     question, juste dessous, qui nomme le lien — répéter
+                     l'alternative du hero ferait annoncer deux fois le même
+                     lien, avec deux textes différents.
+
+                     `lazy` sans exception : aucune de ces miniatures n'est
+                     au-dessus de la ligne de flottaison, le hero de la page est
+                     seul à porter le LCP. */
+                  <Image
+                    src={card.image}
+                    alt=""
+                    widths={[400, 800]}
+                    sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 92vw"
+                    format="webp"
+                    quality={72}
+                    loading="lazy"
+                    class="index__media"
+                  />
+                ) : (
+                  <span class="index__media index__media--empty" aria-hidden="true"></span>
+                )}
+
+                <span class="index__foot">
+                  <span class="index__title">{card.question}</span>
+                  <span class="index__arrow" aria-hidden="true">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <path
+                        d="M2 7H12M12 7L7.5 2.5M12 7L7.5 11.5"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+</Section>
+
+<style>
+  .index {
+    display: flex;
+    flex-direction: column;
+    /* L'écart entre deux catégories doit se lire comme une rupture, pas comme
+       une gouttière de grille un peu large : d'où le pas de section et non
+       `--gap-cards`. */
+    gap: var(--space-48);
+  }
+
+  .index__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .index__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+
+  .index__group-title {
+    margin: 0;
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+    color: var(--color-text-primary);
+  }
+
+  /* Le creux gris de `TopicCards` : sans fond, des cartes blanches sur une
+     section blanche ne formeraient plus un ensemble. */
+  .index__grid {
+    display: grid;
+    gap: var(--gap-cards);
+    padding: var(--space-3);
+    margin: 0;
+    list-style: none;
+    border-radius: var(--radius-panel);
+    background: var(--color-shade-grey);
+  }
+
+  .index__item {
+    display: flex;
+    /* Sans `min-width: 0`, une question longue impose sa largeur à la colonne
+       et la grille déborde du conteneur. */
+    min-width: 0;
+  }
+
+  .index__card {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: var(--space-3);
+    min-width: 0;
+    padding: var(--space-2);
+    border-radius: var(--radius-card);
+    background: var(--color-white-primary);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    transition: opacity var(--duration-medium) var(--easing-expand);
+  }
+
+  .index__media {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Le ratio est posé en CSS ET la hauteur laissée en `auto` : la photo est
+       recadrée en `cover`, mais le cadre garde sa proportion quelle que soit la
+       source — c'est ce qui évite le saut de mise en page (CLS). */
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    border-radius: var(--radius-3);
+    background: var(--color-shade-details);
+  }
+
+  /* Aucune photo déclarée pour cette page : un aplat neutre, jamais une image
+     d'une autre page. */
+  .index__media--empty {
+    background: var(--color-shade-grey);
+  }
+
+  .index__foot {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: 0 var(--space-2) var(--space-2);
+  }
+
+  .index__title {
+    font-family: var(--text-h4-family);
+    font-size: var(--text-h4-size);
+    font-weight: var(--text-h4-weight);
+    line-height: var(--text-h4-line-height);
+    letter-spacing: var(--text-h4-tracking);
+  }
+
+  .index__arrow {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: var(--size-button-icon);
+    height: var(--size-button-icon);
+    border-radius: var(--radius-pill);
+    background: var(--color-highlight-primary);
+    color: var(--color-text-primary);
+    /* Même geste que `ArrowLink` et `TopicCards` : la flèche se lève à 45°. */
+    transition: transform var(--duration-medium) var(--easing-expand);
+  }
+
+  .index__card:hover {
+    opacity: var(--opacity-hover);
+  }
+
+  .index__card:hover .index__arrow,
+  .index__card:focus-visible .index__arrow {
+    transform: rotate(-45deg);
+  }
+
+  .index__card:focus-visible {
+    outline: var(--focus-ring-width) solid var(--color-main-green);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* Deux colonnes à partir de 768px, trois à partir de 1024 : un hub aligne
+     jusqu'à onze cartes, et à deux de front la page devient un couloir. */
+  @media (min-width: 768px) {
+    .index__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .index__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Aucun survol sur écran tactile : il n'y a pas de survol, seulement un état
+     qui reste collé après le tap (règle d'or #6). */
+  @media (max-width: 767px) {
+    .index__card {
+      transition: none;
+    }
+
+    .index__card:hover {
+      opacity: 1;
+    }
+
+    .index__arrow,
+    .index__card:hover .index__arrow,
+    .index__card:focus-visible .index__arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .index__arrow,
+    .index__card:hover .index__arrow,
+    .index__card:focus-visible .index__arrow {
+      transition: none;
+      transform: none;
+    }
+  }
+</style>

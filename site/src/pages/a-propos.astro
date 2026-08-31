@@ -1,24 +1,112 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Section from '../components/Section.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import FigureModule from '../components/FigureModule.astro';
+import Essentials from '../components/Essentials.astro';
+import StepsTimeline from '../components/StepsTimeline.astro';
+import TopicCards from '../components/TopicCards.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { heroImage } from '../data/pageHeroes';
+import enphaseImage from '../assets/reassurance/enphase_bloc.webp';
+import {
+  BRIDGES,
+  ESSENTIALS_COPY,
+  FACTS,
+  FAQ,
+  FIGURES,
+  FINAL_CTA,
+  HERO,
+  LEAD,
+  MODULE,
+  STACKED_IMAGE,
+  STACKED_ROWS,
+  STEPS,
+  STEPS_COPY,
+  TOPICS,
+  TOPICS_COPY,
+} from '../data/pages/a-propos';
 
 /**
- * Placeholder de Phase 1. Elle existe pour deux raisons :
- *  — le cluster confiance du header y renvoie, et un lien du header ne doit
- *    jamais tomber sur un 404 (règle d'or #1) ;
- *  — c'est la page témoin du header SANS hero, celle qui vérifie que la nav
- *    fonctionne ailleurs que sur la home.
+ * « Notre équipe » — la page de confiance du site.
  *
- * ⚠️ `noindex` tant que le contenu réel n'est pas écrit — à retirer à la
- * rédaction. Le contenu attendu est décrit dans architecture.md
- * (§ Pages transverses) : l'histoire du client, l'équipe, les installateurs,
- * la certification Enphase.
+ * Elle remplace le placeholder de Phase 1 : trois entrées y menaient déjà (la
+ * carte équipe de la home, le cluster confiance du header, le footer) et
+ * tombaient sur « Page en cours de rédaction ».
+ *
+ * ⚠️ `noindex` RETIRÉ. La page a désormais du contenu et entre dans la
+ * recherche interne (`PAGE_SOURCES`, `searchSources.ts`) — c'est la bascule
+ * décrite dans son ancien commentaire.
+ *
+ * ⚠️ Elle reste la page TÉMOIN du header : c'est la seule sans hero photo…
+ * qui en a un maintenant. Le rôle de témoin passe donc à `/realisations` et
+ * `/contact`, encore en gabarit.
+ *
+ * Gabarit standard des pages de contenu (`pages-contenu.md`), avec un pont
+ * final vers `/devis` et non vers `/simulateur` : qui lit la page équipe est
+ * déjà plus bas dans le funnel — il ne cherche plus un ordre de grandeur, il
+ * cherche à qui parler.
+ *
+ * ⚠️ La seconde photo (`STACKED_IMAGE`) n'est pas livrée : l'emplacement est
+ * étiqueté, jamais bouché par une image de stock (`design.md`).
  */
 ---
 
-<BaseLayout title="À propos — Belgreen" noindex>
-  <Section>
-    <h1>À propos</h1>
-    <p>Page en cours de rédaction.</p>
-  </Section>
+<BaseLayout title="Notre équipe d’installateurs à Bruxelles | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage('/a-propos')}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} />
+
+  <FigureModule
+    title={MODULE.title}
+    caption={MODULE.caption}
+    extra={MODULE.extra}
+    image={enphaseImage}
+    imageAlt={MODULE.imageAlt}
+    bridgeLabel={MODULE.bridgeLabel}
+    cta={MODULE.cta}
+  />
+
+  <Essentials
+    overline={ESSENTIALS_COPY.overline}
+    title={ESSENTIALS_COPY.title}
+    intro={ESSENTIALS_COPY.intro}
+    figures={FIGURES}
+    facts={FACTS}
+    bridges={BRIDGES}
+    stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }}
+  />
+
+  <StepsTimeline
+    overline={STEPS_COPY.overline}
+    title={STEPS_COPY.title}
+    intro={STEPS_COPY.intro}
+    steps={STEPS}
+  />
+
+  <TopicCards
+    overline={TOPICS_COPY.overline}
+    title={TOPICS_COPY.title}
+    intro={TOPICS_COPY.intro}
+    items={TOPICS}
+    columns={3}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de nous écrire"
+    intro="Ce qu’on nous demande le plus souvent avant un premier rendez-vous."
+    tone="grey"
+    id="faq-a-propos"
+  />
+
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
 </BaseLayout>

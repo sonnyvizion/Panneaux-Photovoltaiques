@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import PillarIndex from '../components/PillarIndex.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { PILLARS } from '../data/site';
+import { pillarGroups } from '../data/pillarIndex';
+import { heroImage } from '../data/pageHeroes';
+import { FAQ, FINAL_CTA, HERO, INDEX_COPY, LEAD } from '../data/pages/installation';
+
+/** Page « vue d'ensemble » du pilier Installation — seize pages en trois temps. */
+/* ⚠️ La photo du hero est EMPRUNTÉE à la page « Trouver un pro » : le hub n'a pas de
+   visuel dédié. L'emprunt est déclaré dans `data/pageHeroes.ts`, pas ici. */
+const pillar = PILLARS.find((item) => item.href === '/installation')!;
+---
+
+<BaseLayout title="Installation de panneaux solaires : le guide complet | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage('/installation')}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} />
+
+  <PillarIndex
+    overline={INDEX_COPY.overline}
+    title={INDEX_COPY.title}
+    intro={INDEX_COPY.intro}
+    groups={pillarGroups(pillar)}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de demander un devis"
+    intro="Les quatre questions qui reviennent avant toute pose."
+    tone="grey"
+    id="faq-installation"
+  />
+
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

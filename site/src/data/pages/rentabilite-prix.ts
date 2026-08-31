@@ -109,6 +109,23 @@ export const BRIDGES: Bridge[] = [
   },
 ];
 
+/**
+ * L'inventaire du pilier, en bas de page.
+ *
+ * ⚠️ Cette page est À LA FOIS la porte du pilier « Rentabilité & prix » et une
+ * page de contenu sur le prix — c'est la seule du sitemap dans ce cas, et c'est
+ * pourquoi elle n'a pas de « vue d'ensemble » séparée comme les trois autres
+ * piliers. Elle en remplit donc le rôle ici : après avoir répondu sur le prix,
+ * elle ouvre les trois pages qui répondent sur le rendement, l'amortissement et
+ * l'autoconsommation. Les cartes sont dérivées de `site.ts` — voir
+ * `data/pillarIndex.ts`.
+ */
+export const INDEX_COPY: SectionCopy = {
+  overline: 'Le pilier en entier',
+  title: 'Ce que le prix ne dit pas',
+  intro: 'Le prix n’est qu’une moitié de la rentabilité : voici l’autre.',
+};
+
 export const DEEP_DIVE_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',

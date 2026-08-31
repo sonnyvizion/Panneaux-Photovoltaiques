@@ -1,0 +1,54 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import PillarIndex from '../components/PillarIndex.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { PILLARS } from '../data/site';
+import { pillarGroups } from '../data/pillarIndex';
+import { heroImage } from '../data/pageHeroes';
+import { FAQ, FINAL_CTA, HERO, INDEX_COPY, LEAD } from '../data/pages/aides-primes';
+
+/**
+ * Page « vue d'ensemble » du pilier Aides & primes.
+ *
+ * ⚠️ Les trois colonnes régionales portent chacune SA rampe vers le simulateur,
+ * avec son `?region=` en dur (`site.ts`) — c'est le seul endroit du site où le
+ * paramètre est écrit et non injecté par `scripts/regionLinks.ts` : ici le
+ * visiteur DÉSIGNE sa région en cliquant, il ne la laisse pas deviner.
+ */
+/* ⚠️ La photo du hero est EMPRUNTÉE à la page « Wallonie » : le hub n'a pas de
+   visuel dédié. L'emprunt est déclaré dans `data/pageHeroes.ts`, pas ici. */
+const pillar = PILLARS.find((item) => item.href === '/aides-primes')!;
+---
+
+<BaseLayout title="Aides et primes photovoltaïques en Belgique 2026 | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage('/aides-primes')}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} />
+
+  <PillarIndex
+    overline={INDEX_COPY.overline}
+    title={INDEX_COPY.title}
+    intro={INDEX_COPY.intro}
+    groups={pillarGroups(pillar)}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de monter un dossier"
+    intro="Ce qui vaut pour les trois régions, avant d’entrer dans le détail de la vôtre."
+    tone="grey"
+    id="faq-aides-primes"
+  />
+
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

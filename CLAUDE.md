@@ -107,7 +107,11 @@ Boucle visée : lire → simuler → un doute → lire le point précis → repr
 - Logo, charte couleurs, police(s).
 - Numéro de téléphone, adresse(s), mentions légales, RGPD.
 - Autres certifications (RESCERT ou équivalent belge), garanties exactes.
-- Photos de chantiers réels, avis clients, photos équipe.
+- Photos de chantiers réels, avis clients, photos équipe (portraits + une seconde
+  photo de chantier pour `/a-propos` ; six chantiers avec leurs caractéristiques
+  pour `/realisations`, qui reste en `noindex` sans eux).
+- Photo de hero pour les trois pages « vue d'ensemble » de pilier : elles
+  empruntent aujourd'hui celle d'une de leurs pages (`src/data/pageHeroes.ts`).
 - Hypothèses de calcul validées par le client (prix/kWc, tarif injection par région…).
 
 ## Ce qui reste à définir

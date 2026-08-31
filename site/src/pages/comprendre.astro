@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import LeadStatement from '../components/LeadStatement.astro';
+import PillarIndex from '../components/PillarIndex.astro';
+import Faq from '../components/Faq.astro';
+import FinalCta from '../components/FinalCta.astro';
+import { PILLARS } from '../data/site';
+import { pillarGroups } from '../data/pillarIndex';
+import { heroImage } from '../data/pageHeroes';
+import { FAQ, FINAL_CTA, HERO, INDEX_COPY, LEAD } from '../data/pages/comprendre';
+
+/**
+ * Page « vue d'ensemble » du pilier Comprendre.
+ *
+ * ⚠️ Le pilier est retrouvé par son `href` et non par son rang dans `PILLARS` :
+ * l'ordre des piliers est un choix éditorial de la nav, qui peut changer sans
+ * que cette page ait à le savoir.
+ */
+/* ⚠️ La photo du hero est EMPRUNTÉE à la page « Fonctionnement » : le hub n'a pas de
+   visuel dédié. L'emprunt est déclaré dans `data/pageHeroes.ts`, pas ici. */
+const pillar = PILLARS.find((item) => item.href === '/comprendre')!;
+---
+
+<BaseLayout title="Comprendre le photovoltaïque en Belgique | Belgreen" transparentHeader>
+  <PageHero
+    badge={HERO.badge}
+    title={HERO.title}
+    answer={HERO.answer}
+    cta={HERO.cta}
+    image={heroImage('/comprendre')}
+    imageAlt={HERO.imageAlt}
+  />
+
+  <LeadStatement text={LEAD.text} />
+
+  <PillarIndex
+    overline={INDEX_COPY.overline}
+    title={INDEX_COPY.title}
+    intro={INDEX_COPY.intro}
+    groups={pillarGroups(pillar)}
+  />
+
+  <Faq
+    items={FAQ}
+    overline="Avant de creuser"
+    intro="Les questions qu’on se pose avant même de savoir quoi chercher."
+    tone="grey"
+    id="faq-comprendre"
+  />
+
+  <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />
+</BaseLayout>

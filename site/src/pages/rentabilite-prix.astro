@@ -5,6 +5,7 @@ import LeadStatement from '../components/LeadStatement.astro';
 import SliderCalculator from '../components/SliderCalculator.astro';
 import Essentials from '../components/Essentials.astro';
 import DeepDive from '../components/DeepDive.astro';
+import PillarIndex from '../components/PillarIndex.astro';
 import Faq from '../components/Faq.astro';
 import FinalCta from '../components/FinalCta.astro';
 /* `renta1` en tête : sa canopée sombre en haut de cadre laisse la nav — qui se
@@ -13,6 +14,8 @@ import FinalCta from '../components/FinalCta.astro';
 import heroImage from '../assets/pages/renta1.webp';
 import moduleImage from '../assets/pages/3.1-prix-installation-module.webp';
 import deepDiveImage from '../assets/pages/renta2.webp';
+import { PILLARS } from '../data/site';
+import { pillarGroups } from '../data/pillarIndex';
 import { POWER_DEFAULT, POWER_MAX, POWER_MIN, POWER_STEP } from '../scripts/powerEstimate';
 import {
   BRIDGES,
@@ -25,6 +28,7 @@ import {
   FIGURES,
   FINAL_CTA,
   HERO,
+  INDEX_COPY,
   LEAD,
   WIDGET,
 } from '../data/pages/rentabilite-prix';
@@ -49,6 +53,10 @@ import {
  * Le prop `placeholder` de `PageHero`, `PowerWidget` et `DeepDive` reste en
  * place pour les ~54 pages dont les photos n'ont pas encore été fournies.
  */
+
+/* Cette page tient lieu de « vue d'ensemble » à son pilier — voir `INDEX_COPY`
+   dans son fichier de données. */
+const pillar = PILLARS.find((item) => item.href === '/rentabilite-prix')!;
 ---
 
 <BaseLayout title="Prix des panneaux solaires en 2026 — Belgique | Belgreen" transparentHeader>
@@ -95,6 +103,13 @@ import {
     items={DEEP_DIVE}
     image={deepDiveImage}
     imageAlt={DEEP_DIVE_IMAGE_ALT}
+  />
+
+  <PillarIndex
+    overline={INDEX_COPY.overline}
+    title={INDEX_COPY.title}
+    intro={INDEX_COPY.intro}
+    groups={pillarGroups(pillar)}
   />
 
   <Faq

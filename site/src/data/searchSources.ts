@@ -18,7 +18,10 @@ import type { SearchEntry } from '../scripts/search';
  */
 
 /**
- * `href` → fichier de `data/pages/`. Les 42, sans exception.
+ * `href` → fichier de `data/pages/`. Toutes, sans exception — les 42 pages de
+ * contenu ET les 3 « vues d'ensemble » de pilier, qui ont elles aussi leur
+ * fichier de données (leur hero et leur FAQ ; leurs cartes, elles, sont
+ * dérivées — voir `data/pillarIndex.ts`).
  *
  * Toutes n'iront pas dans l'index : `search-index.json.ts` filtre ensuite sur
  * `isListed()` de `site.ts`, ce qui écarte `/aides-primes/entreprises` tant que
@@ -26,6 +29,8 @@ import type { SearchEntry } from '../scripts/search';
  * qui permet au garde-fou de repérer un fichier de données orphelin.
  */
 export const PAGE_SOURCES: Readonly<Record<string, string>> = {
+  '/a-propos': 'a-propos',
+  '/aides-primes': 'aides-primes',
   '/aides-primes/bruxelles/demarches': 'aides-primes-bruxelles-demarches',
   '/aides-primes/bruxelles/reglementation': 'aides-primes-bruxelles-reglementation',
   '/aides-primes/bruxelles': 'aides-primes-bruxelles',
@@ -37,6 +42,7 @@ export const PAGE_SOURCES: Readonly<Record<string, string>> = {
   '/aides-primes/wallonie/demarches': 'aides-primes-wallonie-demarches',
   '/aides-primes/wallonie/prosumer': 'aides-primes-wallonie-prosumer',
   '/aides-primes/wallonie': 'aides-primes-wallonie',
+  '/comprendre': 'comprendre',
   '/comprendre/batterie': 'comprendre-batterie',
   '/comprendre/borne-de-recharge': 'comprendre-borne-de-recharge',
   '/comprendre/compteur-intelligent': 'comprendre-compteur-intelligent',
@@ -48,6 +54,7 @@ export const PAGE_SOURCES: Readonly<Record<string, string>> = {
   '/comprendre/onduleur': 'comprendre-onduleur',
   '/comprendre/risques-inconvenients': 'comprendre-risques-inconvenients',
   '/comprendre/types-de-panneaux': 'comprendre-types-de-panneaux',
+  '/installation': 'installation',
   '/installation/abri-de-jardin': 'installation-abri-de-jardin',
   '/installation/balcon': 'installation-balcon',
   '/installation/bipv': 'installation-bipv',
@@ -123,11 +130,12 @@ export const MANUAL_ENTRIES: readonly SearchEntry[] = [
  * reçoit son texte, retirer sa ligne suffit à la faire entrer dans la recherche.
  */
 export const NOT_INDEXED: Readonly<Record<string, string>> = {
-  '/comprendre': 'Vue d’ensemble du pilier — gabarit attrape-tout, pas encore rédigée.',
-  '/aides-primes': 'Vue d’ensemble du pilier — gabarit attrape-tout, pas encore rédigée.',
-  '/installation': 'Vue d’ensemble du pilier — gabarit attrape-tout, pas encore rédigée.',
-  '/a-propos': 'Placeholder de Phase 1, en noindex — « Page en cours de rédaction ».',
-  '/realisations': 'Placeholder de Phase 1, en noindex — « Page en cours de rédaction ».',
+  /* ⚠️ Le gabarit est RÉDIGÉ depuis le 31 août 2026, mais les chantiers ne sont
+     pas livrés : les six fiches sont vides. Indexer une page de références vide
+     enverrait le visiteur sur des emplacements photo — d'où le maintien ici.
+     Sa ligne saute le jour où les fiches sont remplies (mode d'emploi en tête de
+     `src/data/realisations.ts`). */
+  '/realisations': 'Gabarit rédigé, chantiers non livrés — fiches vides, en noindex.',
   '/contact': 'Placeholder de Phase 1, en noindex — « Page en cours de rédaction ».',
 };
 

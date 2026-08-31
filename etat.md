@@ -23,7 +23,7 @@ ligne** (https://belgreen-demo.pages.dev), sans protection d'accès et en
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
 | Les calculs | 333 tests verts |
-| La recherche interne | **Nouveau** — loupe dans la nav, 43 pages indexées |
+| La recherche interne | Loupe dans la nav, **47 pages indexées** |
 | Le build de production | 59 pages + `search-index.json`, ~40 Mo |
 
 ---
@@ -93,9 +93,9 @@ asserter le **style calculé** et envoyer de **vrais événements** (molette,
 souris), jamais lire un attribut. La recette navigateur le fait désormais.
 
 **Ce qui n'est pas indexé, et pourquoi.** On n'indexe que ce qui répond : les pages
-encore en « Page en cours de rédaction » (`/comprendre`, `/aides-primes`,
-`/installation`, `/a-propos`, `/realisations`, `/contact`) sont dans `NOT_INDEXED`
-avec leur raison. **À retirer au fur et à mesure de la rédaction** — c'est une ligne
+encore en « Page en cours de rédaction » (`/realisations`, `/contact`) sont dans
+`NOT_INDEXED` avec leur raison. Les quatre autres en sont SORTIES le 31 août 2026,
+à la rédaction des trois « vues d'ensemble » et de la page équipe (voir plus bas). **À retirer au fur et à mesure de la rédaction** — c'est une ligne
 par page. `/aides-primes/entreprises` en est absente pour une autre raison : elle est
 `hidden` dans `site.ts` tant que son volet fiscal n'est pas validé, et la recherche
 suit ce drapeau.
@@ -109,8 +109,63 @@ suit ce drapeau.
 - **NL non traité.** L'index est mono-langue. À la bascule FR/NL il en faudra un par
   langue (`/nl/search-index.json`) — le générateur est à paramétrer, pas à réécrire.
 - **Pas de tolérance aux fautes de frappe.** Le préfixe et une table de synonymes du
-  domaine couvrent l'essentiel sur 43 pages ; une distance d'édition serait à ajouter
+  domaine couvrent l'essentiel sur 47 pages ; une distance d'édition serait à ajouter
   seulement si les requêtes sans résultat le montrent (d'où le point précédent).
+
+---
+
+## Les vues d'ensemble, la page équipe et les réalisations (31 août 2026)
+
+Quatre destinations annoncées par la navigation ne menaient nulle part. Elles ont
+leur page.
+
+**Les trois hubs** — `/comprendre`, `/aides-primes`, `/installation` — étaient
+servis par le gabarit attrape-tout (`[...slug].astro`), alors que le méga-menu
+(« Vue d'ensemble → »), le footer (« Voir tout → ») et les cartes de la home y
+renvoient. Gabarit allégé : hero → transition → inventaire → FAQ → pont.
+
+**L'inventaire n'est pas écrit à la main.** Une carte = la miniature du hero d'une
+page et sa question, c'est-à-dire son H1 tel quel. Trois pièces neuves le
+permettent :
+
+| Fichier | Rôle |
+|---|---|
+| `site/src/data/pageHeroes.ts` | Jointure `href` → photo de hero, **avec garde-fou de build** |
+| `site/src/data/pillarIndex.ts` | Assemble les groupes du pilier depuis `site.ts` + les `HERO.title` |
+| `site/src/components/PillarIndex.astro` | La grille de cartes-photos, par catégorie |
+
+Conséquence : **une page publiée dans la nav entre d'elle-même dans son hub**, avec
+le bon titre et la bonne photo. Rien à maintenir en double, donc rien qui puisse
+diverger du H1 réel. `/rentabilite-prix` — seule page à être à la fois porte de
+pilier et page de contenu — reçoit la même grille en bas de page.
+
+**La page équipe** (`/a-propos`) remplace son placeholder de Phase 1. Elle porte
+l'argument central du projet (« pas d'intermédiaire, pas de revente de données ») et
+ferme sur `/devis` plutôt que sur `/simulateur` : qui la lit ne cherche plus un
+ordre de grandeur, il cherche à qui parler.
+
+**La page « Nos réalisations »** (`/realisations`) suit le 31 août également, mais
+**reste en `noindex`** : son gabarit est écrit — six fiches chantier (commune,
+puissance, panneaux, toiture, matériel, mise en service) et le carrousel d'avis —
+alors qu'aucune photo de chantier n'est livrée. Les fiches sont donc VIDES et
+étiquetées, jamais remplies d'exemples : des références inventées sur la page qui
+sert de preuve seraient une tromperie, pas un placeholder. Deux pièces neuves :
+`components/ProjectCards.astro` (photo + `<dl>` de caractéristiques, champ manquant
+affiché en marqueur) et `data/realisations.ts` — **volontairement hors de
+`data/pages/`**, où le contrôle d'orphelins imposerait de l'indexer. Le mode
+d'emploi de la publication, en quatre gestes, est en tête de ce fichier.
+`Testimonials.astro` accepte désormais un en-tête en props (défauts = les textes de
+la home, qui ne bouge pas) — et son avertissement « avis de démonstration, à ne pas
+mettre en ligne » vaut maintenant pour **deux** pages.
+
+⚠️ **Ce qui reste à fournir par le client**, en placeholder visible ou en emprunt :
+les trois hubs empruntent la photo d'une de leurs pages (l'emprunt est déclaré dans
+`pageHeroes.ts`, à un seul endroit) ; la page équipe attend prénoms, portraits, une
+seconde photo de chantier, l'année de création, le numéro de téléphone réel et
+l'entité juridique exacte (Belgreen ou Belectric) ; « Nos réalisations » attend six
+chantiers photographiés avec leurs caractéristiques et l'accord des propriétaires,
+plus des avis authentiques et sourcés. Aucun chiffre n'a été inventé —
+la liste complète est en tête de `src/data/pages/a-propos.ts`.
 
 ---
 
