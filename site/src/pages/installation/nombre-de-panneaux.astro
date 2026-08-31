@@ -8,6 +8,7 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.2-nombre-panneaux-hero.webp';
+import moduleImage from '../../assets/pages/2.2-nombre-panneaux-module.webp';
 import Stack from '../../assets/icons/nombre-panneaux/stack-2.svg';
 import Plus from '../../assets/icons/nombre-panneaux/plus.svg';
 import Tag from '../../assets/icons/nombre-panneaux/tag.svg';
@@ -26,8 +27,7 @@ import {
  * c'est le NOMBRE DE PANNEAUX qui porte l'aplat, pas le prix, parce que c'est
  * la question de cette page. Un composant, deux pages, un drapeau de données.
  *
- * ⚠️ La bande du module reprend la photo du hero, à réglages `astro:assets`
- * identiques : le navigateur ne la télécharge qu'une fois.
+ * La bande du module utilise une photo dédiée, distincte du hero.
  */
 ---
 
@@ -45,7 +45,7 @@ import {
     outputs={WIDGET.outputs}
     bridgeLabel={WIDGET.bridgeLabel}
     cta={WIDGET.cta}
-    image={heroImage}
+    image={moduleImage}
     imageAlt={WIDGET.imageAlt}
   />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />

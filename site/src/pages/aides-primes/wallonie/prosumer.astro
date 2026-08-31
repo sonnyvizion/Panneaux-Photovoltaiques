@@ -8,6 +8,7 @@ import TopicCards from '../../../components/TopicCards.astro';
 import Faq from '../../../components/Faq.astro';
 import FinalCta from '../../../components/FinalCta.astro';
 import heroImage from '../../../assets/pages/1.2-tarif-prosumer-hero.webp';
+import moduleImage from '../../../assets/pages/1.2-tarif-prosumer-module.webp';
 /* Icônes livrées pour CETTE page (`img/icones-toutes-pages/1.2-...`). */
 import Bolt from '../../../assets/icons/prosumer-wallonie/bolt.svg';
 import Adjustments from '../../../assets/icons/prosumer-wallonie/adjustments.svg';
@@ -47,10 +48,7 @@ import {
  * page régionale : `scripts/regionLinks.ts` y injecte la région du sélecteur
  * global. Coder `?region=wallonie` en dur ici le figerait.
  *
- * ⚠️ La bande du module REPREND la photo du hero — le client n'a livré que
- * `1.2-tarif-prosumer-hero`. À réglages `astro:assets` identiques, le navigateur
- * ne la télécharge qu'une fois : c'est le motif déjà retenu sur la page prix, et
- * il vaut mieux qu'un emplacement vide.
+ * La bande du module utilise une photo dédiée, distincte du hero.
  */
 
 /* L'icône est résolue ici, au plus près de son import, alignée sur `TOPICS` par
@@ -85,7 +83,7 @@ const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index
     outputs={WIDGET.outputs}
     bridgeLabel={WIDGET.bridgeLabel}
     cta={WIDGET.cta}
-    image={heroImage}
+    image={moduleImage}
     imageAlt={WIDGET.imageAlt}
   />
 

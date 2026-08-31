@@ -1,6 +1,6 @@
 ---
 import { Image } from 'astro:assets';
-import heroImage from '../assets/hero/hero.webp';
+import simulatorImage from '../assets/pages/simulateur-hero-module.webp';
 import SimulatorWizard from './SimulatorWizard.astro';
 import SimulatorStep from './SimulatorStep.astro';
 import SimulatorResult from './SimulatorResult.astro';
@@ -124,11 +124,10 @@ const HELP = {
       moindre divergence génère en silence un second jeu complet de variantes.
       L'échelle monte à 2560 pour les écrans Retina.
 
-      ⚠️ Photo empruntée au hero de la home faute de photo dédiée au simulateur :
-      elle figure dans la liste « à fournir par le client ». */}
+      Le simulateur utilise sa photo dédiée, distincte du hero de la home. */}
   <Image
     class="sim__image"
-    src={heroImage}
+    src={simulatorImage}
     alt=""
     width={2560}
     widths={[768, 1280, 1920, 2560]}
