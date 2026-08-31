@@ -152,7 +152,24 @@ import { POPULAR } from '../data/searchSources';
     background: var(--color-white-primary);
     color: var(--color-text-primary);
     overflow: hidden;
+  }
 
+  /* ⚠️ LE `display` EST SUR `[open]`, ET IL NE PEUT ÊTRE NULLE PART AILLEURS.
+
+     La feuille du navigateur replie un dialogue fermé avec
+     `dialog:not([open]) { display: none }` — mais une déclaration `display`
+     d'auteur l'emporte sur celle de l'agent utilisateur, quelle que soit la
+     spécificité. Posé sur `.search`, ce `display: flex` rouvrait donc la
+     fenêtre EN PERMANENCE. Et un dialogue fermé n'est pas modal : il retombe en
+     `position: absolute`, à 12vh du haut du DOCUMENT, sans fond ni couche
+     supérieure — d'où une barre de recherche fantôme de 640×251 posée SOUS le
+     contenu, que la page recouvrait à moitié. Visible partout où le haut de
+     page est clair ; invisible ailleurs, d'où l'impression d'un défaut
+     intermittent. Constaté au navigateur sur `/`, `/simulateur`,
+     `/rentabilite-prix` et `/comprendre`.
+
+     Même piège, mot pour mot, que le bloc `[hidden]` plus bas. */
+  .search[open] {
     display: flex;
     flex-direction: column;
   }
