@@ -118,13 +118,25 @@ const {
     color: var(--color-text-secondary);
   }
 
+  /* ⚠️ LA TAILLE VIENT DE `h1-page`, PAS DE `display-mid`, ET C'EST VOULU.
+
+     En `display-mid` le titre pesait 44px À TOUTES LES LARGEURS — le token n'a
+     pas de palier — alors que le H1 de la page (`PageHero`, même token
+     `h1-page`) n'en fait que 32px sur desktop. La clôture criait donc 37 % plus
+     fort que le titre de la page qu'elle clôt. Et sur mobile, ces 44px tenaient
+     six lignes : 264px de titre dans une carte de 456px.
+
+     `h1-page` cale le CTA sur le titre de page (32px ≥768px) et redescend seul
+     à 26px en dessous. Il n'existe qu'en `-size` et `-line-height` : la famille,
+     la graisse et l'approche restent celles de `display-mid`, comme dans
+     `PageHero` qui compose déjà ce token de la même façon. */
   .final-cta__title {
     margin: 0;
     max-width: var(--width-section-intro);
     font-family: var(--text-display-mid-family);
-    font-size: var(--text-display-mid-size);
+    font-size: var(--text-h1-page-size);
     font-weight: var(--text-display-mid-weight);
-    line-height: var(--text-display-mid-line-height);
+    line-height: var(--text-h1-page-line-height);
     letter-spacing: var(--text-display-mid-tracking);
   }
 
