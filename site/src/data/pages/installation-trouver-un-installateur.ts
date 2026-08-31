@@ -42,16 +42,19 @@ export const PHOTOS: PhotoCard[] = [
     title: 'Certification',
     text: 'RESCert ou équivalent régional selon votre zone — la garantie que l’installateur est reconnu par les autorités.',
     image: 'trouver-pro-carte-certification.jpg',
+    alt: 'Installateur solaire équipé inspectant une toiture résidentielle avec panneaux',
   },
   {
     title: 'Assurance',
     text: 'Responsabilité civile professionnelle — à vérifier avant de signer, ça vous protège en cas de problème.',
     image: 'trouver-pro-carte-assurance.jpg',
+    alt: 'Installateur avec harnais et gants vérifiant la fixation d’un panneau solaire',
   },
   {
     title: 'Devis',
     text: 'Détaillé et remis avant le début des travaux — jamais un chiffrage approximatif de dernière minute.',
     image: 'trouver-pro-carte-devis.jpg',
+    alt: 'Plan de toiture, mètre et tablette préparés pour un devis solaire résidentiel',
   },
 ];
 

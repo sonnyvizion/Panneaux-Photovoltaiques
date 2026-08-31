@@ -25,7 +25,7 @@ export const HERO = {
   answer:
     "En Flandre, il n'existe plus de prime directe depuis la fin de la prime Fluvius (fin 2023). L'avantage principal aujourd'hui est le tarif d'injection (3 à 5 centimes/kWh) et la TVA réduite à 6 %.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
-  imagePlaceholder: '1.7-flandre-aides-hero.jpg',
+  imageAlt: 'Quartier résidentiel flamand avec plusieurs toitures équipées de panneaux solaires',
 } as const;
 
 export const LEAD = {

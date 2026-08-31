@@ -7,6 +7,9 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.16-trouver-pro-hero.webp';
+import certificationImage from '../../assets/pages/trouver-pro-carte-certification.webp';
+import assuranceImage from '../../assets/pages/trouver-pro-carte-assurance.webp';
+import devisImage from '../../assets/pages/trouver-pro-carte-devis.webp';
 import Certificate from '../../assets/icons/trouver-un-pro/certificate.svg';
 import Files from '../../assets/icons/trouver-un-pro/files.svg';
 import AlertTriangle from '../../assets/icons/trouver-un-pro/alert-triangle.svg';
@@ -27,7 +30,7 @@ import {
 <BaseLayout title="Bien choisir son installateur de panneaux solaires | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS.map((p, i) => ({ ...p, src: [certificationImage, assuranceImage, devisImage][i] }))} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Certificate, Files, AlertTriangle, Checklist][i] }))} tone="grey" />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le choix d'un installateur." tone="default" id="faq-trouver-pro" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="grey" />

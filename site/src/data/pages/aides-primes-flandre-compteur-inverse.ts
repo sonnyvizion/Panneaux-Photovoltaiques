@@ -22,7 +22,7 @@ export const HERO = {
   answer:
     'Depuis janvier 2021, la Flandre a mis fin au compteur qui tourne à l’envers pour tous les propriétaires de panneaux solaires — y compris ceux installés après cette date. Il est remplacé par le tarif d’injection, basé sur un compteur digital.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
-  imagePlaceholder: '1.8-fin-compteur-inverse-flandre-hero.jpg',
+  imageAlt: 'Compteur électrique digital moderne dans un coffret résidentiel avec toiture solaire en arrière-plan',
 } as const;
 
 export const LEAD = {

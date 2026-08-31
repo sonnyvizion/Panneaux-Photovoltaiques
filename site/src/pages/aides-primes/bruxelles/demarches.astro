@@ -5,6 +5,7 @@ import LeadStatement from '../../../components/LeadStatement.astro';
 import StepsTimeline from '../../../components/StepsTimeline.astro';
 import Faq from '../../../components/Faq.astro';
 import FinalCta from '../../../components/FinalCta.astro';
+import heroImage from '../../../assets/pages/1.6-demarches-bruxelles-hero.webp';
 import {
   FAQ, FINAL_CTA, HERO, LEAD, TIMELINE, TIMELINE_COPY,
 } from '../../../data/pages/aides-primes-bruxelles-demarches';
@@ -16,9 +17,7 @@ import {
  * demandé AUCUN code : le composant `StepsTimeline` était déjà écrit pour la
  * Wallonie et la Flandre. C'est le résultat que visait le registre des modules.
  *
- * ⚠️ Deux manques d'assets sur cette page, et sur elle seule :
- *  — pas de photo de hero livrée (`img/pages/` n'a rien en `1.6-`), d'où
- *    l'emplacement étiqueté ;
+ * ⚠️ Il reste un manque d'asset sur cette page, et sur elle seule :
  *  — pas de dossier d'icônes (`img/icones-toutes-pages/` en compte 29 pour 30
  *    pages, celui-ci manque). Les étapes s'affichent donc sans icône — le
  *    composant les rend optionnelles, la timeline reste complète et lisible.
@@ -31,7 +30,8 @@ import {
     title={HERO.title}
     answer={HERO.answer}
     cta={HERO.cta}
-    placeholder={HERO.imagePlaceholder}
+    image={heroImage}
+    imageAlt={HERO.imageAlt}
   />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <StepsTimeline

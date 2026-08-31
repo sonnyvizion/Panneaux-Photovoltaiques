@@ -51,6 +51,7 @@ export const PHOTOS: PhotoCard[] = [
     title: 'Le micro-onduleur',
     text: 'Un boîtier par panneau — plus cher à l’achat, mais limite fortement l’impact d’une ombre partielle sur la production totale.',
     image: 'onduleur-carte-micro.jpg',
+    alt: 'Micro-onduleur fixé sous un panneau solaire avec câbles et connecteurs visibles',
   },
 ];
 

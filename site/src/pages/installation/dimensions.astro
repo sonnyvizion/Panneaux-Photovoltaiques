@@ -8,6 +8,8 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.4-dimensions-hero.webp';
+import moduleImage from '../../assets/pages/2.4-dimensions-module.webp';
+import stackedImage from '../../assets/pages/dimensions-liste.jpg';
 import Resize from '../../assets/icons/dimensions/resize.svg';
 import Ruler from '../../assets/icons/dimensions/ruler-2.svg';
 import ArrowsHorizontal from '../../assets/icons/dimensions/arrows-horizontal.svg';
@@ -29,8 +31,8 @@ import {
 <BaseLayout title="Dimensions des panneaux solaires : surface nécessaire | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt="Pan de toiture équipé d’une douzaine de panneaux solaires avec cheminée visible pour donner l’échelle" />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: stackedImage, imageAlt: HERO.imageAlt, placeholder: STACKED_IMAGE }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Resize, Ruler, ArrowsHorizontal][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la surface." tone="grey" id="faq-dimensions" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

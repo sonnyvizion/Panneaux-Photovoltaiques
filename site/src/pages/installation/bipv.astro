@@ -8,6 +8,7 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.10-integre-toiture-bipv-hero.webp';
+import moduleImage from '../../assets/pages/2.10-bipv-module.webp';
 import Coin from '../../assets/icons/bipv/coin.svg';
 import ChartLine from '../../assets/icons/bipv/chart-line.svg';
 import BuildingMonument from '../../assets/icons/bipv/building-monument.svg';
@@ -25,7 +26,7 @@ import {
 <BaseLayout title="BIPV : panneaux solaires intégrés à la toiture | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt="Toiture avec panneaux solaires intégrés affleurants remplaçant la couverture" />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, ChartLine, BuildingMonument][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le BIPV." tone="grey" id="faq-bipv" />

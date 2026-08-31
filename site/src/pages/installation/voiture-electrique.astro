@@ -8,6 +8,7 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.19-voiture-electrique-hero.webp';
+import moduleImage from '../../assets/pages/2.19-voiture-electrique-module.webp';
 import Car from '../../assets/icons/voiture-electrique/car.svg';
 import Moon from '../../assets/icons/voiture-electrique/moon.svg';
 import Battery from '../../assets/icons/voiture-electrique/battery.svg';
@@ -20,7 +21,7 @@ import {
 <BaseLayout title="Recharger sa voiture électrique en solaire | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} extra={MODULE_EXTRA} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt="Voiture électrique familiale en charge devant une maison équipée de panneaux solaires" extra={MODULE_EXTRA} />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Car, Moon, Battery][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la recharge solaire." tone="grey" id="faq-voiture" />

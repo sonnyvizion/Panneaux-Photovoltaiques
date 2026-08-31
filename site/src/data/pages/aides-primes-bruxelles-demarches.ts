@@ -22,8 +22,7 @@ export const HERO = {
   answer:
     "À Bruxelles, il faut faire certifier l'installation (RESCert), déclarer les index de production via la plateforme Sibelga, puis demander les certificats verts auprès de Brugel — jusqu'à 4 fois par an, pour un délai d'obtention d'environ 2 mois.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
-  /* ⚠️ Photo non livrée pour cette page. Nommage conventionnel du cahier. */
-  imagePlaceholder: '1.6-demarches-bruxelles-hero.jpg',
+  imageAlt: 'Toitures bruxelloises en enfilade avec panneaux solaires dans un quartier résidentiel dense',
 } as const;
 
 export const LEAD = {

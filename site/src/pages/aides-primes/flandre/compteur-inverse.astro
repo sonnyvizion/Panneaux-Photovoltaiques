@@ -7,6 +7,7 @@ import Essentials from '../../../components/Essentials.astro';
 import TopicCards from '../../../components/TopicCards.astro';
 import Faq from '../../../components/Faq.astro';
 import FinalCta from '../../../components/FinalCta.astro';
+import heroImage from '../../../assets/pages/1.8-fin-compteur-inverse-flandre-hero.webp';
 import Scale from '../../../assets/icons/compteur-inverse/scale.svg';
 import ReceiptOff from '../../../assets/icons/compteur-inverse/receipt-off.svg';
 import Progress from '../../../assets/icons/compteur-inverse/progress.svg';
@@ -24,14 +25,14 @@ import {
  * l'envers, la page doit d'abord lui montrer ce qu'il croit, puis ce qui l'a
  * remplacé. Démarrer sur l'état actuel lui ferait rater la comparaison.
  *
- * ⚠️ Photo de hero non livrée : emplacement étiqueté, nommage du cahier.
+ * Photo de hero livrée et branchée.
  */
 const TOPIC_ICONS = [Scale, ReceiptOff, Progress, Ban];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
 <BaseLayout title="Fin du compteur qui tourne à l'envers en Flandre | Belgreen" transparentHeader>
-  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} placeholder={HERO.imagePlaceholder} />
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <StateToggle
     overline={TOGGLE_COPY.overline}

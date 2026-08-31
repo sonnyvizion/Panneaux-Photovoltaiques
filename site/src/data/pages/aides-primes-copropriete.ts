@@ -37,8 +37,7 @@ export const MODULE = {
     "La toiture est une partie commune : c'est l'assemblée générale qui autorise l'installation, et le règlement de copropriété qui fixe la majorité requise et la répartition de l'électricité produite.",
   bridgeLabel: 'Chiffrez le projet avant d’en parler en AG',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
-  /* ⚠️ Image non livrée. Nommage conventionnel du cahier de construction. */
-  placeholder: '1.11-copropriete-module.jpg — schéma du processus de décision en assemblée générale',
+  imageAlt: 'Table de réunion de copropriété avec documents et plan de toiture solaire',
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {

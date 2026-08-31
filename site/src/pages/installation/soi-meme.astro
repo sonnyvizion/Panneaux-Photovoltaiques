@@ -7,6 +7,7 @@ import Essentials from '../../components/Essentials.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.17-installer-soi-meme-hero.webp';
+import editorialImage from '../../assets/pages/soi-meme-editorial.jpg';
 import UserCheck from '../../assets/icons/installer-soi-meme/user-check.svg';
 import Tool from '../../assets/icons/installer-soi-meme/tool.svg';
 import AlertTriangle from '../../assets/icons/installer-soi-meme/alert-triangle.svg';
@@ -33,7 +34,7 @@ import {
   <div id="limite-autoinstallation">
     <TopicCards overline={LIMIT_COPY.overline} title={LIMIT_COPY.title} intro={LIMIT_COPY.intro} items={LIMIT} tone="grey" />
   </div>
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, placeholder: EDITORIAL_IMAGE }} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, image: editorialImage, imageAlt: HERO.imageAlt, placeholder: EDITORIAL_IMAGE }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [UserCheck, Tool, AlertTriangle, Coin][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'auto-installation." tone="grey" id="faq-soi-meme" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

@@ -7,6 +7,7 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.5-poids-hero.webp';
+import editorialImage from '../../assets/pages/poids-editorial.jpg';
 import Building from '../../assets/icons/poids/building.svg';
 import Weight from '../../assets/icons/poids/weight.svg';
 import Tool from '../../assets/icons/poids/tool.svg';
@@ -26,7 +27,7 @@ import {
 <BaseLayout title="Poids des panneaux solaires sur la toiture | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, placeholder: EDITORIAL_IMAGE }} />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} editorial={{ ...EDITORIAL, image: editorialImage, imageAlt: HERO.imageAlt, placeholder: EDITORIAL_IMAGE }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Building, Weight, Tool][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur la solidité du toit." tone="grey" id="faq-poids" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

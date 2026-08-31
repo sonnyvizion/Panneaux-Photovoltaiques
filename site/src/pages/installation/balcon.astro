@@ -8,6 +8,8 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.14-balcon-hero.webp';
+import moduleImage from '../../assets/pages/2.14-balcon-module.webp';
+import stackedImage from '../../assets/pages/balcon-liste.jpg';
 import Key from '../../assets/icons/balcon/key.svg';
 import CalculatorIcon from '../../assets/icons/balcon/calculator.svg';
 import FileText from '../../assets/icons/balcon/file-text.svg';
@@ -31,9 +33,9 @@ import {
 <BaseLayout title="Panneau solaire de balcon : le kit plug & play | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} image={heroImage} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} image={moduleImage} imageAlt="Kit solaire plug and play installé sur un balcon avec panneau compact, micro-onduleur et câble vers une prise" />
   <div id="essentiel-balcon">
-    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
+    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: stackedImage, imageAlt: HERO.imageAlt, placeholder: STACKED_IMAGE }} />
   </div>
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Key, CalculatorIcon, FileText, Truck][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les kits de balcon." tone="grey" id="faq-balcon" />

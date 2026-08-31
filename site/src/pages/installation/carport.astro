@@ -8,6 +8,8 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.13-carport-hero.webp';
+import moduleImage from '../../assets/pages/2.13-carport-module.webp';
+import stackedImage from '../../assets/pages/carport-liste.jpg';
 import Coin from '../../assets/icons/carport/coin.svg';
 import Car from '../../assets/icons/carport/car.svg';
 import FileCertificate from '../../assets/icons/carport/file-certificate.svg';
@@ -20,8 +22,8 @@ import {
 <BaseLayout title="Carport solaire : abri et production combinés | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
-  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt="Carport solaire vu de trois-quarts montrant la structure porteuse indépendante et la toiture photovoltaïque" />
+  <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: stackedImage, imageAlt: HERO.imageAlt, placeholder: STACKED_IMAGE }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, Car, FileCertificate][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le carport." tone="grey" id="faq-carport" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

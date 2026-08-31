@@ -7,6 +7,7 @@ import Essentials from '../../components/Essentials.astro';
 import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
+import heroImage from '../../assets/pages/1.7-flandre-aides-hero.webp';
 import CertificateOff from '../../assets/icons/flandre-aides/certificate-off.svg';
 import BuildingBank from '../../assets/icons/flandre-aides/building-bank.svg';
 import Clock from '../../assets/icons/flandre-aides/clock.svg';
@@ -25,14 +26,14 @@ import {
  * Réutilisé un jour sur les pages Wallonie et Bruxelles, seul `selected`
  * changerait — c'est l'hypothèse que la rédaction posait en note.
  *
- * ⚠️ Photo de hero non livrée : emplacement étiqueté, nommage du cahier.
+ * Photo de hero livrée et branchée.
  */
 const TOPIC_ICONS = [CertificateOff, BuildingBank, Clock, TrendingDown];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
 <BaseLayout title="Aides panneaux solaires Flandre 2026 : le guide complet | Belgreen" transparentHeader>
-  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} placeholder={HERO.imagePlaceholder} />
+  <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <OptionComparator
     overline={COMPARATOR_COPY.overline}

@@ -8,6 +8,7 @@ import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/2.9-toit-plat-hero.webp';
+import moduleImage from '../../assets/pages/2.9-toit-plat-module.webp';
 import DropletOff from '../../assets/icons/toit-plat/droplet-off.svg';
 import ChartBar from '../../assets/icons/toit-plat/chart-bar.svg';
 import Tool from '../../assets/icons/toit-plat/tool.svg';
@@ -20,7 +21,7 @@ import {
 <BaseLayout title="Panneaux solaires sur toit plat : structure et lestage | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={heroImage} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt="Toiture plate avec panneaux solaires sur châssis inclinés lestés et rangées espacées" />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [DropletOff, ChartBar, Tool][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le toit plat." tone="grey" id="faq-toit-plat" />

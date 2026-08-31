@@ -9,6 +9,7 @@ import Faq from '../../components/Faq.astro';
 import FinalCta from '../../components/FinalCta.astro';
 import heroImage from '../../assets/pages/1.11-copropriete-hero.webp';
 import listeImage from '../../assets/pages/1.11-copropriete-liste.webp';
+import moduleImage from '../../assets/pages/1.11-copropriete-module.webp';
 import Users from '../../assets/icons/copropriete/users.svg';
 import Bolt from '../../assets/icons/copropriete/bolt.svg';
 import FileCertificate from '../../assets/icons/copropriete/file-certificate.svg';
@@ -22,9 +23,7 @@ import {
  * Page 1.11 du cahier de construction — « Installation en copropriété ».
  *
  * Première instance de `FigureModule` (famille E du registre) : le module est
- * une illustration, pas un calculateur. Le schéma n'étant pas encore livré, le
- * composant affiche un emplacement étiqueté — visible et nommé, jamais une image
- * de stock (design.md).
+ * une illustration, pas un calculateur.
  */
 const TOPIC_ICONS = [Users, Bolt, FileCertificate, Cash];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
@@ -33,7 +32,7 @@ const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index
 <BaseLayout title="Panneaux solaires en copropriété : comment ça se décide | Belgreen" transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
-  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} placeholder={MODULE.placeholder} />
+  <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt={MODULE.imageAlt} />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: listeImage, imageAlt: STACKED_ALT }} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={topics} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent en copropriété." tone="grey" id="faq-copropriete" />
