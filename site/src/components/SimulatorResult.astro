@@ -5,7 +5,6 @@ import enphaseLogo from '../assets/reassurance/enphase-logo.png';
 import {
   MONTH_LABELS,
   KWH_PER_KWC_YEAR,
-  SUMMER_WINTER_RATIO,
   formatPower,
 } from '../scripts/powerEstimate';
 import { GRID_CO2_G_PER_KWH, formatCo2 } from '../scripts/co2';
@@ -18,6 +17,7 @@ import {
 } from '../scripts/savings';
 import { formatEuro, formatNumber } from '../scripts/format';
 import { paybackLabel } from '../scripts/payback';
+import { CHART_BASIS_LEAD, CHART_PEAK_LABEL, chartSeasonNote } from '../scripts/chartCopy';
 import {
   AREA_DEFAULT,
   CONSUMPTION_DEFAULT,
@@ -267,7 +267,7 @@ const OUTCOMES = [
               Un seul repère suffit — une graduation fine promettrait une
               précision que l'estimation n'a pas. */}
           <p class="result__peak">
-            Pic mensuel estimé&nbsp;: <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
+            {CHART_PEAK_LABEL}&nbsp;: <span data-sim-peak>{formatNumber(Math.round(peak / 10) * 10)}</span> kWh
           </p>
           {/* ⚠️ DEUX BOUCLES, PAS UNE. Les étiquettes étaient posées en absolu
               SOUS les barres, ce qui obligeait à réserver leur place avec un
@@ -290,20 +290,14 @@ const OUTCOMES = [
                 les barres illustrent le MILIEU de la fourchette — il les lit
                 comme la borne haute. Le scénario se nomme. */}
             <p class="result__basis">
-              Profil mensuel basé sur une installation intermédiaire d’environ{' '}
+              {CHART_BASIS_LEAD}{' '}
               <span data-sim-basis>{formatPower(initial.kwcTypical)}</span>.
             </p>
             {/* ⚠️ C'EST LA BOSSE D'ÉTÉ qui envoie le surplus au réseau, pas le
                 creux d'hiver. La version précédente disait littéralement
                 l'inverse du mécanisme — le commentaire d'intention plus haut
                 dit, lui, la bonne chose : c'est l'ÉCART qui explique le surplus. */}
-            <p>
-              Un mois d’été produit environ {SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois
-              plus qu’un mois d’hiver. En été, la production peut dépasser la
-              consommation instantanée du bâtiment&nbsp;: le surplus est alors
-              injecté sur le réseau. Plus vous autoconsommez votre production,
-              plus l’installation est rentable.
-            </p>
+            <p>{chartSeasonNote()}</p>
           </figcaption>
         </figure>
       </section>
