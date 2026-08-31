@@ -28,6 +28,15 @@ interface Props {
    * déjà blanche (Figma 466:1492).
    */
   tone?: 'grey' | 'default';
+  /**
+   * ⚠️ LA BANDE SE SOUDE AU BLOC PRÉCÉDENT — marge haute supprimée.
+   *
+   * Réservé aux pages dont le bloc du dessus est DÉJÀ GRIS : le gris continu
+   * porte alors l'écart à lui seul (la home, et elle seule aujourd'hui). Sous un
+   * bloc blanc, la soudure fait démarrer le gris au ras de la carte verte — on
+   * ne voit plus qu'un liseré de 2px dans l'arrondi des angles.
+   */
+  soude?: boolean;
 }
 
 const {
@@ -36,10 +45,11 @@ const {
   text = "Vous parlez directement à l'équipe qui installe. Pas d'intermédiaire. Pas de revente de données.",
   cta = { label: 'Faire mon estimation', href: '/simulateur' } as ContentLink | null,
   tone = 'grey',
+  soude = false,
 } = Astro.props;
 ---
 
-<section class={`final-cta final-cta--${tone}`}>
+<section class={`final-cta final-cta--${tone}${soude ? ' final-cta--soude' : ''}`}>
   <div class="final-cta__card reveal">
     <p class="final-cta__overline">{overline}</p>
     {/* Interpolation simple, jamais `set:html` : ce texte viendra de Sanity.
@@ -55,22 +65,34 @@ const {
 </section>
 
 <style>
+  /* ⚠️ LA MARGE HAUTE EST LE DÉFAUT, ET C'EST L'INVERSE D'AVANT.
+
+     Elle était à zéro pour tout le monde, `--default` la reposant ensuite. Or le
+     défaut du prop `tone` est `grey` : neuf pages de contenu se retrouvaient
+     donc soudées à leur FAQ BLANCHE, la bande grise démarrant au ras de la carte
+     verte — un liseré de 2px dans l'arrondi des angles, et rien d'autre. Mesuré
+     au navigateur : écart bande → carte de 0px sur /comprendre/fonctionnement,
+     /installation/ombrage, /installation/trouver-un-installateur,
+     /rentabilite-prix/amortissement, /aides-primes/flandre (+ ses deux
+     sous-pages), /aides-primes/bruxelles/demarches et
+     /aides-primes/wallonie/demarches.
+
+     La soudure passe donc sur `soude`, où elle se demande explicitement. */
   .final-cta {
-    padding: 0 var(--container-padding) var(--section-padding-block);
+    padding: var(--section-padding-block) var(--container-padding);
   }
 
-  .final-cta--grey {
-    background: var(--color-shade-grey);
-  }
-
-  /* ⚠️ Sur fond blanc, la bande pose AUSSI sa marge haute.
-     Le `padding-top: 0` ci-dessus n'a de sens que sur la home : la carte verte
-     y prolonge une FAQ grise, et le gris continu masque l'absence d'écart. Sur
-     une page de contenu, la FAQ est blanche comme la bande — le joint ne valait
-     alors que la moitié du rythme et la page se terminait serrée. */
+  /* Les deux tons peignent le même gris depuis que la bande a cessé d'être
+     blanche sur les pages de contenu (b1e4b05) : `tone` ne décide plus de rien
+     à l'écran. Les deux sélecteurs restent, les 43 pages qui les passent aussi. */
+  .final-cta--grey,
   .final-cta--default {
-    padding-top: var(--section-padding-block);
     background: var(--color-shade-grey);
+  }
+
+  /* Le gris du bloc précédent porte l'écart à lui seul — voir le prop `soude`. */
+  .final-cta--soude {
+    padding-top: 0;
   }
 
   .final-cta__card {
