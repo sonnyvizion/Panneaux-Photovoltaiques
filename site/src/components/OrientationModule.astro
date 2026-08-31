@@ -2,36 +2,90 @@
 import Section from './Section.astro';
 import SectionHeading from './SectionHeading.astro';
 import Button from './Button.astro';
-import OrientationDial from './OrientationDial.astro';
-import { ORIENTATION_DEFAULT, orientationSpread, type DialAxis } from '../scripts/orientation';
+import { ORIENTATIONS, ORIENTATION_DEFAULT, orientationPercent, orientationSpread } from '../scripts/orientation';
 import type { ContentLink, SectionCopy } from '../data/content';
 
 /**
- * La coquille de section qui monte le curseur orientation/inclinaison sur une
- * page de contenu — l'autre moitié du contrat du catalogue : la brique explique
- * ici ce qu'elle fait calculer dans le simulateur.
+ * Le module orientation d'une page de contenu : quatre orientations nommées, le
+ * rendement de celle qu'on choisit.
  *
- * ⚠️ Elle DÉMARRE RÉPONDUE, contrairement au simulateur. Sur une page de
- * contenu il n'y a rien à verrouiller, et un module qui s'ouvre sur un tiret
- * n'explique rien : il montre le cas de référence, et le visiteur le déplace.
+ * ⚠️ DES BOUTONS, PAS UN CURSEUR — et pas de soleil au-dessus d'un toit. Le
+ * curseur et son SVG ont vécu ici jusqu'à ce que le simulateur les abandonne
+ * pour quatre réponses nommées (`SimulatorPanels.astro`) : un dessin de soleil
+ * qui monte n'apprend rien de plus qu'un pourcentage, et il tirait le module
+ * vers l'illustration. Le module et l'étape 3 du simulateur montrent désormais
+ * la même chose de la même façon — sur le même modèle, `ORIENTATIONS`.
+ *
+ * ⚠️ ZÉRO JAVASCRIPT. Boutons radio + `:has()`, comme `StateToggle` et
+ * `OptionComparator`. Les quatre pourcentages sont dans le HTML servi, masqués
+ * par `visibility` et jamais par `display: none` : c'est le texte qui porte
+ * l'information (règle d'or #1), la sélection ne fait que le désigner.
+ *
+ * ⚠️ Les tuiles reprennent l'habillage de `SliderCalculator` (`.calc__option*`),
+ * copié et non partagé : les styles Astro sont scopés, et le dépôt a déjà tranché
+ * ce point trois fois (`.sim__choice`, `.calc__option`, `.toggle__option`).
+ * Extraire une brique commune obligerait à recâbler le simulateur entier.
+ *
+ * ⚠️ Il DÉMARRE RÉPONDU, contrairement au simulateur. Sur une page de contenu il
+ * n'y a rien à verrouiller, et un module qui s'ouvre sur un tiret n'explique
+ * rien : il montre le cas de référence, et le visiteur en essaie un autre.
  *
  * ⚠️ L'écart annoncé est DÉRIVÉ de `orientationSpread()`, jamais écrit à la
  * main : il doit rester solidaire des coefficients du modèle.
  */
 interface Props extends SectionCopy {
-  axis?: DialAxis;
   bridgeLabel: string;
   cta: ContentLink;
+  /** Nom du groupe de radios. Unique par page. */
+  id?: string;
 }
 
-const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro.props;
+const { overline, title, intro, bridgeLabel, cta, id = 'orient' } = Astro.props;
 ---
 
 <Section tone="grey">
   <SectionHeading overline={overline} overlineTone="tertiary" title={title} intro={intro} />
 
   <div class="orient reveal">
-    <OrientationDial axis={axis} name="orientation-demo" value={ORIENTATION_DEFAULT} escape={false} id="orient-demo" />
+    <fieldset class="orient__choices">
+      <legend class="visually-hidden">Orientation du pan de toiture</legend>
+      {/* ⚠️ La grille est ce DIV, pas le `<fieldset>`. `.visually-hidden` reste
+          volontairement dans le flux (`global.css`) : une `<legend>` posée dans
+          un conteneur de grille en devient un élément et occupe la 1re cellule. */}
+      <div class="orient__choices-grid">
+        {ORIENTATIONS.map((o) => (
+          <label class="orient__choice">
+            <input
+              class="orient__choice-input"
+              type="radio"
+              name={`${id}-orientation`}
+              value={o.value}
+              checked={o.value === ORIENTATION_DEFAULT}
+            />
+            <span class="orient__choice-label">
+              {o.label}
+              {/* Le chiffre est annoncé au moment du choix : la révélation étant
+                  purement CSS, rien ne le dirait au lecteur d'écran. */}
+              <span class="visually-hidden"> — {orientationPercent(o.value)} % du rendement optimal</span>
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    {/* Les quatre relevés occupent LA MÊME case : le bloc garde la hauteur du
+        plus grand et ne saute pas d'une orientation à l'autre. */}
+    <div class="orient__stack">
+      {ORIENTATIONS.map((o) => (
+        <p class="orient__readout">
+          <span class="orient__percent">{orientationPercent(o.value)} %</span>
+          <span class="orient__caption">du rendement optimal</span>
+          {/* Jauge purement descriptive, donc retirée de l'oral — le relevé
+              qu'elle accompagne reste lu. */}
+          <span class="orient__gauge" style={`--gauge-ratio: ${orientationPercent(o.value)}%`} aria-hidden="true"></span>
+        </p>
+      ))}
+    </div>
 
     <p class="orient__spread">
       Entre le meilleur et le pire cas, l’écart atteint {orientationSpread()} points
@@ -58,6 +112,136 @@ const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro
     background: var(--color-white-primary);
   }
 
+  /* --- Les quatre orientations --- */
+  .orient__choices {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-inline-size: 0;
+  }
+
+  /* Deux colonnes par défaut : « Sud-Est / Sud-Ouest » sur quatre colonnes de
+     téléphone se rognerait. Les quatre s'alignent dès qu'il y a la place. */
+  .orient__choices-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--radius-card);
+    background: var(--color-white-clear);
+  }
+
+  .orient__choice {
+    display: flex;
+    min-width: 0;
+  }
+
+  /* Le bouton reste dans la page — il doit rester focusable — mais invisible :
+     c'est la tuile qui le représente. Surtout pas `display: none`, qui le
+     retirerait de la navigation clavier. */
+  .orient__choice-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Corps de texte et non corps display, contrairement aux tuiles de
+     `SliderCalculator` : ces libellés sont des mots, pas des chiffres, et le
+     plus long doit pouvoir passer à la ligne. */
+  .orient__choice-label {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: var(--space-3) var(--space-2);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+    text-align: center;
+    color: var(--color-text-primary);
+    background: var(--color-white-primary);
+    font-family: var(--text-body-light-family);
+    font-size: var(--text-body-light-size);
+    font-weight: var(--text-body-light-weight);
+    line-height: var(--text-body-light-line-height);
+    letter-spacing: var(--text-body-light-tracking);
+    transition: background-color var(--duration-fast) var(--easing-default);
+  }
+
+  .orient__choice-input:checked + .orient__choice-label {
+    background: var(--color-highlight-primary);
+  }
+
+  /* L'anneau se pose sur la TUILE, le bouton étant invisible. Sans cette règle,
+     la navigation au clavier dans le groupe n'a aucun retour visible. */
+  .orient__choice-input:focus-visible + .orient__choice-label {
+    outline: var(--focus-ring-width) solid var(--color-ink-900);
+    outline-offset: var(--focus-ring-offset);
+  }
+
+  /* --- Le relevé --- */
+  .orient__stack {
+    display: grid;
+  }
+
+  .orient__readout {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-1);
+    text-align: center;
+    /* ⚠️ Masquage par `visibility` et non `display: none` : les quatre
+       pourcentages doivent rester dans le document pour être indexés
+       (règle d'or #1). */
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity var(--duration-medium) var(--easing-expand),
+      visibility var(--duration-medium) var(--easing-expand);
+  }
+
+  /* Le relevé visible est celui dont le bouton, à la même position, est coché.
+     Sélection par POSITION et non par valeur : l'ordre est une propriété du
+     composant, les valeurs viennent du modèle. */
+  .orient:has(.orient__choice:nth-child(1) .orient__choice-input:checked) .orient__readout:nth-child(1),
+  .orient:has(.orient__choice:nth-child(2) .orient__choice-input:checked) .orient__readout:nth-child(2),
+  .orient:has(.orient__choice:nth-child(3) .orient__choice-input:checked) .orient__readout:nth-child(3),
+  .orient:has(.orient__choice:nth-child(4) .orient__choice-input:checked) .orient__readout:nth-child(4) {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  /* Pas de `tabular-nums` : dans Circular Std il élargit aussi l'espace, et
+     « 95 % » s'y disloque. */
+  .orient__percent {
+    font-family: var(--text-display-mid-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-display-mid-weight);
+    line-height: 1;
+    letter-spacing: var(--text-display-mid-tracking);
+  }
+
+  .orient__caption {
+    color: var(--color-text-tertiary);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+  }
+
+  .orient__gauge {
+    width: 100%;
+    height: var(--height-power-gauge);
+    margin-top: var(--space-2);
+    border-radius: var(--radius-pill);
+    background: linear-gradient(
+      to right,
+      var(--color-ink-700) var(--gauge-ratio),
+      var(--color-shade-grey) var(--gauge-ratio)
+    );
+  }
+
   .orient__spread {
     color: var(--color-text-tertiary);
     font-family: var(--text-body-sm-family);
@@ -65,6 +249,7 @@ const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro
     line-height: var(--text-body-sm-line-height);
   }
 
+  /* --- Pont --- */
   .orient__bridge {
     display: flex;
     flex-direction: column;
@@ -86,6 +271,10 @@ const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro
   }
 
   @media (min-width: 768px) {
+    .orient__choices-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
     .orient__bridge {
       flex-direction: row;
       align-items: center;
@@ -98,6 +287,14 @@ const { overline, title, intro, axis = 'orientation', bridgeLabel, cta } = Astro
     .orient {
       padding: var(--space-12);
       gap: var(--space-3);
+    }
+  }
+
+  /* Le basculement est instantané quand le visiteur a demandé moins de
+     mouvement — `global.css` neutralise le reste du site de la même façon. */
+  @media (prefers-reduced-motion: reduce) {
+    .orient__readout {
+      transition: none;
     }
   }
 </style>

@@ -146,7 +146,7 @@ export const FINAL_CTA = {
  */
 export const ORIENT_WIDGET = {
   overline: 'Le pan de toiture',
-  title: 'Déplacez le soleil, le rendement suit',
+  title: 'Choisissez l’orientation, le rendement suit',
   intro:
     "L'orientation est le facteur qu'on ne peut pas changer après coup — et celui qu'on surestime le plus. Un toit est/ouest reste largement rentable.",
   bridgeLabel: 'Et sur votre toit, ça donne quoi ?',

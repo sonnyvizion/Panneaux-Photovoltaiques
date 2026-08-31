@@ -625,7 +625,6 @@
   --width-sim-panel: 1040px;
   --width-sim-text: 200px;         /* champ code postal : quatre chiffres */
   --tracking-sim-cp: 0.12em;
-  --width-dial: 320px; /* course du soleil, brique orientation/inclinaison */
 
   /* Panneau de résultat. Le graphe mensuel est un aperçu de forme, pas un relevé
      à lire au kWh près : 110px suffisent à voir la bosse d'été. La largeur mini

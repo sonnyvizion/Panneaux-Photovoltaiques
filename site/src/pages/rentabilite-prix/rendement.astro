@@ -46,10 +46,11 @@ import {
     image={moduleImage}
     imageAlt={WIDGET.imageAlt}
   />
-  {/* ⚠️ LA BRIQUE DU CATALOGUE, montée ici pour EXPLIQUER. Le simulateur monte
-      exactement le même composant sur le même modèle, à son étape 3 — c'est le
-      contrat : « on construit chaque brique une fois, on la réutilise dans le
-      simulateur (pour calculer) ET dans le contenu (pour expliquer) ». */}
+  {/* ⚠️ CE QUI EST PARTAGÉ AVEC LE SIMULATEUR, C'EST LE MODÈLE, pas le
+      composant : ce module et l'étape 3 du simulateur lisent les mêmes
+      `ORIENTATIONS` (`scripts/orientation.ts`) et proposent les mêmes quatre
+      réponses nommées, chacun avec son habillage — ici pour EXPLIQUER, là-bas
+      pour calculer. Un coefficient qui bouge bouge des deux côtés. */}
   <OrientationModule
     overline={ORIENT_WIDGET.overline}
     title={ORIENT_WIDGET.title}

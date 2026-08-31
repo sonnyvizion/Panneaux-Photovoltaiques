@@ -20,7 +20,7 @@
 | Brique | Rôle dans le simulateur | Réemploi dans le contenu | Note perf |
 |--------|-------------------------|--------------------------|-----------|
 | Voyage du photon (schéma animé) | — | Page « fonctionnement » : remplace le pave | SVG léger, anim au scroll-in |
-| Curseur orientation/inclinaison | Étape orientation | Page « rendement » : on bouge le soleil, le % bouge | JS léger, pas de lib |
+| Boutons orientation + jauge | Étape orientation (radios) | Page « rendement » : on choisit une orientation, le % et la jauge suivent | Zéro JS — radios + `:has()` |
 | Slider facture avant/après | Affichage économies | Pages prix/rentabilité | Léger |
 | Timeline d'amortissement | Résultats (ROI) | Pages rentabilité | Anim au scroll-in |
 | Tooltips au tap | Libellés techniques | 3-4 termes jargon : onduleur, kWc, prosumer | Parcimonie (3-4 max) |
