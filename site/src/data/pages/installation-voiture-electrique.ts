@@ -28,6 +28,16 @@ export const MODULE = {
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
 
+/* ⚠️ UNE SECONDE CARTE SUR LA MÊME PHOTO, pas un second module. Le sujet
+   appelle deux temps — ce que la combinaison fait, puis pourquoi elle est
+   intéressante — et les séparer en deux bandes illustrées aurait fait relire la
+   même image deux fois. Voir le `extra` de `FigureModule`. */
+export const MODULE_EXTRA = {
+  title: 'Ce qui rend cette combinaison intéressante',
+  text:
+    'Faire coïncider recharge et production, c’est transformer un surplus peu valorisé en économie directe. Coupler avec un carport solaire pousse la logique encore plus loin — production et recharge au même endroit, sans détour par le réseau.',
+} as const;
+
 export const ESSENTIALS_COPY: SectionCopy = {
   overline: 'En bref',
   title: 'Ce qui rend la combinaison intéressante',

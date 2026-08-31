@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 2.5 — « Poids » (`/installation/poids`).
@@ -26,17 +26,19 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut vérifier avant de s’inquiéter.',
 };
 
-/* ⚠️ UNE SEULE CARTE. « 20-22 kg » est le chiffre que la page existe pour
-   donner. « Diffuse » et « À vérifier » ne sont pas des grandeurs — leur donner
-   le même corps qu'au poids mettait trois faits au même niveau alors qu'un seul
-   répond à la question posée. */
-export const FIGURES: Figure[] = [
-  { label: 'Poids par panneau', value: '20-22 kg', note: 'soit 280 à 310 kg pour 14 panneaux', tone: 'lime' },
-];
+/* ⚠️ La carte chiffre unique et son texte fusionnent : « 20-22 kg » ne se
+   comprend qu'avec la répartition sur la toiture, et les séparer forçait à
+   lire deux fois la même idée. */
+export const FIGURES: Figure[] = [];
 
-export const ASIDE: string[] = [
-  'Ce poids se répartit sur toute la surface du toit, jamais en un seul point. Sur les toitures anciennes ou déjà fragilisées, une vérification reste recommandée.',
-];
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Poids',
+  text:
+    'Un panneau solaire pèse environ 20 à 22 kg, soit 280 à 310 kg pour une installation de 14 panneaux. Ce poids se répartit sur toute la surface du toit, jamais en un seul point — une charpente en bon état le supporte sans difficulté. Seules les toitures anciennes ou déjà fragilisées méritent une vérification préalable, généralement une simple inspection visuelle plutôt qu’une étude structurelle poussée.',
+};
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const EDITORIAL_IMAGE = 'poids-editorial.jpg';
 
 export const FACTS: Fact[] = [
   {

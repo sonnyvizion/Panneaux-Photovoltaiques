@@ -30,7 +30,7 @@ export const LEAD = {
 export const MODULE = {
   title: 'Intégré, pas superposé',
   caption:
-    'Une installation classique se pose SUR la couverture existante, qui reste en place. Le BIPV la REMPLACE : les modules deviennent la toiture. D’où l’aspect affleurant, apprécié en zone protégée — et d’où le surcoût, puisque le produit assume deux fonctions au lieu d’une.',
+    'Une installation classique se pose sur la couverture existante, qui reste en place. Le BIPV la remplace : les modules deviennent la toiture elle-même. D’où l’aspect affleurant, apprécié en zone protégée — et d’où le surcoût, puisque le produit assume deux fonctions au lieu d’une. Le rendement reste comparable à un panneau classique à orientation égale.',
   bridgeLabel: 'Chiffrez votre projet',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;

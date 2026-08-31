@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.14 — « Balcon » (`/installation/balcon`).
@@ -47,11 +47,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut savoir avant d’installer un kit plug & play.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Légal depuis', value: 'Avril 2025', note: 'si le matériel est homologué et listé chez Synergrid', tone: 'lime' },
-  { label: 'Installation', value: 'Sans pro', note: 'branché sur une prise domestique standard', tone: 'grey' },
-  { label: 'Déclaration', value: 'Obligatoire', note: 'au GRD, quelle que soit la puissance', tone: 'ink' },
+/* ⚠️ « Avril 2025 » est une vraie date, mais « Sans pro » et « Obligatoire »
+   n'étaient pas des grandeurs. La date reste, dans le texte de sa ligne, où
+   elle est enfin accompagnée de sa condition. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'LÉGAL DEPUIS',
+    title: 'Avril 2025, sous conditions',
+    text:
+      'Un kit plug & play homologué et listé Synergrid peut être installé sans professionnel.',
+  },
+  {
+    eyebrow: 'INSTALLATION',
+    title: 'Auto-installable, prise standard',
+    text:
+      'Se branche directement sur une prise domestique, se démonte tout aussi facilement.',
+  },
+  {
+    eyebrow: 'DÉCLARATION',
+    title: 'Obligatoire au GRD, quelle que soit la puissance',
+    text:
+      'Même un kit modeste doit être déclaré comme nouvelle production d’énergie.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'balcon-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

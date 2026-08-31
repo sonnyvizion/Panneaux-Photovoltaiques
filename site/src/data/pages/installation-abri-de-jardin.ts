@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 2.11 — « Abri de jardin » (`/installation/abri-de-jardin`).
@@ -24,18 +24,18 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qu’il faut savoir sur cette solution d’appoint.',
 };
 
-/* ⚠️ UNE SEULE CARTE, et c'est « 4-6 » — le seul vrai chiffre des trois.
-   « Complément » et « Au compteur » passent en texte : ce sont des réponses,
-   pas des grandeurs. L'accent passe du rôle au nombre de panneaux, qui est ce
-   que le visiteur vient chercher. */
-export const FIGURES: Figure[] = [
-  { label: 'Puissance', value: '4-6', note: 'panneaux au maximum, selon la surface', tone: 'lime' },
-];
+/* ⚠️ Même mouvement que sur Poids : la carte « 4-6 » et le texte qui la
+   complétait se rejoignent dans un seul paragraphe. */
+export const FIGURES: Figure[] = [];
 
-export const ASIDE: string[] = [
-  'Rôle : un complément, rarement une installation principale.',
-  'Raccordement : au même compteur que la maison — la configuration la plus fréquente.',
-];
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Abri de jardin',
+  text:
+    'Un abri de jardin peut accueillir quelques panneaux solaires — 4 à 6 au maximum selon la surface disponible. C’est une solution d’appoint, rarement une installation principale, qui vient généralement compléter une toiture déjà exploitée. Le raccordement se fait le plus souvent au même compteur que la maison, la configuration la plus simple et la plus fréquente.',
+};
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const EDITORIAL_IMAGE = 'abri-jardin-editorial.jpg';
 
 export const FACTS: Fact[] = [
   {

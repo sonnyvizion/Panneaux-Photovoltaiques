@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.18 — « Pompe à chaleur » (`/installation/pompe-a-chaleur`).
@@ -34,11 +34,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Pourquoi cette combinaison a du sens.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Autoconsommation', value: 'En hausse', note: 'quand la PAC utilise l’électricité solaire', tone: 'lime' },
-  { label: 'Timing', value: 'Mi-saison', note: 'la production coïncide avec les besoins de chauffage', tone: 'grey' },
-  { label: 'Dimensionnement', value: 'À adapter', note: 'si une PAC est déjà prévue ou installée', tone: 'ink' },
+/* ⚠️ « En hausse », « Mi-saison », « À adapter » : aucun chiffre, et trois
+   facettes du même raisonnement — pourquoi la pompe à chaleur et le solaire
+   se complètent. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'AUTOCONSOMMATION',
+    title: 'Elle augmente significativement',
+    text:
+      'La pompe à chaleur consomme une part importante de votre production solaire directement, plutôt que de l’injecter au réseau.',
+  },
+  {
+    eyebrow: 'TIMING',
+    title: 'Une coïncidence qui joue en votre faveur',
+    text:
+      'La production solaire est la plus forte en mi-saison, exactement quand les besoins de chauffage restent présents.',
+  },
+  {
+    eyebrow: 'DIMENSIONNEMENT',
+    title: 'À adapter si la PAC est prévue',
+    text:
+      'Une installation pensée avec la pompe à chaleur dès le départ maximise l’autoconsommation.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'pompe-a-chaleur-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

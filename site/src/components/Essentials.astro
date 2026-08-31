@@ -61,7 +61,14 @@ interface Props extends SectionCopy {
    * de la grille de cartes. L'en-tête de section, les cartes conditions et les
    * ponts restent : seul le tableau de cartes change de forme.
    */
-  stacked?: { rows: StackedRow[]; image: ImageMetadata; imageAlt: string };
+  stacked?: {
+    rows: StackedRow[];
+    /** Absente tant que la photo n'est pas livrée : voir `placeholder`. */
+    image?: ImageMetadata;
+    imageAlt?: string;
+    /** Le fichier attendu, quand l'image manque encore. */
+    placeholder?: string;
+  };
   /** Une vraie comparaison : mêmes critères sur plusieurs objets. */
   table?: EssentialsTable;
   /** Un seul fait et ses conséquences, dans une carte unique. */
@@ -72,7 +79,7 @@ interface Props extends SectionCopy {
    * ⚠️ IL REMPLACE L'EN-TÊTE DE SECTION : son titre devient le `h2`. Passer à
    * la fois `editorial` et un `title` de section afficherait deux titres.
    */
-  editorial?: EssentialsEditorial & { image: ImageMetadata };
+  editorial?: EssentialsEditorial & { image?: ImageMetadata; placeholder?: string };
   /**
    * Ce qui ne méritait pas une carte.
    *
@@ -106,15 +113,21 @@ const {
       {/* ⚠️ La photo est PORTRAIT (1744×2336) pour un créneau de 597×690 :
           `object-fit: cover` recadre, la largeur déclarée reste celle du
           fichier pour qu'`astro:assets` génère les bonnes variantes. */}
-      <Image
-        class="essentials__editorial-image"
-        src={editorial.image}
-        alt={editorial.imageAlt}
-        width={1744}
-        widths={[600, 900, 1200, 1744]}
-        sizes="(min-width: 768px) 597px, 100vw"
-        loading="lazy"
-      />
+      {editorial.image ? (
+        <Image
+          class="essentials__editorial-image"
+          src={editorial.image}
+          alt={editorial.imageAlt}
+          width={1744}
+          widths={[600, 900, 1200, 1744]}
+          sizes="(min-width: 768px) 597px, 100vw"
+          loading="lazy"
+        />
+      ) : (
+        <div class="essentials__editorial-slot">
+          <ImagePlaceholder label={editorial.placeholder ?? 'photo du bloc'} ratio="auto" />
+        </div>
+      )}
     </div>
     )}
 
@@ -176,7 +189,12 @@ const {
     )}
 
     {stacked && (
-      <StackedList rows={stacked.rows} image={stacked.image} imageAlt={stacked.imageAlt} />
+      <StackedList
+        rows={stacked.rows}
+        image={stacked.image}
+        imageAlt={stacked.imageAlt}
+        placeholder={stacked.placeholder}
+      />
     )}
 
     {/* Trois facettes d'un même sujet : l'icône remplace la valeur géante. */}
@@ -546,6 +564,11 @@ const {
      22/24 : sur 390px, ce paragraphe de cinq cents signes y tiendrait sur
      vingt-cinq lignes. `body_bull` (16/20) est le cran juste en dessous dans la
      MÊME famille — la carte garde son allure, elle se lit simplement. */
+  .essentials__editorial-slot :global(.placeholder) {
+    height: 100%;
+    border-radius: var(--radius-3);
+  }
+
   .essentials__editorial-card p {
     font-family: var(--text-body-bull-family);
     font-size: var(--text-body-bull-size);
@@ -556,7 +579,8 @@ const {
 
   /* Portrait sur téléphone aussi, mais moins haut : la photo doit tenir dans
      l'écran avec un morceau du texte, sinon elle coupe la lecture en deux. */
-  .essentials__editorial-image {
+  .essentials__editorial-image,
+  .essentials__editorial-slot {
     width: 100%;
     height: auto;
     aspect-ratio: 4 / 3;
@@ -595,7 +619,8 @@ const {
       letter-spacing: var(--text-display-little-tracking);
     }
 
-    .essentials__editorial-image {
+    .essentials__editorial-image,
+    .essentials__editorial-slot {
       flex: 0 1 var(--width-editorial-image);
       aspect-ratio: var(--ratio-editorial-image);
     }

@@ -25,7 +25,7 @@ export const LEAD = {
 export const MODULE = {
   title: 'Une pente recréée, sans toucher à l’étanchéité',
   caption:
-    'Les panneaux reposent sur des châssis inclinés à 10-15°, maintenus par des blocs de béton posés sur la membrane. Rien n’est percé. Entre deux rangées, un espace est laissé libre pour que la première ne fasse pas d’ombre à la suivante en hiver, quand le soleil est bas.',
+    'Les panneaux reposent sur des châssis inclinés à 10-15°, maintenus par des blocs de béton posés sur la membrane. Rien n’est percé. Entre deux rangées, un espace est laissé libre pour que la première ne fasse pas d’ombre à la suivante, surtout en hiver quand le soleil est bas — une contrainte propre au toit plat qui réduit légèrement la densité de panneaux par rapport à un toit incliné bien orienté.',
   bridgeLabel: 'Ce que votre toit plat peut accueillir',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;

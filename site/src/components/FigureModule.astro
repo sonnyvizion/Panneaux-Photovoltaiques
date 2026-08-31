@@ -37,9 +37,21 @@ interface Props {
   imageAlt?: string;
   /** Ce que la maquette attend à cet endroit, si l'image manque encore. */
   placeholder?: string;
+  /**
+   * Un SECOND panneau sur la même photo.
+   *
+   * ⚠️ Il n'existait pas : le module n'a jamais porté qu'une carte. Ajouté pour
+   * la page Voiture électrique, dont le sujet appelle deux temps — ce que la
+   * combinaison fait, puis pourquoi elle est intéressante — sur une seule et
+   * même image. Le mécanisme est celui des ponts de « L'essentiel » : un
+   * conteneur, plusieurs blocs dedans, pas deux modules empilés.
+   */
+  extra?: { title: string; text: string };
 }
 
-const { title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder } = Astro.props;
+const {
+  title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder, extra,
+} = Astro.props;
 ---
 
 <section class="figure">
@@ -68,6 +80,7 @@ const { title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder } = 
   )}
   <div class="figure__overlay" aria-hidden="true"></div>
 
+  <div class="figure__stack">
   <div class="figure__panel reveal">
     <h2 class="figure__title">{title}</h2>
     <p class="figure__caption">{caption}</p>
@@ -78,6 +91,16 @@ const { title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder } = 
         <Button href={cta.href}>{cta.label}</Button>
       </div>
     )}
+  </div>
+
+  {extra && (
+    <div class="figure__panel reveal">
+      {/* `h3` : ce panneau prolonge le premier sur la même image, il n'ouvre
+          pas une seconde section. */}
+      <h3 class="figure__title">{extra.title}</h3>
+      <p class="figure__caption">{extra.text}</p>
+    </div>
+  )}
   </div>
 </section>
 
@@ -132,12 +155,21 @@ const { title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder } = 
     background: var(--overlay-photo);
   }
 
-  .figure__panel {
+  /* La pile porte la largeur, les panneaux la remplissent. Sans elle, deux
+     panneaux se posaient côte à côte — `.figure` est un conteneur flex. */
+  .figure__stack {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
     width: 100%;
     max-width: var(--width-power-panel);
+  }
+
+  .figure__panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
     padding: var(--pad-power-panel);
     border-radius: var(--radius-panel);
     background: var(--bg-glass-fill-menu);
@@ -151,6 +183,12 @@ const { title, caption, cta, bridgeLabel, image, imageAlt = '', placeholder } = 
        module interactif, pour que les deux se répondent. */
     font-size: var(--text-h3-size);
     line-height: var(--text-h3-line-height);
+    /* ⚠️ LA GRAISSE EST POSÉE, pas héritée. La règle ne fixait que le corps :
+       la famille et la graisse retombaient sur les styles `h2` et `h3` de
+       `global.css`, qui ne s'accordent pas (Book 450 contre Medium 500). Le
+       second panneau — un `h3` — ressortait donc plus gras que le premier sur
+       la même photo, alors que les deux nomment la même illustration. */
+    font-weight: var(--text-h2-weight);
   }
 
   .figure__caption {

@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.13 — « Carport » (`/installation/carport`).
@@ -36,11 +36,33 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qui rend le carport solaire particulier.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Double fonction', value: 'Abri + kWh', note: 'un seul ouvrage, deux usages', tone: 'lime' },
-  { label: 'Synergie', value: 'Recharge', note: 'idéal avec une borne pour véhicule électrique', tone: 'grey' },
-  { label: 'Structure', value: 'Autonome', note: 'aucune contrainte de toiture existante', tone: 'ink' },
+/* ⚠️ « Abri + kWh », « Recharge », « Autonome » : trois arguments, pas trois
+   mesures. Le premier n'était même pas une valeur mais une addition. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'DOUBLE FONCTION',
+    title: 'Abri et production réunis',
+    text:
+      'Le carport solaire protège votre véhicule tout en produisant de l’électricité, sans empiéter sur la toiture principale.',
+  },
+  {
+    eyebrow: 'SYNERGIE',
+    title: 'Idéal avec une borne de recharge',
+    text:
+      'Produire et recharger au même endroit, c’est la combinaison la plus cohérente du solaire résidentiel.',
+  },
+  {
+    eyebrow: 'STRUCTURE',
+    title: 'Indépendante de toute toiture existante',
+    text:
+      'Le carport se construit là où vous voulez, sans dépendre de l’orientation ou de l’état de votre toit.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'carport-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

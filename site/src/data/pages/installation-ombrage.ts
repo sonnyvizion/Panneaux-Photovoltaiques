@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, ToggleState, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, ToggleState, TopicCard } from '../content';
 
 /**
  * Page 2.6 — « Ombrage » (`/installation/ombrage`).
@@ -53,11 +53,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'L’effet domino de l’ombre, en résumé.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Panneaux en série', value: 'Effet domino', note: 'un seul panneau ombragé pénalise toute la chaîne', tone: 'lime' },
-  { label: 'La solution', value: 'Un par panneau', note: 'micro-onduleurs ou optimiseurs de puissance', tone: 'grey' },
-  { label: 'Sources fréquentes', value: 'Le voisinage', note: 'cheminées, arbres, bâtiments, antennes', tone: 'ink' },
+/* ⚠️ « Effet domino », « Un par panneau », « Le voisinage » : trois formules
+   posées en corps 44 sans un chiffre. C'est un mécanisme qui s'explique —
+   la cause, la parade, les sources — pas trois grandeurs. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'EFFET DOMINO',
+    title: 'Un seul panneau ombragé pénalise la chaîne',
+    text:
+      'Avec un onduleur string classique, l’ombre partielle sur un panneau réduit la production de toute la série connectée.',
+  },
+  {
+    eyebrow: 'SOLUTION',
+    title: 'Micro-onduleurs ou optimiseurs',
+    text:
+      'Ces équipements isolent chaque panneau, limitant l’impact d’une ombre localisée au reste de l’installation.',
+  },
+  {
+    eyebrow: 'SOURCES',
+    title: 'Cheminées, arbres, antennes, bâtiments voisins',
+    text:
+      'Les causes d’ombrage les plus fréquentes à repérer avant l’installation.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'ombrage-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

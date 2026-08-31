@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import ImagePlaceholder from './ImagePlaceholder.astro';
 import type { StackedRow } from '../data/content';
 
 /**
@@ -30,12 +31,19 @@ import type { StackedRow } from '../data/content';
  */
 interface Props {
   rows: StackedRow[];
-  /** UNE image pour toute la liste. Le hero de la page, recadré en CSS. */
-  image: ImageMetadata;
-  imageAlt: string;
+  /**
+   * UNE image pour toute la liste.
+   *
+   * Absente tant que la photo n'est pas livrée : c'est alors un emplacement
+   * nommé qui s'affiche, jamais une image de stock (`design.md`).
+   */
+  image?: ImageMetadata;
+  imageAlt?: string;
+  /** Le fichier attendu, quand l'image manque encore. */
+  placeholder?: string;
 }
 
-const { rows, image, imageAlt } = Astro.props;
+const { rows, image, imageAlt = '', placeholder } = Astro.props;
 ---
 
 <div class="stacked">
@@ -58,15 +66,21 @@ const { rows, image, imageAlt } = Astro.props;
         auparavant le hero panoramique de la page : `object-fit: cover` retenait
         alors une bande centrale, ce qui coupait souvent l'objet en deux. Le
         recadrage reste en place, il n'a simplement plus grand-chose à faire. */}
-    <Image
-      class="stacked__image"
-      src={image}
-      alt={imageAlt}
-      width={1280}
-      widths={[480, 768, 1280]}
-      sizes="(min-width: 1024px) 50vw, 100vw"
-      loading="lazy"
-    />
+    {image ? (
+      <Image
+        class="stacked__image"
+        src={image}
+        alt={imageAlt}
+        width={1280}
+        widths={[480, 768, 1280]}
+        sizes="(min-width: 1024px) 50vw, 100vw"
+        loading="lazy"
+      />
+    ) : (
+      <div class="stacked__slot">
+        <ImagePlaceholder label={placeholder ?? 'photo de la liste'} ratio="auto" />
+      </div>
+    )}
   </div>
 </div>
 
@@ -166,12 +180,19 @@ const { rows, image, imageAlt } = Astro.props;
     letter-spacing: var(--text-body-sm-tracking);
   }
 
-  .stacked__image {
+  .stacked__image,
+  .stacked__slot {
     width: 100%;
     height: auto;
     aspect-ratio: 16 / 9;
     border-radius: var(--radius-3);
     object-fit: cover;
+  }
+
+  /* L'emplacement remplit son cadre comme le fera la photo. */
+  .stacked__slot :global(.placeholder) {
+    height: 100%;
+    border-radius: var(--radius-3);
   }
 
   @media (min-width: 1024px) {
@@ -198,7 +219,8 @@ const { rows, image, imageAlt } = Astro.props;
       position: relative;
     }
 
-    .stacked__image {
+    .stacked__image,
+    .stacked__slot {
       position: absolute;
       inset: 0;
       height: 100%;

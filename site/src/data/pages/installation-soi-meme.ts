@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, SectionCopy, TopicCard } from '../content';
+import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
 
 /**
  * Page 2.17 — « Installer soi-même » (`/installation/soi-meme`).
@@ -64,6 +64,20 @@ export const ESSENTIALS_COPY: SectionCopy = {
   title: 'Ce que ça change vraiment',
   intro: 'Ce qu’il faut savoir avant de se lancer soi-même.',
 };
+
+/* ⚠️ La page n'avait aucune carte chiffre — elle n'en avait pas besoin. Le
+   bloc éditorial lui donne enfin la réponse d'un seul tenant que le gabarit
+   attend à cet endroit. */
+export const FIGURES: Figure[] = [];
+
+export const EDITORIAL: EssentialsEditorial = {
+  title: 'Installer soi-même',
+  text:
+    'Poser ses panneaux soi-même est légal en Belgique — sur la toiture ou la façade, sans professionnel obligatoire. Mais le raccordement au tableau électrique et le contrôle de conformité RGIE, eux, doivent toujours être réalisés par un professionnel avant la mise en service. Les kits plug & play homologués font exception : ils s’installent en autonomie complète. Seule certitude côté interdiction : l’auto-installation d’une batterie domestique, prohibée depuis la révision RGIE 2025.',
+};
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const EDITORIAL_IMAGE = 'soi-meme-editorial.jpg';
 
 export const FACTS: Fact[] = [
   {

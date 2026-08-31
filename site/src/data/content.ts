@@ -150,7 +150,7 @@ export interface EssentialsEditorial {
   title: string;
   /** Le paragraphe, dans sa carte blanche. Un seul, volontairement. */
   text: string;
-  imageAlt: string;
+  imageAlt?: string;
 }
 
 /**

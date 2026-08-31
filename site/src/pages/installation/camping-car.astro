@@ -12,7 +12,7 @@ import ArrowsLeftRight from '../../assets/icons/camping-car/arrows-left-right.sv
 import Bolt from '../../assets/icons/camping-car/bolt.svg';
 import Battery from '../../assets/icons/camping-car/battery.svg';
 import {
-  BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
+  STACKED_ROWS, STACKED_IMAGE, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
   HERO, LEAD, MODULE, TOPICS, TOPICS_COPY,
 } from '../../data/pages/installation-camping-car';
 
@@ -30,7 +30,7 @@ import {
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <FigureModule title={MODULE.title} caption={MODULE.caption} image={heroImage} />
   <div id="essentiel-camping-car">
-    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} />
+    <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, placeholder: STACKED_IMAGE }} />
   </div>
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Bolt, ArrowsLeftRight, Battery][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur le solaire embarqué." tone="grey" id="faq-camping-car" />

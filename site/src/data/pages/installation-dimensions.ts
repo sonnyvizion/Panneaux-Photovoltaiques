@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.4 — « Dimensions » (`/installation/dimensions`).
@@ -39,11 +39,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'L’espace nécessaire, en repères concrets.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Un panneau', value: '1,9-2 m²', note: 'environ 1,7 × 1,1 m', tone: 'lime' },
-  { label: '14 panneaux', value: '27-30 m²', note: 'de toiture utile', tone: 'grey' },
-  { label: 'Espacement', value: 'À prévoir', note: 'surtout hors toit incliné classique', tone: 'ink' },
+/* ⚠️ Deux vraies mesures sur trois, mais « À prévoir » n'en était pas une —
+   et la grille imposait de les lire comme trois grandeurs comparables alors
+   que la troisième est une contrainte de pose. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'PANNEAU',
+    title: 'Environ 2 m² par unité',
+    text:
+      'Un panneau standard mesure 1,7 à 1,9 m de long sur 1 à 1,13 m de large.',
+  },
+  {
+    eyebrow: 'SURFACE',
+    title: '27 à 30 m² pour 14 panneaux',
+    text:
+      'L’équivalent d’une grande pièce à vivre, posée sur un pan de toiture.',
+  },
+  {
+    eyebrow: 'ESPACEMENT',
+    title: 'Une marge à prévoir hors toit incliné',
+    text:
+      'Sur toit plat ou au sol, un espacement entre rangées évite les ombres portées d’une rangée sur l’autre.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'dimensions-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

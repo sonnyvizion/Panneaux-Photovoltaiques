@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.15 — « Camping-car » (`/installation/camping-car`).
@@ -41,11 +41,34 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Ce qui distingue le solaire camping-car du solaire résidentiel.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'Tension', value: '12 V', note: 'basse tension, pas comparable au résidentiel', tone: 'lime' },
-  { label: 'Stockage', value: 'Batterie', note: 'embarquée, et indispensable', tone: 'grey' },
-  { label: 'Raccordement', value: 'Aucun', note: 'système autonome, hors réseau', tone: 'ink' },
+/* ⚠️ « 12 V » est un vrai chiffre, « Batterie » et « Aucun » n'en sont pas.
+   La tension reprend sa place dans le titre de sa ligne, où elle veut dire
+   quelque chose. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'TENSION',
+    title: 'Un système basse tension (12 V)',
+    text:
+      'Rien à voir avec une installation résidentielle : le solaire camping-car fonctionne en circuit fermé et basse tension.',
+  },
+  {
+    eyebrow: 'STOCKAGE',
+    title: 'Une batterie embarquée indispensable',
+    text:
+      'Sans stockage, l’électricité produite en roulant ou à l’arrêt ne sert à rien.',
+  },
+  {
+    eyebrow: 'RACCORDEMENT',
+    title: 'Aucun, système totalement autonome',
+    text:
+      'Pas de réseau, pas de déclaration : tout reste à bord du véhicule.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'camping-car-liste.jpg';
 
 export const FACTS: Fact[] = [
   {

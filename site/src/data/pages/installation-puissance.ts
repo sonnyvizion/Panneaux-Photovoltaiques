@@ -1,4 +1,4 @@
-import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
 
 /**
  * Page 2.3 — « Puissance (kWc) » (`/installation/puissance`).
@@ -40,11 +40,35 @@ export const ESSENTIALS_COPY: SectionCopy = {
   intro: 'Deux unités à ne pas confondre.',
 };
 
-export const FIGURES: Figure[] = [
-  { label: 'kWc', value: 'Puissance', note: 'le maximum théorique de l’installation', tone: 'lime' },
-  { label: 'kWh', value: 'Énergie', note: 'ce qui est réellement produit sur une période', tone: 'grey' },
-  { label: 'Gamme résidentielle', value: '3-10 kWc', note: 'en Belgique', tone: 'ink' },
+/* ⚠️ « Puissance » et « Énergie » n'étaient pas des valeurs mais des
+   DÉFINITIONS : la carte annonçait « kWc » en libellé et répondait
+   « Puissance » en corps 44. Un glossaire déguisé en statistique. Les trois
+   points forment une explication suivie, pas trois mesures. */
+export const FIGURES: Figure[] = [];
+
+export const STACKED_ROWS: StackedRow[] = [
+  {
+    eyebrow: 'CAPACITÉ',
+    title: 'Le kWc, une puissance maximale théorique',
+    text:
+      'Mesuré en conditions de test standardisées (1000 W/m², 25 °C) — ce que l’installation peut produire au mieux, pas ce qu’elle produit réellement au quotidien.',
+  },
+  {
+    eyebrow: 'PRODUCTION',
+    title: 'Le kWh, ce qui compte vraiment',
+    text:
+      'L’énergie réellement produite varie avec la météo, la saison et l’heure. On achète des kWc, on consomme des kWh.',
+  },
+  {
+    eyebrow: 'GAMME',
+    title: 'Entre 3 et 10 kWc en résidentiel',
+    text:
+      'La quasi-totalité des installations belges se situent dans cette fourchette, selon la taille du foyer et sa consommation.',
+  },
 ];
+
+/* Photo en cours de génération : emplacement nommé en attendant. */
+export const STACKED_IMAGE = 'puissance-liste.jpg';
 
 export const FACTS: Fact[] = [
   {
