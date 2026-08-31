@@ -316,11 +316,9 @@ const {
     width: 100%;
   }
 
-  /* ⚠️ La grille NE CHANGE PAS entre mobile et desktop — trois chiffres de
-     front, deux conditions côte à côte, aux deux tailles (Figma 466:1869).
-     Les empiler sur mobile détruirait la seule chose que ce bloc sert à faire :
-     comparer les fourchettes d'un coup d'œil. Ce qui s'adapte, ce sont les
-     paddings, le rayon et la typographie. */
+  /* ⚠️ Les figures restent comparables d'un coup d'œil. À trois chiffres,
+     desktop garde trois colonnes ; mobile pose les deux premiers côte à côte et
+     donne toute la largeur au troisième pour éviter trois colonnes trop serrées. */
   .essentials__figures,
   .essentials__facts {
     display: grid;
@@ -346,6 +344,16 @@ const {
 
   .essentials__figures[data-count='2'] {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 767px) {
+    .essentials__figures[data-count='3'] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .essentials__figures[data-count='3'] .essentials__card:nth-child(3) {
+      grid-column: 1 / -1;
+    }
   }
 
   /* ⚠️ SEULE, LA CARTE CHANGE DE MISE EN PAGE. La colonne `space-between` des
