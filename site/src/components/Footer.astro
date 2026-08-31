@@ -115,9 +115,14 @@ const columns = PILLARS.map((pillar) => ({
     letter-spacing: var(--text-body-light-tracking);
   }
 
+  /* ⚠️ UNE SEULE COLONNE SUR MOBILE. À deux, les quatre piliers formaient deux
+     rangées de listes inégales : la fin d'une colonne et le titre de sa voisine
+     se retrouvaient à la même hauteur, et le plan du site se lisait en zigzag.
+     Empilés, les quatre piliers se parcourent d'un seul trait. Les quatre
+     colonnes reviennent dès 768px, où la place les remet côte à côte. */
   .footer__columns {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--space-4) var(--space-3);
   }
 
@@ -249,6 +254,34 @@ const columns = PILLARS.map((pillar) => ({
   @media (min-width: 768px) {
     .footer__columns {
       grid-template-columns: repeat(4, 1fr);
+    }
+
+    /* Un filet vertical entre les liens transverses. DESSINÉ, pas écrit : un
+       « | » posé en `content` entrerait dans le texte de la page, donc dans
+       l'oral du lecteur d'écran, et il se calerait sur la chasse d'un glyphe
+       plutôt qu'au milieu de l'écart. Le pseudo-élément se pose au demi-`gap`,
+       et prend la couleur des filets déjà présents (`--color-ink-700`, celle
+       des traits qui séparent les rangées du pied de page).
+
+       ⚠️ À PARTIR DE 768px SEULEMENT, et c'est le fond du sujet : les six liens
+       ne tiennent sur une ligne qu'à cette largeur. En dessous la rangée passe
+       à la ligne, et un filet posé sur `li + li` suit son lien — il se
+       retrouverait pendu seul en tête de la deuxième ligne, là où il ne sépare
+       plus rien. Aucun sélecteur CSS ne sait reconnaître un début de ligne. */
+    .footer__utility-list li {
+      position: relative;
+    }
+
+    /* Bornes hautes et basses plutôt qu'une hauteur en `em` : le `li` hérite du
+       corps du pied de page, pas des 18px du lien qu'il contient. */
+    .footer__utility-list li + li::before {
+      content: '';
+      position: absolute;
+      top: var(--space-1);
+      bottom: var(--space-1);
+      left: calc(var(--space-3) / -2);
+      width: var(--border-width);
+      background: var(--color-ink-700);
     }
   }
 </style>
