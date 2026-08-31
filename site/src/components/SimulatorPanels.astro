@@ -1101,5 +1101,44 @@ const HELP = {
     .sim__choice span {
       padding: var(--space-12);
     }
+
+    /* ⚠️ UN CRAN SOUS LA QUESTION — c'est le pendant de la descente en `h4` de
+       `.step__title` dans `SimulatorStep.astro`.
+
+       Le libellé est en `h4` à TOUTES les largeurs. Sur grand écran il tombe
+       donc un cran sous la question (26 contre 20), mais sous 768px la question
+       descend à `h4` elle aussi : même corps, même interlignage, MÊME GRAISSE.
+       Seule l'approche les séparait encore (−0,4px contre `normal`), ce qui ne
+       se voit pas — « Quelle surface pouvez-vous couvrir ? » et « Surface
+       disponible » se lisaient comme deux titres de même rang. Mesuré au
+       navigateur à 390px.
+
+       `overline` (18/20) rétablit l'échelle mobile : 20 pour la question, 18
+       pour le libellé, 16 pour les réponses, 13 pour l'aide. C'est aussi le
+       token dont `Essentials` habille déjà ses libellés de cartes chiffres —
+       même motif exactement, un intitulé apparié à une valeur.
+
+       ⚠️ `.sim__value` SUIT, et il n'a pas le choix : il vit DANS le libellé et
+       partage sa ligne de base en `space-between`. Laissé à 20px à côté d'un
+       intitulé à 18, le couple se désaccordait. La graisse, elle, ne bouge
+       pas — `medium` contre `book`, c'est ce qui les départage déjà. */
+    .sim__label,
+    .sim__value {
+      font-size: var(--text-overline-size);
+      line-height: var(--text-overline-line-height);
+    }
+
+    /* ⚠️ ET UN CRAN DE GRAISSE AUSSI — `book`, pas le `medium` d'`overline`.
+       La taille seule ne suffisait pas : à 18px en `medium`, le libellé gardait
+       le poids d'un titre à côté d'une question qui est elle aussi en `medium`.
+       En `book` il redevient une étiquette.
+
+       Corollaire assumé : le libellé et sa valeur partagent désormais la même
+       graisse. Ce qui les départage n'est plus le poids mais la place — l'un au
+       fer à gauche, l'autre au fer à droite du `space-between`. */
+    .sim__label {
+      font-weight: var(--font-weight-book);
+      letter-spacing: var(--text-overline-tracking);
+    }
   }
 </style>
