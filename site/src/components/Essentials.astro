@@ -506,6 +506,21 @@ const {
     .essentials__figures .essentials__note {
       text-align: start;
     }
+
+    /* ⚠️ LA CARTE SOMBRE CENTRE TOUT, elle seule. Sur une colonne, les trois
+       lignes des cartes claires s'appuient sur les bords de la page et suivent
+       le reste du contenu ; la carte à fond plein, elle, est un bloc détouré —
+       un libellé au fer à gauche, une valeur centrée et une condition ramenée à
+       gauche y dessinaient trois axes différents dans un même cadre.
+
+       La règle porte sur la CARTE, ce qui suffit au libellé (il n'a pas
+       d'alignement propre) ; la valeur et la condition, elles, en posent un et
+       doivent être reprises nommément. */
+    .essentials__figures .essentials__card--ink,
+    .essentials__figures .essentials__card--ink .essentials__value,
+    .essentials__figures .essentials__card--ink .essentials__note {
+      text-align: center;
+    }
   }
 
   .essentials__prefix {
