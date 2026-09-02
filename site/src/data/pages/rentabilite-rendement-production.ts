@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 import { KWH_PER_KWC_YEAR, POWER_DEFAULT, estimate, formatNumber } from '../../scripts/powerEstimate';
 
 /**
@@ -15,6 +16,18 @@ import { KWH_PER_KWC_YEAR, POWER_DEFAULT, estimate, formatNumber } from '../../s
  */
 
 const standard = estimate(POWER_DEFAULT);
+
+/**
+ * Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build.
+ *
+ * La description reprend les constantes plutôt que de les recopier, comme le
+ * reste du fichier : le jour où `KWH_PER_KWC_YEAR` bouge, c'est aussi ce que
+ * Google affiche sous le lien qui suit.
+ */
+export const SEO: PageSeo = {
+  title: 'Rendement des panneaux solaires en Belgique | Belgreen',
+  description: `Une installation de ${POWER_DEFAULT} kWc produit environ ${formatNumber(standard.production)} kWh par an en Belgique, soit ${KWH_PER_KWC_YEAR} kWh par kWc. Ce qui fait varier ce chiffre.`,
+};
 
 export const HERO = {
   badge: 'Rentabilité & Prix',

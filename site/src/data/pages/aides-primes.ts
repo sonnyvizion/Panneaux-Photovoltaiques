@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Pilier 1 — page « vue d'ensemble » d'Aides & primes (`/aides-primes`).
@@ -16,6 +17,20 @@ import type { FaqItem, SectionCopy } from '../content';
  * Gabarit allégé (hero → transition → inventaire → FAQ → pont), même raison que
  * `comprendre.ts`.
  */
+
+/**
+ * Ce que Google lit en tête de page — voir `data/seo.ts` pour les contraintes,
+ * que le build vérifie.
+ *
+ * Le hub vise la requête générique « primes panneaux solaires Belgique », que
+ * les trois pages régionales ne peuvent pas viser sans se cannibaliser entre
+ * elles : chacune porte sa région, celle-ci porte le pays et l'aiguillage.
+ */
+export const SEO: PageSeo = {
+  title: 'Primes panneaux solaires Belgique 2026 | Belgreen',
+  description:
+    'Wallonie, Bruxelles, Flandre : trois régimes différents. Primes, prêts à taux réduit et compensation du surplus, région par région, à jour pour 2026.',
+};
 
 export const HERO = {
   badge: 'Aides & primes',

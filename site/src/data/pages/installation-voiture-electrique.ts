@@ -1,10 +1,20 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.19 — « Voiture électrique » (`/installation/voiture-electrique`).
  * Module : `FigureModule` (famille E). ⚠️ Schéma de flux non livré
  * (`2.19-voiture-electrique-module.jpg`).
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Recharger sa voiture électrique en solaire | Belgreen',
+  description:
+    'Recharger en journée, c’est consommer sa propre production au lieu de l’injecter à bas prix. Dimensionnement, borne, carport et limites de la recharge nocturne.',
+};
 
 export const HERO = {
   badge: 'Installation',

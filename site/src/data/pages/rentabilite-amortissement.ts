@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 import { POWER_DEFAULT } from '../../scripts/powerEstimate';
 import {
   HORIZON_YEARS,
@@ -35,6 +36,22 @@ export const BREAK_EVEN = breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) 
 
 /** Le meilleur cas régional, à forte autoconsommation — la borne basse du hero. */
 const BEST_CASE = paybackYear(POWER_DEFAULT, { region: 'bruxelles', rate: 0.7 });
+
+/**
+ * Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build.
+ *
+ * ⚠️ LA DESCRIPTION NE PROMET AUCUN DÉLAI. C'est délibéré, et c'est le sujet même
+ * de la réécriture du 2026-08-18 : les pages concurrentes belges annoncent toutes
+ * « 6 à 9 ans » ou « 7 à 10 ans », le modèle de ce site calcule une Wallonie
+ * jamais amortie sur son horizon de `HORIZON_YEARS` à autoconsommation standard.
+ * Écrire un chiffre ici pour s'aligner sur la concurrence serait promettre dans
+ * Google l'inverse de ce que la page démontre trois lignes plus bas.
+ */
+export const SEO: PageSeo = {
+  title: 'Amortissement des panneaux solaires en Belgique | Belgreen',
+  description:
+    'En combien d’années une installation solaire est-elle remboursée ? Le calcul région par région, sans la moyenne qui ne correspond à personne.',
+};
 
 export const HERO = {
   badge: 'Rentabilité & Prix',

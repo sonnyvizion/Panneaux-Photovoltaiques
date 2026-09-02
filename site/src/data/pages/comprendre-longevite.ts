@@ -1,13 +1,30 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.7 — « Longévité » (`/comprendre/longevite`).
  * Module : aucun.
  */
 
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * ⚠️ Le H1 disait « combien de temps dure une installation solaire », qui ne
+ * contient pas l'expression réellement tapée : « durée de vie des panneaux
+ * solaires ». Le titre, la description et le H1 la portent maintenant tous les
+ * trois, et la fourchette 25-30 ans occupe la place que Google donnerait de
+ * toute façon au suffixe de marque.
+ */
+export const SEO: PageSeo = {
+  title: 'Durée de vie des panneaux solaires : 25 à 30 ans | Belgreen',
+  description:
+    'Un panneau produit 25 à 30 ans en perdant environ 0,5 % de rendement par an ; l’onduleur tient 10 à 15 ans. La durée de vie, composant par composant.',
+};
+
 export const HERO = {
   badge: 'Comprendre',
-  title: "Combien de temps dure une installation solaire ?",
+  title: "Quelle est la durée de vie des panneaux solaires ?",
   answer:
     "Un panneau solaire a une durée de vie de 25 à 30 ans, avec une dégradation progressive et lente de sa capacité de production — environ 0,5 % par an. L’onduleur, lui, dure généralement moins longtemps : 10 à 15 ans.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
@@ -32,7 +49,7 @@ export const FIGURES: Figure[] = [
 ];
 
 export const FACTS: Fact[] = [
-  { title: "Encore 80 % après 25 ans", text: "Un panneau ne s’arrête pas : il continue à produire à rendement réduit, souvent bien au-delà de sa durée de vie officielle." },
+  { title: "80 %, c’est le plancher garanti", text: "Le seuil que le fabricant s’engage à tenir à 25 ans, pas la perte attendue : à 0,5 % par an, un panneau tourne encore autour de 88 % de sa puissance d’origine." },
   { title: "Le climat belge n’use pas plus", text: "Pluie, gel et vent font partie des contraintes standards pour lesquelles les panneaux sont conçus." },
 ];
 
@@ -44,8 +61,8 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: "Sur 25 ans, ça donne quoi financièrement ?",
-    text: "Avec un amortissement en 7 à 12 ans, l’installation produit gratuitement pendant 15 à 20 ans.",
-    cta: { label: "Voir les prix 2026", href: '/rentabilite-prix' },
+    text: "La durée de vie ne dit pas la rentabilité : celle-ci dépend de votre région et de votre autoconsommation.",
+    cta: { label: "Voir l’amortissement", href: '/rentabilite-prix/amortissement' },
   },
 ];
 
@@ -63,7 +80,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "Un panneau garde-t-il une valeur après 25 ans ?",
-    text: "Il continue à produire, à un rendement réduit — généralement encore plus de 80 % de sa capacité initiale. Beaucoup d’installations fonctionnent bien après leur durée de vie officielle.",
+    text: "Oui : il continue à produire. La dégradation réelle, de l’ordre de 0,5 % par an, laisse environ 88 % de la puissance d’origine au bout de 25 ans — les 80 % que promettent les garanties de performance sont un plancher, pas la valeur attendue.",
   },
   {
     title: "Le climat belge use-t-il plus vite les panneaux ?",
@@ -90,7 +107,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "La durée de vie justifie-t-elle l’investissement ?",
     answer:
-      "Avec un retour sur investissement de 7 à 12 ans et une durée de vie de 25 à 30 ans, l’installation produit « gratuitement » pendant 15 à 20 ans une fois amortie.",
+      "Une installation produit 25 à 30 ans, mais le délai de retour ne se résume pas à une moyenne : il dépend de votre région et de votre taux d’autoconsommation, et en Wallonie la charge prosumer l’allonge nettement. Le détail est en page Amortissement.",
   },
 ];
 

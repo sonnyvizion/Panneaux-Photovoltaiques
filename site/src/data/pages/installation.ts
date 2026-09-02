@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Pilier 2 — page « vue d'ensemble » d'Installation (`/installation`).
@@ -11,6 +12,19 @@ import type { FaqItem, SectionCopy } from '../content';
  * Gabarit allégé (hero → transition → inventaire → FAQ → pont), même raison que
  * `comprendre.ts`.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le mot-clé principal (« installation panneaux solaires ») ouvre le titre : la
+ * vue d'ensemble du pilier vise la requête générique, ses seize pages filles
+ * visant chacune une question précise.
+ */
+export const SEO: PageSeo = {
+  title: 'Installation de panneaux solaires en Belgique | Belgreen',
+  description:
+    'Toiture, nombre de panneaux, fixation, choix de l’installateur : les questions à trancher avant la pose, et le déroulé d’un chantier en une à deux journées.',
+};
 
 export const HERO = {
   badge: 'Installation',

@@ -1,5 +1,6 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
-import { GRID_CO2_G_PER_KWH, residentialRange, standardCase } from '../../scripts/co2';
+import { GRID_CO2_G_PER_KWH, residentialRange } from '../../scripts/co2';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.10 — « Impact écologique » (`/comprendre/impact-ecologique`).
@@ -26,6 +27,18 @@ import { GRID_CO2_G_PER_KWH, residentialRange, standardCase } from '../../script
  *
  * Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * ⚠️ La fourchette de CO₂ de la description est DÉRIVÉE de `scripts/co2.ts`,
+ * comme celle du hero : deux chiffres recopiés finiraient par diverger.
+ */
+export const SEO: PageSeo = {
+  title: 'Impact écologique des panneaux solaires | Belgreen',
+  description: `Comptez ${residentialRange()} de CO₂ évitée par an pour une installation résidentielle belge : un chiffre modeste, car le réseau belge est déjà peu carboné.`,
+};
 
 export const HERO = {
   badge: 'Comprendre',
@@ -56,7 +69,7 @@ export const FIGURES: Figure[] = [];
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Impact écologique',
   text:
-    'Le solaire réduit vraiment les émissions de CO₂, mais pas dans les proportions qu’on imagine parfois : le réseau belge étant déjà peu carboné, comptez 0,5 à 1,5 tonne évitée par an pour une installation résidentielle standard. La fabrication a elle-même un coût carbone, remboursé en 1 à 3 ans de production sur une durée de vie de 25 à 30 ans. Et en fin de vie, l’essentiel — verre, aluminium, silicium — reste recyclable.',
+    `Le solaire réduit vraiment les émissions de CO₂, mais pas dans les proportions qu’on imagine parfois : le réseau belge étant déjà peu carboné, comptez ${residentialRange()} évitée par an pour une installation résidentielle standard. La fabrication a elle-même un coût carbone, remboursé en 1 à 3 ans de production sur une durée de vie de 25 à 30 ans. Et en fin de vie, l’essentiel — verre, aluminium, silicium — reste recyclable.`,
   imageAlt:
     'Maison en brique dont le toit porte des panneaux solaires, vue depuis un jardin planté de haies et d’arbustes',
 };

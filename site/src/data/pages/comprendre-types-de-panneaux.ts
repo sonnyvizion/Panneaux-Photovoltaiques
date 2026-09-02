@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.2 — « Types de panneaux » (`/comprendre/types-de-panneaux`).
@@ -14,6 +15,20 @@ import type { Bridge, FaqItem, Fact, SectionCopy, TopicCard } from '../content';
  * Module : `TopicCards` en quatre colonnes (famille F). Le composant existait,
  * seule la borne de `columns` a été élargie à 4.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * Le H1 énumère les quatre technologies ; le titre, lui, doit tenir en
+ * 60 caractères et prend donc l'ombrelle réellement tapée, « types de panneaux
+ * solaires », suivie de la question qui décide (« lequel choisir »).
+ */
+export const SEO: PageSeo = {
+  title: 'Types de panneaux solaires : lequel choisir ? | Belgreen',
+  description:
+    'Monocristallin, polycristallin, bifacial, amorphe : comparez les quatre technologies et voyez laquelle tient sur une toiture belge, surface à l’appui.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

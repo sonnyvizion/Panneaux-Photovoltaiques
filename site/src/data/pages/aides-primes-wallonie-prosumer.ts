@@ -6,7 +6,9 @@ import type {
   SectionCopy,
   TopicCard,
 } from '../content';
+import type { PageSeo } from '../seo';
 import { PROSUMER_DEFAULT, PROSUMER_RATE, yearlyCost } from '../../scripts/calculators/prosumer';
+import { SELF_CONSUMPTION_RATE } from '../../scripts/savings';
 import { formatEuro } from '../../scripts/format';
 
 /**
@@ -43,6 +45,26 @@ import { formatEuro } from '../../scripts/format';
  *     règle d'or (la boucle contenu ↔ contenu) : une page qui explique une
  *     CHARGE doit dire où lire ce qu'elle change sur la rentabilité.
  */
+
+/* Le taux d'autoconsommation vient de `savings.ts` : la page « Aides Wallonie »
+   affiche le même, une seule source le porte. */
+const percent = (ratio: number) =>
+  new Intl.NumberFormat('fr-BE', { maximumFractionDigits: 2 }).format(ratio * 100) + ' %';
+
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * ⚠️ Le montant de la description est DÉRIVÉ du modèle, jamais recopié : c'est
+ * le même chiffre que le module et que la réponse-clé, et une révision du
+ * coefficient CWaPE le corrigera aux trois endroits à la fois.
+ */
+export const SEO: PageSeo = {
+  title: 'Tarif prosumer Wallonie 2026 : calcul et montant | Belgreen',
+  description: `Environ ${PROSUMER_RATE} €/kWc par an, soit ${formatEuro(
+    Math.round(yearlyCost(PROSUMER_DEFAULT)),
+  )} pour ${PROSUMER_DEFAULT} kWc. Calculez ce que le tarif prosumer coûte vraiment selon votre puissance installée.`,
+};
 
 export const HERO = {
   badge: 'Aides & Primes',
@@ -93,7 +115,7 @@ export const FIGURES: Figure[] = [
   },
   {
     label: 'Autoconsommation retenue',
-    value: '37,76 %',
+    value: percent(SELF_CONSUMPTION_RATE),
     note: 'moyenne appliquée au calcul',
     tone: 'grey',
   },

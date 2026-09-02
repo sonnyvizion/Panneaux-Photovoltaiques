@@ -1,4 +1,5 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.9 — « Maintenance & nettoyage » (`/comprendre/maintenance`).
@@ -7,6 +8,19 @@ import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, T
  * `/comprendre/maintenance`. On suit le code, comme pour les autres écarts.
  * Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * La requête tapée est « entretien des panneaux solaires », pas
+ * « maintenance » — le slug reste `maintenance`, le titre suit l'usage.
+ */
+export const SEO: PageSeo = {
+  title: 'Entretien des panneaux solaires : que faire ? | Belgreen',
+  description:
+    'Pas de pièce mobile et la pluie belge fait l’essentiel : un contrôle visuel une à deux fois par an suffit. Ce qu’il faut surveiller, et quand intervenir.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

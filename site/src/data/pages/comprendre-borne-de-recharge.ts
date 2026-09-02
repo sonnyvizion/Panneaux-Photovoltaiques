@@ -1,4 +1,5 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.6 — « Borne de recharge » (`/comprendre/borne-de-recharge`).
@@ -11,6 +12,19 @@ import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, T
  * n'existe pas : dans le code c'est `/installation/voiture-electrique`.
  *
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * La page ne dispute pas « recharger sa voiture avec ses panneaux » à
+ * `/installation/voiture-electrique` : elle vise l'équipement, la borne.
+ */
+export const SEO: PageSeo = {
+  title: 'Borne de recharge et panneaux solaires | Belgreen',
+  description:
+    'Une borne recharge votre voiture bien plus vite qu’une prise, et certains modèles suivent la production du toit. Ce qu’elle apporte, ce qu’elle exige.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

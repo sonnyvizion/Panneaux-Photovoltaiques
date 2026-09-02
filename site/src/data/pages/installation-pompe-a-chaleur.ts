@@ -1,10 +1,20 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.18 — « Pompe à chaleur » (`/installation/pompe-a-chaleur`).
  * Module : `FigureModule` (famille E). ⚠️ Schéma de flux non livré
  * (`2.18-pompe-a-chaleur-module.jpg`) — la légende porte l'explication.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneaux solaires et pompe à chaleur | Belgreen',
+  description:
+    'Coupler une pompe à chaleur à vos panneaux fait grimper l’autoconsommation : l’électricité produite chauffe la maison au lieu de partir au réseau à bas prix.',
+};
 
 export const HERO = {
   badge: 'Installation',

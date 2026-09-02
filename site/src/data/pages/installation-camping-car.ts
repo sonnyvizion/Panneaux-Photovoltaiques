@@ -1,4 +1,6 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
+import { POWER_MIN } from '../../scripts/powerEstimate';
 
 /**
  * Page 2.15 — « Camping-car » (`/installation/camping-car`).
@@ -14,6 +16,15 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * n'a été inventée non plus : les pages qui auraient du sens ici (batterie
  * domestique) ne sont pas publiées.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneau solaire pour camping-car : le guide | Belgreen',
+  description:
+    'Basse tension 12 V, batterie embarquée, aucun raccordement au réseau : le solaire de camping-car n’a presque rien de commun avec une installation résidentielle.',
+};
 
 export const HERO = {
   badge: 'Installation',
@@ -73,7 +84,9 @@ export const STACKED_IMAGE = 'camping-car-liste.jpg';
 export const FACTS: Fact[] = [
   {
     title: 'Des puissances sans commune mesure',
-    text: 'De 100 à 400 Wc selon l’usage, là où une installation résidentielle démarre à 3 000 Wc.',
+    /* Le point de comparaison est la borne basse du curseur résidentiel du
+       site (`POWER_MIN`), pas un « 3 000 Wc » recopié à côté. */
+    text: `De 100 à 400 Wc selon l’usage, là où une installation résidentielle démarre à ${POWER_MIN * 1000} Wc.`,
   },
   {
     title: 'Aucune démarche',

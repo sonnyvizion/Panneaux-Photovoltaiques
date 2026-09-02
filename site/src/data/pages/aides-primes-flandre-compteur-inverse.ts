@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, ToggleState, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Fin du compteur inversé en Flandre »
@@ -15,6 +16,13 @@ import type { Bridge, FaqItem, Fact, Figure, SectionCopy, ToggleState, TopicCard
  * payé 3 à 5 ct »), et une règle de calcul se lit. L'illustration pourra venir
  * s'ajouter au composant quand elle existera.
  */
+
+/** Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build. */
+export const SEO: PageSeo = {
+  title: 'Fin du compteur qui tourne à l’envers en Flandre | Belgreen',
+  description:
+    'Depuis 2021, la Flandre est passée au tarif d’injection et au compteur digital Fluvius. Ce qui change sur votre facture, avant comme après 2021.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',

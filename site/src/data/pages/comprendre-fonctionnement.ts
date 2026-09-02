@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, FlowStep, PhotoCard, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.1 — « Fonctionnement des panneaux » (`/comprendre/fonctionnement`).
@@ -14,6 +15,19 @@ import type { Bridge, Fact, FaqItem, Figure, FlowStep, PhotoCard, SectionCopy, T
  *
  *
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * « Comment fonctionne un panneau solaire » est la requête telle qu'elle se
+ * tape — le H1 la porte déjà mot pour mot, le titre la reprend sans la diluer.
+ */
+export const SEO: PageSeo = {
+  title: 'Comment fonctionne un panneau solaire ? | Belgreen',
+  description:
+    'La lumière frappe le silicium, un électron se libère, l’onduleur convertit : suivez le trajet de l’électricité, du photon à votre prise de courant.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

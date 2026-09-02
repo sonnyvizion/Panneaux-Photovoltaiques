@@ -29,7 +29,7 @@ const TOPIC_ICONS = [Users, Bolt, FileCertificate, Cash];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
-<BaseLayout title="Panneaux solaires en copropriété : comment ça se décide | Belgreen" transparentHeader>
+<BaseLayout transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <FigureModule title={MODULE.title} caption={MODULE.caption} bridgeLabel={MODULE.bridgeLabel} cta={MODULE.cta} image={moduleImage} imageAlt={MODULE.imageAlt} />

@@ -31,7 +31,7 @@ const TOPIC_ICONS = [Scale, ReceiptOff, Progress, Ban];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
-<BaseLayout title="Fin du compteur qui tourne à l'envers en Flandre | Belgreen" transparentHeader>
+<BaseLayout transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <StateToggle

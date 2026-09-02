@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.9 — « Toit plat » (`/installation/toit-plat`).
@@ -7,6 +8,15 @@ import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../c
  * cahier n'est pas livrée (`2.9-toit-plat-module.jpg`) — la photo du hero sert
  * de fond, la légende porte l'explication.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneaux solaires sur toit plat : le guide | Belgreen',
+  description:
+    'Sur un toit plat, les panneaux reposent sur des châssis inclinés lestés de blocs de béton, sans percer l’étanchéité. Structure, espacement et densité réelle.',
+};
 
 export const HERO = {
   badge: 'Installation',

@@ -1,4 +1,6 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
+import { M2_PER_PANEL, POWER_DEFAULT, estimate } from '../../scripts/powerEstimate';
 
 /**
  * Page 2.4 — « Dimensions » (`/installation/dimensions`).
@@ -11,11 +13,33 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * texte, ce qui suffit à la faire comprendre.
  */
 
+/**
+ * L'installation de référence, celle que toute la page prend en exemple.
+ *
+ * ⚠️ SON NOMBRE DE PANNEAUX NE S'ÉCRIT PAS : il sort de `powerEstimate.ts`,
+ * comme sur la page prix. Le « 14 panneaux » qui traversait cette page était
+ * recopié à la main — il tombait juste, mais il n'aurait pas survécu à un
+ * changement de `WC_PER_PANEL`, et la surface annoncée juste après aurait
+ * continué de le suivre.
+ */
+const mid = estimate(POWER_DEFAULT);
+const midSurface = mid.panels * M2_PER_PANEL;
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * « Dimensions panneau solaire » ouvre le titre ; « surface » capte la seconde
+ * intention, celle du visiteur qui mesure sa toiture.
+ */
+export const SEO: PageSeo = {
+  title: 'Dimensions d’un panneau solaire et surface | Belgreen',
+  description: `Un panneau solaire mesure 1,7 à 1,9 m sur 1 à 1,13 m, soit environ ${M2_PER_PANEL} m². Calculez la surface de toiture nécessaire à votre installation, obstacles déduits.`,
+};
+
 export const HERO = {
   badge: 'Installation',
   title: 'Quelles dimensions pour une installation solaire ?',
-  answer:
-    'Un panneau solaire standard mesure environ 1,7 à 1,9 m de long sur 1 à 1,13 m de large, soit environ 1,9 à 2 m² par panneau. Une installation de 14 panneaux nécessite donc environ 27 à 30 m² de toiture.',
+  answer: `Un panneau solaire standard mesure environ 1,7 à 1,9 m de long sur 1 à 1,13 m de large, soit environ ${M2_PER_PANEL} m² par panneau. Une installation de ${mid.panels} panneaux nécessite donc environ ${midSurface} m² de toiture.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Vue rapprochée de panneaux solaires alignés sur une toiture',
 } as const;
@@ -26,9 +50,8 @@ export const LEAD = {
 } as const;
 
 export const MODULE = {
-  title: 'Ce que 30 m² représentent',
-  caption:
-    'Une installation de 14 panneaux occupe environ 27 à 30 m² — l’équivalent d’une grande pièce à vivre, posée sur un pan de toiture. Ce n’est pas la surface totale du toit qui compte, mais la surface utile une fois retirés cheminée, fenêtres de toit et zones d’ombre.',
+  title: `Ce que ${midSurface} m² représentent`,
+  caption: `Une installation de ${mid.panels} panneaux occupe environ ${midSurface} m² — l’équivalent d’une grande pièce à vivre, posée sur un pan de toiture. Ce n’est pas la surface totale du toit qui compte, mais la surface utile une fois retirés cheminée, fenêtres de toit et zones d’ombre.`,
   bridgeLabel: 'Ce qui tient sur votre toiture',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -47,13 +70,13 @@ export const FIGURES: Figure[] = [];
 export const STACKED_ROWS: StackedRow[] = [
   {
     eyebrow: 'PANNEAU',
-    title: 'Environ 2 m² par unité',
+    title: `Environ ${M2_PER_PANEL} m² par unité`,
     text:
       'Un panneau standard mesure 1,7 à 1,9 m de long sur 1 à 1,13 m de large.',
   },
   {
     eyebrow: 'SURFACE',
-    title: '27 à 30 m² pour 14 panneaux',
+    title: `${midSurface} m² pour ${mid.panels} panneaux`,
     text:
       'L’équivalent d’une grande pièce à vivre, posée sur un pan de toiture.',
   },

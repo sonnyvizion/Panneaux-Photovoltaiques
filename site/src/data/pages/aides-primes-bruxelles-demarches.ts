@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy, TimelineStep } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Démarches administratives Bruxelles »
@@ -16,11 +17,25 @@ import type { FaqItem, SectionCopy, TimelineStep } from '../content';
  * doit rester visuellement distincte, pas noyée dans le texte.
  */
 
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * La requête tapée mêle les deux organismes (« Sibelga Brugel certificats
+ * verts ») : c'est précisément la confusion que la page lève, et la description
+ * les nomme donc tous les deux.
+ */
+export const SEO: PageSeo = {
+  title: 'Démarches certificats verts Bruxelles 2026 | Belgreen',
+  description:
+    'Certification RESCert, encodage des index sur Green Meter Sibelga, octroi par Brugel : les trois étapes pour toucher vos certificats verts, dans l’ordre.',
+};
+
 export const HERO = {
   badge: 'Aides & Primes',
   title: 'Les démarches pour toucher vos certificats verts à Bruxelles',
   answer:
-    "À Bruxelles, il faut faire certifier l'installation (RESCert), déclarer les index de production via la plateforme Sibelga, puis demander les certificats verts auprès de Brugel — jusqu'à 4 fois par an, pour un délai d'obtention d'environ 2 mois.",
+    "À Bruxelles, il faut faire certifier l'installation (RESCert), encoder les index de production sur la plateforme Green Meter de Sibelga, puis laisser Brugel octroyer les certificats verts — quatre fois par an, dans les quinze jours calendrier suivant l'encodage.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Toitures bruxelloises en enfilade avec panneaux solaires dans un quartier résidentiel dense',
 } as const;
@@ -48,7 +63,7 @@ export const TIMELINE: TimelineStep[] = [
   },
   {
     title: 'Demande auprès de Brugel',
-    text: 'Sur base des index transmis par Sibelga, Brugel calcule et délivre vos certificats verts. La demande peut se faire jusqu’à 4 fois par an, pour un délai d’obtention d’environ 2 mois.',
+    text: 'Sur base des index transmis par Sibelga, Brugel calcule et octroie vos certificats verts. Sibelga vous invite à encoder vos index quatre fois par an — en mars, juin, septembre et décembre — et l’octroi suit dans les quinze jours calendrier.',
   },
 ];
 
@@ -62,12 +77,12 @@ export const FAQ: FaqItem[] = [
   {
     question: 'À quelle fréquence dois-je déclarer ma production ?',
     answer:
-      'Vous pouvez demander vos certificats verts jusqu’à 4 fois par an. Il n’y a pas d’obligation de le faire à chaque fois : plus vous espacez les demandes, moins vous avez de démarches, mais plus vous attendez avant de percevoir vos certificats.',
+      'Quatre fois par an : Sibelga vous envoie un e-mail en mars, juin, septembre et décembre pour vous inviter à encoder votre index sur Green Meter. Rien ne vous oblige à répondre à chaque fois — espacer les encodages allège les démarches, mais retarde d’autant l’octroi de vos certificats.',
   },
   {
     question: 'Combien de temps avant de recevoir mes premiers certificats ?',
     answer:
-      'Comptez environ 2 mois entre votre demande auprès de Brugel et l’obtention effective des certificats verts.',
+      'Une fois votre index encodé sur Green Meter, Brugel octroie les certificats dans les quinze jours calendrier — souvent le lundi suivant, Sibelga lui transmettant les données chaque semaine. Le délai réel se joue donc avant : sur la certification de l’installation, pas sur l’octroi.',
   },
   {
     question: 'Dois-je gérer moi-même le raccordement Sibelga, ou votre équipe s’en occupe ?',

@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 import {
   CERT_DEFAULT,
   CERT_YEARS,
@@ -23,11 +24,34 @@ import { formatEuro } from '../../scripts/format';
  * Brugel, le prix du certificat suit un marché. Rien ici n'est un revenu garanti.
  */
 
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * ⚠️ Le revenu de la description est DÉRIVÉ de `greenCert.ts`, comme le module
+ * et la FAQ. C'est ce qui a permis de voir que la réponse-clé annonçait
+ * « 700 à 1 000 €/an » là où le modèle calcule ~712 € — voir `HERO` ci-dessous.
+ */
+export const SEO: PageSeo = {
+  title: 'Certificats verts Bruxelles 2026 : le calcul | Belgreen',
+  description: `Bruxelles est la seule région belge à en octroyer encore : environ ${formatEuro(
+    Math.round(yearlyRevenue(CERT_DEFAULT)),
+  )} par an pendant ${CERT_YEARS} ans pour ${CERT_DEFAULT} kWc. Calculez votre cas.`,
+};
+
+/**
+ * ⚠️ RÉPONSE-CLÉ CORRIGÉE (vérifiée le 2026-09-02). Elle annonçait « environ
+ * 700 à 1 000 €/an » : impossible avec les constantes de `greenCert.ts`, qui
+ * plafonnent à ~832 €/an même en revendant le certificat au haut de la
+ * fourchette (4,5 MWh × 2,055 CV/MWh × 90 €). Le montant est donc dérivé du
+ * modèle, comme partout ailleurs sur la page.
+ */
 export const HERO = {
   badge: 'Aides & Primes',
   title: 'Certificats verts à Bruxelles : le seul vrai avantage financier en Belgique',
-  answer:
-    'Bruxelles est la seule région belge à encore octroyer des certificats verts pour les nouvelles installations photovoltaïques — environ 700 à 1 000 €/an de revenus sur 10 ans pour une installation de 5 kWc.',
+  answer: `Bruxelles est la seule région belge à encore octroyer des certificats verts pour les nouvelles installations photovoltaïques — environ ${formatEuro(
+    Math.round(yearlyRevenue(CERT_DEFAULT)),
+  )} de revenus par an pendant ${CERT_YEARS} ans pour une installation de ${CERT_DEFAULT} kWc.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Toitures bruxelloises en enfilade, plusieurs équipées de panneaux photovoltaïques',
@@ -136,7 +160,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Comment vendre mes certificats verts, à qui ?',
     answer:
-      'Vous les revendez à un fournisseur d’électricité, qui a l’obligation légale d’en détenir un certain quota. Le prix de rachat varie selon le marché, entre 65 et 90 € par certificat.',
+      'Vous les revendez à un fournisseur d’électricité, qui a l’obligation légale d’en détenir un certain quota. Le prix suit le marché : comptez entre 65 € — le rachat garanti par Elia, qui sert de plancher — et environ 90 € par certificat.',
     open: true,
   },
   {

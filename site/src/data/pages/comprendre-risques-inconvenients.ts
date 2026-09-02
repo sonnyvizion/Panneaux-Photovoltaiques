@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.11 — « Risques & inconvénients » (`/comprendre/risques-inconvenients`).
@@ -12,6 +13,19 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  *
  * Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * « Inconvénients des panneaux solaires » est la requête, et elle est posée
+ * par quelqu'un qui cherche à être détrompé ou confirmé — pas à être vendu.
+ */
+export const SEO: PageSeo = {
+  title: 'Inconvénients des panneaux solaires : à savoir | Belgreen',
+  description:
+    'Coût initial, production dépendante de la météo, toitures incompatibles, rentabilité inégale selon la région : les limites du solaire, sans les édulcorer.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

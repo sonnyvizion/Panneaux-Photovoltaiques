@@ -1,4 +1,5 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.17 — « Installer soi-même » (`/installation/soi-meme`).
@@ -17,6 +18,19 @@ import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, T
  * propose donc « Nous contacter » et NON une promesse de service : le texte
  * demande d'en parler, il n'affirme pas que le service existe.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * La description tranche dès la première phrase (« légal… mais ») : c'est une
+ * requête à réponse binaire, et une description qui la fait attendre perd le
+ * clic au profit du résultat qui répond tout de suite.
+ */
+export const SEO: PageSeo = {
+  title: 'Installer ses panneaux solaires soi-même | Belgreen',
+  description:
+    'Poser ses panneaux soi-même est légal en Belgique, mais raccordement et contrôle RGIE exigent un professionnel. La limite exacte, et ce que ça fait gagner.',
+};
 
 export const HERO = {
   badge: 'Installation',

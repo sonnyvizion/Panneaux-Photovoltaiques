@@ -1,9 +1,19 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.11 — « Abri de jardin » (`/installation/abri-de-jardin`).
  * ⚠️ SANS MODULE, sur prescription du cahier.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneaux solaires sur un abri de jardin | Belgreen',
+  description:
+    'Un abri de jardin accueille 4 à 6 panneaux au maximum : une solution d’appoint quand la toiture principale est saturée. Permis, raccordement et limites réelles.',
+};
 
 export const HERO = {
   badge: 'Installation',

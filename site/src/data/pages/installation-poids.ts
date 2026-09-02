@@ -1,4 +1,6 @@
 import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
+import { POWER_DEFAULT, estimate } from '../../scripts/powerEstimate';
 
 /**
  * Page 2.5 — « Poids » (`/installation/poids`).
@@ -7,11 +9,36 @@ import type { Bridge, EssentialsEditorial, Fact, FaqItem, Figure, SectionCopy, T
  * suffit »). Le gabarit passe du chapô à « L'essentiel ».
  */
 
+/**
+ * L'installation de référence de la page, et son poids.
+ *
+ * ⚠️ Le NOMBRE de panneaux vient de `powerEstimate.ts` ; seul le poids unitaire
+ * est écrit ici, faute de constante — c'est une caractéristique produit, pas un
+ * paramètre du modèle. ⚠️ À VALIDER PAR LE CLIENT sur les modules réellement
+ * posés (CLAUDE.md § « À compléter »).
+ */
+const PANEL_WEIGHT_MIN = 20;
+const PANEL_WEIGHT_MAX = 22;
+const mid = estimate(POWER_DEFAULT);
+const totalMin = mid.panels * PANEL_WEIGHT_MIN;
+const totalMax = mid.panels * PANEL_WEIGHT_MAX;
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * « Poids panneaux solaires toiture » est une requête d'INQUIÉTUDE : la
+ * description doit donc chiffrer ET rassurer, sinon elle ne se distingue pas
+ * des dix autres résultats.
+ */
+export const SEO: PageSeo = {
+  title: 'Poids des panneaux solaires sur la toiture | Belgreen',
+  description: `Un panneau solaire pèse ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg, soit ${totalMin} à ${totalMax} kg pour ${mid.panels} panneaux, répartis sur toute la toiture. Quand faut-il vraiment vérifier la charpente ?`,
+};
+
 export const HERO = {
   badge: 'Installation',
   title: 'Les panneaux solaires, quel poids sur ma toiture ?',
-  answer:
-    'Un panneau solaire pèse environ 20 à 22 kg. Pour une installation de 14 panneaux, le poids total avoisine 280 à 310 kg, réparti sur toute la toiture — largement dans la capacité de charge de la plupart des toitures belges.',
+  answer: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg. Pour une installation de ${mid.panels} panneaux, le poids total avoisine ${totalMin} à ${totalMax} kg, réparti sur toute la toiture — largement dans la capacité de charge de la plupart des toitures belges.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Charpente et toiture d’une maison belge vue de l’extérieur',
 } as const;
@@ -33,8 +60,7 @@ export const FIGURES: Figure[] = [];
 
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Poids',
-  text:
-    'Un panneau solaire pèse environ 20 à 22 kg, soit 280 à 310 kg pour une installation de 14 panneaux. Ce poids se répartit sur toute la surface du toit, jamais en un seul point — une charpente en bon état le supporte sans difficulté. Seules les toitures anciennes ou déjà fragilisées méritent une vérification préalable, généralement une simple inspection visuelle plutôt qu’une étude structurelle poussée.',
+  text: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg, soit ${totalMin} à ${totalMax} kg pour une installation de ${mid.panels} panneaux. Ce poids se répartit sur toute la surface du toit, jamais en un seul point — une charpente en bon état le supporte sans difficulté. Seules les toitures anciennes ou déjà fragilisées méritent une vérification préalable, généralement une simple inspection visuelle plutôt qu’une étude structurelle poussée.`,
 };
 
 /* Photo en cours de génération : emplacement nommé en attendant. */

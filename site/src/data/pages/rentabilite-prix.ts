@@ -6,6 +6,7 @@ import type {
   Figure,
   SectionCopy,
 } from '../content';
+import type { PageSeo } from '../seo';
 import { POWER_DEFAULT, POWER_MAX, POWER_MIN, estimate, formatEuro } from '../../scripts/powerEstimate';
 
 /**
@@ -28,6 +29,19 @@ import { POWER_DEFAULT, POWER_MAX, POWER_MIN, estimate, formatEuro } from '../..
 const low = estimate(POWER_MIN);
 const mid = estimate(POWER_DEFAULT);
 const high = estimate(POWER_MAX);
+
+/**
+ * Ce que Google lit en tête de page — voir `data/seo.ts` pour les contraintes,
+ * que le build vérifie.
+ *
+ * Le mot-clé principal (« prix panneaux solaires Belgique ») ouvre le titre :
+ * c'est la requête la plus disputée du sujet, et le suffixe de marque n'y sert
+ * qu'à occuper la place que Google lui donnerait de toute façon.
+ */
+export const SEO: PageSeo = {
+  title: 'Prix des panneaux solaires en Belgique 2026 | Belgreen',
+  description: `Une installation photovoltaïque coûte entre ${formatEuro(low.price)} et ${formatEuro(high.price)} TVAC en Belgique. Prix par kWc, TVA à 6 % et rentabilité réelle, région par région.`,
+};
 
 export const HERO = {
   badge: 'Rentabilité & Prix',
@@ -104,7 +118,13 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: "Sur combien d'années ce prix se rembourse-t-il ?",
-    text: 'Le retour sur investissement se situe généralement entre 7 et 12 ans, pour une installation qui dure 25 à 30 ans.',
+    /* ⚠️ Annonçait « entre 7 et 12 ans » — dernier résidu de la moyenne retirée
+       le 2026-08-18. Elle reposait sur la compensation du surplus wallon,
+       supprimée en 2024, et ne décrivait aucune région réelle. La page 3.3 que
+       ce pont vise calcule des délais allant du simple au « jamais amorti »
+       selon la région ET le taux d'autoconsommation : promettre un chiffre ici
+       ferait mentir la page d'arrivée. */
+    text: 'Cela dépend beaucoup moins du prix que de votre région et de la part que vous consommez vous-même — les écarts vont du simple au « jamais amorti ».',
     cta: { label: 'Voir le calcul de rentabilité', href: '/rentabilite-prix/amortissement' },
   },
 ];

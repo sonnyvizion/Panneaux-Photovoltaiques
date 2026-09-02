@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.14 — « Balcon » (`/installation/balcon`).
@@ -19,11 +20,28 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * (`2.14-balcon-module.jpg`). La photo du hero sert de fond.
  */
 
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * La description porte les DEUX conditions qui décident de la légalité — la
+ * date et le plafond de 800 W. C'est ce que le visiteur cherche à vérifier
+ * avant d'acheter, et ce qu'aucun titre seul ne peut dire.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneau solaire de balcon : le kit plug & play | Belgreen',
+  description:
+    'Légal en Belgique depuis avril 2025 : un kit plug & play homologué, dans la limite de 800 W, s’installe sans professionnel — même quand vous êtes locataire.',
+};
+
 export const HERO = {
   badge: 'Installation',
   title: 'Panneau solaire de balcon : le kit plug & play',
+  /* ⚠️ Le plafond de 800 W et l'homologation Synergrid C10/26 sont les DEUX
+     conditions qui rendent le kit légal ; la réponse-clé les annonçait sans
+     elles, ce qui laissait croire que n'importe quel kit convient. Vérifié le
+     2026-09-02 (Test-Achats, Synergrid, Batibouw). */
   answer:
-    'Depuis avril 2025, les panneaux solaires « plug & play » homologués sont légaux en Belgique pour une installation sur balcon, sans professionnel — une solution accessible aux locataires.',
+    'Depuis avril 2025, un kit solaire « plug & play » homologué Synergrid peut être installé sur un balcon sans professionnel en Belgique, dans la limite de 800 W cumulés par ménage — une solution accessible aux locataires.',
   /* ⚠️ Pas « Estimer mon installation » : le lecteur type de cette page est
      locataire, et ce CTA lui promettrait un service qui ne le concerne pas. */
   cta: { label: 'Voir les conditions', href: '#essentiel-balcon' },
@@ -134,13 +152,18 @@ export const FAQ: FaqItem[] = [
     open: true,
   },
   {
-    question: 'Le kit plug & play est-il rentable ?',
+    question: 'Un kit solaire de balcon est-il rentable ?',
     answer:
-      'À petite échelle oui, mais le retour sur investissement est plus long qu’avec une installation complète.',
+      'À petite échelle oui, mais le retour sur investissement est plus long qu’avec une installation complète : le plafond de 800 W limite mécaniquement ce que le kit peut couvrir de votre consommation.',
   },
   {
-    question: 'Dois-je déclarer mon kit même s’il est petit ?',
-    answer: 'Oui, la déclaration au GRD est obligatoire quelle que soit la puissance.',
+    /* ⚠️ La réponse précédente généralisait l'obligation à toute la Belgique.
+       Elle vaut en Wallonie (notification à ORES, RESA, AIEG ou AIESH selon la
+       commune) ; la Flandre n'impose pas d'enregistrement pour un kit dans les
+       limites prévues. Vérifié le 2026-09-02. */
+    question: 'Dois-je déclarer mon kit de balcon au gestionnaire de réseau ?',
+    answer:
+      'En Wallonie, oui : chaque appareil se notifie à votre gestionnaire de réseau, quelle que soit sa puissance. La Flandre ne l’impose pas pour un kit qui reste dans les limites prévues. Dans les deux cas, le kit doit être homologué et rester sous les 800 W cumulés.',
   },
   {
     question: 'Que se passe-t-il si je déménage ?',

@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.13 — « Carport » (`/installation/carport`).
@@ -7,6 +8,15 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * photo simple » — la photo du hero convient telle quelle, c'est le seul module
  * de ce pilier dont l'image livrée correspond vraiment à ce qui est décrit.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ */
+export const SEO: PageSeo = {
+  title: 'Carport solaire : abri et production combinés | Belgreen',
+  description:
+    'Le carport solaire abrite la voiture et produit l’électricité qui la recharge, avec une orientation libre. Structure, permis d’urbanisme et surcoût à prévoir.',
+};
 
 export const HERO = {
   badge: 'Installation',

@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.7 — « Fixation » (`/installation/fixation`).
@@ -12,6 +13,18 @@ import type { Bridge, FaqItem, Fact, SectionCopy, TopicCard } from '../content';
  * grilles identiques à un écran d'intervalle. Les trois familles de fixation
  * sont donc le module, et « L'essentiel » ne garde que ce qui les nuance.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le titre annonce le dénombrement (« les 3 systèmes ») : c'est ce qui
+ * distingue ce résultat des pages produit qui rankent sur la même requête.
+ */
+export const SEO: PageSeo = {
+  title: 'Fixation des panneaux solaires : les 3 systèmes | Belgreen',
+  description:
+    'Rails sur crochets en toit incliné, lestage sans perçage en toit plat, intégration en BIPV : les trois façons de fixer des panneaux, et ce que subit la toiture.',
+};
 
 export const HERO = {
   badge: 'Installation',

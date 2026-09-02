@@ -26,7 +26,7 @@ const TOPIC_ICONS = [Certificate, AlertTriangle, Home];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
-<BaseLayout title="RESCert PV Bruxelles 2026 : l'obligation expliquée | Belgreen" transparentHeader>
+<BaseLayout transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} panel={PANEL} />

@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy, TimelineStep } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Démarches administratives Flandre »
@@ -14,6 +15,13 @@ import type { FaqItem, SectionCopy, TimelineStep } from '../content';
  * propres restent en néerlandais — « Mijn Fluvius » est le nom du service, pas
  * une expression à traduire.
  */
+
+/** Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build. */
+export const SEO: PageSeo = {
+  title: 'Démarches panneaux solaires en Flandre | Belgreen',
+  description:
+    'Compteur digital Fluvius, déclaration sur Mijn Fluvius, délais à prévoir : le parcours complet pour raccorder vos panneaux solaires en Flandre.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',

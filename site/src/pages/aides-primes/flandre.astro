@@ -32,7 +32,7 @@ const TOPIC_ICONS = [CertificateOff, BuildingBank, Clock, TrendingDown];
 const topics = TOPICS.map((topic, index) => ({ ...topic, icon: TOPIC_ICONS[index] }));
 ---
 
-<BaseLayout title="Aides panneaux solaires Flandre 2026 : le guide complet | Belgreen" transparentHeader>
+<BaseLayout transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <OptionComparator

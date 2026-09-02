@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Pilier 4 — page « vue d'ensemble » de Comprendre (`/comprendre`).
@@ -15,6 +16,20 @@ import type { FaqItem, SectionCopy } from '../content';
  * ⚠️ LES CARTES NE SONT PAS ÉCRITES ICI. Elles sont dérivées de `site.ts` et
  * des `HERO.title` des pages visées — voir `data/pillarIndex.ts`.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * Le hub ne dispute pas « comment fonctionne un panneau solaire » à la page
+ * Fonctionnement : il vise la requête d'entrée du sujet, « comprendre les
+ * panneaux solaires », et laisse chaque page cadette prendre la sienne.
+ */
+export const SEO: PageSeo = {
+  title: 'Comprendre les panneaux solaires en Belgique | Belgreen',
+  description:
+    'Fonctionnement, types de panneaux, onduleur, batterie, durée de vie, entretien : onze pages pour comprendre le photovoltaïque belge sans jargon.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

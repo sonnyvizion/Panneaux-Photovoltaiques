@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.4 — « Batterie domestique » (`/comprendre/batterie`).
@@ -8,6 +9,19 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * footer utilisent. On suit le code, comme pour les autres écarts d'URL entre le
  * cahier et le sitemap. Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * « Batterie domestique » se cherche presque toujours accompagné de la
+ * question de la rentabilité — c'est elle qui ouvre le titre après le sujet.
+ */
+export const SEO: PageSeo = {
+  title: 'Batterie domestique solaire : est-ce rentable ? | Belgreen',
+  description:
+    'Une batterie garde pour le soir le surplus produit en journée. Ce qu’elle change à votre autoconsommation, ce qu’elle impose, et quand elle se justifie.',
+};
 
 export const HERO = {
   badge: 'Comprendre',
@@ -117,7 +131,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Puis-je installer ma batterie moi-même ?",
     answer:
-      "Non, l’auto-installation de batterie est interdite depuis la révision RGIE 2025 — un professionnel est obligatoire.",
+      "Non pour une batterie fixe : depuis la révision RGIE de 2025, elle doit être posée par un installateur agréé. Seules les batteries plug-in certifiées Synergrid (C10/26) échappent à cette règle.",
   },
 ];
 

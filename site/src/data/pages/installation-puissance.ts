@@ -1,4 +1,6 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
+import { POWER_DEFAULT, POWER_MAX, POWER_MIN } from '../../scripts/powerEstimate';
 
 /**
  * Page 2.3 — « Puissance (kWc) » (`/installation/puissance`).
@@ -12,11 +14,23 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * `2.3-puissance-module.jpg`.
  */
 
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le mot-clé principal est l'unité elle-même (« kWc ») : c'est ce que le
+ * visiteur tape quand il tombe dessus sur un devis. La fourchette résidentielle
+ * vient de `powerEstimate.ts`, jamais recopiée.
+ */
+export const SEO: PageSeo = {
+  title: 'kWc : définition et puissance à installer | Belgreen',
+  description:
+    'Le kWc mesure la puissance maximale d’une installation, le kWh l’énergie qu’elle produit vraiment. La différence entre les deux, et la puissance à viser.',
+};
+
 export const HERO = {
   badge: 'Installation',
   title: 'Le kWc, qu’est-ce que c’est et de combien ai-je besoin ?',
-  answer:
-    'Le kWc (kilowatt-crête) mesure la puissance maximale qu’une installation peut produire dans des conditions standardisées de test. Les installations résidentielles belges vont généralement de 3 à 10 kWc.',
+  answer: `Le kWc (kilowatt-crête) mesure la puissance maximale qu’une installation peut produire dans des conditions standardisées de test. Les installations résidentielles belges vont généralement de ${POWER_MIN} à ${POWER_MAX} kWc.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Panneaux solaires en toiture sous un ciel dégagé',
 } as const;
@@ -61,7 +75,9 @@ export const STACKED_ROWS: StackedRow[] = [
   },
   {
     eyebrow: 'GAMME',
-    title: 'Entre 3 et 10 kWc en résidentiel',
+    /* Les bornes du curseur de la page prix, jamais recopiées : le jour où le
+       résidentiel s'étend, la phrase suit. */
+    title: `Entre ${POWER_MIN} et ${POWER_MAX} kWc en résidentiel`,
     text:
       'La quasi-totalité des installations belges se situent dans cette fourchette, selon la taille du foyer et sa consommation.',
   },
@@ -124,9 +140,11 @@ export const FAQ: FaqItem[] = [
     open: true,
   },
   {
-    question: 'Comment savoir combien de kWc me faut-il ?',
-    answer:
-      'Ça dépend de votre consommation, de la surface de toiture disponible et de son orientation. C’est précisément ce que le simulateur calcule.',
+    /* Reformulée sur la longue traîne réellement tapée (« de combien de kWc
+       ai-je besoin »), et la réponse donne la fourchette avant de renvoyer au
+       simulateur : une réponse qui ne fait que déléguer ne gagne aucun extrait. */
+    question: 'De combien de kWc ai-je besoin pour ma maison ?',
+    answer: `La plupart des maisons belges se situent entre ${POWER_MIN} et ${POWER_MAX} kWc, ${POWER_DEFAULT} kWc étant le cas le plus courant. Le chiffre exact dépend de votre consommation annuelle, de la surface de toiture disponible et de son orientation.`,
   },
   {
     question: 'Une installation plus puissante coûte-t-elle proportionnellement plus cher ?',

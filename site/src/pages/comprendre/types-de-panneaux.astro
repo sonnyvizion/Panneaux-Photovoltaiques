@@ -29,7 +29,7 @@ import {
  */
 ---
 
-<BaseLayout title="Types de panneaux solaires : mono, poly, bifacial, amorphe | Belgreen" transparentHeader>
+<BaseLayout transparentHeader>
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} note={LEAD.note} />
   <TopicCards overline={TYPES_COPY.overline} title={TYPES_COPY.title} intro={TYPES_COPY.intro} items={TYPES.map((t, i) => ({ ...t, icon: [Star, Coin, FlipVertical, DeviceMobile][i] }))} columns={4} tone="grey" />

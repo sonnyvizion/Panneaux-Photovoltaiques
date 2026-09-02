@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Installation en copropriété »
@@ -15,6 +16,13 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard 
  * Q/R courtes ». Les réponses ont donc été condensées depuis « Creuser le
  * sujet » — c'est une reformulation, pas du contenu neuf.
  */
+
+/** Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build. */
+export const SEO: PageSeo = {
+  title: 'Panneaux solaires en copropriété : les règles | Belgreen',
+  description:
+    'La toiture est une partie commune : l’installation passe par l’assemblée générale. Majorités requises, montages possibles et financement.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',

@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 import { POWER_DEFAULT } from '../../scripts/powerEstimate';
 import {
   ELECTRICITY_PRICE,
@@ -31,6 +32,13 @@ const BREAK_EVEN = breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '45 
  * ⚠️ Le taux de référence n'est pas une donnée neuve : c'est le 37,76 % de la
  * CWaPE, déjà utilisé pour le tarif prosumer wallon. Le cahier le dit lui-même.
  */
+
+/** Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build. */
+export const SEO: PageSeo = {
+  title: 'Autoconsommation solaire en Belgique | Belgreen',
+  description:
+    'Autoconsommer 30 % de sa production ou 60 % ne donne pas la même rentabilité. Ce qui fait bouger le taux, et comment le monter sans batterie.',
+};
 
 export const HERO = {
   badge: 'Rentabilité & Prix',

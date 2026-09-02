@@ -53,7 +53,7 @@ export interface PageSeo {
  */
 export const MANUAL_SEO: Readonly<Record<string, PageSeo>> = {
   '/': {
-    title: 'Panneaux solaires en Belgique : estimation gratuite | Belgreen',
+    title: 'Panneaux solaires Belgique : estimation gratuite | Belgreen',
     description:
       'Production, coût, économies et primes de votre région : estimez votre installation photovoltaïque en quelques questions, sans laisser vos coordonnées.',
   },

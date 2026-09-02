@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.10 — « Intégré toiture (BIPV) » (`/installation/bipv`).
@@ -12,6 +13,19 @@ import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../c
  * n'est avancé sur la page. À reprendre quand le coefficient sera fourni —
  * c'est une correction du simulateur, pas de cette page.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le sigle ouvre le titre mais ne le porte pas seul : « panneaux solaires
+ * intégrés à la toiture » est la formulation réellement tapée, « BIPV » celle
+ * qui figure sur les devis.
+ */
+export const SEO: PageSeo = {
+  title: 'BIPV : panneaux solaires intégrés à la toiture | Belgreen',
+  description:
+    'Le BIPV remplace le revêtement de toiture au lieu de s’y poser : aspect affleurant apprécié en zone protégée, rendement comparable, mais surcoût à anticiper.',
+};
 
 export const HERO = {
   badge: 'Installation',

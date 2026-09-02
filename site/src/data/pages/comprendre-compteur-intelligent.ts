@@ -1,9 +1,23 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.5 — « Compteur intelligent » (`/comprendre/compteur-intelligent`).
  * Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * Le compteur ne se cherche pas seul : la requête associe presque toujours
+ * « compteur intelligent » et « panneaux solaires ».
+ */
+export const SEO: PageSeo = {
+  title: 'Compteur intelligent et panneaux solaires | Belgreen',
+  description:
+    'Le compteur communicant sépare ce que vous consommez de ce que vous injectez : sans lui, ni tarif prosumer, ni tarif d’injection, ni certificats verts.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

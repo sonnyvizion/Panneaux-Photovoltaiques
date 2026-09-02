@@ -1,5 +1,8 @@
 import { POWER_DEFAULT } from '../../scripts/powerEstimate';
-import { breakEvenLabel } from '../../scripts/savings';
+import { SELF_CONSUMPTION_RATE, breakEvenLabel } from '../../scripts/savings';
+import { PROSUMER_RATE } from '../../scripts/calculators/prosumer';
+import { LOAN_MAX } from '../../scripts/loanEstimate';
+import { formatEuro } from '../../scripts/format';
 import type {
   Bridge,
   FaqItem,
@@ -8,6 +11,7 @@ import type {
   SectionCopy,
   TopicCard,
 } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Aides & primes — Wallonie » (`/aides-primes/wallonie`).
@@ -43,6 +47,26 @@ import type {
  *    haut. Compter une charge parmi les leviers aurait contredit l'argument
  *    d'honnêteté sur lequel toute la page repose.
  */
+
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * ⚠️ LE TITRE GARDE LE MOT « PRIME » AU SINGULIER-REQUÊTE alors que la page
+ * répond « il n'y en a plus ». C'est voulu : « prime panneaux solaires Wallonie
+ * 2026 » est la requête réellement tapée, et la description dit tout de suite
+ * qu'il n'y a plus de prime directe. Écrire le titre sur « aides indirectes »
+ * ferait rater la requête à la page qui y répond le mieux.
+ */
+export const SEO: PageSeo = {
+  title: 'Prime panneaux solaires Wallonie 2026 | Belgreen',
+  description: `Plus de prime directe ni de certificats verts en Wallonie. Ce qui reste en 2026 : le Rénoprêt à 0 % jusqu'à ${formatEuro(LOAN_MAX)}, la TVA à 6 % et le tarif prosumer.`,
+};
+
+/* Le taux d'autoconsommation vient de `savings.ts` : deux pages du site
+   l'affichent (ici et « Tarif prosumer »), une seule source le porte. */
+const percent = (ratio: number) =>
+  new Intl.NumberFormat('fr-BE', { maximumFractionDigits: 2 }).format(ratio * 100) + ' %';
 
 export const HERO = {
   badge: 'Aides & Primes',
@@ -91,14 +115,14 @@ export const ESSENTIALS_COPY: SectionCopy = {
  * plus.
  */
 export const FIGURES: Figure[] = [
-  { label: 'Rénoprêt', value: 'Taux 0 %', note: "jusqu'à 60 000 €", tone: 'lime' },
+  { label: 'Rénoprêt', value: 'Taux 0 %', note: `jusqu'à ${formatEuro(LOAN_MAX)}`, tone: 'lime' },
   { label: 'TVA réduite', value: '6 %', note: 'logement de plus de 10 ans', tone: 'grey' },
   /* ⚠️ L'unité est descendue dans la note, elle n'est pas dans la valeur.
      `.essentials__value` est en `nowrap` (choix documenté du composant : trois
      montants de front à toutes les tailles) et « ~87 €/kWc » débordait de sa
      carte à 390px, là où « ~87 € » tient. La maquette écrit « €/kWe » — c'est
      le kilowatt-CRÊTE, kWc, comme partout ailleurs sur le site. */
-  { label: 'Tarif prosumer', value: '~87 €', note: 'par kWc, à votre charge', tone: 'ink' },
+  { label: 'Tarif prosumer', value: `~${PROSUMER_RATE} €`, note: 'par kWc, à votre charge', tone: 'ink' },
 ];
 
 export const FACTS: Fact[] = [
@@ -150,7 +174,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Le Rénoprêt en détail',
-    text: "Prêt à taux 0 %, jusqu'à 60 000 €, remboursable sur 30 ans maximum via la SWCS.",
+    text: `Prêt à taux 0 %, jusqu'à ${formatEuro(LOAN_MAX)}, remboursable sur 30 ans maximum via la SWCS.`,
     href: '/aides-primes/wallonie/renopret',
   },
   {
@@ -160,7 +184,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Comment est calculé le tarif prosumer',
-    text: "Basé sur la puissance installée et un taux d'autoconsommation moyen de 37,76 %.",
+    text: `Basé sur la puissance installée et un taux d'autoconsommation moyen de ${percent(SELF_CONSUMPTION_RATE)}.`,
     href: '/aides-primes/wallonie/prosumer',
   },
   {
@@ -179,7 +203,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Comment fonctionne le Rénoprêt à taux 0 % ?',
     answer:
-      "C'est un prêt sans intérêt accordé par la SWCS, jusqu'à 60 000 €, sur 30 ans maximum, sous conditions de revenus et d'âge du logement. Sans intérêts, le total remboursé est exactement le montant emprunté : seule la durée fait varier la mensualité.",
+      `C'est un prêt sans intérêt accordé par la SWCS, jusqu'à ${formatEuro(LOAN_MAX)}, sur 30 ans maximum, sous conditions de revenus et d'âge du logement. Sans intérêts, le total remboursé est exactement le montant emprunté : seule la durée fait varier la mensualité.`,
     open: true,
   },
   {

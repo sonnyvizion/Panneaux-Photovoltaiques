@@ -1,4 +1,5 @@
 import type { Bridge, EssentialsPanel, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Réglementation bruxelloise 2026 »
@@ -18,6 +19,20 @@ import type { Bridge, EssentialsPanel, Fact, FaqItem, Figure, SectionCopy, Topic
  *
  * ⚠️ Chiffres et dates À VALIDER PAR LE CLIENT (CLAUDE.md § « À compléter »).
  */
+
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * Le sigle RESCert EST la requête : personne ne cherche « réglementation
+ * photovoltaïque bruxelloise », tout le monde cherche « RESCert » depuis
+ * l'entrée en vigueur du 1ᵉʳ janvier 2026. Le titre l'ouvre donc.
+ */
+export const SEO: PageSeo = {
+  title: 'RESCert PV à Bruxelles : l’obligation 2026 | Belgreen',
+  description:
+    'Depuis le 1er janvier 2026, une installation de 5 kWc ou moins doit être posée par un installateur certifié RESCert pour donner droit aux certificats verts.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',
@@ -104,20 +119,36 @@ export const TOPICS: TopicCard[] = [
   },
 ];
 
+/**
+ * ⚠️ RÉPONSES RALLONGÉES (2026-09-02). Les trois du cahier tenaient en une
+ * ligne — « Aucun accès aux certificats verts. » Ce bloc porte le balisage
+ * `FAQPage` : une réponse de six mots n'est jamais retenue en résultat enrichi,
+ * et ne répond à aucune requête longue traîne. La quatrième entrée est neuve :
+ * la révision des coefficients du 1ᵉʳ avril 2026 est la question que se posent
+ * ceux qui hésitent à faire poser leur installation cette année (vérifié le
+ * 2026-09-02 sur environnement.brussels).
+ */
 export const FAQ: FaqItem[] = [
   {
     question: 'Qu’est-ce qu’un installateur certifié RESCert exactement ?',
     answer:
-      'Un professionnel accrédité pour délivrer le certificat de conformité obligatoire depuis 2026.',
+      'Un professionnel qui a suivi la formation RESCert PV et obtenu l’accréditation reconnue par la Région bruxelloise. C’est lui — et lui seul — qui peut délivrer le certificat de conformité devenu obligatoire au 1ᵉʳ janvier 2026 pour les installations de 5 kWc ou moins.',
     open: true,
   },
   {
-    question: 'Que risque-t-on sans RESCert ?',
-    answer: 'Aucun accès aux certificats verts.',
+    question: 'Que risque-t-on si l’installateur n’est pas certifié RESCert ?',
+    answer:
+      'Votre installation fonctionnera normalement, mais elle ne pourra pas être certifiée par Brugel : aucun certificat vert ne vous sera octroyé, et c’est l’essentiel de l’avantage financier bruxellois qui disparaît. Vérifiez la certification AVANT de signer, pas après la pose.',
   },
   {
-    question: 'Ça change quoi pour les installations existantes ?',
-    answer: 'Rien rétroactivement, la règle vise les nouvelles installations.',
+    question: 'Le RESCert est-il obligatoire pour les installations déjà en service ?',
+    answer:
+      'Non. La règle n’est pas rétroactive : elle ne vise que les installations mises en service à partir du 1ᵉʳ janvier 2026. Si la vôtre tourne déjà, vos certificats verts continuent d’être octroyés sans changement.',
+  },
+  {
+    question: 'Les coefficients de certificats verts baissent-ils en 2026 ?',
+    answer:
+      'Pas pour les petites installations. Depuis le 1ᵉʳ avril 2026, Brugel applique de nouveaux coefficients aux installations mises en service après cette date : rien ne change jusqu’à 5 kWc, mais l’octroi baisse au-delà, et il disparaît complètement au-dessus de 100 kWc.',
   },
 ];
 

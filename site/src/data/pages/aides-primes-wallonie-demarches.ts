@@ -1,4 +1,5 @@
 import type { FaqItem, SectionCopy, TimelineStep } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Démarches administratives Wallonie »
@@ -12,6 +13,20 @@ import type { FaqItem, SectionCopy, TimelineStep } from '../content';
  * Texte repris tel quel du cahier. Seul l'`imageAlt` est rédigé ici : le cahier
  * ne décrit pas les photos.
  */
+
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * La requête réelle est « déclaration panneaux solaires Wallonie » / « démarches
+ * panneaux solaires Wallonie » : c'est le délai de 45 jours que les gens
+ * cherchent, et la description le donne d'emblée plutôt que de le promettre.
+ */
+export const SEO: PageSeo = {
+  title: 'Démarches panneaux solaires Wallonie 2026 | Belgreen',
+  description:
+    'Compteur communicant, contrôle RGIE, déclaration au gestionnaire de réseau dans les 45 jours : les quatre étapes obligatoires, dans l’ordre, expliquées.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',

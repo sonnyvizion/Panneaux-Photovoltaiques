@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, ToggleState, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.6 — « Ombrage » (`/installation/ombrage`).
@@ -11,6 +12,18 @@ import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, ToggleStat
  * TECHNOLOGIES : onduleur string contre micro-onduleurs. C'est la même
  * mécanique de substitution, et c'est ce que le module sert à montrer.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le titre reprend la question réellement tapée (« quel impact »), pas la
+ * métaphore de l'effet domino, qui n'est le mot-clé de personne.
+ */
+export const SEO: PageSeo = {
+  title: 'Ombrage et panneaux solaires : quel impact ? | Belgreen',
+  description:
+    'Une ombre sur un seul panneau fait chuter toute une chaîne en onduleur string. Comment micro-onduleurs et optimiseurs limitent la perte, panneau par panneau.',
+};
 
 export const HERO = {
   badge: 'Installation',

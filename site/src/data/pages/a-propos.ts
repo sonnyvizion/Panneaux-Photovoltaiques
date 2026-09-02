@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, SectionCopy, StackedRow, TimelineStep, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 import { PHONE } from '../site';
 
 /**
@@ -27,6 +28,20 @@ import { PHONE } from '../site';
  * l'absence d'intermédiaire, la certification Enphase. Un chiffre inventé sur la
  * page qui vend la confiance serait le pire endroit du site où en mettre un.
  */
+
+/**
+ * Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build.
+ *
+ * ⚠️ La requête visée n'est pas « qui sommes-nous » : c'est
+ * « installateur panneaux solaires Bruxelles », une requête locale à intention
+ * commerciale. La description porte donc l'argument anti-intermédiaire, qui est
+ * ce qui distingue cette page des annuaires qui occupent la même requête.
+ */
+export const SEO: PageSeo = {
+  title: 'Installateur panneaux solaires à Bruxelles | Belgreen',
+  description:
+    'Une équipe d’installateurs certifiés Enphase basée à Bruxelles. Vous parlez directement à ceux qui monteront sur votre toit : aucun intermédiaire.',
+};
 
 export const HERO = {
   badge: 'L’équipe',

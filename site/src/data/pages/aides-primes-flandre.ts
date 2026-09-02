@@ -1,4 +1,5 @@
 import type { Bridge, ComparatorRow, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Flandre : quelles aides en 2026 »
@@ -18,6 +19,20 @@ import type { Bridge, ComparatorRow, FaqItem, Fact, Figure, SectionCopy, TopicCa
  * « une charge » / « un revenu » — ce qui règle la confusion que l'infobulle
  * devait lever. À reprendre quand le système d'infobulles sera posé.
  */
+
+/**
+ * Ce que Google lit en tête de page — contraintes vérifiées au build
+ * (`data/seo.ts`).
+ *
+ * Même parti pris que la page Wallonie : le titre garde « prime », la requête
+ * réellement tapée, et la description répond aussitôt qu'il n'y en a plus.
+ * Aucune autre page du site ne vise « prime panneaux solaires Flandre ».
+ */
+export const SEO: PageSeo = {
+  title: 'Prime panneaux solaires Flandre 2026 | Belgreen',
+  description:
+    'Plus aucune prime directe en Flandre depuis fin 2023. Ce qui reste en 2026 : le tarif d’injection de 3 à 5 ct/kWh, la TVA à 6 % et le prêt Mijn VerbouwLening.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',
@@ -93,10 +108,17 @@ export const FIGURES: Figure[] = [
     note: 'logement > 10 ans, installateur agréé, usage privé',
     tone: 'grey',
   },
+  /* ⚠️ DATE CORRIGÉE le 2026-09-02, source Fluvius (« Retroactieve
+     investeringspremie zonnepanelen »). La carte annonçait « Fin 2026 » pour
+     les installations « d'avant le 31/12/2023 » : les deux étaient faux. La
+     prime devait être demandée au plus tard le 31 décembre 2025, et ne visait
+     que les installations mises en service entre 2006 et 2020. Elle n'est donc
+     plus un dispositif ouvert — la carte le dit, plutôt que de laisser un
+     visiteur croire qu'il lui reste quelques mois pour la demander. */
   {
     label: 'Prime de compensation',
-    value: 'Fin 2026',
-    note: 'uniquement pour les installations d’avant le 31/12/2023',
+    value: 'Terminée',
+    note: 'demandes closes depuis le 31/12/2025',
     tone: 'ink',
   },
 ];
@@ -144,8 +166,8 @@ export const TOPICS: TopicCard[] = [
     text: 'La Région flamande propose ce prêt pour financer la rénovation énergétique, panneaux solaires inclus. Conditions et taux varient selon votre profil — c’est un dispositif à vérifier au cas par cas, pas un montant fixe comme le Rénoprêt wallon.',
   },
   {
-    title: 'Ma prime de compensation, jusqu’à quand ?',
-    text: 'Jusqu’à fin 2026, et uniquement si votre installation date d’avant le 31 décembre 2023. Passé cette échéance, elle disparaît complètement — y compris pour ceux qui en bénéficiaient encore.',
+    title: 'Et la prime de compensation, peut-on encore la demander ?',
+    text: 'Non. Cette prime d’investissement rétroactive indemnisait la perte du compteur qui tourne à l’envers pour les installations mises en service entre 2006 et 2020 ; les demandes se sont closes le 31 décembre 2025. Elle n’a rien à voir avec une prime à l’installation, et rien ne l’a remplacée.',
   },
   {
     title: 'Le tarif d’injection va-t-il encore baisser ?',
@@ -157,7 +179,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Existe-t-il encore une prime en Flandre en 2026 ?',
     answer:
-      'Non, la prime Fluvius s’est arrêtée fin 2023. Seule une prime de compensation subsiste, réservée aux installations antérieures à cette date, jusqu’à fin 2026.',
+      'Non. La prime Fluvius s’est arrêtée fin 2023, et la prime d’investissement rétroactive qui indemnisait la perte du compteur inversé n’est plus demandable depuis le 31 décembre 2025. Il ne reste aucune prime directe en Flandre : l’avantage passe par le tarif d’injection, la TVA à 6 % et le prêt Mijn VerbouwLening.',
     open: true,
   },
   {
@@ -166,8 +188,9 @@ export const FAQ: FaqItem[] = [
       'Chaque kWh que vous injectez sur le réseau (l’électricité produite que vous ne consommez pas vous-même) est valorisé à un tarif de 3 à 5 centimes, contrairement à avant où le compteur tournait à l’envers et compensait à l’euro près.',
   },
   {
-    question: 'Mon installation date d’avant 2024, ai-je encore droit à la prime de compensation ?',
-    answer: 'Oui, jusqu’à fin 2026. Vérifiez votre éligibilité exacte auprès de Fluvius.',
+    question: 'Mon installation est ancienne, ai-je encore droit à la prime de compensation ?',
+    answer:
+      'Non, plus aujourd’hui. La prime d’investissement rétroactive visait les installations mises en service entre 2006 et 2020, et devait être demandée au plus tard le 31 décembre 2025. Si vous pensez avoir un dossier en cours, c’est auprès de Fluvius qu’il se vérifie.',
   },
   {
     question: 'Pourquoi la Flandre n’a-t-elle pas de certificats verts comme Bruxelles ?',

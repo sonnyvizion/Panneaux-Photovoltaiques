@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.3 — « Onduleur & micro-onduleur » (`/comprendre/onduleur`).
@@ -9,6 +10,19 @@ import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard }
  *
  * Module : aucun, sur prescription du cahier.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * La requête utile n'est pas « onduleur » seul mais l'arbitrage qui amène
+ * dessus : string ou micro-onduleur.
+ */
+export const SEO: PageSeo = {
+  title: 'Onduleur solaire : string ou micro-onduleur ? | Belgreen',
+  description:
+    'L’onduleur rend utilisable le courant des panneaux. Rôle, durée de vie de 10 à 15 ans, et le seul cas où le micro-onduleur vaut son surcoût : l’ombrage.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

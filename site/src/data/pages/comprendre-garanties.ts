@@ -1,4 +1,5 @@
 import type { Bridge, EssentialsTable, Fact, FaqItem, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 4.8 — « Garanties (Belgique) » (`/comprendre/garanties`).
@@ -26,6 +27,20 @@ import type { Bridge, EssentialsTable, Fact, FaqItem, Figure, SectionCopy, Topic
  *
  * Module : aucun.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées au build, voir
+ * `data/seo.ts`.
+ *
+ * « Garantie panneaux solaires » avec la mention Belgique : c'est la
+ * distinction garantie légale / garanties commerciales qui fait la valeur de la
+ * page, et elle est nationale.
+ */
+export const SEO: PageSeo = {
+  title: 'Garanties des panneaux solaires en Belgique | Belgreen',
+  description:
+    'Garantie produit, garantie de performance, garantie légale : trois couvertures qu’on confond souvent. Voyez laquelle couvre quoi, et pour combien de temps.',
+};
 
 export const HERO = {
   badge: 'Comprendre',

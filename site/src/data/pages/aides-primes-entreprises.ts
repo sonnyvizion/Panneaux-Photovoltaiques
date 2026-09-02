@@ -1,4 +1,5 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Contenu de la page « Guide entreprises » (`/aides-primes/entreprises`).
@@ -28,6 +29,19 @@ import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../c
  * tant que le contenu fiscal n'est pas validé.
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
+/**
+ * Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build.
+ *
+ * ⚠️ La page est `hidden` dans `site.ts` tant que son volet fiscal n’est pas
+ * validé. Elle porte quand même ses métadonnées : `hidden` la retire des
+ * inventaires de navigation, pas du site — elle reste liable et indexable.
+ */
+export const SEO: PageSeo = {
+  title: 'Panneaux solaires pour entreprises en Belgique | Belgreen',
+  description:
+    'Pas de TVA à 6 %, un amortissement fiscal distinct : ce qui change quand l’installation solaire est portée par une société plutôt qu’un ménage.',
+};
 
 export const HERO = {
   badge: 'Aides & Primes',

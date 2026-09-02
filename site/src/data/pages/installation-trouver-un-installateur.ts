@@ -1,4 +1,5 @@
 import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard } from '../content';
+import type { PageSeo } from '../seo';
 
 /**
  * Page 2.16 — « Trouver un pro » (`/installation/trouver-un-installateur`).
@@ -12,6 +13,18 @@ import type { Bridge, Fact, FaqItem, Figure, PhotoCard, SectionCopy, TopicCard }
  * par un autre ». Les critères sont donc écrits sans mention de Belgreen ; c'est
  * le pont final, et lui seul, qui fait le lien.
  */
+
+/**
+ * Ce que Google lit en tête de page — bornes vérifiées par `data/seo.ts`.
+ *
+ * Le titre part du SUBSTANTIF cherché (« installateur panneaux solaires ») et
+ * non du verbe « trouver » : c'est la requête, le verbe n'est que l'intention.
+ */
+export const SEO: PageSeo = {
+  title: 'Installateur panneaux solaires : bien choisir | Belgreen',
+  description:
+    'Certification RESCert, responsabilité civile professionnelle, devis détaillé avant travaux : les critères pour trier les installateurs, et les signaux d’alarme.',
+};
 
 export const HERO = {
   badge: 'Installation',
