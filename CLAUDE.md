@@ -74,6 +74,13 @@ Boucle visée : lire → simuler → un doute → lire le point précis → repr
   décrit encore l'ancien fonctionnement et reste à mettre à jour. Le compte rendu a
   été refondu (fond uni, une seule action adaptée au résultat) et la courbe
   d'amortissement est passée dans le rapport PDF. Voir `etat.md`.
+- **Métadonnées SEO** : le `<title>` et la `<meta description>` d'une page vivent
+  dans son fichier de données (`export const SEO`), **jamais en littéral dans le
+  `.astro`** — ils préfigurent le modèle Sanity comme les blocs de `content.ts`.
+  Le build échoue si un titre dépasse 60 caractères ou si une description sort de
+  110–160. `NOINDEX_PATHS` (`data/seo.ts`) est le **registre unique** : il
+  commande la balise `robots` ET le sitemap. Méthode reproductible dans le skill
+  projet `.claude/skills/audit-seo-page/`.
 - **Pages de contenu** : « colonne vertébrale visible, profondeur repliée ».
   Réponse visible → module → essentiel → accordéons → FAQ balisée → ponts. Voir `docs/pages-contenu.md`.
 - **Interactivité & perf** : catalogue de briques réutilisables + règles Core Web Vitals.
@@ -91,6 +98,8 @@ Boucle visée : lire → simuler → un doute → lire le point précis → repr
 | `docs/pages-contenu.md` | Gabarit de page, accordéons/SEO, modélisation Sanity, query params |
 | `docs/nav.md` | Header, méga-menus, mobile, sélecteur région → query params |
 | `docs/interactivite-seo.md` | Briques interactives + Core Web Vitals |
+| `docs/seo-mots-cles.md` | **Carte des mots-clés** des 46 pages : titres retenus, secondaires, longue traîne |
+| `docs/verification-factuelle.md` | **Chiffres du site vs sources** — écarts, corrections faites, arbitrages client en attente |
 | `docs/design.md` | Direction visuelle (stub — phase design à venir) |
 
 ## Informations client (partiellement connues)

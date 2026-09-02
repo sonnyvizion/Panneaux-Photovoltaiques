@@ -1,6 +1,6 @@
 # État du projet — où on en est
 
-> Mis à jour le 28 août 2026. Décrit **l'état réel du code**, pas l'intention.
+> Mis à jour le 2 septembre 2026. Décrit **l'état réel du code**, pas l'intention.
 > Quand ce document et un doc de cadrage divergent, c'est le code qui a raison —
 > et la divergence est signalée ici.
 
@@ -322,6 +322,55 @@ Détail complet dans `site/README.md`.
 
 ---
 
+## La passe SEO (2 septembre 2026)
+
+Le site n'émettait **aucune** métadonnée au-delà du `<title>` : pas de
+description, pas de canonique, pas d'Open Graph, pas de sitemap. Sur ~50 pages
+indexables, c'était le premier poste de perte — et il contredisait la règle d'or
+n°1 (« perf & SEO d'abord »).
+
+**Ce qui est en place**
+
+- `data/seo.ts` — les métadonnées viennent du fichier de données de la page
+  (`export const SEO`), plus du littéral recopié dans 56 `.astro`. Ces champs
+  **préfigurent le modèle Sanity**, comme les blocs de `content.ts`.
+- Un **garde-fou fait échouer le build** si une page n'a pas de métadonnées, si
+  un titre dépasse 60 caractères ou si une description sort de 110–160 — mêmes
+  bornes que ce que Google affiche. Même parti pris qu'`assertNoDrift`.
+- `NOINDEX_PATHS` — **registre unique** qui commande la balise `robots` ET le
+  sitemap. La prop `noindex` disparaît de huit pages. Un sitemap ne peut donc
+  plus déclarer une page interdite d'indexation : c'est impossible à écrire,
+  pas seulement interdit.
+- `sitemap.xml.ts` écrit à la main plutôt qu'avec `@astrojs/sitemap`, dont le
+  `filter` aurait imposé une seconde liste des pages en `noindex`.
+- `BaseLayout` émet description, canonique, Open Graph (image 1200×630 dérivée du
+  hero), Twitter Card, `Organization` et `BreadcrumbList` — ce dernier nommant
+  chaque maillon par le **H1 réel** de la page visée, comme `pillarIndex`.
+- Les 46 pages de contenu ont leur titre (≤ 60 car., douze dépassaient 70) et
+  leur description, adossés aux SERP belges.
+- `.claude/skills/audit-seo-page/` — la méthode, versionnée, pour que la passe
+  soit reproductible page par page.
+
+**Ce qui reste**
+
+- Le **vrai domaine** en `PUBLIC_SITE_URL` : canoniques et sitemap pointent
+  encore la démo.
+- Une **image sociale** 1200×630 : le hero de l'accueil sert de bouche-trou.
+- La recherche de mots-clés des piliers **Aides & primes** et **Installation**
+  n'a pas été restituée (agents interrompus) — les titres sont posés et vérifiés,
+  les secondaires et la longue traîne manquent. Voir `docs/seo-mots-cles.md`.
+- Les **FAQ** n'ont pas encore été reformulées sur la longue traîne.
+- `npm run check` existe mais **n'est pas branché sur le build** : `astro check`
+  n'avait jamais tourné et remonte **84 erreurs préexistantes** dans
+  `src/scripts/` (`searchOverlay.ts`, `simulatorWidget.ts`, imports inutilisés
+  des tests). Aucune ne vient de la couche SEO. Les brancher aurait bloqué les
+  déploiements derrière une dette sans rapport.
+
+**Vérification factuelle** — `docs/verification-factuelle.md` recense les écarts
+et ce qui attend un arbitrage client. Le plus lourd : le modèle calcule une
+Wallonie **jamais amortie sur 25 ans**, quand toutes les sources belges annoncent
+6 à 13 ans. Tant que ce n'est pas tranché, **aucune page ne promet de délai**.
+
 ## Ce qui bloque, et sur quoi
 
 ### Décisions client attendues
@@ -370,8 +419,11 @@ Tant qu'elles ne le sont pas, aucun de ces chiffres n'est un prix. »
   investissement en clair.
 - **`/simulateur` est en `noindex`** alors qu'`architecture.md` et `funnel.md`
   en font une cible SEO et une landing pour les pubs.
-- **`site:` n'est pas renseigné** dans `astro.config.mjs` — pas d'URLs
-  canoniques ni de sitemap tant que le domaine n'est pas connu.
+- ~~**`site:` n'est pas renseigné** dans `astro.config.mjs`~~ — **réglé le
+  2026-09-02.** `site` vient de `PUBLIC_SITE_URL`, avec la démo en valeur de
+  repli (même logique que `PUBLIC_INDEXABLE`). Canoniques, Open Graph et
+  `sitemap.xml` sont en place ; il reste à poser le **vrai domaine** en variable
+  d'environnement de production.
 - **Le parcours de questions n'a pas été retouché** : carrousel horizontal à
   hauteur fixe, trois indicateurs de progression concurrents qui se
   désynchronisent pendant le glissement. Problèmes réels, volontairement hors du

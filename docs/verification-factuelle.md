@@ -155,3 +155,70 @@ le client ne vend pas.
 | Adresse, entité juridique (Belgreen ou Belectric ?) | Idem |
 | Domaine de production | `PUBLIC_SITE_URL` retombe sur la démo : canoniques et sitemap pointent `belgreen-demo.pages.dev` |
 | Image sociale 1200×630 | Aperçus de partage : le hero de l'accueil sert de bouche-trou |
+
+---
+
+## 6. Arbitrages remontés par la passe éditoriale (pilier Comprendre)
+
+Corrections **déjà appliquées** dans cette passe, pour mémoire :
+
+| Page | Ce qui était écrit | Ce qui a été fait |
+|---|---|---|
+| `/comprendre/longevite` | « Encore 80 % après 25 ans » **et** « 0,5 % par an » | Distingués : 80 % est le **plancher de la garantie de performance**, 0,995²⁵ = **88 %** est la dégradation attendue |
+| `/comprendre/longevite` | H1 « Combien de temps dure une installation solaire ? » | Réécrit : il ne contenait pas « durée de vie », l'expression réellement tapée |
+| `/comprendre/batterie` | « Installation par un professionnel » posée comme **absolue** | Nuancé : vrai pour les batteries **fixes**, les plug-in certifiées Synergrid sont autorisées depuis avril 2025 |
+| `/comprendre/impact-ecologique` | « 0,5 à 1,5 tonne » écrit à la main | Passé en `residentialRange()`, comme le reste de la page |
+
+### ⚠️ Garantie produit annoncée à 10–15 ans — **sous le marché**
+
+`comprendre-garanties.ts` (tableau et FAQ) annonce une garantie produit de
+**10 à 15 ans**. Les fabricants et les sources belges situent le standard
+résidentiel à **20–25 ans**, avec une recommandation de « minimum 20 ans ».
+
+Le chiffre n'a pas été corrigé : c'est une donnée **commerciale**, qui dépend du
+fabricant réellement posé. Mais en l'état il **dessert le client** — un visiteur
+qui compare des devis y lira une garantie faible.
+
+> **Décision client** : donner la fourchette du fabricant réellement installé.
+> Elle règle les deux occurrences d'un coup.
+
+### ⚠️ Onduleur : la page contredit ce que le client vend
+
+Déjà signalé en §4. Rappel : `/comprendre/longevite` annonce 10–15 ans pour
+l'onduleur, alors que `/comprendre/onduleur` vend la certification Enphase, dont
+les micro-onduleurs sont garantis 25 ans. Le `FINAL_CTA` de cette page met en
+avant Enphase alors que le corps du texte dit que le micro-onduleur ne se
+justifie qu'en cas d'ombrage — **seul endroit du site où la ligne commerciale et
+la ligne éditoriale tirent en sens inverse.**
+
+### ⚠️ « Compteur intelligent gratuit » — vrai à moitié
+
+`/comprendre/compteur-intelligent` écrit « Gratuit, via votre GRD ». C'est exact
+pour un **remplacement standard**, faux pour une **demande anticipée** — facturée
+~100 € à Bruxelles et ~152 € en Wallonie. Or le visiteur qui a des panneaux et
+veut son compteur tout de suite est précisément dans le cas payant.
+
+Même page : l'obligation est présentée comme uniforme (« nécessaire pour toute
+installation »). Elle est acquise à Bruxelles pour tout producteur, mais en
+Wallonie le compteur ne devient obligatoire qu'au passage au régime proportionnel.
+
+### ⏳ `GRID_CO2_G_PER_KWH = 170` — source non datée
+
+`scripts/co2.ts` porte encore « source : Elia, [année] », non renseignée, alors
+que `simulateur.md` impose de citer source et année. À dater d'autant plus que le
+mix belge bouge avec la sortie du nucléaire. **Constante du modèle : signalée,
+pas touchée.**
+
+### Manques de contenu qui coûtent un featured snippet
+
+Pas des erreurs — des absences, à arbitrer selon la ligne « fourchettes, pas de
+faux précis ».
+
+| Page | Ce qui manque | Ce que le marché belge annonce |
+|---|---|---|
+| `/comprendre/risques-inconvenients` | Le **risque d'incendie**, question n°1 sur « risques panneaux solaires » | ~1 cas sur 10 000, surtout dus aux raccordements — argument direct pour l'installateur certifié |
+| `/comprendre/borne-de-recharge` | Le prix, alors que la FAQ ouvre sur « coûte-t-elle cher ? » et répond « ça varie » | 750 à 2 500 € installés |
+| `/comprendre/batterie` | Prix et délai de retour, sur la requête n°1 du sujet | 4 000 à 10 000 € TVAC pour 5–15 kWh, 8 à 14 ans |
+| `/comprendre/onduleur` | Le coût du remplacement à mi-vie, que la page demande deux fois de « budgétiser » | 500 à 2 000 € pour 3–9 kWc |
+| `/comprendre/types-de-panneaux` | Les rendements chiffrés | 16–24 % (mono) contre 14–18 % (poly) |
+| `/comprendre/maintenance` | La réserve géographique | 1 à 2 nettoyages/an en zone urbaine, industrielle ou côtière ; 3 à 10 % de perte si encrassé |
