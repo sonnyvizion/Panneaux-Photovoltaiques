@@ -5,12 +5,33 @@ import '@fontsource/inter/500.css';
 import '../styles/tokens.css';
 import '../styles/fonts.css';
 import '../styles/global.css';
+import { getImage } from 'astro:assets';
 import NavBar from '../components/NavBar.astro';
 import SearchOverlay from '../components/SearchOverlay.astro';
 import Footer from '../components/Footer.astro';
+import heroImage from '../assets/hero/hero.webp';
+import logo from '../assets/brand/Belgreen-logo.webp';
+import { breadcrumbFor, isNoindex, normalizePath, resolveSeo } from '../data/seo';
 
 interface Props {
-  title: string;
+  /**
+   * Titre de repli, pour une page qui n'a pas de métadonnées déclarées.
+   *
+   * ⚠️ N'EST PLUS LA SOURCE HABITUELLE. Le `<title>` d'une page de contenu vit
+   * dans son fichier de données (`data/pages/*.ts` → `SEO`) et se résout depuis
+   * l'URL. Cette prop ne sert qu'à `[...slug].astro`, qui fabrique des routes
+   * dont le titre n'existe qu'à la génération.
+   */
+  title?: string;
+  /** Description de repli, même usage que `title`. */
+  description?: string;
+  /**
+   * Force le `noindex` sur une page absente du registre.
+   *
+   * Le cas normal est déclaré dans `NOINDEX_PATHS` (`data/seo.ts`), qui sert à
+   * la fois la balise et le sitemap. Cette prop couvre les URL fabriquées à la
+   * volée, qu'aucun registre ne peut lister à l'avance.
+   */
   noindex?: boolean;
   /**
    * La page ouvre sur un hero photo, sur lequel la nav se pose en transparence.
@@ -30,7 +51,68 @@ interface Props {
   bare?: boolean;
 }
 
-const { title, noindex = false, transparentHeader = false, bare = false } = Astro.props;
+const {
+  title: titleProp,
+  description: descriptionProp,
+  noindex: noindexProp = false,
+  transparentHeader = false,
+  bare = false,
+} = Astro.props;
+
+/* `Astro.site` vient de `astro.config.mjs`. Sans lui, aucune URL absolue n'est
+   possible — donc ni canonique, ni `og:url`, ni image sociale. */
+const site = Astro.site!;
+const path = normalizePath(Astro.url.pathname);
+const canonical = new URL(path, site);
+
+const seo = resolveSeo(path);
+const title = seo?.title ?? titleProp ?? 'Belgreen';
+const description = seo?.description ?? descriptionProp;
+const noindex = noindexProp || isNoindex(path);
+const crumbs = breadcrumbFor(path);
+
+/* ⚠️ PROVISOIRE — image sociale du client à fournir (CLAUDE.md « À compléter »).
+   En attendant, le hero de l'accueil, redimensionné au format attendu par les
+   réseaux (1200×630) et converti en JPEG : plusieurs robots d'aperçu ignorent
+   encore le WebP, et une vignette absente vaut moins qu'une vignette générique.
+   Le fichier source fait 4608 px de large — le servir tel quel serait 600 ko
+   téléchargés pour une vignette. */
+const socialImage = await getImage({
+  src: heroImage,
+  width: 1200,
+  height: 630,
+  format: 'jpeg',
+});
+
+/**
+ * L'organisation, déclarée une fois pour tout le site.
+ *
+ * ⚠️ PAS DE `telephone` NI D'`address` TANT QU'ILS SONT DES PLACEHOLDERS.
+ * `site.ts` porte encore `+32 2 XXX XX XX`. Publier un faux numéro dans des
+ * données structurées est pire que n'en publier aucun : c'est exactement ce que
+ * Google recoupe avec les autres mentions de l'entreprise sur le web. Le jour où
+ * le vrai numéro arrive, `@type` passe à `LocalBusiness` et les deux champs
+ * entrent ici.
+ */
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Belgreen',
+  url: site.href,
+  logo: new URL(logo.src, site).href,
+  areaServed: { '@type': 'Country', name: 'Belgique' },
+};
+
+const breadcrumb = crumbs.length > 0 && {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: crumbs.map((crumb, index) => ({
+    '@type': 'ListItem',
+    position: index + 1,
+    name: crumb.name,
+    item: new URL(crumb.path, site).href,
+  })),
+};
 ---
 
 <html lang="fr">
@@ -41,6 +123,25 @@ const { title, noindex = false, transparentHeader = false, bare = false } = Astr
 		<meta name="generator" content={Astro.generator} />
 		{noindex && <meta name="robots" content="noindex, follow" />}
 		<title>{title}</title>
+		{description && <meta name="description" content={description} />}
+		{/* La canonique vaut aussi pour les pages en `noindex` : le simulateur et
+		    le rapport portent les réponses du visiteur en paramètres d'URL, ce qui
+		    fabrique autant de variantes de la même page. */}
+		<link rel="canonical" href={canonical.href} />
+		<meta property="og:type" content="website" />
+		<meta property="og:site_name" content="Belgreen" />
+		<meta property="og:locale" content="fr_BE" />
+		<meta property="og:url" content={canonical.href} />
+		<meta property="og:title" content={title} />
+		{description && <meta property="og:description" content={description} />}
+		<meta property="og:image" content={new URL(socialImage.src, site).href} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+		<meta name="twitter:card" content="summary_large_image" />
+		<script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
+		{breadcrumb && (
+			<script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} is:inline />
+		)}
 	</head>
 	<body>
 		{!bare && <NavBar overHero={transparentHeader} />}

@@ -40,4 +40,13 @@ npm-debug.log*
 # ils pointeraient vers un dossier absent chez les autres.
 # ⚠️ On n'ignore PAS `.claude/` en entier : la config PROJET qu'il accueille
 # (settings.json, commandes) a vocation à être partagée.
-.claude/skills/
+# ⚠️ `/*` et non `/` : git refuse de ré-inclure un fichier si son DOSSIER est
+# exclu. Exclure le contenu plutôt que le dossier est ce qui rend l'exception
+# ci-dessous possible.
+.claude/skills/*
+# ⚠️ Sauf les skills ÉCRITES POUR CE PROJET. La règle au-dessus vise les skills
+# installées depuis un marketplace, que `skills-lock.json` sait réinstaller.
+# Celles-ci ne sont réinstallables de nulle part : elles portent des règles
+# propres au site (contraintes de titre, constantes à confronter, format de
+# rapport) et se perdraient au premier clone.
+!.claude/skills/audit-seo-page/

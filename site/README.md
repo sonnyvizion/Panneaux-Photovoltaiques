@@ -109,3 +109,18 @@ Deux façons de fermer la porte, si le besoin se confirme :
   une politique de données.
 - **`site:`** n'est pas renseigné dans `astro.config.mjs` : à poser avec le
   domaine définitif, pour les URLs canoniques et le futur sitemap.
+
+## Vérification des types
+
+```
+npm run check
+```
+
+⚠️ **Volontairement PAS branché sur `npm run build`.** Le typage n'avait jamais
+été exécuté jusqu'au 2026-09-02 : `astro check` remonte 84 erreurs préexistantes,
+concentrées dans `src/scripts/` (`searchOverlay.ts`, `simulatorWidget.ts`, et des
+imports inutilisés dans les tests). Aucune ne vient de la couche SEO.
+
+Les brancher sur le build aurait bloqué tout déploiement derrière un chantier de
+dette qui n'a rien à voir. Le script existe donc pour être lancé sciemment ; il
+sera branché au build le jour où le compteur sera à zéro.

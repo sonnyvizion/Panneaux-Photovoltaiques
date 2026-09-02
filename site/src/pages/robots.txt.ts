@@ -36,7 +36,12 @@ User-agent: *
 Disallow: /
 `;
 
-const ALLOWED = `User-agent: *
+/**
+ * ⚠️ Le `Sitemap:` n'apparaît QUE dans la variante autorisée. Annoncer un
+ * sitemap dans un `robots.txt` qui interdit tout serait une invitation
+ * contradictoire — et l'inventaire complet de la démo, offert à qui passe.
+ */
+const ALLOWED = (site: URL) => `User-agent: *
 Allow: /
 
 # Pages outil : aucune valeur en recherche, et le rapport porte les réponses
@@ -50,9 +55,19 @@ Disallow: /design-system
 # dans des résultats Google, où il paraîtrait comme un fichier de texte brut
 # reprenant le contenu du site.
 Disallow: /search-index.json
+
+Sitemap: ${new URL('/sitemap.xml', site).href}
 `;
 
-export const GET: APIRoute = () =>
-  new Response(INDEXABLE ? ALLOWED : BLOCKED, {
+export const GET: APIRoute = ({ site }) => {
+  if (INDEXABLE && !site) {
+    throw new Error(
+      'Le `robots.txt` indexable annonce le sitemap et a donc besoin de `site` ' +
+        'dans `astro.config.mjs`. Poser `PUBLIC_SITE_URL`.',
+    );
+  }
+
+  return new Response(INDEXABLE ? ALLOWED(site!) : BLOCKED, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   });
+};
