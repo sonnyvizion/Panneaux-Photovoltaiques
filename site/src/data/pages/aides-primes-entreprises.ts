@@ -57,7 +57,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Le solaire professionnel obéit à des règles différentes du résidentiel — voici ce qu'on peut confirmer, et ce qui reste à valider avec un comptable ou fiscaliste avant de s'engager.",
+  text: "Le solaire professionnel obéit à des règles différentes du résidentiel : voici ce qu'on peut confirmer, et ce qui reste à valider avec un comptable ou fiscaliste avant de s'engager.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -78,7 +78,7 @@ export const FIGURES: Figure[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Amortissement fiscal',
-    text: 'Le régime applicable dépend de la forme et du régime de votre entreprise — à valider avec votre comptable.',
+    text: 'Le régime applicable dépend de la forme et du régime de votre entreprise, à valider avec votre comptable.',
   },
   {
     title: 'Aides sectorielles',
@@ -111,7 +111,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Les certificats verts sont-ils accessibles aux professionnels ?',
-    text: "Oui à Bruxelles pour toute puissance ; en Wallonie, seulement au-delà de 10 kWc — la limite qui a mis fin au Solwatt résidentiel en 2014 ne s'applique pas aux plus grosses installations.",
+    text: "Oui à Bruxelles pour toute puissance ; en Wallonie, seulement au-delà de 10 kWc : la limite qui a mis fin au Solwatt résidentiel en 2014 ne s'applique pas aux plus grosses installations.",
     accent: true,
   },
 ];
@@ -125,7 +125,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Les certificats verts sont-ils accessibles aux professionnels partout en Belgique ?',
     answer:
-      'Pas uniformément — Bruxelles reste la plus accessible, la Wallonie réserve ça aux installations de plus de 10 kWc.',
+      'Pas uniformément : Bruxelles reste la plus accessible, la Wallonie réserve ça aux installations de plus de 10 kWc.',
   },
 ];
 

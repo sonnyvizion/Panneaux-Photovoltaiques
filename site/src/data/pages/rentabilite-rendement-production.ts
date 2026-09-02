@@ -32,14 +32,14 @@ export const SEO: PageSeo = {
 export const HERO = {
   badge: 'Rentabilité & Prix',
   title: 'Combien produit une installation solaire en Belgique ?',
-  answer: `Une installation de ${POWER_DEFAULT} kWc bien orientée produit environ ${formatNumber(standard.production)} kWh par an en Belgique — soit environ ${KWH_PER_KWC_YEAR} kWh par kWc installé. Ce chiffre varie fortement selon l’orientation, l’inclinaison, et dans une moindre mesure la région.`,
+  answer: `Une installation de ${POWER_DEFAULT} kWc bien orientée produit environ ${formatNumber(standard.production)} kWh par an en Belgique, soit environ ${KWH_PER_KWC_YEAR} kWh par kWc installé. Ce chiffre varie fortement selon l’orientation, l’inclinaison, et dans une moindre mesure la région.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Toiture résidentielle couverte de panneaux solaires sous un ciel dégagé de fin de journée',
 } as const;
 
 export const LEAD = {
-  text: '« Combien ça produit » est la question qui vient juste après « combien ça coûte » — et la réponse dépend de bien plus que la seule puissance installée.',
+  text: '« Combien ça produit » est la question qui vient juste après « combien ça coûte », et la réponse dépend de bien plus que la seule puissance installée.',
   note: 'Testez ci-dessous comment la production suit la puissance.',
 } as const;
 
@@ -78,7 +78,7 @@ export const FIGURES: Figure[] = [
 export const FACTS: Fact[] = [
   {
     title: 'La région pèse peu',
-    text: 'L’ensoleillement diffère peu entre Wallonie, Bruxelles et Flandre — l’orientation compte bien davantage.',
+    text: 'L’ensoleillement diffère peu entre Wallonie, Bruxelles et Flandre : l’orientation compte bien davantage.',
   },
   {
     title: 'Une baisse lente et normale',
@@ -108,20 +108,20 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'La production varie-t-elle selon la région ?',
-    text: 'Légèrement — l’ensoleillement diffère peu entre la Wallonie, Bruxelles et la Flandre à l’échelle de la Belgique. L’orientation et l’inclinaison du toit ont un impact bien plus important que la localisation.',
+    text: 'Légèrement : l’ensoleillement diffère peu entre la Wallonie, Bruxelles et la Flandre à l’échelle de la Belgique. L’orientation et l’inclinaison du toit ont un impact bien plus important que la localisation.',
     accent: true,
   },
   {
     title: 'Pourquoi ma production baisse-t-elle en hiver ?',
-    text: 'Les jours sont plus courts et le soleil moins haut dans le ciel — la production d’un mois de décembre peut être 5 à 6 fois plus faible qu’un mois de juillet.',
+    text: 'Les jours sont plus courts et le soleil moins haut dans le ciel : la production d’un mois de décembre peut être 5 à 6 fois plus faible qu’un mois de juillet.',
   },
   {
     title: 'Les panneaux perdent-ils en performance avec le temps ?',
-    text: 'Oui, une dégradation naturelle d’environ 0,5 % par an est normale — un panneau garde généralement plus de 80 % de sa capacité initiale après 25 ans.',
+    text: 'Oui, une dégradation naturelle d’environ 0,5 % par an est normale : un panneau garde généralement plus de 80 % de sa capacité initiale après 25 ans.',
   },
   {
     title: 'La météo impacte-t-elle beaucoup la production ?',
-    text: 'Oui au jour le jour, mais un panneau continue de produire par temps couvert, à rendement réduit — ce n’est pas tout ou rien comme on l’imagine souvent.',
+    text: 'Oui au jour le jour, mais un panneau continue de produire par temps couvert, à rendement réduit. Ce n’est pas tout ou rien comme on l’imagine souvent.',
   },
 ];
 
@@ -129,7 +129,7 @@ export const FAQ: FaqItem[] = [
   {
     question: `${KWH_PER_KWC_YEAR} kWh/kWc, c’est une moyenne fiable pour mon cas ?`,
     answer:
-      'C’est un ordre de grandeur pour une orientation favorable — le simulateur donne une estimation propre à votre toiture.',
+      'C’est un ordre de grandeur pour une orientation favorable ; le simulateur donne une estimation propre à votre toiture.',
     open: true,
   },
   {
@@ -161,7 +161,7 @@ export const ORIENT_WIDGET = {
   overline: 'Le pan de toiture',
   title: 'Choisissez l’orientation, le rendement suit',
   intro:
-    "L'orientation est le facteur qu'on ne peut pas changer après coup — et celui qu'on surestime le plus. Un toit est/ouest reste largement rentable.",
+    "L'orientation est le facteur qu'on ne peut pas changer après coup, et celui qu'on surestime le plus. Un toit est/ouest reste largement rentable.",
   bridgeLabel: 'Et sur votre toit, ça donne quoi ?',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;

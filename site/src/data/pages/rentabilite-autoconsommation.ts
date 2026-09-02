@@ -44,7 +44,7 @@ export const HERO = {
   badge: 'Rentabilité & Prix',
   title: 'Autoconsommation et revente du surplus : comment ça marche',
   answer:
-    'Plus vous consommez directement votre production solaire, plus votre installation est rentable — l’électricité autoconsommée vaut son prix d’achat plein tarif, alors que le surplus revendu ou injecté est valorisé à un tarif nettement inférieur.',
+    'Plus vous consommez directement votre production solaire, plus votre installation est rentable : l’électricité autoconsommée vaut son prix d’achat plein tarif, alors que le surplus revendu ou injecté est valorisé à un tarif nettement inférieur.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Intérieur de maison en journée, appareils en fonctionnement, avec une toiture solaire visible par la fenêtre',
@@ -78,7 +78,7 @@ export const FIGURES: Figure[] = [
   {
     label: 'Autoconsommation',
     value: `${ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} €`,
-    note: 'par kWh — le prix plein de l’électricité achetée',
+    note: 'par kWh, le prix plein de l’électricité achetée',
     tone: 'lime',
   },
   {
@@ -130,12 +130,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Comment augmenter mon taux d’autoconsommation ?',
-    text: 'En décalant les usages énergivores — lave-linge, lave-vaisselle, recharge de véhicule — vers les heures de production, ou en ajoutant des équipements qui consomment en journée.',
+    text: 'En décalant les usages énergivores (lave-linge, lave-vaisselle, recharge de véhicule) vers les heures de production, ou en ajoutant des équipements qui consomment en journée.',
     accent: true,
   },
   {
     title: 'Une batterie domestique change-t-elle la donne ?',
-    text: 'Oui, significativement — elle permet de stocker le surplus de journée pour le consommer le soir, au prix d’un investissement supplémentaire.',
+    text: 'Oui, significativement : elle permet de stocker le surplus de journée pour le consommer le soir, au prix d’un investissement supplémentaire.',
   },
   {
     title: 'Que devient mon surplus selon ma région ?',
@@ -143,29 +143,29 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Faut-il viser 100 % d’autoconsommation ?',
-    text: 'Pas nécessairement — au-delà d’un certain point, ça demanderait une installation sous-dimensionnée par rapport à votre toiture, ou un investissement en stockage pas toujours rentable.',
+    text: 'Pas nécessairement : au-delà d’un certain point, ça demanderait une installation sous-dimensionnée par rapport à votre toiture, ou un investissement en stockage pas toujours rentable.',
   },
   {
     title: `Ce seuil de ${BREAK_EVEN} est-il le même partout ?`,
-    text: 'Non — c’est spécifiquement le repère wallon, où le tarif prosumer, une charge fixe, rend l’autoconsommation déterminante. À Bruxelles et en Flandre, la rentabilité reste positive même à autoconsommation standard, grâce aux certificats verts et au tarif d’injection.',
+    text: 'Non. C’est spécifiquement le repère wallon, où le tarif prosumer, une charge fixe, rend l’autoconsommation déterminante. À Bruxelles et en Flandre, la rentabilité reste positive même à autoconsommation standard, grâce aux certificats verts et au tarif d’injection.',
   },
 ];
 
 export const FAQ: FaqItem[] = [
   {
     question: 'Quel est le taux moyen sans rien faire de spécial ?',
-    answer: `Environ 30 à 40 % pour un foyer standard — la référence retenue sur ce site est ${Math.round(SELF_CONSUMPTION_RATE * 100)} %, le reste partant en surplus sur le réseau.`,
+    answer: `Environ 30 à 40 % pour un foyer standard, la référence retenue sur ce site est ${Math.round(SELF_CONSUMPTION_RATE * 100)} %, le reste partant en surplus sur le réseau.`,
     open: true,
   },
   {
     question: 'La pompe à chaleur ou la voiture électrique aident-elles vraiment ?',
     answer:
-      'Oui, ce sont deux des leviers les plus efficaces pour augmenter l’autoconsommation — chacune a sa page dédiée.',
+      'Oui, ce sont deux des leviers les plus efficaces pour augmenter l’autoconsommation, et chacune a sa page dédiée.',
   },
   {
     question: 'Dois-je changer mes habitudes pour en profiter ?',
     answer:
-      'Ce n’est pas obligatoire, mais quelques ajustements simples — lancer l’électroménager en journée — augmentent sensiblement le taux sans effort majeur.',
+      'Ce n’est pas obligatoire, mais quelques ajustements simples, comme lancer l’électroménager en journée, augmentent sensiblement le taux sans effort majeur.',
   },
 ];
 

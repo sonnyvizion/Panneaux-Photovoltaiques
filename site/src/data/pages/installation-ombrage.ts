@@ -35,7 +35,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Une cheminée, une antenne, un arbre voisin — l’ombrage semble un détail, mais c’est l’un des facteurs qui pénalise le plus le rendement s’il n’est pas anticipé.',
+  text: 'Une cheminée, une antenne, un arbre voisin : l’ombrage semble un détail, mais c’est l’un des facteurs qui pénalise le plus le rendement s’il n’est pas anticipé.',
   note: 'Basculez d’une technologie à l’autre ci-dessous.',
 } as const;
 
@@ -56,7 +56,7 @@ export const TOGGLE_STATES: [ToggleState, ToggleState] = [
     label: 'Micro-onduleurs',
     title: 'Chaque panneau est isolé',
     highlight: 'Seul le panneau ombragé baisse',
-    text: 'Avec un micro-onduleur ou un optimiseur par panneau, chaque module produit indépendamment des autres. L’ombre ne coûte plus que la production du panneau qu’elle couvre — les autres continuent à plein régime.',
+    text: 'Avec un micro-onduleur ou un optimiseur par panneau, chaque module produit indépendamment des autres. L’ombre ne coûte plus que la production du panneau qu’elle couvre : les autres continuent à plein régime.',
   },
 ];
 
@@ -102,7 +102,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Le surcoût se justifie au cas par cas',
-    text: 'Les micro-onduleurs coûtent plus cher — l’investissement vaut le coup quand l’ombrage est inévitable.',
+    text: 'Les micro-onduleurs coûtent plus cher : l’investissement vaut le coup quand l’ombrage est inévitable.',
   },
 ];
 
@@ -114,7 +114,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Notre équipe est certifiée Enphase',
-    text: 'Les micro-onduleurs, c’est notre spécialité — et c’est précisément la réponse à l’ombrage.',
+    text: 'Les micro-onduleurs, c’est notre spécialité. Et c’est précisément la réponse à l’ombrage.',
     cta: { label: 'Estimer mon installation', href: '/simulateur' },
   },
 ];
@@ -128,7 +128,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Un arbre qui fait de l’ombre le matin, est-ce un problème ?',
-    text: 'Ça dépend de la technologie choisie — avec un onduleur string classique, oui, même une ombre partielle temporaire réduit la production de toute la chaîne concernée.',
+    text: 'Ça dépend de la technologie choisie : avec un onduleur string classique, oui, même une ombre partielle temporaire réduit la production de toute la chaîne concernée.',
     accent: true,
   },
   {
@@ -137,7 +137,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Peut-on couper les branches qui gênent, légalement ?',
-    text: 'Ça dépend si l’arbre est sur votre terrain ou celui d’un voisin — les règles de mitoyenneté s’appliquent comme pour toute question de branches débordantes.',
+    text: 'Ça dépend si l’arbre est sur votre terrain ou celui d’un voisin : les règles de mitoyenneté s’appliquent comme pour toute question de branches débordantes.',
   },
 ];
 
@@ -155,7 +155,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Peut-on couper les branches qui gênent, légalement ?',
     answer:
-      'Ça dépend de l’emplacement de l’arbre — les règles de mitoyenneté s’appliquent comme pour toute branche débordante.',
+      'Ça dépend de l’emplacement de l’arbre : les règles de mitoyenneté s’appliquent comme pour toute branche débordante.',
   },
 ];
 

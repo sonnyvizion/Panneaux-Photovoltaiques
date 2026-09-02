@@ -27,7 +27,7 @@ export const HERO = {
   badge: 'Comprendre',
   title: "La batterie domestique : stocker sa production solaire",
   answer:
-    "Une batterie domestique stocke le surplus d’électricité produit en journée pour le consommer plus tard, notamment le soir — elle augmente le taux d’autoconsommation mais représente un investissement supplémentaire important.",
+    "Une batterie domestique stocke le surplus d’électricité produit en journée pour le consommer plus tard, notamment le soir : elle augmente le taux d’autoconsommation mais représente un investissement supplémentaire important.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Batterie domestique blanche fixée au mur d’une buanderie, à côté de l’installation électrique",
@@ -53,7 +53,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'RÔLE',
     title: 'Stocker le surplus, pas le perdre',
     text:
-      'Une batterie domestique conserve l’électricité produite en journée pour la restituer le soir — le surplus qui partait sur le réseau reste chez vous.',
+      'Une batterie domestique conserve l’électricité produite en journée pour la restituer le soir : le surplus qui partait sur le réseau reste chez vous.',
   },
   {
     eyebrow: 'IMPACT',
@@ -65,7 +65,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'INSTALLATION',
     title: 'Toujours par un professionnel',
     text:
-      'L’auto-installation d’une batterie domestique est interdite depuis la révision RGIE 2025 — un point à anticiper dans votre budget et votre planning.',
+      'L’auto-installation d’une batterie domestique est interdite depuis la révision RGIE 2025, un point à anticiper dans votre budget et votre planning.',
   },
 ];
 
@@ -85,7 +85,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: "Une voiture électrique joue le même rôle ?",
-    text: "Pas tout à fait, mais elle absorbe aussi le surplus de journée — avec une logique proche.",
+    text: "Pas tout à fait, mais elle absorbe aussi le surplus de journée, avec une logique proche.",
     cta: { label: "Voir la recharge solaire", href: '/installation/voiture-electrique' },
   },
 ];
@@ -99,16 +99,16 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Une batterie est-elle rentable ?",
-    text: "Ça dépend fortement du prix de l’électricité et de votre profil de consommation — le calcul est plus long à amortir qu’une installation solaire seule, à évaluer au cas par cas.",
+    text: "Ça dépend fortement du prix de l’électricité et de votre profil de consommation : le calcul est plus long à amortir qu’une installation solaire seule, à évaluer au cas par cas.",
     accent: true,
   },
   {
     title: "Quelle capacité choisir ?",
-    text: "Ça dépend de votre consommation en soirée et de votre production journalière — une batterie surdimensionnée n’apporte pas de bénéfice proportionnel à son coût.",
+    text: "Ça dépend de votre consommation en soirée et de votre production journalière : une batterie surdimensionnée n’apporte pas de bénéfice proportionnel à son coût.",
   },
   {
     title: "Fonctionne-t-elle en cas de coupure ?",
-    text: "Pas systématiquement — ça dépend du système installé, certains fonctionnent uniquement couplés au réseau, d’autres offrent un mode secours. À vérifier avec votre installateur.",
+    text: "Pas systématiquement : ça dépend du système installé, certains fonctionnent uniquement couplés au réseau, d’autres offrent un mode secours. À vérifier avec votre installateur.",
   },
   {
     title: "Peut-on ajouter une batterie après coup ?",
@@ -120,7 +120,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Une batterie augmente-t-elle vraiment mes économies ?",
     answer:
-      "Oui, en vous permettant de consommer votre propre électricité le soir plutôt que d’en racheter au réseau — mais l’investissement doit être mis en balance avec le gain réel.",
+      "Oui, en vous permettant de consommer votre propre électricité le soir plutôt que d’en racheter au réseau, mais l’investissement doit être mis en balance avec le gain réel.",
     open: true,
   },
   {

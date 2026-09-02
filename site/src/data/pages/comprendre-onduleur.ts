@@ -35,7 +35,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Moins visible que les panneaux, mais tout aussi indispensable — et souvent le premier composant à remplacer au cours de la vie de l’installation.",
+  text: "Moins visible que les panneaux, mais tout aussi indispensable, et souvent le premier composant à remplacer au cours de la vie de l’installation.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -56,13 +56,13 @@ export const FIGURES: Figure[] = [];
 export const PHOTOS: PhotoCard[] = [
   {
     title: 'L’onduleur string',
-    text: 'Un seul boîtier pour toute l’installation — le montage le plus courant, adapté à la plupart des toitures sans ombrage.',
+    text: 'Un seul boîtier pour toute l’installation : le montage le plus courant, adapté à la plupart des toitures sans ombrage.',
     image: '4.3-onduleur-carte-string.jpg',
     alt: 'Onduleur string mural installé dans un local technique résidentiel avec câbles solaires rangés',
   },
   {
     title: 'Le micro-onduleur',
-    text: 'Un boîtier par panneau — plus cher à l’achat, mais limite fortement l’impact d’une ombre partielle sur la production totale.',
+    text: 'Un boîtier par panneau : plus cher à l’achat, mais limite fortement l’impact d’une ombre partielle sur la production totale.',
     image: 'onduleur-carte-micro.jpg',
     alt: 'Micro-onduleur fixé sous un panneau solaire avec câbles et connecteurs visibles',
   },
@@ -70,13 +70,13 @@ export const PHOTOS: PhotoCard[] = [
 
 export const FACTS: Fact[] = [
   { title: "Le premier à remplacer", text: "10 à 15 ans, contre 25 à 30 pour les panneaux : un remplacement à mi-vie est à budgétiser dès le départ." },
-  { title: "Où l’installer", text: "Dans un local ventilé et si possible frais, à distance raisonnable des panneaux — l’éloignement coûte en pertes et en câblage." },
+  { title: "Où l’installer", text: "Dans un local ventilé et si possible frais, à distance raisonnable des panneaux : l’éloignement coûte en pertes et en câblage." },
 ];
 
 export const BRIDGES: Bridge[] = [
   {
     title: "Votre toiture a de l’ombre ?",
-    text: "C’est le seul cas où le micro-onduleur se justifie vraiment — et il change tout.",
+    text: "C’est le seul cas où le micro-onduleur se justifie vraiment. Et il change tout.",
     cta: { label: "Voir l’ombrage", href: '/installation/ombrage' },
   },
   {
@@ -100,7 +100,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "Combien de temps dure un onduleur ?",
-    text: "Généralement 10 à 15 ans, sensiblement moins que les panneaux eux-mêmes (25-30 ans) — un remplacement à mi-vie de l’installation est à anticiper dans le budget.",
+    text: "Généralement 10 à 15 ans, sensiblement moins que les panneaux eux-mêmes (25-30 ans) : un remplacement à mi-vie de l’installation est à anticiper dans le budget.",
   },
   {
     title: "L’onduleur consomme-t-il de l’électricité ?",
@@ -108,7 +108,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "Où installer l’onduleur ?",
-    text: "Dans un local ventilé, si possible frais, à une distance raisonnable des panneaux — l’éloignement augmente les pertes et le coût du câblage.",
+    text: "Dans un local ventilé, si possible frais, à une distance raisonnable des panneaux : l’éloignement augmente les pertes et le coût du câblage.",
   },
 ];
 
@@ -116,7 +116,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Que se passe-t-il si l’onduleur tombe en panne ?",
     answer:
-      "L’installation cesse de produire de l’électricité utilisable jusqu’au remplacement — c’est la panne la plus fréquente sur une installation solaire, plus que les panneaux eux-mêmes.",
+      "L’installation cesse de produire de l’électricité utilisable jusqu’au remplacement : c’est la panne la plus fréquente sur une installation solaire, plus que les panneaux eux-mêmes.",
     open: true,
   },
   {
@@ -127,12 +127,12 @@ export const FAQ: FaqItem[] = [
   {
     question: "Un onduleur fait-il du bruit ?",
     answer:
-      "Un léger bruit de ventilation est normal sur certains modèles — à prendre en compte dans le choix de l’emplacement, en évitant une chambre adjacente.",
+      "Un léger bruit de ventilation est normal sur certains modèles, à prendre en compte dans le choix de l’emplacement, en évitant une chambre adjacente.",
   },
 ];
 
 export const FINAL_CTA = {
   title: "Le bon onduleur dépend de votre toiture",
-  text: "Notre équipe est certifiée Enphase — les micro-onduleurs, c'est notre spécialité.",
+  text: "Notre équipe est certifiée Enphase : les micro-onduleurs, c'est notre spécialité.",
   cta: { label: "Estimer mon installation", href: '/simulateur' },
 } as const;

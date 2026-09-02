@@ -26,7 +26,7 @@ export const HERO = {
   badge: 'Comprendre',
   title: "L’entretien d’une installation solaire : ce qu’il faut vraiment faire",
   answer:
-    "Une installation solaire demande très peu d’entretien — pas de pièce mobile à user, un nettoyage occasionnel suffit dans la plupart des cas, la pluie faisant naturellement le principal du travail.",
+    "Une installation solaire demande très peu d’entretien : pas de pièce mobile à user, un nettoyage occasionnel suffit dans la plupart des cas, la pluie faisant naturellement le principal du travail.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Gouttes de pluie perlant à la surface d’un panneau solaire, en gros plan",
@@ -51,14 +51,14 @@ export const FIGURES: Figure[] = [];
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Maintenance',
   text:
-    'Un des avantages sous-estimés du solaire : il ne demande presque rien. Le nettoyage est rarement nécessaire — en Belgique, la pluie fait l’essentiel du travail. Un contrôle visuel une à deux fois par an suffit pour repérer un défaut, et l’application de l’onduleur permet de suivre la production au quotidien sans rien faire de plus. Pas de contrat d’entretien obligatoire, juste un œil de temps en temps.',
+    'Un des avantages sous-estimés du solaire : il ne demande presque rien. Le nettoyage est rarement nécessaire. En Belgique, la pluie fait l’essentiel du travail. Un contrôle visuel une à deux fois par an suffit pour repérer un défaut, et l’application de l’onduleur permet de suivre la production au quotidien sans rien faire de plus. Pas de contrat d’entretien obligatoire, juste un œil de temps en temps.',
   imageAlt:
     'Gros plan sur des panneaux solaires couverts de gouttes de pluie',
 };
 
 export const FACTS: Fact[] = [
   { title: "Le contrat d’entretien n’est pas indispensable", text: "Le besoin réel est faible ; certains installateurs le proposent pour la tranquillité d’esprit." },
-  { title: "Un mauvais nettoyage abîme", text: "Produits agressifs et matériel abrasif rayent la surface — de l’eau claire, ou un professionnel équipé." },
+  { title: "Un mauvais nettoyage abîme", text: "Produits agressifs et matériel abrasif rayent la surface : de l’eau claire, ou un professionnel équipé." },
 ];
 
 export const BRIDGES: Bridge[] = [
@@ -83,12 +83,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Faut-il nettoyer ses panneaux régulièrement ?",
-    text: "Rarement nécessaire en Belgique — le climat pluvieux fait naturellement le travail. Un nettoyage ponctuel peut se justifier en cas de dépôt inhabituel : pollen dense, poussière, fientes d’oiseaux localisées.",
+    text: "Rarement nécessaire en Belgique, où le climat pluvieux fait naturellement le travail. Un nettoyage ponctuel peut se justifier en cas de dépôt inhabituel : pollen dense, poussière, fientes d’oiseaux localisées.",
     accent: true,
   },
   {
     title: "Comment savoir si mon installation fonctionne bien ?",
-    text: "Le suivi de production via l’application de l’onduleur permet de repérer une baisse anormale — c’est l’outil de surveillance le plus simple au quotidien.",
+    text: "Le suivi de production via l’application de l’onduleur permet de repérer une baisse anormale : c’est l’outil de surveillance le plus simple au quotidien.",
   },
   {
     title: "Faut-il un contrat d’entretien ?",
@@ -110,12 +110,12 @@ export const FAQ: FaqItem[] = [
   {
     question: "Le nettoyage abîme-t-il les panneaux ?",
     answer:
-      "Un nettoyage mal fait — produits agressifs, matériel abrasif — peut endommager la surface. Mieux vaut de l’eau claire, ou un professionnel équipé du bon matériel.",
+      "Un nettoyage mal fait, avec des produits agressifs ou du matériel abrasif, peut endommager la surface. Mieux vaut de l’eau claire, ou un professionnel équipé du bon matériel.",
   },
   {
     question: "Combien coûte un entretien professionnel ?",
     answer:
-      "Ça varie selon le prestataire et la fréquence choisie — à mettre en balance avec le faible besoin réel d’entretien du solaire.",
+      "Ça varie selon le prestataire et la fréquence choisie, à mettre en balance avec le faible besoin réel d’entretien du solaire.",
   },
 ];
 

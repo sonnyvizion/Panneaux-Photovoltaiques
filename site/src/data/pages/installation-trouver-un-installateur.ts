@@ -36,7 +36,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Le marché du solaire attire aussi des acteurs peu sérieux — voici les critères concrets pour faire le tri, que vous passiez par nous ou par un autre installateur.',
+  text: 'Le marché du solaire attire aussi des acteurs peu sérieux : voici les critères concrets pour faire le tri, que vous passiez par nous ou par un autre installateur.',
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -53,19 +53,19 @@ export const FIGURES: Figure[] = [];
 export const PHOTOS: PhotoCard[] = [
   {
     title: 'Certification',
-    text: 'RESCert ou équivalent régional selon votre zone — la garantie que l’installateur est reconnu par les autorités.',
+    text: 'RESCert ou équivalent régional selon votre zone : la garantie que l’installateur est reconnu par les autorités.',
     image: 'trouver-pro-carte-certification.jpg',
     alt: 'Installateur solaire équipé inspectant une toiture résidentielle avec panneaux',
   },
   {
     title: 'Assurance',
-    text: 'Responsabilité civile professionnelle — à vérifier avant de signer, ça vous protège en cas de problème.',
+    text: 'Responsabilité civile professionnelle : à vérifier avant de signer, ça vous protège en cas de problème.',
     image: 'trouver-pro-carte-assurance.jpg',
     alt: 'Installateur avec harnais et gants vérifiant la fixation d’un panneau solaire',
   },
   {
     title: 'Devis',
-    text: 'Détaillé et remis avant le début des travaux — jamais un chiffrage approximatif de dernière minute.',
+    text: 'Détaillé et remis avant le début des travaux, jamais un chiffrage approximatif de dernière minute.',
     image: 'trouver-pro-carte-devis.jpg',
     alt: 'Plan de toiture, mètre et tablette préparés pour un devis solaire résidentiel',
   },
@@ -74,7 +74,7 @@ export const PHOTOS: PhotoCard[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Comparez à équivalence',
-    text: 'Plusieurs devis, oui — mais à puissance, marque et garanties comparables, pas seulement sur le prix final.',
+    text: 'Plusieurs devis, oui, mais à puissance, marque et garanties comparables, pas seulement sur le prix final.',
   },
   {
     title: 'Les démarches sont incluses',
@@ -85,7 +85,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Quelles démarches doit-il gérer pour vous ?',
-    text: 'Elles changent d’une région à l’autre — savoir lesquelles vous concernent aide à juger un devis.',
+    text: 'Elles changent d’une région à l’autre : savoir lesquelles vous concernent aide à juger un devis.',
     cta: { label: 'Voir les démarches en Wallonie', href: '/aides-primes/wallonie/demarches' },
   },
   {
@@ -109,7 +109,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Faut-il toujours comparer plusieurs devis ?',
-    text: 'C’est recommandé, mais assurez-vous de comparer des devis à puissance et qualité de matériel équivalentes — pas seulement le prix final.',
+    text: 'C’est recommandé, mais assurez-vous de comparer des devis à puissance et qualité de matériel équivalentes, pas seulement le prix final.',
   },
   {
     title: 'Quels sont les signaux d’alarme ?',
@@ -117,7 +117,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'S’occupe-t-il de toutes les démarches ?',
-    text: 'Ça devrait être le cas pour un installateur sérieux — RGIE, déclaration GRD, et selon la région, RESCert ou Sibelga.',
+    text: 'Ça devrait être le cas pour un installateur sérieux : RGIE, déclaration GRD, et selon la région, RESCert ou Sibelga.',
   },
 ];
 

@@ -36,7 +36,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Trois grandes familles de fixation, chacune adaptée à un type de toiture — le détail complet par type de toit se trouve dans les pages « Emplacements », celle-ci reste la vue d’ensemble.',
+  text: 'Trois grandes familles de fixation, chacune adaptée à un type de toiture. Le détail complet par type de toit se trouve dans les pages « Emplacements », celle-ci reste la vue d’ensemble.',
   note: 'Les trois familles, côte à côte.',
 } as const;
 
@@ -54,7 +54,7 @@ export const FIXATIONS: TopicCard[] = [
   },
   {
     title: 'Toit plat',
-    text: 'Structure lestée ou plots, souvent sans aucun perçage — la membrane d’étanchéité reste intacte.',
+    text: 'Structure lestée ou plots, souvent sans aucun perçage : la membrane d’étanchéité reste intacte.',
   },
   {
     title: 'BIPV',
@@ -87,7 +87,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Le BIPV vous intéresse ?',
-    text: 'Les panneaux intégrés remplacent la couverture — plus esthétique, plus cher.',
+    text: 'Les panneaux intégrés remplacent la couverture : plus esthétique, plus cher.',
     cta: { label: 'Voir le BIPV', href: '/installation/bipv' },
   },
 ];
@@ -101,7 +101,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'La fixation abîme-t-elle la toiture ?',
-    text: 'Sur un toit incliné, quelques tuiles sont temporairement déplacées au niveau des crochets puis remises en place — le reste n’est pas touché. Sur toit plat, le lestage évite tout perçage.',
+    text: 'Sur un toit incliné, quelques tuiles sont temporairement déplacées au niveau des crochets puis remises en place : le reste n’est pas touché. Sur toit plat, le lestage évite tout perçage.',
     accent: true,
   },
   {

@@ -64,7 +64,7 @@ export const HERO = {
   badge: 'Nos réalisations',
   title: 'À quoi ressemblent nos chantiers ?',
   answer:
-    'Des toitures résidentielles à Bruxelles et en périphérie, entre 8 et 20 panneaux le plus souvent. Chaque fiche donne la puissance installée, le nombre de panneaux, le type de toiture et le matériel posé — pour que vous puissiez comparer avec la vôtre.',
+    'Des toitures résidentielles à Bruxelles et en périphérie, entre 8 et 20 panneaux le plus souvent. Chaque fiche donne la puissance installée, le nombre de panneaux, le type de toiture et le matériel posé, pour que vous puissiez comparer avec la vôtre.',
   cta: { label: 'Demander un devis', href: '/devis' },
   /* ⚠️ Photo empruntée à la page « Toit plat » : aucune photo de chantier n'est
      livrée. L'emprunt est déclaré dans `data/pageHeroes.ts`. Le placeholder de
@@ -129,6 +129,6 @@ export const FAQ: FaqItem[] = [
 
 export const FINAL_CTA = {
   title: 'Votre toiture ressemble à l’une d’elles ?',
-  text: 'Une visite, des mesures, un prix qui tient. Gratuit et sans engagement — et c’est nous qui venons.',
+  text: 'Une visite, des mesures, un prix qui tient. Gratuit et sans engagement. Et c’est nous qui venons.',
   cta: { label: 'Demander un devis', href: '/devis' },
 } as const;

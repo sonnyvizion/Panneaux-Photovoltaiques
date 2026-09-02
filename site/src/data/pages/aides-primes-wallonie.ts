@@ -128,7 +128,7 @@ export const FIGURES: Figure[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Primes communales',
-    text: 'Certaines communes en proposent encore — à vérifier au cas par cas.',
+    text: 'Certaines communes en proposent encore, à vérifier au cas par cas.',
   },
   {
     title: 'Obligation 35 % renouvelable',
@@ -189,7 +189,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Les primes communales existent-elles encore ?',
-    text: 'Certaines communes proposent encore une aide locale — à vérifier au cas par cas.',
+    text: 'Certaines communes proposent encore une aide locale, à vérifier au cas par cas.',
     href: '/aides-primes/wallonie/primes-communales',
   },
 ];
@@ -198,7 +198,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Puis-je encore toucher une prime pour mes panneaux solaires en Wallonie ?',
     answer:
-      "Pas de prime régionale directe : la Wallonie n'en verse plus pour le photovoltaïque résidentiel, et les certificats verts se sont arrêtés en 2014 pour les nouvelles installations. Ce qui subsiste est indirect — le Rénoprêt à taux 0 %, la TVA à 6 % sur les logements de plus de dix ans, et parfois une aide de votre commune.",
+      "Pas de prime régionale directe : la Wallonie n'en verse plus pour le photovoltaïque résidentiel, et les certificats verts se sont arrêtés en 2014 pour les nouvelles installations. Ce qui subsiste est indirect : le Rénoprêt à taux 0 %, la TVA à 6 % sur les logements de plus de dix ans, et parfois une aide de votre commune.",
   },
   {
     question: 'Comment fonctionne le Rénoprêt à taux 0 % ?',
@@ -219,7 +219,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Les certificats verts, c'est vraiment terminé ?",
     answer:
-      "Pour les nouvelles installations résidentielles, oui, depuis 2014 et la fin du régime Solwatt. Les installations qui en bénéficiaient à l'époque ont conservé leurs droits jusqu'au terme de leur période d'octroi — c'est ce qui explique que le sujet revienne encore dans les conversations.",
+      "Pour les nouvelles installations résidentielles, oui, depuis 2014 et la fin du régime Solwatt. Les installations qui en bénéficiaient à l'époque ont conservé leurs droits jusqu'au terme de leur période d'octroi, ce qui explique que le sujet revienne encore dans les conversations.",
   },
 ];
 
@@ -234,6 +234,6 @@ export const FAQ: FaqItem[] = [
  */
 export const FINAL_CTA = {
   title: 'Voyez ce que ça change sur votre facture',
-  text: `En Wallonie, la rentabilité dépend surtout de votre taux d'autoconsommation — au-delà de ${breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '45 %'}, l'installation reste positive sur toute sa durée de vie ; en dessous, le tarif prosumer pèse lourd. Calculez votre cas précis, tarif prosumer déjà intégré.`,
+  text: `En Wallonie, la rentabilité dépend surtout de votre taux d'autoconsommation : au-delà de ${breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '45 %'}, l'installation reste positive sur toute sa durée de vie ; en dessous, le tarif prosumer pèse lourd. Calculez votre cas précis, tarif prosumer déjà intégré.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;

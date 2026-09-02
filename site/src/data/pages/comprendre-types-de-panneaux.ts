@@ -34,14 +34,14 @@ export const HERO = {
   badge: 'Comprendre',
   title: 'Monocristallin, polycristallin, bifacial, amorphe : quel type de panneau choisir ?',
   answer:
-    'Le monocristallin domine le marché résidentiel belge grâce à son meilleur rendement par m² — un critère important sur des toitures de taille limitée. Les autres technologies répondent à des besoins plus spécifiques.',
+    'Le monocristallin domine le marché résidentiel belge grâce à son meilleur rendement par m², un critère important sur des toitures de taille limitée. Les autres technologies répondent à des besoins plus spécifiques.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Toiture en tuiles sombres portant des panneaux solaires noirs, sur fond de champs et de bocage",
 } as const;
 
 export const LEAD = {
-  text: 'Quatre technologies, un seul choix qui compte vraiment pour la plupart des projets résidentiels — voici les différences essentielles, sans jargon inutile.',
+  text: 'Quatre technologies, un seul choix qui compte vraiment pour la plupart des projets résidentiels : voici les différences essentielles, sans jargon inutile.',
   note: 'Les quatre technologies, côte à côte.',
 } as const;
 
@@ -63,7 +63,7 @@ export const TYPES: TopicCard[] = [
   },
   {
     title: 'Bifacial',
-    text: 'Capte la lumière des deux faces — utile en toiture surélevée ou au sol.',
+    text: 'Capte la lumière des deux faces, utile en toiture surélevée ou au sol.',
   },
   {
     title: 'Amorphe',
@@ -110,20 +110,20 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Pourquoi le monocristallin est-il le plus utilisé ?',
-    text: 'Son meilleur rendement par m² permet de produire plus sur une surface de toiture limitée — l’argument décisif pour la majorité des toits résidentiels belges, où la surface disponible est souvent le facteur limitant.',
+    text: 'Son meilleur rendement par m² permet de produire plus sur une surface de toiture limitée, l’argument décisif pour la majorité des toits résidentiels belges, où la surface disponible est souvent le facteur limitant.',
     accent: true,
   },
   {
     title: 'Le polycristallin vaut-il le coup pour économiser ?',
-    text: 'Sur une grande toiture sans contrainte de surface, oui — l’écart de rendement compte moins quand la place ne manque pas.',
+    text: 'Sur une grande toiture sans contrainte de surface, oui : l’écart de rendement compte moins quand la place ne manque pas.',
   },
   {
     title: 'Le bifacial, dans quels cas ça a du sens ?',
-    text: 'Surtout pour les installations au sol ou sur structures surélevées, où la face arrière peut capter la lumière réfléchie par le sol — moins pertinent pour une toiture classique posée à plat sur la charpente.',
+    text: 'Surtout pour les installations au sol ou sur structures surélevées, où la face arrière peut capter la lumière réfléchie par le sol. C’est moins pertinent pour une toiture classique posée à plat sur la charpente.',
   },
   {
     title: 'L’amorphe a-t-il sa place en résidentiel ?',
-    text: 'Rarement pour une installation principale — son rendement plus faible le réserve à des usages spécifiques (intégration architecturale, surfaces courbes, applications mobiles).',
+    text: 'Rarement pour une installation principale : son rendement plus faible le réserve à des usages spécifiques (intégration architecturale, surfaces courbes, applications mobiles).',
   },
 ];
 
@@ -142,7 +142,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Peut-on mélanger plusieurs technologies sur un même toit ?',
     answer:
-      'Techniquement possible mais rarement recommandé — mieux vaut une installation homogène pour simplifier le suivi et l’entretien.',
+      'Techniquement possible mais rarement recommandé : mieux vaut une installation homogène pour simplifier le suivi et l’entretien.',
   },
 ];
 

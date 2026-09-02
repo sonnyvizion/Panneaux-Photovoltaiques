@@ -78,7 +78,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Ce n'est pas une prime qu'on vous retire, mais un coût à part entière du solaire en Wallonie — encore mal connu, et souvent oublié dans les calculs de rentabilité qu'on trouve en ligne.",
+  text: "Ce n'est pas une prime qu'on vous retire, mais un coût à part entière du solaire en Wallonie, encore mal connu et souvent oublié dans les calculs de rentabilité qu'on trouve en ligne.",
   note: 'Testez ci-dessous ce que ce tarif représente selon votre puissance.',
 } as const;
 
@@ -129,7 +129,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'À votre charge',
-    text: 'Entièrement, depuis 2024 — le tarif n’est plus compensé par la Région.',
+    text: 'Entièrement, depuis 2024 : le tarif n’est plus compensé par la Région.',
   },
 ];
 
@@ -138,7 +138,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Une installation reste-t-elle rentable avec ce tarif ?',
-    text: 'Oui — notre calcul de rentabilité intègre déjà le tarif prosumer, il ne vient pas s’ajouter après coup.',
+    text: 'Oui. Notre calcul de rentabilité intègre déjà le tarif prosumer, il ne vient pas s’ajouter après coup.',
     cta: { label: 'Voir le calcul de rentabilité', href: '/rentabilite-prix' },
   },
   {
@@ -165,7 +165,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Le tarif proportionnel, une alternative ?',
-    text: 'Avec un compteur communicant, un tarif ajusté à votre consommation réelle du réseau peut remplacer le tarif forfaitaire — potentiellement plus avantageux si votre autoconsommation est élevée.',
+    text: 'Avec un compteur communicant, un tarif ajusté à votre consommation réelle du réseau peut remplacer le tarif forfaitaire, potentiellement plus avantageux si votre autoconsommation est élevée.',
   },
   {
     title: 'Ce tarif est-il le même partout en Wallonie ?',
@@ -173,7 +173,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Le tarif va-t-il encore augmenter ?',
-    text: 'Il est révisé chaque année par le régulateur wallon (CWaPE) — pas de garantie de stabilité sur le long terme.',
+    text: 'Il est révisé chaque année par le régulateur wallon (CWaPE) : pas de garantie de stabilité sur le long terme.',
   },
 ];
 

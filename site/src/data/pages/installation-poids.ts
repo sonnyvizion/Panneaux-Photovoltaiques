@@ -38,13 +38,13 @@ export const SEO: PageSeo = {
 export const HERO = {
   badge: 'Installation',
   title: 'Les panneaux solaires, quel poids sur ma toiture ?',
-  answer: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg. Pour une installation de ${mid.panels} panneaux, le poids total avoisine ${totalMin} à ${totalMax} kg, réparti sur toute la toiture — largement dans la capacité de charge de la plupart des toitures belges.`,
+  answer: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg. Pour une installation de ${mid.panels} panneaux, le poids total avoisine ${totalMin} à ${totalMax} kg, réparti sur toute la toiture, largement dans la capacité de charge de la plupart des toitures belges.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Charpente et toiture d’une maison belge vue de l’extérieur',
 } as const;
 
 export const LEAD = {
-  text: 'Une inquiétude fréquente, rarement justifiée — voici quand le poids devient vraiment un sujet, et quand il ne l’est pas.',
+  text: 'Une inquiétude fréquente, rarement justifiée : voici quand le poids devient vraiment un sujet, et quand il ne l’est pas.',
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -60,7 +60,7 @@ export const FIGURES: Figure[] = [];
 
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Poids',
-  text: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg, soit ${totalMin} à ${totalMax} kg pour une installation de ${mid.panels} panneaux. Ce poids se répartit sur toute la surface du toit, jamais en un seul point — une charpente en bon état le supporte sans difficulté. Seules les toitures anciennes ou déjà fragilisées méritent une vérification préalable, généralement une simple inspection visuelle plutôt qu’une étude structurelle poussée.`,
+  text: `Un panneau solaire pèse environ ${PANEL_WEIGHT_MIN} à ${PANEL_WEIGHT_MAX} kg, soit ${totalMin} à ${totalMax} kg pour une installation de ${mid.panels} panneaux. Ce poids se répartit sur toute la surface du toit, jamais en un seul point : une charpente en bon état le supporte sans difficulté. Seules les toitures anciennes ou déjà fragilisées méritent une vérification préalable, généralement une simple inspection visuelle plutôt qu’une étude structurelle poussée.`,
 };
 
 /* Photo en cours de génération : emplacement nommé en attendant. */
@@ -99,7 +99,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Ma toiture doit-elle être renforcée avant l’installation ?',
-    text: 'Rarement pour une charpente en bon état — c’est surtout un sujet pour les toitures anciennes ou déjà fragilisées.',
+    text: 'Rarement pour une charpente en bon état : c’est surtout un sujet pour les toitures anciennes ou déjà fragilisées.',
     accent: true,
   },
   {
@@ -108,7 +108,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Comment savoir si ma charpente peut supporter des panneaux ?',
-    text: 'Une vérification visuelle par un professionnel suffit dans la grande majorité des cas — une étude structurelle poussée n’est nécessaire que pour les cas douteux.',
+    text: 'Une vérification visuelle par un professionnel suffit dans la grande majorité des cas : une étude structurelle poussée n’est nécessaire que pour les cas douteux.',
   },
 ];
 

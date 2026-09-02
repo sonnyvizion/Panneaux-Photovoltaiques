@@ -30,7 +30,7 @@ export const HERO = {
   badge: 'Installation',
   title: 'Comment se passe l’installation de panneaux solaires ?',
   answer:
-    'Trois questions dans l’ordre : votre toiture peut-elle les recevoir, où les poser, et qui les pose. Une installation résidentielle classique tient en une à deux journées de chantier — l’essentiel du travail se joue avant, dans l’étude.',
+    'Trois questions dans l’ordre : votre toiture peut-elle les recevoir, où les poser, et qui les pose. Une installation résidentielle classique tient en une à deux journées de chantier. L’essentiel du travail se joue avant, dans l’étude.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   /* ⚠️ Photo empruntée à la page « Trouver un pro » faute de visuel dédié au
      hub (CLAUDE.md, « À compléter »). */
@@ -63,7 +63,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Faut-il un permis d’urbanisme ?',
     answer:
-      'Dans la majorité des cas résidentiels, non — la pose en surimposition sur une toiture existante est généralement dispensée. Les exceptions concernent surtout les biens classés, les zones protégées et l’intégration en toiture. Votre commune reste l’autorité qui tranche.',
+      'Dans la majorité des cas résidentiels, non : la pose en surimposition sur une toiture existante est généralement dispensée. Les exceptions concernent surtout les biens classés, les zones protégées et l’intégration en toiture. Votre commune reste l’autorité qui tranche.',
   },
   {
     question: 'Puis-je installer les panneaux moi-même ?',

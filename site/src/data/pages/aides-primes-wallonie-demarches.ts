@@ -39,7 +39,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Contrairement à Bruxelles, il n'y a pas de certificats à demander en Wallonie — mais les étapes administratives restent incontournables pour que votre installation soit en règle.",
+  text: "Contrairement à Bruxelles, il n'y a pas de certificats à demander en Wallonie, mais les étapes administratives restent incontournables pour que votre installation soit en règle.",
   note: 'Les quatre étapes, dans l’ordre où elles se présentent.',
 } as const;
 

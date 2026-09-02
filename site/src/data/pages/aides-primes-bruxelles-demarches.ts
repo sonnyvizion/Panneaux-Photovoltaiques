@@ -35,13 +35,13 @@ export const HERO = {
   badge: 'Aides & Primes',
   title: 'Les démarches pour toucher vos certificats verts à Bruxelles',
   answer:
-    "À Bruxelles, il faut faire certifier l'installation (RESCert), encoder les index de production sur la plateforme Green Meter de Sibelga, puis laisser Brugel octroyer les certificats verts — quatre fois par an, dans les quinze jours calendrier suivant l'encodage.",
+    "À Bruxelles, il faut faire certifier l'installation (RESCert), encoder les index de production sur la plateforme Green Meter de Sibelga, puis laisser Brugel octroyer les certificats verts, quatre fois par an, dans les quinze jours calendrier suivant l'encodage.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Toitures bruxelloises en enfilade avec panneaux solaires dans un quartier résidentiel dense',
 } as const;
 
 export const LEAD = {
-  text: "Trois étapes, trois interlocuteurs différents. C'est justement là que la plupart des propriétaires se perdent — Sibelga et Brugel ne sont pas la même chose, et personne ne vous le rappelle nulle part. Voici comment ça se déroule concrètement, et ce qu'on prend en charge pour vous.",
+  text: "Trois étapes, trois interlocuteurs différents. C'est justement là que la plupart des propriétaires se perdent : Sibelga et Brugel ne sont pas la même chose, et personne ne vous le rappelle nulle part. Voici comment ça se déroule concrètement, et ce qu'on prend en charge pour vous.",
   note: 'Les trois étapes, dans l’ordre où elles se présentent.',
 } as const;
 
@@ -58,12 +58,12 @@ export const TIMELINE: TimelineStep[] = [
   },
   {
     title: 'Déclaration Sibelga',
-    text: 'Le relevé des index de production se fait via la plateforme Sibelga, aussi appelée « greenmeter ». C’est une étape que beaucoup de propriétaires trouvent fastidieuse — notre équipe s’en charge directement avec vous.',
+    text: 'Le relevé des index de production se fait via la plateforme Sibelga, aussi appelée « greenmeter ». C’est une étape que beaucoup de propriétaires trouvent fastidieuse. Notre équipe s’en charge directement avec vous.',
     badge: 'Pris en charge par notre équipe',
   },
   {
     title: 'Demande auprès de Brugel',
-    text: 'Sur base des index transmis par Sibelga, Brugel calcule et octroie vos certificats verts. Sibelga vous invite à encoder vos index quatre fois par an — en mars, juin, septembre et décembre — et l’octroi suit dans les quinze jours calendrier.',
+    text: 'Sur base des index transmis par Sibelga, Brugel calcule et octroie vos certificats verts. Sibelga vous invite à encoder vos index quatre fois par an, en mars, juin, septembre et décembre ; l’octroi suit dans les quinze jours calendrier.',
   },
 ];
 
@@ -71,23 +71,23 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Quelle est la différence entre Sibelga et Brugel ?',
     answer:
-      'Sibelga est le gestionnaire du réseau de distribution à Bruxelles — c’est lui qui relève les index de production de votre installation. Brugel est le régulateur régional qui calcule et délivre les certificats verts sur base de ces relevés. Deux organismes, deux rôles distincts, mais un seul dossier à suivre.',
+      'Sibelga est le gestionnaire du réseau de distribution à Bruxelles : c’est lui qui relève les index de production de votre installation. Brugel est le régulateur régional qui calcule et délivre les certificats verts sur base de ces relevés. Deux organismes, deux rôles distincts, mais un seul dossier à suivre.',
     open: true,
   },
   {
     question: 'À quelle fréquence dois-je déclarer ma production ?',
     answer:
-      'Quatre fois par an : Sibelga vous envoie un e-mail en mars, juin, septembre et décembre pour vous inviter à encoder votre index sur Green Meter. Rien ne vous oblige à répondre à chaque fois — espacer les encodages allège les démarches, mais retarde d’autant l’octroi de vos certificats.',
+      'Quatre fois par an : Sibelga vous envoie un e-mail en mars, juin, septembre et décembre pour vous inviter à encoder votre index sur Green Meter. Rien ne vous oblige à répondre à chaque fois : espacer les encodages allège les démarches, mais retarde d’autant l’octroi de vos certificats.',
   },
   {
     question: 'Combien de temps avant de recevoir mes premiers certificats ?',
     answer:
-      'Une fois votre index encodé sur Green Meter, Brugel octroie les certificats dans les quinze jours calendrier — souvent le lundi suivant, Sibelga lui transmettant les données chaque semaine. Le délai réel se joue donc avant : sur la certification de l’installation, pas sur l’octroi.',
+      'Une fois votre index encodé sur Green Meter, Brugel octroie les certificats dans les quinze jours calendrier, souvent le lundi suivant, Sibelga lui transmettant les données chaque semaine. Le délai réel se joue donc avant : sur la certification de l’installation, pas sur l’octroi.',
   },
   {
     question: 'Dois-je gérer moi-même le raccordement Sibelga, ou votre équipe s’en occupe ?',
     answer:
-      'Notre équipe gère cette étape avec vous — ce n’est pas une prestation ponctuelle, c’est une démarche qu’on accompagne pour tous nos clients bruxellois. Vous n’avez pas à naviguer seul entre les plateformes.',
+      'Notre équipe gère cette étape avec vous : ce n’est pas une prestation ponctuelle, c’est une démarche qu’on accompagne pour tous nos clients bruxellois. Vous n’avez pas à naviguer seul entre les plateformes.',
   },
 ];
 

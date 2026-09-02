@@ -28,13 +28,13 @@ export const HERO = {
   badge: 'Aides & Primes',
   title: 'La fin du compteur qui tourne à l’envers en Flandre',
   answer:
-    'Depuis janvier 2021, la Flandre a mis fin au compteur qui tourne à l’envers pour tous les propriétaires de panneaux solaires — y compris ceux installés après cette date. Il est remplacé par le tarif d’injection, basé sur un compteur digital.',
+    'Depuis janvier 2021, la Flandre a mis fin au compteur qui tourne à l’envers pour tous les propriétaires de panneaux solaires, y compris ceux installés après cette date. Il est remplacé par le tarif d’injection, basé sur un compteur digital.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Compteur électrique digital moderne dans un coffret résidentiel avec toiture solaire en arrière-plan',
 } as const;
 
 export const LEAD = {
-  text: "C'est l'un des sujets les plus mal compris du solaire en Belgique : beaucoup de gens pensent encore que leur compteur va « tourner à l'envers » quand ils produisent plus qu'ils ne consomment. En Flandre, ce n'est plus vrai depuis 2021 — voici ce qui a changé, et pourquoi.",
+  text: "C'est l'un des sujets les plus mal compris du solaire en Belgique : beaucoup de gens pensent encore que leur compteur va « tourner à l'envers » quand ils produisent plus qu'ils ne consomment. En Flandre, ce n'est plus vrai depuis 2021 : voici ce qui a changé, et pourquoi.",
   note: 'Basculez d’un mécanisme à l’autre ci-dessous.',
 } as const;
 
@@ -102,7 +102,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Quelles aides restent en Flandre ?',
-    text: 'Le tarif d’injection est aujourd’hui l’avantage principal — voyez ce qui subsiste à côté.',
+    text: 'Le tarif d’injection est aujourd’hui l’avantage principal : voyez ce qui subsiste à côté.',
     cta: { label: 'Voir les aides en Flandre', href: '/aides-primes/flandre' },
   },
   {
@@ -142,7 +142,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Mon compteur tourne encore à l’envers, est-ce normal en 2026 ?',
     answer:
-      'Si vous n’avez pas encore de compteur digital, c’est possible temporairement — le déploiement est encore en cours chez Fluvius. Mais le principe du « compteur qui tourne à l’envers » n’est plus légalement en vigueur depuis 2021, quel que soit votre compteur physique actuel.',
+      'Si vous n’avez pas encore de compteur digital, c’est possible temporairement : le déploiement est encore en cours chez Fluvius. Mais le principe du « compteur qui tourne à l’envers » n’est plus légalement en vigueur depuis 2021, quel que soit votre compteur physique actuel.',
     open: true,
   },
   {

@@ -90,6 +90,18 @@ Trois pièges connus :
   `/rentabilite-prix/amortissement`, pas `/rentabilite-prix`).
 - Vérifie que la destination est publiée (`published` dans `src/data/site.ts`).
 
+## Règle de ponctuation : pas de tiret cadratin dans le texte visible
+
+Le site n'utilise **plus de « — » dans ses textes** (décision client du
+2026-09-02, 377 occurrences retirées). N'en réintroduis pas. Selon le rôle :
+deux-points pour une explication, virgules pour une incise, point pour deux
+idées autonomes, parenthèses pour une énumération intercalée.
+
+Cela ne vaut **que pour le texte visible**. Les commentaires de code gardent les
+leurs, et trois « — » subsistent comme **glyphes de remplissage** : le signe
+« sans objet » de `OptionComparator`, et les deux valeurs absentes de
+`ReportDocument`. Ce ne sont pas de la ponctuation.
+
 ## Ce que tu rends
 
 Les modifications, plus **ce bloc exactement**, sans prose autour :

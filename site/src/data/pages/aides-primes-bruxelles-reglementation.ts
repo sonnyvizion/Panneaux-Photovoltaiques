@@ -86,7 +86,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Les certificats verts bruxellois, ça rapporte combien ?',
-    text: 'C’est le mécanisme que ce certificat conditionne — sans RESCert, il n’y a rien à toucher.',
+    text: 'C’est le mécanisme que ce certificat conditionne : sans RESCert, il n’y a rien à toucher.',
     cta: { label: 'Voir les certificats verts', href: '/aides-primes/bruxelles' },
   },
   {
@@ -115,7 +115,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Ça change quoi pour les installations existantes ?',
-    text: 'La règle s’applique aux nouvelles installations à partir de 2026 — les installations déjà en service ne sont pas concernées rétroactivement.',
+    text: 'La règle s’applique aux nouvelles installations à partir de 2026 : les installations déjà en service ne sont pas concernées rétroactivement.',
   },
 ];
 
@@ -132,7 +132,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Qu’est-ce qu’un installateur certifié RESCert exactement ?',
     answer:
-      'Un professionnel qui a suivi la formation RESCert PV et obtenu l’accréditation reconnue par la Région bruxelloise. C’est lui — et lui seul — qui peut délivrer le certificat de conformité devenu obligatoire au 1ᵉʳ janvier 2026 pour les installations de 5 kWc ou moins.',
+      'Un professionnel qui a suivi la formation RESCert PV et obtenu l’accréditation reconnue par la Région bruxelloise. C’est lui, et lui seul, qui peut délivrer le certificat de conformité devenu obligatoire au 1ᵉʳ janvier 2026 pour les installations de 5 kWc ou moins.',
     open: true,
   },
   {

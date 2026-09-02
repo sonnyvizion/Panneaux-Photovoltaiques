@@ -63,37 +63,37 @@ export const MANUAL_SEO: Readonly<Record<string, PageSeo>> = {
       'Combien produirait votre toit, combien ça coûterait, en combien de temps c’est amorti : votre estimation en quelques questions, gratuite et sans engagement.',
   },
   '/contact': {
-    title: 'Nous contacter — Belgreen',
+    title: 'Nous contacter | Belgreen',
     description:
       'Parlez directement à l’équipe qui installera vos panneaux : pas d’intermédiaire, pas de revente de vos données à des installateurs partenaires.',
   },
   '/realisations': {
-    title: 'Nos chantiers photovoltaïques — Belgreen',
+    title: 'Nos chantiers photovoltaïques | Belgreen',
     description:
       'Des installations que nous avons posées nous-mêmes en Belgique : puissance, production réelle et configuration de toiture, chantier par chantier.',
   },
   '/devis': {
-    title: 'Recevoir mon devis — Belgreen',
+    title: 'Recevoir mon devis | Belgreen',
     description:
-      'Recevez un devis de l’équipe qui posera vos panneaux, établi sur votre toiture réelle et votre consommation — sans intermédiaire ni revente de données.',
+      'Recevez un devis de l’équipe qui posera vos panneaux, établi sur votre toiture réelle et votre consommation, sans intermédiaire ni revente de données.',
   },
   '/etude': {
-    title: 'Réserver mon étude gratuite — Belgreen',
+    title: 'Réserver mon étude gratuite | Belgreen',
     description:
       'Une étude de toiture gratuite et sans engagement, menée par nos installateurs certifiés Enphase, pour valider l’estimation faite par le simulateur.',
   },
   '/rapport': {
-    title: 'Recevoir mon estimation par e-mail — Belgreen',
+    title: 'Recevoir mon estimation par e-mail | Belgreen',
     description:
       'Recevez le détail de votre estimation photovoltaïque par e-mail : production, coût, économies annuelles et primes applicables dans votre région.',
   },
   '/rapport/document': {
-    title: 'Votre estimation photovoltaïque — Belgreen',
+    title: 'Votre estimation photovoltaïque | Belgreen',
     description:
       'Le détail de votre estimation : production annuelle, coût de l’installation, économies attendues et courbe d’amortissement sur vingt-cinq ans.',
   },
   '/design-system': {
-    title: 'Design system — QA interne',
+    title: 'Design system : QA interne',
     description:
       'Inventaire des composants, des couleurs et des échelles typographiques du site. Page de contrôle interne, sans contenu destiné aux visiteurs.',
   },

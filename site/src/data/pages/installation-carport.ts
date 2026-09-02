@@ -22,20 +22,20 @@ export const HERO = {
   badge: 'Installation',
   title: 'Le carport solaire : abri et production combinés',
   answer:
-    'Un carport solaire combine abri pour véhicule et production d’électricité — une solution idéale pour qui veut aussi recharger une voiture électrique directement sous ses panneaux.',
+    'Un carport solaire combine abri pour véhicule et production d’électricité, une solution idéale pour qui veut aussi recharger une voiture électrique directement sous ses panneaux.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Carport dont la toiture est entièrement composée de panneaux solaires, une voiture stationnée dessous',
 } as const;
 
 export const LEAD = {
-  text: 'Deux besoins réglés d’un coup — abriter la voiture, produire de l’électricité — avec un vrai bonus si cette électricité sert justement à la recharger.',
+  text: 'Deux besoins réglés d’un coup : abriter la voiture, produire de l’électricité. Avec un vrai bonus si cette électricité sert justement à la recharger.',
   note: 'Le principe, en une image.',
 } as const;
 
 export const MODULE = {
   title: 'Une structure qui produit',
   caption:
-    'Le carport ne dépend d’aucune toiture existante : c’est une construction à part entière, donc libre de son orientation et de son inclinaison. C’est aussi ce qui explique son coût — la structure porteuse s’ajoute au prix des panneaux.',
+    'Le carport ne dépend d’aucune toiture existante : c’est une construction à part entière, donc libre de son orientation et de son inclinaison. C’est aussi ce qui explique son coût : la structure porteuse s’ajoute au prix des panneaux.',
   bridgeLabel: 'Chiffrez votre carport',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -77,7 +77,7 @@ export const STACKED_IMAGE = 'carport-liste.jpg';
 export const FACTS: Fact[] = [
   {
     title: 'Un permis, généralement',
-    text: 'Un carport est une construction nouvelle, pas un ajout sur l’existant — à vérifier auprès de votre commune.',
+    text: 'Un carport est une construction nouvelle, pas un ajout sur l’existant, à vérifier auprès de votre commune.',
   },
   {
     title: 'Orientation libre',
@@ -93,7 +93,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Combien coûte une installation classique ?',
-    text: 'Le carport se compare toujours à une pose en toiture — voilà la base.',
+    text: 'Le carport se compare toujours à une pose en toiture : voilà la base.',
     cta: { label: 'Voir les prix 2026', href: '/rentabilite-prix' },
   },
 ];
@@ -112,11 +112,11 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Peut-on combiner carport solaire et borne de recharge ?',
-    text: 'Oui, c’est même l’un des cas d’usage les plus cohérents — voir la page dédiée « Voiture électrique ».',
+    text: 'Oui, c’est même l’un des cas d’usage les plus cohérents : voir la page dédiée « Voiture électrique ».',
   },
   {
     title: 'Faut-il un permis pour construire un carport avec panneaux ?',
-    text: 'Généralement oui, un carport étant une construction nouvelle plutôt qu’un ajout sur une structure existante — à vérifier auprès de votre commune.',
+    text: 'Généralement oui, un carport étant une construction nouvelle plutôt qu’un ajout sur une structure existante, à vérifier auprès de votre commune.',
   },
 ];
 

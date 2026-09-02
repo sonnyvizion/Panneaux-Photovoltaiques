@@ -42,7 +42,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Ni totalement interdit, ni totalement libre — voici la limite précise entre ce que vous pouvez faire vous-même et ce qui doit passer par un professionnel.',
+  text: 'Ni totalement interdit, ni totalement libre : voici la limite précise entre ce que vous pouvez faire vous-même et ce qui doit passer par un professionnel.',
   note: 'La limite, des deux côtés.',
 } as const;
 
@@ -87,7 +87,7 @@ export const FIGURES: Figure[] = [];
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Installer soi-même',
   text:
-    'Poser ses panneaux soi-même est légal en Belgique — sur la toiture ou la façade, sans professionnel obligatoire. Mais le raccordement au tableau électrique et le contrôle de conformité RGIE, eux, doivent toujours être réalisés par un professionnel avant la mise en service. Les kits plug & play homologués font exception : ils s’installent en autonomie complète. Seule certitude côté interdiction : l’auto-installation d’une batterie domestique, prohibée depuis la révision RGIE 2025.',
+    'Poser ses panneaux soi-même est légal en Belgique, sur la toiture ou la façade, sans professionnel obligatoire. Mais le raccordement au tableau électrique et le contrôle de conformité RGIE, eux, doivent toujours être réalisés par un professionnel avant la mise en service. Les kits plug & play homologués font exception : ils s’installent en autonomie complète. Seule certitude côté interdiction : l’auto-installation d’une batterie domestique, prohibée depuis la révision RGIE 2025.',
 };
 
 /* Photo en cours de génération : emplacement nommé en attendant. */
@@ -96,7 +96,7 @@ export const EDITORIAL_IMAGE = 'soi-meme-editorial.jpg';
 export const FACTS: Fact[] = [
   {
     title: 'L’économie est partielle',
-    text: 'Le raccordement et le contrôle restent facturés — le gain porte surtout sur la main-d’œuvre de pose.',
+    text: 'Le raccordement et le contrôle restent facturés : le gain porte surtout sur la main-d’œuvre de pose.',
   },
   {
     title: 'Un contrôle négatif bloque tout',
@@ -126,7 +126,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Puis-je vraiment poser mes panneaux moi-même légalement ?',
-    text: 'Oui, la pose physique sur la toiture est autorisée — c’est le raccordement électrique et le contrôle qui nécessitent un professionnel.',
+    text: 'Oui, la pose physique sur la toiture est autorisée : c’est le raccordement électrique et le contrôle qui nécessitent un professionnel.',
     accent: true,
   },
   {
@@ -139,7 +139,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Ça fait vraiment économiser, au final ?',
-    text: 'Une partie du coût seulement, puisque le raccordement et le contrôle restent obligatoirement facturés — le gain porte surtout sur la main-d’œuvre de pose elle-même.',
+    text: 'Une partie du coût seulement, puisque le raccordement et le contrôle restent obligatoirement facturés : le gain porte surtout sur la main-d’œuvre de pose elle-même.',
   },
 ];
 

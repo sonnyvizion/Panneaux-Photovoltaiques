@@ -11,12 +11,12 @@ export const FAQ_HOME: FaqItem[] = [
   {
     question: 'Le photovoltaïque est-il vraiment rentable pour ma maison ?',
     answer:
-      "Dans la majorité des cas en Belgique, oui — mais le délai d'amortissement dépend de votre consommation, de l'orientation de votre toit et des primes de votre région. Le simulateur vous donne une fourchette en deux minutes, sans laisser vos coordonnées.",
+      "Dans la majorité des cas en Belgique, oui, mais le délai d'amortissement dépend de votre consommation, de l'orientation de votre toit et des primes de votre région. Le simulateur vous donne une fourchette en deux minutes, sans laisser vos coordonnées.",
   },
   {
     question: 'Revendez-vous mes données à des installateurs partenaires ?',
     answer:
-      "Non. Belgreen/Belectric n'est pas un comparateur de devis : nous ne revendons ni ne partageons vos données avec des installateurs tiers. Quand vous demandez une estimation, c'est directement notre équipe — celle qui viendra poser vos panneaux — qui vous contacte. Personne d'autre n'a accès à vos coordonnées.",
+      "Non. Belgreen/Belectric n'est pas un comparateur de devis : nous ne revendons ni ne partageons vos données avec des installateurs tiers. Quand vous demandez une estimation, c'est directement notre équipe, celle qui viendra poser vos panneaux, qui vous contacte. Personne d'autre n'a accès à vos coordonnées.",
     open: true,
   },
   {

@@ -28,7 +28,7 @@ export const HERO = {
   badge: 'Aides & Primes',
   title: 'Installer des panneaux solaires en copropriété : comment ça se décide',
   answer:
-    "Installer des panneaux solaires en copropriété est possible, mais nécessite l'accord de l'assemblée générale des copropriétaires — la toiture étant une partie commune.",
+    "Installer des panneaux solaires en copropriété est possible, mais nécessite l'accord de l'assemblée générale des copropriétaires, la toiture étant une partie commune.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Immeuble à appartements dont la toiture plate est équipée de panneaux solaires',
@@ -66,7 +66,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'RÈGLEMENT DE COPROPRIÉTÉ',
     title: 'L’accord de l’assemblée d’abord',
     text:
-      'La toiture est une partie commune — c’est l’assemblée générale qui autorise l’installation, et le règlement de copropriété qui fixe la majorité requise et la répartition de l’électricité produite.',
+      'La toiture est une partie commune : c’est l’assemblée générale qui autorise l’installation, et le règlement de copropriété qui fixe la majorité requise et la répartition de l’électricité produite.',
   },
   {
     eyebrow: 'PERMIS D’URBANISME',
@@ -78,7 +78,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'RÉPARTITION',
     title: 'À définir entre copropriétaires',
     text:
-      'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun — à fixer dans le règlement avant de lancer le projet.',
+      'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun, à fixer dans le règlement avant de lancer le projet.',
   },
 ];
 
@@ -118,12 +118,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Qui décide : l’unanimité ou une majorité suffit ?',
-    text: 'Ça dépend du règlement de copropriété et du type de décision (installation simple vs modification structurelle) — à vérifier avec le syndic.',
+    text: 'Ça dépend du règlement de copropriété et du type de décision (installation simple vs modification structurelle), à vérifier avec le syndic.',
     accent: true,
   },
   {
     title: 'Comment répartir l’électricité produite ?',
-    text: 'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun — à définir en amont dans le règlement.',
+    text: 'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun, à définir en amont dans le règlement.',
   },
   {
     title: 'Faut-il un permis d’urbanisme en copropriété ?',
@@ -141,7 +141,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Qui décide en copropriété ?',
     answer:
-      'L’assemblée générale. La majorité requise dépend de votre règlement de copropriété et de la nature des travaux — votre syndic peut la confirmer.',
+      'L’assemblée générale. La majorité requise dépend de votre règlement de copropriété et de la nature des travaux : votre syndic peut la confirmer.',
     open: true,
   },
   {
@@ -152,7 +152,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Faut-il un permis d’urbanisme en copropriété ?',
     answer:
-      'Pas si l’aspect extérieur visible depuis la rue reste inchangé — la règle est la même que pour une maison individuelle.',
+      'Pas si l’aspect extérieur visible depuis la rue reste inchangé : la règle est la même que pour une maison individuelle.',
   },
   {
     question: 'Qui paie si tous les copropriétaires n’y participent pas ?',

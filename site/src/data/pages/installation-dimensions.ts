@@ -51,7 +51,7 @@ export const LEAD = {
 
 export const MODULE = {
   title: `Ce que ${midSurface} m² représentent`,
-  caption: `Une installation de ${mid.panels} panneaux occupe environ ${midSurface} m² — l’équivalent d’une grande pièce à vivre, posée sur un pan de toiture. Ce n’est pas la surface totale du toit qui compte, mais la surface utile une fois retirés cheminée, fenêtres de toit et zones d’ombre.`,
+  caption: `Une installation de ${mid.panels} panneaux occupe environ ${midSurface} m², l’équivalent d’une grande pièce à vivre, posée sur un pan de toiture. Ce n’est pas la surface totale du toit qui compte, mais la surface utile une fois retirés cheminée, fenêtres de toit et zones d’ombre.`,
   bridgeLabel: 'Ce qui tient sur votre toiture',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -98,7 +98,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Tous les panneaux ne se valent pas',
-    text: 'Les modèles haute puissance sont parfois légèrement plus grands — à puissance égale, ils prennent moins de place au total.',
+    text: 'Les modèles haute puissance sont parfois légèrement plus grands : à puissance égale, ils prennent moins de place au total.',
   },
 ];
 
@@ -110,7 +110,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Et le poids sur la charpente ?',
-    text: 'Trente mètres carrés de panneaux, ça pèse — beaucoup moins qu’on ne l’imagine.',
+    text: 'Trente mètres carrés de panneaux, ça pèse. Mais beaucoup moins qu’on ne l’imagine.',
     cta: { label: 'Voir le poids', href: '/installation/poids' },
   },
 ];
@@ -124,12 +124,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Ma toiture est petite, combien de panneaux puis-je installer ?',
-    text: 'Ça dépend de la surface utile réelle une fois les obstacles retirés (cheminée, fenêtre de toit, zones d’ombre) — souvent moins que la surface totale du toit.',
+    text: 'Ça dépend de la surface utile réelle une fois les obstacles retirés (cheminée, fenêtre de toit, zones d’ombre), souvent moins que la surface totale du toit.',
     accent: true,
   },
   {
     title: 'Les panneaux ont-ils tous la même taille ?',
-    text: 'Non, ça varie selon le fabricant et la puissance du panneau — les modèles haute puissance sont parfois légèrement plus grands.',
+    text: 'Non, ça varie selon le fabricant et la puissance du panneau : les modèles haute puissance sont parfois légèrement plus grands.',
   },
   {
     title: 'Faut-il laisser de l’espace entre les panneaux ?',
@@ -141,7 +141,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Ma toiture est petite, combien de panneaux puis-je installer ?',
     answer:
-      'Ça dépend de la surface utile réelle, une fois retirés les obstacles — souvent moins que la surface totale du toit.',
+      'Ça dépend de la surface utile réelle, une fois retirés les obstacles : souvent moins que la surface totale du toit.',
     open: true,
   },
   {

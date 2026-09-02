@@ -640,7 +640,7 @@ export function initSimulator(root: ParentNode = document): void {
     }
     if (regionEcho) {
       regionEcho.textContent = detected
-        ? `${regionLabel(detected)} — les aides et le tarif d’injection y sont propres à cette région.`
+        ? `${regionLabel(detected)} : les aides et le tarif d’injection y sont propres à cette région.`
         : 'Les aides et le tarif d’injection changent du tout au tout selon la région.';
     }
   };

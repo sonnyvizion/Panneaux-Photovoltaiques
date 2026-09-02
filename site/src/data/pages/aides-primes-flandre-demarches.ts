@@ -34,7 +34,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Ici, tout passe par un seul interlocuteur — Fluvius — ce qui simplifie les démarches par rapport à Bruxelles.',
+  text: 'Ici, tout passe par un seul interlocuteur, Fluvius, ce qui simplifie les démarches par rapport à Bruxelles.',
   note: 'Les trois étapes, dans l’ordre où elles se présentent.',
 } as const;
 
@@ -78,7 +78,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Combien de temps prend l’installation du compteur ?',
     answer:
-      'Ça dépend du calendrier de déploiement dans votre zone — comptez plusieurs semaines à quelques mois.',
+      'Ça dépend du calendrier de déploiement dans votre zone : comptez plusieurs semaines à quelques mois.',
   },
 ];
 

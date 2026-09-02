@@ -53,7 +53,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Le prix dépend surtout de trois facteurs : la puissance installée (en kWc), le type de panneau, et si votre toiture nécessite des travaux de renfort. Sur un même toit, doubler la puissance ne double pas le prix — une partie du chantier ne dépend pas du nombre de panneaux.",
+  text: "Le prix dépend surtout de trois facteurs : la puissance installée (en kWc), le type de panneau, et si votre toiture nécessite des travaux de renfort. Sur un même toit, doubler la puissance ne double pas le prix : une partie du chantier ne dépend pas du nombre de panneaux.",
   note: 'Testez ci-dessous comment le prix évolue selon la puissance.',
 } as const;
 
@@ -124,7 +124,7 @@ export const BRIDGES: Bridge[] = [
        ce pont vise calcule des délais allant du simple au « jamais amorti »
        selon la région ET le taux d'autoconsommation : promettre un chiffre ici
        ferait mentir la page d'arrivée. */
-    text: 'Cela dépend beaucoup moins du prix que de votre région et de la part que vous consommez vous-même — les écarts vont du simple au « jamais amorti ».',
+    text: 'Cela dépend beaucoup moins du prix que de votre région et de la part que vous consommez vous-même : les écarts vont du simple au « jamais amorti ».',
     cta: { label: 'Voir le calcul de rentabilité', href: '/rentabilite-prix/amortissement' },
   },
 ];
@@ -162,7 +162,7 @@ export const DEEP_DIVE: DeepDiveItem[] = [
   },
   {
     title: 'Mono vs polycristallin',
-    text: 'Le monocristallin coûte plus cher au Wc mais produit davantage par m² — il est plus intéressant sur les petites toitures, où la surface est la contrainte. Sur un grand toit dégagé, le polycristallin reste défendable.',
+    text: 'Le monocristallin coûte plus cher au Wc mais produit davantage par m² : il est plus intéressant sur les petites toitures, où la surface est la contrainte. Sur un grand toit dégagé, le polycristallin reste défendable.',
     open: true,
   },
   {
@@ -188,7 +188,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Pourquoi deux devis pour la même puissance ont des prix différents ?',
     answer:
-      "Deux installateurs peuvent proposer des panneaux ou des onduleurs de qualité différente, et inclure ou non certains travaux annexes. Comparez toujours des devis à puissance, marque et garanties équivalentes — c'est la seule comparaison qui a un sens.",
+      "Deux installateurs peuvent proposer des panneaux ou des onduleurs de qualité différente, et inclure ou non certains travaux annexes. Comparez toujours des devis à puissance, marque et garanties équivalentes : c'est la seule comparaison qui a un sens.",
     open: true,
   },
   {

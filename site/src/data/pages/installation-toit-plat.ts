@@ -28,14 +28,14 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Pas de pente naturelle ne veut pas dire pas d’inclinaison — juste une structure en plus pour la recréer artificiellement.',
+  text: 'Pas de pente naturelle ne veut pas dire pas d’inclinaison : juste une structure en plus pour la recréer artificiellement.',
   note: 'La structure et l’espacement, en coupe.',
 } as const;
 
 export const MODULE = {
   title: 'Une pente recréée, sans toucher à l’étanchéité',
   caption:
-    'Les panneaux reposent sur des châssis inclinés à 10-15°, maintenus par des blocs de béton posés sur la membrane. Rien n’est percé. Entre deux rangées, un espace est laissé libre pour que la première ne fasse pas d’ombre à la suivante, surtout en hiver quand le soleil est bas — une contrainte propre au toit plat qui réduit légèrement la densité de panneaux par rapport à un toit incliné bien orienté.',
+    'Les panneaux reposent sur des châssis inclinés à 10-15°, maintenus par des blocs de béton posés sur la membrane. Rien n’est percé. Entre deux rangées, un espace est laissé libre pour que la première ne fasse pas d’ombre à la suivante, surtout en hiver quand le soleil est bas, une contrainte propre au toit plat qui réduit légèrement la densité de panneaux par rapport à un toit incliné bien orienté.',
   bridgeLabel: 'Ce que votre toit plat peut accueillir',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -85,12 +85,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Le lestage abîme-t-il l’étanchéité du toit ?',
-    text: 'Non, c’est justement l’intérêt du lestage — aucun perçage, la membrane d’étanchéité reste intacte.',
+    text: 'Non, c’est justement l’intérêt du lestage : aucun perçage, la membrane d’étanchéité reste intacte.',
     accent: true,
   },
   {
     title: 'Peut-on installer plus de panneaux sur un toit plat qu’incliné ?',
-    text: 'Pas nécessairement — l’espacement obligatoire entre rangées pour éviter les ombres portées réduit la densité effective par rapport à un toit incliné bien orienté.',
+    text: 'Pas nécessairement : l’espacement obligatoire entre rangées pour éviter les ombres portées réduit la densité effective par rapport à un toit incliné bien orienté.',
   },
   {
     title: 'Faut-il un accès spécifique pour l’entretien ?',

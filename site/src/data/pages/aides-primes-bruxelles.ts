@@ -49,7 +49,7 @@ export const SEO: PageSeo = {
 export const HERO = {
   badge: 'Aides & Primes',
   title: 'Certificats verts à Bruxelles : le seul vrai avantage financier en Belgique',
-  answer: `Bruxelles est la seule région belge à encore octroyer des certificats verts pour les nouvelles installations photovoltaïques — environ ${formatEuro(
+  answer: `Bruxelles est la seule région belge à encore octroyer des certificats verts pour les nouvelles installations photovoltaïques : environ ${formatEuro(
     Math.round(yearlyRevenue(CERT_DEFAULT)),
   )} de revenus par an pendant ${CERT_YEARS} ans pour une installation de ${CERT_DEFAULT} kWc.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
@@ -58,7 +58,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "En Wallonie et en Flandre, ce système a disparu depuis longtemps. À Bruxelles, il existe toujours — et c'est un vrai revenu, pas juste une réduction de facture. Voici comment ça marche, et combien ça représente concrètement pour vous.",
+  text: "En Wallonie et en Flandre, ce système a disparu depuis longtemps. À Bruxelles, il existe toujours. Et c'est un vrai revenu, pas juste une réduction de facture. Voici comment ça marche, et combien ça représente concrètement pour vous.",
   note: 'Testez ci-dessous ce que ça représente selon votre puissance.',
 } as const;
 
@@ -105,7 +105,7 @@ export const FIGURES: Figure[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Au-delà de 100 kWc',
-    text: 'Plus aucun certificat vert n’est octroyé — l’installation est jugée assez rentable sans, avec un retour sur investissement visé de 7 ans.',
+    text: 'Plus aucun certificat vert n’est octroyé : l’installation est jugée assez rentable sans, avec un retour sur investissement visé de 7 ans.',
   },
   {
     title: 'RESCert PV obligatoire',
@@ -120,7 +120,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Le raccordement Sibelga vous inquiète ?',
-    text: 'C’est l’étape que la plupart des propriétaires redoutent — notre équipe s’en charge avec vous, de bout en bout.',
+    text: 'C’est l’étape que la plupart des propriétaires redoutent. Notre équipe s’en charge avec vous, de bout en bout.',
     cta: { label: 'Voir le détail des démarches', href: '/aides-primes/bruxelles/demarches' },
   },
   {
@@ -160,7 +160,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Comment vendre mes certificats verts, à qui ?',
     answer:
-      'Vous les revendez à un fournisseur d’électricité, qui a l’obligation légale d’en détenir un certain quota. Le prix suit le marché : comptez entre 65 € — le rachat garanti par Elia, qui sert de plancher — et environ 90 € par certificat.',
+      'Vous les revendez à un fournisseur d’électricité, qui a l’obligation légale d’en détenir un certain quota. Le prix suit le marché : comptez entre 65 € et environ 90 € par certificat, le plancher de 65 € étant le rachat garanti par Elia.',
     open: true,
   },
   {

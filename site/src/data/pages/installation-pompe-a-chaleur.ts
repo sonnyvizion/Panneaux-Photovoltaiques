@@ -26,7 +26,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Deux investissements qui se renforcent l’un l’autre — la pompe à chaleur consomme de l’électricité au bon moment pour profiter pleinement de votre production solaire.',
+  text: 'Deux investissements qui se renforcent l’un l’autre : la pompe à chaleur consomme de l’électricité au bon moment pour profiter pleinement de votre production solaire.',
   note: 'Le flux, en une image.',
 } as const;
 
@@ -106,7 +106,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Faut-il surdimensionner l’installation solaire ?',
-    text: 'C’est souvent pertinent, une PAC étant un des postes de consommation électrique les plus importants du foyer — une puissance solaire plus généreuse maximise l’autoconsommation.',
+    text: 'C’est souvent pertinent, une PAC étant un des postes de consommation électrique les plus importants du foyer : une puissance solaire plus généreuse maximise l’autoconsommation.',
     accent: true,
   },
   {
@@ -129,7 +129,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Une pompe à chaleur consomme-t-elle beaucoup d’électricité ?',
     answer:
-      'Oui, c’est généralement le premier poste électrique d’une maison équipée — d’où l’intérêt de la coupler au solaire.',
+      'Oui, c’est généralement le premier poste électrique d’une maison équipée, d’où l’intérêt de la coupler au solaire.',
   },
   {
     question: 'Peut-on ajouter une pompe à chaleur après coup ?',

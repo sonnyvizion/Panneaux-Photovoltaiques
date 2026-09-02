@@ -31,20 +31,20 @@ export const HERO = {
   badge: 'Installation',
   title: 'Le BIPV : des panneaux solaires intégrés à la toiture',
   answer:
-    'Le BIPV (Building Integrated Photovoltaics) intègre les panneaux directement dans le revêtement de toiture — comme des tuiles solaires — au lieu de les poser par-dessus. Plus esthétique, mais plus coûteux qu’une installation classique.',
+    'Le BIPV (Building Integrated Photovoltaics) intègre les panneaux directement dans le revêtement de toiture, comme des tuiles solaires, au lieu de les poser par-dessus. Plus esthétique, mais plus coûteux qu’une installation classique.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Toiture dont les panneaux solaires sont intégrés au ras de la couverture',
 } as const;
 
 export const LEAD = {
-  text: 'Pour qui privilégie l’esthétique ou doit respecter des contraintes patrimoniales, le BIPV est une alternative à connaître — à condition d’en accepter le surcoût.',
+  text: 'Pour qui privilégie l’esthétique ou doit respecter des contraintes patrimoniales, le BIPV est une alternative à connaître, à condition d’en accepter le surcoût.',
   note: 'Intégré ou posé par-dessus : la différence.',
 } as const;
 
 export const MODULE = {
   title: 'Intégré, pas superposé',
   caption:
-    'Une installation classique se pose sur la couverture existante, qui reste en place. Le BIPV la remplace : les modules deviennent la toiture elle-même. D’où l’aspect affleurant, apprécié en zone protégée — et d’où le surcoût, puisque le produit assume deux fonctions au lieu d’une. Le rendement reste comparable à un panneau classique à orientation égale.',
+    'Une installation classique se pose sur la couverture existante, qui reste en place. Le BIPV la remplace : les modules deviennent la toiture elle-même. D’où l’aspect affleurant, apprécié en zone protégée. Et d’où le surcoût, puisque le produit assume deux fonctions au lieu d’une. Le rendement reste comparable à un panneau classique à orientation égale.',
   bridgeLabel: 'Chiffrez votre projet',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -64,7 +64,7 @@ export const FIGURES: Figure[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Rendement comparable',
-    text: 'À orientation égale, globalement équivalent — même si certaines solutions BIPV restent sous les panneaux classiques les plus performants.',
+    text: 'À orientation égale, globalement équivalent, même si certaines solutions BIPV restent sous les panneaux classiques les plus performants.',
   },
   {
     title: 'Zone protégée',
@@ -80,7 +80,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Et le budget d’une installation standard ?',
-    text: 'Le BIPV se compare toujours à une installation classique — voilà le point de départ.',
+    text: 'Le BIPV se compare toujours à une installation classique : voilà le point de départ.',
     cta: { label: 'Voir les prix 2026', href: '/rentabilite-prix' },
   },
 ];
@@ -94,7 +94,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Le BIPV est-il vraiment plus cher ?',
-    text: 'Oui, généralement, parce qu’il remplace un matériau de toiture en plus de produire de l’électricité — le coût intègre les deux fonctions.',
+    text: 'Oui, généralement, parce qu’il remplace un matériau de toiture en plus de produire de l’électricité : le coût intègre les deux fonctions.',
     accent: true,
   },
   {

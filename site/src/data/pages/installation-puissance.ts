@@ -36,7 +36,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'kWc, kWh — deux unités qui se ressemblent mais ne mesurent pas la même chose. Voici la différence, en clair.',
+  text: 'kWc, kWh : deux unités qui se ressemblent mais ne mesurent pas la même chose. Voici la différence, en clair.',
   note: 'La différence entre les deux, en une image.',
 } as const;
 
@@ -65,7 +65,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'CAPACITÉ',
     title: 'Le kWc, une puissance maximale théorique',
     text:
-      'Mesuré en conditions de test standardisées (1000 W/m², 25 °C) — ce que l’installation peut produire au mieux, pas ce qu’elle produit réellement au quotidien.',
+      'Mesuré en conditions de test standardisées (1000 W/m², 25 °C) : ce que l’installation peut produire au mieux, pas ce qu’elle produit réellement au quotidien.',
   },
   {
     eyebrow: 'PRODUCTION',
@@ -93,7 +93,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Le prix n’est pas proportionnel',
-    text: 'Le coût par Wc diminue quand la puissance installée augmente — une partie du chantier ne dépend pas du nombre de panneaux.',
+    text: 'Le coût par Wc diminue quand la puissance installée augmente : une partie du chantier ne dépend pas du nombre de panneaux.',
   },
 ];
 
@@ -105,7 +105,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Et ça coûte combien, par kWc ?',
-    text: 'Le prix au watt-crête baisse avec la taille de l’installation — voyez les fourchettes 2026.',
+    text: 'Le prix au watt-crête baisse avec la taille de l’installation. Voyez les fourchettes 2026.',
     cta: { label: 'Voir les prix 2026', href: '/rentabilite-prix' },
   },
 ];
@@ -124,11 +124,11 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Comment savoir combien de kWc me faut-il ?',
-    text: 'Ça dépend de votre consommation annuelle, de votre surface de toiture disponible et de son orientation — c’est exactement ce que calcule le simulateur.',
+    text: 'Ça dépend de votre consommation annuelle, de votre surface de toiture disponible et de son orientation : c’est exactement ce que calcule le simulateur.',
   },
   {
     title: 'Le prix est-il proportionnel à la puissance ?',
-    text: 'Pas tout à fait — le prix par Wc diminue généralement à mesure que la puissance installée augmente (économies d’échelle).',
+    text: 'Pas tout à fait : le prix par Wc diminue généralement à mesure que la puissance installée augmente (économies d’échelle).',
   },
 ];
 

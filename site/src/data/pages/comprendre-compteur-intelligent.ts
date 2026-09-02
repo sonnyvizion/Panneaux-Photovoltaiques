@@ -30,7 +30,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Un objet technique qu’on remarque à peine, mais sans lequel les mécanismes régionaux — prosumer, injection, certificats verts — ne peuvent pas fonctionner.",
+  text: "Un objet technique qu’on remarque à peine, mais sans lequel les mécanismes régionaux ne peuvent pas fonctionner : prosumer, injection, certificats verts.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -49,7 +49,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'RÔLE',
     title: 'Mesurer, pas seulement compter',
     text:
-      'Le compteur intelligent distingue ce que vous consommez de ce que vous injectez sur le réseau — une donnée que l’ancien compteur ne pouvait pas fournir.',
+      'Le compteur intelligent distingue ce que vous consommez de ce que vous injectez sur le réseau, une donnée que l’ancien compteur ne pouvait pas fournir.',
   },
   {
     eyebrow: 'OBLIGATION',
@@ -61,7 +61,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'GESTIONNAIRE',
     title: 'Gratuit, via votre GRD',
     text:
-      'La demande et l’installation sont prises en charge par votre gestionnaire de réseau — ORES, RESA, Fluvius ou Sibelga selon votre région.',
+      'La demande et l’installation sont prises en charge par votre gestionnaire de réseau : ORES, RESA, Fluvius ou Sibelga selon votre région.',
   },
 ];
 
@@ -100,15 +100,15 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "Combien de temps pour l’obtenir ?",
-    text: "Ça varie selon la région et le rythme de déploiement du gestionnaire de réseau — voir les pages démarches par région pour le détail.",
+    text: "Ça varie selon la région et le rythme de déploiement du gestionnaire de réseau. Voir les pages démarches par région pour le détail.",
   },
   {
     title: "Collecte-t-il mes données en détail ?",
-    text: "Il mesure les flux d’énergie nécessaires à la facturation — les modalités exactes de collecte varient selon le gestionnaire de réseau.",
+    text: "Il mesure les flux d’énergie nécessaires à la facturation : les modalités exactes de collecte varient selon le gestionnaire de réseau.",
   },
   {
     title: "Puis-je installer des panneaux sans lui ?",
-    text: "Techniquement oui pour la pose, mais l’activation des mécanismes de valorisation — tarif d’injection, certificats verts — nécessite ce compteur.",
+    text: "Techniquement oui pour la pose, mais l’activation des mécanismes de valorisation, tarif d’injection ou certificats verts, nécessite ce compteur.",
   },
 ];
 
@@ -127,7 +127,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Ai-je le choix de refuser ?",
     answer:
-      "Ça dépend de votre région et de la date de votre installation — voir la page « Fin du compteur inversé » pour le détail en Flandre.",
+      "Ça dépend de votre région et de la date de votre installation. Voir la page « Fin du compteur inversé » pour le détail en Flandre.",
   },
 ];
 

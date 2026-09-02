@@ -30,7 +30,7 @@ export const HERO = {
   badge: 'Comprendre',
   title: "La borne de recharge : un complément naturel au solaire",
   answer:
-    "Une borne de recharge permet de recharger un véhicule électrique plus rapidement et plus efficacement qu’une prise domestique classique — et de le faire avec l’électricité produite par vos panneaux solaires.",
+    "Une borne de recharge permet de recharger un véhicule électrique plus rapidement et plus efficacement qu’une prise domestique classique, et de le faire avec l’électricité produite par vos panneaux solaires.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Borne de recharge murale et son câble enroulé, une voiture stationnée à côté dans une allée bordée d’une haie",
@@ -54,13 +54,13 @@ export const FIGURES: Figure[] = [];
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Borne de recharge',
   text:
-    'Une borne de recharge n’est pas obligatoire pour recharger une voiture électrique, mais elle change tout. La vitesse d’abord, nettement supérieure à une prise domestique classique. La sécurité ensuite, avec une installation dédiée plutôt qu’un branchement de fortune. Et pour qui a des panneaux solaires, le vrai plus : certains modèles ajustent automatiquement leur puissance selon ce que le toit produit à l’instant T — la voiture se recharge quand le soleil donne, pas au hasard.',
+    'Une borne de recharge n’est pas obligatoire pour recharger une voiture électrique, mais elle change tout. La vitesse d’abord, nettement supérieure à une prise domestique classique. La sécurité ensuite, avec une installation dédiée plutôt qu’un branchement de fortune. Et pour qui a des panneaux solaires, le vrai plus : certains modèles ajustent automatiquement leur puissance selon ce que le toit produit à l’instant T. La voiture se recharge quand le soleil donne, pas au hasard.',
   imageAlt:
     'Voiture électrique grise branchée à une borne de recharge murale blanche, sur la façade d’une maison, à côté de la porte de garage',
 };
 
 export const FACTS: Fact[] = [
-  { title: "Indépendante du solaire", text: "Une borne fonctionne sans panneaux — le couplage relève de l’économie, pas de la technique." },
+  { title: "Indépendante du solaire", text: "Une borne fonctionne sans panneaux : le couplage relève de l’économie, pas de la technique." },
   { title: "Rarement un permis", text: "Pas de permis en général pour une installation murale standard, mais les règles varient d’une commune à l’autre." },
 ];
 
@@ -86,12 +86,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Faut-il une borne spécifique pour le solaire ?",
-    text: "Certains modèles intelligents ajustent automatiquement la puissance de recharge selon la production solaire disponible — un vrai plus pour maximiser l’autoconsommation, mais pas indispensable pour recharger tout court.",
+    text: "Certains modèles intelligents ajustent automatiquement la puissance de recharge selon la production solaire disponible, un vrai plus pour maximiser l’autoconsommation, mais pas indispensable pour recharger tout court.",
     accent: true,
   },
   {
     title: "La borne consomme-t-elle plus qu’une prise ?",
-    text: "Non, elle ne consomme pas plus d’énergie pour un même trajet — elle la délivre juste plus rapidement et plus efficacement.",
+    text: "Non, elle ne consomme pas plus d’énergie pour un même trajet : elle la délivre juste plus rapidement et plus efficacement.",
   },
   {
     title: "Peut-on installer une borne sans panneaux ?",
@@ -113,7 +113,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Puis-je recharger la nuit avec mes panneaux ?",
     answer:
-      "Non, sans batterie de stockage — voir la page dédiée « Voiture électrique » pour le détail.",
+      "Non, sans batterie de stockage. Voir la page dédiée « Voiture électrique » pour le détail.",
   },
   {
     question: "La borne fonctionne-t-elle avec toutes les voitures ?",

@@ -54,7 +54,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "« Combien de panneaux » est souvent la première question concrète qu'on se pose — voici comment ce chiffre se calcule, et pourquoi il n'est pas fixe.",
+  text: "« Combien de panneaux » est souvent la première question concrète qu'on se pose : voici comment ce chiffre se calcule, et pourquoi il n'est pas fixe.",
   note: 'Testez ci-dessous comment le nombre évolue selon la puissance.',
 } as const;
 
@@ -101,7 +101,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Combien de place faut-il par panneau ?',
-    text: 'Environ 2 m² pièce — c’est ce qui décide du nombre que votre toiture peut vraiment accueillir.',
+    text: 'Environ 2 m² pièce : c’est ce qui décide du nombre que votre toiture peut vraiment accueillir.',
     cta: { label: 'Voir les dimensions', href: '/installation/dimensions' },
   },
   {
@@ -120,7 +120,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Plus de panneaux, c’est toujours mieux ?',
-    text: 'Non — au-delà de votre consommation réelle plus une marge raisonnable, les panneaux supplémentaires produisent un surplus faiblement valorisé (tarif d’injection ou prosumer selon la région), donc moins rentable.',
+    text: 'Non : au-delà de votre consommation réelle plus une marge raisonnable, les panneaux supplémentaires produisent un surplus faiblement valorisé (tarif d’injection ou prosumer selon la région), donc moins rentable.',
     accent: true,
   },
   {
@@ -133,7 +133,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Faut-il toujours viser sa consommation exacte ?',
-    text: 'Pas nécessairement — une installation légèrement surdimensionnée peut avoir du sens si vous prévoyez une pompe à chaleur ou une voiture électrique.',
+    text: 'Pas nécessairement : une installation légèrement surdimensionnée peut avoir du sens si vous prévoyez une pompe à chaleur ou une voiture électrique.',
   },
 ];
 
@@ -150,12 +150,12 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Plus de panneaux, c’est toujours mieux ?',
     answer:
-      'Non. Au-delà de votre consommation réelle plus une marge, la production supplémentaire part en surplus — faiblement valorisé par le tarif d’injection, et facturé en plus par le tarif prosumer en Wallonie.',
+      'Non. Au-delà de votre consommation réelle plus une marge, la production supplémentaire part en surplus : faiblement valorisé par le tarif d’injection, et facturé en plus par le tarif prosumer en Wallonie.',
   },
   {
     question: 'Puis-je ajouter des panneaux plus tard ?',
     answer:
-      'Oui, mais l’ajout se redéclare au gestionnaire de réseau, et l’onduleur doit pouvoir encaisser la puissance totale — sinon il faut le remplacer, ce qui pèse lourd dans le coût de l’extension.',
+      'Oui, mais l’ajout se redéclare au gestionnaire de réseau, et l’onduleur doit pouvoir encaisser la puissance totale. Sinon il faut le remplacer, ce qui pèse lourd dans le coût de l’extension.',
   },
   {
     question: 'Le nombre de panneaux change-t-il selon la marque ?',

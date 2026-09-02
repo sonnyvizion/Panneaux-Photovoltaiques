@@ -61,7 +61,7 @@ export const LEAD = {
 export const MODULE = {
   title: 'Installateur certifié Enphase',
   caption:
-    'Enphase ne certifie pas tout le monde : la certification suppose une formation sur ses micro-onduleurs et un suivi de la qualité des poses. Concrètement, cela veut dire que la marque reconnaît notre équipe comme habilitée à installer et à garantir son matériel — et que le monitoring de votre production est configuré correctement dès le premier jour.',
+    'Enphase ne certifie pas tout le monde : la certification suppose une formation sur ses micro-onduleurs et un suivi de la qualité des poses. Concrètement, cela veut dire que la marque reconnaît notre équipe comme habilitée à installer et à garantir son matériel, et que le monitoring de votre production est configuré correctement dès le premier jour.',
   extra: {
     title: 'Pourquoi des micro-onduleurs ?',
     text: 'Un micro-onduleur par panneau : un panneau à l’ombre ne fait plus baisser toute la rangée, et la production se lit panneau par panneau. C’est ce qui permet de repérer une anomalie sans monter sur le toit.',
@@ -98,7 +98,7 @@ export const STACKED_ROWS: StackedRow[] = [
   {
     eyebrow: 'Comment',
     title: 'Vos coordonnées ne sortent pas d’ici',
-    text: 'Nous ne revendons ni ne partageons vos données avec des installateurs partenaires — il n’y en a pas. Une seule demande, un seul interlocuteur, un seul rappel.',
+    text: 'Nous ne revendons ni ne partageons vos données avec des installateurs partenaires : il n’y en a pas. Une seule demande, un seul interlocuteur, un seul rappel.',
   },
 ];
 
@@ -108,7 +108,7 @@ export const STACKED_IMAGE = 'equipe-chantier.jpg';
 export const FACTS: Fact[] = [
   {
     title: 'Ce que nous ne faisons pas',
-    text: 'Nous ne vendons pas votre demande, nous ne facturons pas l’étude, et nous ne vous rappelons pas six mois de suite. Si le solaire n’est pas rentable chez vous, nous le disons — c’est aussi ce qu’une étude sert à savoir.',
+    text: 'Nous ne vendons pas votre demande, nous ne facturons pas l’étude, et nous ne vous rappelons pas six mois de suite. Si le solaire n’est pas rentable chez vous, nous le disons. C’est aussi ce qu’une étude sert à savoir.',
   },
   {
     title: 'Ce qu’un devis engage',
@@ -119,7 +119,7 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Comment reconnaître un bon installateur ?',
-    text: 'Les critères à vérifier avant de signer — y compris chez nous.',
+    text: 'Les critères à vérifier avant de signer, y compris chez nous.',
     cta: { label: 'Voir les critères', href: '/installation/trouver-un-installateur' },
   },
   {
@@ -132,7 +132,7 @@ export const BRIDGES: Bridge[] = [
 export const STEPS_COPY: SectionCopy = {
   overline: 'Ce qui se passe ensuite',
   title: 'De votre demande à votre première production',
-  intro: 'Quatre étapes, et à chacune un interlocuteur de notre équipe — jamais un centre d’appel.',
+  intro: 'Quatre étapes, et à chacune un interlocuteur de notre équipe, jamais un centre d’appel.',
 };
 
 export const STEPS: TimelineStep[] = [
@@ -142,7 +142,7 @@ export const STEPS: TimelineStep[] = [
   },
   {
     title: 'Nous venons mesurer',
-    text: 'Visite sur place : orientation, inclinaison, état de la toiture, ombrages, tableau électrique. C’est là qu’une estimation en ligne devient un projet chiffré — et parfois qu’on découvre qu’il faut d’abord refaire la couverture.',
+    text: 'Visite sur place : orientation, inclinaison, état de la toiture, ombrages, tableau électrique. C’est là qu’une estimation en ligne devient un projet chiffré, et parfois qu’on découvre qu’il faut d’abord refaire la couverture.',
   },
   {
     title: 'Nous posons',
@@ -158,7 +158,7 @@ export const STEPS: TimelineStep[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Avant de nous écrire',
   title: 'Ce qu’il vaut mieux savoir',
-  intro: 'Trois choses à vérifier — y compris sur nous.',
+  intro: 'Trois choses à vérifier, y compris sur nous.',
 };
 
 export const TOPICS: TopicCard[] = [
@@ -203,18 +203,18 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Que se passe-t-il si ma toiture ne convient pas ?',
     answer:
-      'Nous vous le disons. Une toiture trop ombragée, trop ancienne ou mal orientée ne devient pas rentable parce qu’on a envie de vendre une installation — et une pose sur une couverture à refaire coûte deux fois le démontage.',
+      'Nous vous le disons. Une toiture trop ombragée, trop ancienne ou mal orientée ne devient pas rentable parce qu’on a envie de vendre une installation. Et une pose sur une couverture à refaire coûte deux fois le démontage.',
   },
   {
     question: 'Comment vous joindre directement ?',
     /* ⚠️ Le numéro vient de `PHONE` (`site.ts`), qui porte encore un gabarit :
        il se corrigera ici en même temps que dans le header et le footer. */
-    answer: `Par téléphone au ${PHONE.label}, ou par le formulaire de devis — c’est la même équipe qui répond aux deux.`,
+    answer: `Par téléphone au ${PHONE.label}, ou par le formulaire de devis : c’est la même équipe qui répond aux deux.`,
   },
 ];
 
 export const FINAL_CTA = {
   title: 'Parlons de votre toiture',
-  text: 'Une visite, des mesures, un prix qui tient. Gratuit et sans engagement — et c’est nous qui venons.',
+  text: 'Une visite, des mesures, un prix qui tient. Gratuit et sans engagement. Et c’est nous qui venons.',
   cta: { label: 'Demander un devis', href: '/devis' },
 } as const;

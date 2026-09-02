@@ -46,14 +46,14 @@ export const HERO = {
   badge: 'Comprendre',
   title: "Quelles garanties pour une installation solaire en Belgique ?",
   answer:
-    "Une installation solaire est couverte par plusieurs garanties distinctes : la garantie légale de conformité, qui relève du droit commun, et deux garanties commerciales spécifiques aux panneaux — garantie produit et garantie de performance, généralement proposées par le fabricant.",
+    "Une installation solaire est couverte par plusieurs garanties distinctes : la garantie légale de conformité, qui relève du droit commun, et deux garanties commerciales spécifiques aux panneaux, la garantie produit et la garantie de performance, généralement proposées par le fabricant.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Mains ouvrant un dossier posé sur une table en bois, devant une baie vitrée donnant sur une toiture solaire",
 } as const;
 
 export const LEAD = {
-  text: "« La garantie », au singulier, n’existe pas vraiment en solaire — il y en a plusieurs, qui ne couvrent pas la même chose.",
+  text: "« La garantie », au singulier, n’existe pas vraiment en solaire : il y en a plusieurs, qui ne couvrent pas la même chose.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -79,7 +79,7 @@ export const TABLE: EssentialsTable = {
 };
 
 export const FACTS: Fact[] = [
-  { title: "Deux durées différentes", text: "Produit et performance ne courent presque jamais sur la même période — lisez les deux séparément dans le devis." },
+  { title: "Deux durées différentes", text: "Produit et performance ne courent presque jamais sur la même période. Lisez les deux séparément dans le devis." },
   { title: "La main-d’œuvre n’est pas toujours incluse", text: "Certaines garanties couvrent le matériel seul, d’autres l’intervention. À vérifier précisément avant signature." },
 ];
 
@@ -105,7 +105,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Garantie produit ou garantie de performance ?",
-    text: "La garantie produit couvre les défauts matériels — un panneau qui casse ou dysfonctionne. La garantie de performance garantit que le panneau produit toujours au-dessus d’un certain seuil après un nombre d’années donné. Deux couvertures différentes, souvent avec des durées différentes.",
+    text: "La garantie produit couvre les défauts matériels : un panneau qui casse ou dysfonctionne. La garantie de performance garantit que le panneau produit toujours au-dessus d’un certain seuil après un nombre d’années donné. Deux couvertures différentes, souvent avec des durées différentes.",
     accent: true,
   },
   {
@@ -114,7 +114,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "La garantie couvre-t-elle la main-d’œuvre ?",
-    text: "Ça dépend du contrat — certaines garanties couvrent uniquement le matériel, d’autres incluent aussi l’intervention. À vérifier précisément dans le devis avant signature.",
+    text: "Ça dépend du contrat : certaines garanties couvrent uniquement le matériel, d’autres incluent aussi l’intervention. À vérifier précisément dans le devis avant signature.",
   },
   {
     title: "Que se passe-t-il si l’installateur ferme boutique ?",
@@ -126,7 +126,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Combien de temps sont garantis les panneaux ?",
     answer:
-      "Les standards de marché courants avoisinent 10 à 15 ans pour la garantie produit et jusqu’à 25 ans pour la garantie de performance — à confirmer précisément selon le fabricant choisi.",
+      "Les standards de marché courants avoisinent 10 à 15 ans pour la garantie produit et jusqu’à 25 ans pour la garantie de performance, à confirmer précisément selon le fabricant choisi.",
     open: true,
   },
   {
@@ -137,7 +137,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "La garantie est-elle transférable en cas de revente ?",
     answer:
-      "Ça dépend des conditions du fabricant — à vérifier au moment de l’achat si c’est un critère important pour vous.",
+      "Ça dépend des conditions du fabricant, à vérifier au moment de l’achat si c’est un critère important pour vous.",
   },
 ];
 

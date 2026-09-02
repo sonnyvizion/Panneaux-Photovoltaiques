@@ -38,7 +38,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Un site honnête doit aussi dire ce qui ne va pas parfaitement — voici les vrais points de vigilance, sans dramatiser ni minimiser.",
+  text: "Un site honnête doit aussi dire ce qui ne va pas parfaitement : voici les vrais points de vigilance, sans dramatiser ni minimiser.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -66,7 +66,7 @@ export const STACKED_ROWS: StackedRow[] = [
     eyebrow: 'MÉTÉO',
     title: 'Une production qui varie',
     text:
-      'Le rendement dépend de la saison, de l’ensoleillement et de l’ombrage — pas de production stable garantie au jour le jour.',
+      'Le rendement dépend de la saison, de l’ensoleillement et de l’ombrage : pas de production stable garantie au jour le jour.',
   },
   {
     eyebrow: 'TOITURE',
@@ -92,7 +92,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: "Le coût initial vous freine ?",
-    text: "En Wallonie, un prêt à taux 0 % existe encore — c’est ce qui reste des aides.",
+    text: "En Wallonie, un prêt à taux 0 % existe encore : c’est ce qui reste des aides.",
     cta: { label: "Voir les aides en Wallonie", href: '/aides-primes/wallonie' },
   },
 ];
@@ -106,12 +106,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Le coût initial est-il un vrai obstacle ?",
-    text: "C’est le principal frein pour beaucoup de foyers — le Rénoprêt en Wallonie ou d’autres solutions de financement peuvent atténuer cet impact, mais l’investissement reste réel.",
+    text: "C’est le principal frein pour beaucoup de foyers : le Rénoprêt en Wallonie ou d’autres solutions de financement peuvent atténuer cet impact, mais l’investissement reste réel.",
     accent: true,
   },
   {
     title: "Et si je déménage avant d’avoir amorti ?",
-    text: "L’installation valorise généralement le bien à la revente, mais le calcul de rentabilité initial ne se réalise pas si vous partez avant le seuil — à anticiper si un déménagement est probable à moyen terme.",
+    text: "L’installation valorise généralement le bien à la revente, mais le calcul de rentabilité initial ne se réalise pas si vous partez avant le seuil, à anticiper si un déménagement est probable à moyen terme.",
   },
   {
     title: "Le rendement variable est-il vraiment gênant ?",
@@ -119,7 +119,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: "Toutes les toitures sont-elles compatibles ?",
-    text: "Non — une orientation très défavorable, un ombrage important ou une structure trop fragile peuvent limiter ou empêcher une installation standard.",
+    text: "Non : une orientation très défavorable, un ombrage important ou une structure trop fragile peuvent limiter ou empêcher une installation standard.",
   },
 ];
 
@@ -127,7 +127,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Le solaire est-il rentable pour tout le monde ?",
     answer:
-      "Pas automatiquement — ça dépend de votre toiture, de votre consommation et de votre région. C’est justement ce que le simulateur évalue pour votre cas précis.",
+      "Pas automatiquement : ça dépend de votre toiture, de votre consommation et de votre région. C’est justement ce que le simulateur évalue pour votre cas précis.",
     open: true,
   },
   {
@@ -138,7 +138,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "L’esthétique est-elle un inconvénient réel ?",
     answer:
-      "C’est subjectif — des solutions comme le BIPV existent pour qui privilégie l’intégration visuelle.",
+      "C’est subjectif : des solutions comme le BIPV existent pour qui privilégie l’intégration visuelle.",
   },
 ];
 

@@ -33,7 +33,7 @@ export const LEAD = {
 export const MODULE = {
   title: 'Du toit à la batterie, sans passer par le réseau',
   caption:
-    'Recharger en journée, c’est consommer directement ce que les panneaux produisent au même moment. L’électricité ne transite pas par le réseau, donc elle n’est ni vendue à bas prix ni rachetée au tarif plein — c’est là que se fait l’économie.',
+    'Recharger en journée, c’est consommer directement ce que les panneaux produisent au même moment. L’électricité ne transite pas par le réseau, donc elle n’est ni vendue à bas prix ni rachetée au tarif plein : c’est là que se fait l’économie.',
   bridgeLabel: 'Ajoutez la borne à votre simulation',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;
@@ -45,7 +45,7 @@ export const MODULE = {
 export const MODULE_EXTRA = {
   title: 'Ce qui rend cette combinaison intéressante',
   text:
-    'Faire coïncider recharge et production, c’est transformer un surplus peu valorisé en économie directe. Coupler avec un carport solaire pousse la logique encore plus loin — production et recharge au même endroit, sans détour par le réseau.',
+    'Faire coïncider recharge et production, c’est transformer un surplus peu valorisé en économie directe. Coupler avec un carport solaire pousse la logique encore plus loin : production et recharge au même endroit, sans détour par le réseau.',
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -67,7 +67,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Prévoir la puissance',
-    text: 'Une recharge régulière est une consommation importante — mieux vaut la couvrir dès le dimensionnement.',
+    text: 'Une recharge régulière est une consommation importante : mieux vaut la couvrir dès le dimensionnement.',
   },
 ];
 
@@ -98,7 +98,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Peut-on recharger la nuit avec des panneaux solaires ?',
-    text: 'Pas directement — sans batterie de stockage, l’électricité solaire n’est disponible qu’en journée ; la nuit, la recharge vient du réseau classique.',
+    text: 'Pas directement : sans batterie de stockage, l’électricité solaire n’est disponible qu’en journée ; la nuit, la recharge vient du réseau classique.',
   },
   {
     title: 'Une batterie domestique est-elle nécessaire ?',

@@ -26,14 +26,14 @@ export const HERO = {
   badge: 'Comprendre',
   title: "Quelle est la durée de vie des panneaux solaires ?",
   answer:
-    "Un panneau solaire a une durée de vie de 25 à 30 ans, avec une dégradation progressive et lente de sa capacité de production — environ 0,5 % par an. L’onduleur, lui, dure généralement moins longtemps : 10 à 15 ans.",
+    "Un panneau solaire a une durée de vie de 25 à 30 ans, avec une dégradation progressive et lente de sa capacité de production, environ 0,5 % par an. L’onduleur, lui, dure généralement moins longtemps : 10 à 15 ans.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Vue aérienne, à la lumière du soir, d’une maison en briques dont les deux pans de toiture sont couverts de panneaux solaires",
 } as const;
 
 export const LEAD = {
-  text: "« Ça dure combien de temps » est une question légitime pour un investissement de plusieurs milliers d’euros — la réponse dépend du composant dont on parle.",
+  text: "« Ça dure combien de temps » est une question légitime pour un investissement de plusieurs milliers d’euros : la réponse dépend du composant dont on parle.",
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -75,20 +75,20 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Qu’est-ce qui dégrade un panneau avec le temps ?",
-    text: "L’exposition aux UV et aux variations de température use progressivement les matériaux — un processus lent et normal, pas un signe de défaut.",
+    text: "L’exposition aux UV et aux variations de température use progressivement les matériaux, un processus lent et normal, pas un signe de défaut.",
     accent: true,
   },
   {
     title: "Un panneau garde-t-il une valeur après 25 ans ?",
-    text: "Oui : il continue à produire. La dégradation réelle, de l’ordre de 0,5 % par an, laisse environ 88 % de la puissance d’origine au bout de 25 ans — les 80 % que promettent les garanties de performance sont un plancher, pas la valeur attendue.",
+    text: "Oui : il continue à produire. La dégradation réelle, de l’ordre de 0,5 % par an, laisse environ 88 % de la puissance d’origine au bout de 25 ans. Les 80 % que promettent les garanties de performance sont un plancher, pas la valeur attendue.",
   },
   {
     title: "Le climat belge use-t-il plus vite les panneaux ?",
-    text: "Pas particulièrement — les panneaux sont conçus pour résister aux intempéries standards, et le climat belge ne présente pas de contrainte exceptionnelle.",
+    text: "Pas particulièrement : les panneaux sont conçus pour résister aux intempéries standards, et le climat belge ne présente pas de contrainte exceptionnelle.",
   },
   {
     title: "Faut-il tout remplacer après 25-30 ans ?",
-    text: "Pas nécessairement d’un coup — un remplacement progressif, l’onduleur d’abord puis les panneaux au cas par cas, est souvent plus pertinent économiquement.",
+    text: "Pas nécessairement d’un coup : un remplacement progressif, l’onduleur d’abord puis les panneaux au cas par cas, est souvent plus pertinent économiquement.",
   },
 ];
 
@@ -96,7 +96,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Les panneaux garantissent-ils leur rendement dans le temps ?",
     answer:
-      "Les fabricants proposent généralement une garantie de performance distincte de la garantie produit — voir la page Garanties pour le détail.",
+      "Les fabricants proposent généralement une garantie de performance distincte de la garantie produit. Voir la page Garanties pour le détail.",
     open: true,
   },
   {

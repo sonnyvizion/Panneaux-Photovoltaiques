@@ -36,7 +36,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Un univers à part — pas de GRD, pas de déclaration, juste de l’autonomie électrique en déplacement.',
+  text: 'Un univers à part : pas de GRD, pas de déclaration, juste de l’autonomie électrique en déplacement.',
   note: 'Le principe, en une image.',
 } as const;
 
@@ -121,7 +121,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Peut-on utiliser les mêmes panneaux que pour une maison ?',
-    text: 'Techniquement possible mais pas optimal — les panneaux camping-car sont conçus pour être plus légers et résister aux vibrations de la route.',
+    text: 'Techniquement possible mais pas optimal : les panneaux camping-car sont conçus pour être plus légers et résister aux vibrations de la route.',
   },
   {
     title: 'Faut-il une batterie spécifique ?',

@@ -40,7 +40,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Pas besoin d’être ingénieur pour comprendre le principe — trois étapes suffisent à saisir comment la lumière devient de l’électricité utilisable chez vous.',
+  text: 'Pas besoin d’être ingénieur pour comprendre le principe : trois étapes suffisent à saisir comment la lumière devient de l’électricité utilisable chez vous.',
   note: 'Suivez le trajet, étape par étape.',
 } as const;
 
@@ -54,7 +54,7 @@ export const FLOW: FlowStep[] = [
   {
     title: 'La lumière arrive',
     state: 'photon',
-    text: 'Un rayon de soleil frappe la surface du panneau. Ce n’est pas la chaleur qui compte, mais la lumière elle-même — c’est pour ça qu’un panneau produit aussi par temps froid.',
+    text: 'Un rayon de soleil frappe la surface du panneau. Ce n’est pas la chaleur qui compte, mais la lumière elle-même : c’est pour ça qu’un panneau produit aussi par temps froid.',
   },
   {
     title: 'La cellule l’absorbe',
@@ -94,7 +94,7 @@ export const FIGURES: Figure[] = [];
 export const PHOTOS: PhotoCard[] = [
   {
     title: 'La cellule photovoltaïque',
-    text: 'Capte la lumière du soleil et libère des électrons — c’est la naissance du courant continu. Le matériau qui rend ça possible : le silicium, à la base de la quasi-totalité des panneaux du marché.',
+    text: 'Capte la lumière du soleil et libère des électrons. C’est la naissance du courant continu. Le matériau qui rend ça possible : le silicium, à la base de la quasi-totalité des panneaux du marché.',
     image: '4.1-fonctionnement-carte-cellule.webp',
     alt: 'Gros plan sur des cellules photovoltaïques bleu foncé et leurs fines grilles de contact argentées, balayées par un reflet de soleil',
   },
@@ -117,7 +117,7 @@ export const PHOTOS: PhotoCard[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Pas de pièce mobile',
-    text: 'Un panneau ne s’use pas mécaniquement — c’est l’onduleur qui tombe en panne en premier, en général.',
+    text: 'Un panneau ne s’use pas mécaniquement : c’est l’onduleur qui tombe en panne en premier, en général.',
   },
   {
     title: 'La lumière, pas la chaleur',
@@ -147,20 +147,20 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Pourquoi courant continu puis alternatif ?',
-    text: 'Les panneaux produisent naturellement du courant continu (comme une pile), mais les appareils domestiques et le réseau électrique fonctionnent en courant alternatif — l’onduleur fait cette conversion indispensable.',
+    text: 'Les panneaux produisent naturellement du courant continu (comme une pile), mais les appareils domestiques et le réseau électrique fonctionnent en courant alternatif : l’onduleur fait cette conversion indispensable.',
     accent: true,
   },
   {
     title: 'Un panneau produit-il par temps nuageux ?',
-    text: 'Oui, à rendement réduit — la lumière diffuse traverse les nuages et continue à activer les cellules, juste avec moins d’intensité qu’en plein soleil.',
+    text: 'Oui, à rendement réduit : la lumière diffuse traverse les nuages et continue à activer les cellules, juste avec moins d’intensité qu’en plein soleil.',
   },
   {
     title: 'Que se passe-t-il la nuit ?',
-    text: 'Aucune production, logiquement — c’est le rôle du réseau électrique (ou d’une batterie domestique) de prendre le relais.',
+    text: 'Aucune production, logiquement : c’est le rôle du réseau électrique (ou d’une batterie domestique) de prendre le relais.',
   },
   {
     title: 'Combien de temps un panneau met-il à démarrer le matin ?',
-    text: 'La production commence dès les premiers rayons, de façon progressive — pas d’effet de seuil brutal, juste une montée en puissance graduelle avec la luminosité.',
+    text: 'La production commence dès les premiers rayons, de façon progressive : pas d’effet de seuil brutal, juste une montée en puissance graduelle avec la luminosité.',
   },
 ];
 
@@ -168,7 +168,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Un panneau solaire peut-il tomber en panne ?',
     answer:
-      'Rarement le panneau lui-même (pas de pièce mobile), plus souvent l’onduleur, qui a une durée de vie plus courte — 10 à 15 ans en général.',
+      'Rarement le panneau lui-même (pas de pièce mobile), plus souvent l’onduleur, qui a une durée de vie plus courte, 10 à 15 ans en général.',
     open: true,
   },
   {

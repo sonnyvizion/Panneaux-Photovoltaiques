@@ -336,7 +336,7 @@ export function productionFactor(inputs: SimulatorInputs): number {
  */
 export function aidesLabel(region: Region): string {
   if (region === 'bruxelles') {
-    return 'À Bruxelles, les certificats verts s’ajoutent en revenu pendant 10 ans — ils ne réduisent pas le budget de départ.';
+    return 'À Bruxelles, les certificats verts s’ajoutent en revenu pendant 10 ans : ils ne réduisent pas le budget de départ.';
   }
   if (region === 'wallonie') {
     return 'En Wallonie, plus de prime directe : le Rénoprêt à 0 % étale le budget, et le tarif prosumer est déjà déduit des économies.';

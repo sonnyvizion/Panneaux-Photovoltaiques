@@ -44,7 +44,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: "Comme en Wallonie, l'époque des primes directes est révolue en Flandre. Mais contrairement à la Wallonie et Bruxelles, la logique ici est différente sur un point clé : pas de tarif prosumer, pas de certificats verts — juste un tarif d'injection. Voici ce que ça change concrètement.",
+  text: "Comme en Wallonie, l'époque des primes directes est révolue en Flandre. Mais contrairement à la Wallonie et Bruxelles, la logique ici est différente sur un point clé : pas de tarif prosumer, pas de certificats verts, juste un tarif d'injection. Voici ce que ça change concrètement.",
   note: 'Comparez les trois régimes régionaux ci-dessous.',
 } as const;
 
@@ -74,9 +74,9 @@ export const COMPARATOR_ROWS: ComparatorRow[] = [
   {
     label: 'Tarif spécifique',
     cells: [
-      { text: 'Tarif prosumer — ~87 €/kWc par an, une charge' },
+      { text: 'Tarif prosumer : ~87 €/kWc par an, une charge' },
       { status: 'na' },
-      { text: 'Tarif d’injection — 3 à 5 ct/kWh, un revenu' },
+      { text: 'Tarif d’injection : 3 à 5 ct/kWh, un revenu' },
     ],
   },
   {
@@ -137,12 +137,12 @@ export const FACTS: Fact[] = [
 export const BRIDGES: Bridge[] = [
   {
     title: 'Le compteur ne tourne plus à l’envers depuis 2021',
-    text: 'C’est le changement qui explique tout le régime flamand actuel — et il reste mal compris.',
+    text: 'C’est le changement qui explique tout le régime flamand actuel, et il reste mal compris.',
     cta: { label: 'Comprendre ce changement', href: '/aides-primes/flandre/compteur-inverse' },
   },
   {
     title: 'Les démarches passent toutes par Fluvius',
-    text: 'Un seul interlocuteur, trois étapes — c’est plus simple qu’à Bruxelles.',
+    text: 'Un seul interlocuteur, trois étapes : c’est plus simple qu’à Bruxelles.',
     cta: { label: 'Voir les démarches', href: '/aides-primes/flandre/demarches' },
   },
 ];
@@ -156,14 +156,14 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Pourquoi la Flandre n’a-t-elle pas de certificats verts ?',
-    text: 'La Flandre a opté pour le tarif d’injection comme unique mécanisme de valorisation du surplus, sans jamais introduire de certificats verts pour le résidentiel — contrairement à Bruxelles, qui les a conservés.',
+    text: 'La Flandre a opté pour le tarif d’injection comme unique mécanisme de valorisation du surplus, sans jamais introduire de certificats verts pour le résidentiel, contrairement à Bruxelles, qui les a conservés.',
     accent: true,
   },
   {
     title: 'Le prêt MijnVerbouwLening, comment ça marche ?',
     /* ⚠️ La rédaction signale ce point comme non vérifié en profondeur. La
        phrase reste donc prudente et ne cite AUCUN taux ni montant. */
-    text: 'La Région flamande propose ce prêt pour financer la rénovation énergétique, panneaux solaires inclus. Conditions et taux varient selon votre profil — c’est un dispositif à vérifier au cas par cas, pas un montant fixe comme le Rénoprêt wallon.',
+    text: 'La Région flamande propose ce prêt pour financer la rénovation énergétique, panneaux solaires inclus. Conditions et taux varient selon votre profil : c’est un dispositif à vérifier au cas par cas, pas un montant fixe comme le Rénoprêt wallon.',
   },
   {
     title: 'Et la prime de compensation, peut-on encore la demander ?',

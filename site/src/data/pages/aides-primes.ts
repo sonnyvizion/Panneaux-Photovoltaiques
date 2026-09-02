@@ -36,7 +36,7 @@ export const HERO = {
   badge: 'Aides & primes',
   title: 'À quelles aides avez-vous droit pour vos panneaux solaires ?',
   answer:
-    'Cela dépend d’abord de votre région : la Wallonie, Bruxelles et la Flandre n’ont ni les mêmes primes, ni les mêmes mécanismes de compensation, ni les mêmes démarches. Choisissez la vôtre ci-dessous — le régime, les conditions et les formulaires y sont détaillés.',
+    'Cela dépend d’abord de votre région : la Wallonie, Bruxelles et la Flandre n’ont ni les mêmes primes, ni les mêmes mécanismes de compensation, ni les mêmes démarches. Choisissez la vôtre ci-dessous. Le régime, les conditions et les formulaires y sont détaillés.',
   cta: { label: 'Calculer ma prime', href: '/simulateur' },
   /* ⚠️ Photo empruntée à la page « Wallonie » faute de visuel dédié au hub
      (CLAUDE.md, « À compléter »). */
@@ -45,7 +45,7 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'Trois régions, trois régimes. Ce qui vaut à Namur ne vaut ni à Bruxelles ni à Anvers — et un site qui vous annonce « la prime belge » se trompe forcément pour deux visiteurs sur trois.',
+  text: 'Trois régions, trois régimes. Ce qui vaut à Namur ne vaut ni à Bruxelles ni à Anvers, et un site qui vous annonce « la prime belge » se trompe forcément pour deux visiteurs sur trois.',
 } as const;
 
 export const INDEX_COPY: SectionCopy = {
@@ -74,7 +74,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Les montants annoncés ici sont-ils garantis ?',
     answer:
-      'Non — un barème se modifie par décision régionale, parfois en cours d’année. Les pages portent la date du régime qu’elles décrivent ; en cas de doute, la source officielle de votre région fait foi, et notre équipe vérifie ce qui s’applique à votre dossier avant de chiffrer.',
+      'Non. Un barème se modifie par décision régionale, parfois en cours d’année. Les pages portent la date du régime qu’elles décrivent ; en cas de doute, la source officielle de votre région fait foi, et notre équipe vérifie ce qui s’applique à votre dossier avant de chiffrer.',
   },
 ];
 

@@ -30,7 +30,7 @@ import type { PageSeo } from '../seo';
 export const SEO: PageSeo = {
   title: 'Panneau solaire de balcon : le kit plug & play | Belgreen',
   description:
-    'Légal en Belgique depuis avril 2025 : un kit plug & play homologué, dans la limite de 800 W, s’installe sans professionnel — même quand vous êtes locataire.',
+    'Légal en Belgique depuis avril 2025 : un kit plug & play homologué, dans la limite de 800 W, s’installe sans professionnel, même quand vous êtes locataire.',
 };
 
 export const HERO = {
@@ -41,7 +41,7 @@ export const HERO = {
      elles, ce qui laissait croire que n'importe quel kit convient. Vérifié le
      2026-09-02 (Test-Achats, Synergrid, Batibouw). */
   answer:
-    'Depuis avril 2025, un kit solaire « plug & play » homologué Synergrid peut être installé sur un balcon sans professionnel en Belgique, dans la limite de 800 W cumulés par ménage — une solution accessible aux locataires.',
+    'Depuis avril 2025, un kit solaire « plug & play » homologué Synergrid peut être installé sur un balcon sans professionnel en Belgique, dans la limite de 800 W cumulés par ménage, une solution accessible aux locataires.',
   /* ⚠️ Pas « Estimer mon installation » : le lecteur type de cette page est
      locataire, et ce CTA lui promettrait un service qui ne le concerne pas. */
   cta: { label: 'Voir les conditions', href: '#essentiel-balcon' },
@@ -49,14 +49,14 @@ export const HERO = {
 } as const;
 
 export const LEAD = {
-  text: 'La seule page de ce site qui s’adresse vraiment aux locataires, pas seulement aux propriétaires — une vraie option d’entrée dans le solaire, à petite échelle.',
+  text: 'La seule page de ce site qui s’adresse vraiment aux locataires, pas seulement aux propriétaires : une vraie option d’entrée dans le solaire, à petite échelle.',
   note: 'Le kit, en une image.',
 } as const;
 
 export const MODULE = {
   title: 'Un kit qui se branche sur une prise',
   caption:
-    'Un ou deux panneaux, un micro-onduleur intégré, et une prise domestique standard : le kit plug & play s’installe sans professionnel et se démonte aussi facilement. Il doit être homologué et figurer sur la liste Synergrid — c’est ce qui le rend légal depuis avril 2025.',
+    'Un ou deux panneaux, un micro-onduleur intégré, et une prise domestique standard : le kit plug & play s’installe sans professionnel et se démonte aussi facilement. Il doit être homologué et figurer sur la liste Synergrid : c’est ce qui le rend légal depuis avril 2025.',
 } as const;
 
 export const ESSENTIALS_COPY: SectionCopy = {
@@ -101,7 +101,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Il vous suit',
-    text: 'Le kit est démontable et transportable — c’est un de ses avantages sur une installation fixe.',
+    text: 'Le kit est démontable et transportable : c’est un de ses avantages sur une installation fixe.',
   },
 ];
 
@@ -127,7 +127,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Un locataire peut-il vraiment installer des panneaux ?',
-    text: 'Oui, avec un kit plug & play homologué — mais mieux vaut vérifier auprès du propriétaire et, en copropriété, auprès de l’ACP avant de l’installer.',
+    text: 'Oui, avec un kit plug & play homologué, mais mieux vaut vérifier auprès du propriétaire et, en copropriété, auprès de l’ACP avant de l’installer.',
     accent: true,
   },
   {
@@ -140,7 +140,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Que se passe-t-il si je déménage ?',
-    text: 'Le kit est démontable et transportable — c’est un de ses avantages par rapport à une installation fixe.',
+    text: 'Le kit est démontable et transportable : c’est un de ses avantages par rapport à une installation fixe.',
   },
 ];
 
@@ -176,6 +176,6 @@ export const FAQ: FaqItem[] = [
 export const FINAL_CTA = {
   overline: 'Et si vous êtes propriétaire',
   title: 'Vous voulez une vraie installation ?',
-  text: "Si vous êtes propriétaire, une installation en toiture change d'échelle — et là, on peut chiffrer.",
+  text: "Si vous êtes propriétaire, une installation en toiture change d'échelle. Et là, on peut chiffrer.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
 } as const;

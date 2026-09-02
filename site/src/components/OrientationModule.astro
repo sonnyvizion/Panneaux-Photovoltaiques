@@ -66,7 +66,7 @@ const { overline, title, intro, bridgeLabel, cta, id = 'orient' } = Astro.props;
               {o.label}
               {/* Le chiffre est annoncé au moment du choix : la révélation étant
                   purement CSS, rien ne le dirait au lecteur d'écran. */}
-              <span class="visually-hidden"> — {orientationPercent(o.value)} % du rendement optimal</span>
+              <span class="visually-hidden">, {orientationPercent(o.value)} % du rendement optimal</span>
             </span>
           </label>
         ))}
@@ -89,7 +89,7 @@ const { overline, title, intro, bridgeLabel, cta, id = 'orient' } = Astro.props;
 
     <p class="orient__spread">
       Entre le meilleur et le pire cas, l’écart atteint {orientationSpread()} points
-      de rendement — à toiture et puissance identiques.
+      de rendement, à toiture et puissance identiques.
     </p>
 
     <div class="orient__bridge">

@@ -109,7 +109,7 @@ export const MANUAL_ENTRIES: readonly SearchEntry[] = [
     pillar: 'Le site',
     title: 'Votre estimation en quelques questions',
     answer:
-      'Production, coût, économies et primes de votre région, estimés en quelques questions — sans laisser vos coordonnées.',
+      'Production, coût, économies et primes de votre région, estimés en quelques questions, sans laisser vos coordonnées.',
     strong: ['Combien ça coûte ?', 'Combien je gagne ?', 'En combien de temps c’est amorti ?'],
     weak: ['simulateur', 'simulation', 'devis', 'estimation gratuite', 'calcul'],
     context: 'simulateur estimation',

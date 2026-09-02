@@ -41,7 +41,7 @@ export const FIGURES: Figure[] = [];
 export const EDITORIAL: EssentialsEditorial = {
   title: 'Abri de jardin',
   text:
-    'Un abri de jardin peut accueillir quelques panneaux solaires — 4 à 6 au maximum selon la surface disponible. C’est une solution d’appoint, rarement une installation principale, qui vient généralement compléter une toiture déjà exploitée. Le raccordement se fait le plus souvent au même compteur que la maison, la configuration la plus simple et la plus fréquente.',
+    'Un abri de jardin peut accueillir quelques panneaux solaires, 4 à 6 au maximum selon la surface disponible. C’est une solution d’appoint, rarement une installation principale, qui vient généralement compléter une toiture déjà exploitée. Le raccordement se fait le plus souvent au même compteur que la maison, la configuration la plus simple et la plus fréquente.',
 };
 
 /* Photo en cours de génération : emplacement nommé en attendant. */
@@ -50,7 +50,7 @@ export const EDITORIAL_IMAGE = 'abri-jardin-editorial.jpg';
 export const FACTS: Fact[] = [
   {
     title: 'Pas de permis en général',
-    text: 'Les mêmes règles qu’une installation au sol s’appliquent — pas de permis dans la plupart des cas résidentiels.',
+    text: 'Les mêmes règles qu’une installation au sol s’appliquent : pas de permis dans la plupart des cas résidentiels.',
   },
   {
     title: 'La configuration courante',
@@ -66,7 +66,7 @@ export const BRIDGES: Bridge[] = [
   },
   {
     title: 'Et une installation au sol ?',
-    text: 'Plus de surface, plus de liberté d’orientation — souvent plus pertinent qu’un abri.',
+    text: 'Plus de surface, plus de liberté d’orientation : souvent plus pertinent qu’un abri.',
     cta: { label: 'Voir l’installation au sol', href: '/installation/au-sol' },
   },
 ];
@@ -85,7 +85,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Faut-il un permis pour un abri avec panneaux ?',
-    text: 'Les mêmes règles générales s’appliquent que pour une installation au sol — pas de permis dans la plupart des cas résidentiels standards.',
+    text: 'Les mêmes règles générales s’appliquent que pour une installation au sol : pas de permis dans la plupart des cas résidentiels standards.',
   },
   {
     title: 'Peut-on relier au compteur principal de la maison ?',
@@ -101,7 +101,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     question: 'Faut-il un permis pour un abri de jardin avec panneaux ?',
-    answer: 'Pas dans la plupart des cas résidentiels standards — les règles sont celles d’une installation au sol.',
+    answer: 'Pas dans la plupart des cas résidentiels standards : les règles sont celles d’une installation au sol.',
   },
   {
     question: 'Peut-on relier cette installation au compteur principal de la maison ?',

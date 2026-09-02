@@ -35,7 +35,7 @@ export const HERO = {
   badge: 'Comprendre',
   title: 'Que faut-il comprendre avant d’installer des panneaux solaires ?',
   answer:
-    'Le principe tient en une phrase : vos panneaux produisent du courant continu, l’onduleur le convertit, votre maison le consomme et le surplus part sur le réseau. Le reste — types de panneaux, batterie, durée de vie, entretien — se lit page par page, dans l’ordre que vous voulez.',
+    'Le principe tient en une phrase : vos panneaux produisent du courant continu, l’onduleur le convertit, votre maison le consomme et le surplus part sur le réseau. Le reste se lit page par page, dans l’ordre que vous voulez : types de panneaux, batterie, durée de vie, entretien.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   /* ⚠️ Photo empruntée à la page « Fonctionnement » faute de visuel dédié : le
      hub n'a pas sa propre image au cahier de construction (CLAUDE.md, « À
@@ -59,18 +59,18 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Par où commencer si je n’y connais rien ?',
     answer:
-      'Par « Fonctionnement des panneaux » : elle explique le trajet de l’électricité, du panneau à votre prise. Les autres pages en découlent — l’onduleur, la batterie et le compteur y sont déjà nommés.',
+      'Par « Fonctionnement des panneaux » : elle explique le trajet de l’électricité, du panneau à votre prise. Les autres pages en découlent : l’onduleur, la batterie et le compteur y sont déjà nommés.',
     open: true,
   },
   {
     question: 'Faut-il comprendre tout ça pour se lancer ?',
     answer:
-      'Non. Un devis sérieux vous est expliqué par l’installateur qui viendra chez vous. Ces pages servent à ne pas signer sans comprendre — et à repérer un devis qui promet l’impossible.',
+      'Non. Un devis sérieux vous est expliqué par l’installateur qui viendra chez vous. Ces pages servent à ne pas signer sans comprendre, et à repérer un devis qui promet l’impossible.',
   },
   {
     question: 'Ces pages parlent-elles de prix et d’aides ?',
     answer:
-      'À peine — c’est le sujet de deux autres piliers. Ici on explique le matériel et son comportement dans la durée ; les chiffres d’argent vivent dans « Rentabilité & prix » et « Aides & primes ».',
+      'À peine : c’est le sujet de deux autres piliers. Ici on explique le matériel et son comportement dans la durée ; les chiffres d’argent vivent dans « Rentabilité & prix » et « Aides & primes ».',
   },
   {
     question: 'Combien de temps dure une installation photovoltaïque ?',
