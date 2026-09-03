@@ -132,7 +132,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Le compteur intelligent est-il payant ?',
     answer:
-      'Le remplacement lui-même n’est pas facturé au client lors de la mise en service d’une installation photovoltaïque : c’est le gestionnaire de réseau qui le pose. Ce qui change, ce n’est pas le prix du compteur, c’est la façon dont votre électricité est comptée ensuite.',
+      "Cela dépend de qui le demande. Posé par votre gestionnaire de réseau dans le cadre du déploiement, ou à la mise en service d'une installation photovoltaïque, le compteur n'est pas facturé. Demandé par anticipation, il l'est : comptez de l'ordre d'une centaine d'euros à Bruxelles et un peu plus en Wallonie. C'est le cas de figure le plus fréquent chez qui vient d'installer des panneaux et ne veut pas attendre son tour.",
   },
 ];
 
