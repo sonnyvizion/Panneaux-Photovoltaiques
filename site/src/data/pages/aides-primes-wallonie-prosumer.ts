@@ -179,25 +179,38 @@ export const TOPICS: TopicCard[] = [
 
 export const FAQ: FaqItem[] = [
   {
-    question: 'Le tarif prosumer s’applique-t-il dans toute la Belgique ?',
+    question: 'Le tarif prosumer, est-ce la « taxe sur les panneaux solaires » ?',
     answer:
-      "Non, c'est spécifique à la Wallonie. Bruxelles et la Flandre fonctionnent différemment (certificats verts pour l'une, tarif d'injection pour l'autre).",
+      "C'est le nom que lui donne l'usage, et il n'est pas tout à fait faux : c'est une redevance annuelle due dès la mise en service, que vous injectiez beaucoup ou peu. Elle ne paie pas l'électricité mais l'usage du réseau, dont votre installation se sert comme d'un tampon quand elle produit plus que vous ne consommez.",
   },
   {
-    question: 'Comment réduire mon tarif prosumer ?',
+    question: 'Comment réduire, voire éviter, le tarif prosumer ?',
     answer:
-      'En maximisant votre autoconsommation, ou en passant au tarif proportionnel si votre profil de consommation s’y prête.',
+      "Il ne s'évite pas, il se réduit. Deux leviers : consommer votre production au moment où elle arrive (lave-linge et lave-vaisselle en journée, chauffe-eau ou voiture pilotés sur le surplus), ce qui abaisse la part de réseau que vous payez sans rien changer au forfait ; et vérifier si le tarif proportionnel est plus avantageux pour votre profil.",
     open: true,
   },
   {
-    question: 'Le tarif prosumer va-t-il encore augmenter ?',
-    answer: 'Possible, il est révisé annuellement par la CWaPE.',
+    question: 'Forfait ou tarif proportionnel : lequel choisir ?',
+    answer:
+      "Le forfait, dit capacitaire, se calcule sur la puissance installée, sans regarder ce que vous injectez réellement. Le tarif proportionnel se calcule sur les kilowattheures effectivement prélevés au réseau, et devient intéressant quand vous autoconsommez beaucoup, typiquement avec une batterie ou une pompe à chaleur. Il suppose un compteur communicant capable de mesurer les deux sens. Le choix se demande à votre gestionnaire de réseau et se compare sur une année complète.",
   },
   {
-    question: 'Dois-je le payer même la première année ?',
-    answer: 'Oui, dès la mise en service de votre installation.',
+    question: 'Le montant change-t-il selon mon gestionnaire de réseau ?',
+    answer:
+      "Oui, et l'écart n'est pas anecdotique. Pour 2026, le coefficient va d'environ 79 €/kWc chez AIEG à environ 98 €/kWc chez AIESH, avec ORES (~87 €/kWc) et RESA (~86 €/kWc) entre les deux. Ces montants s'entendent hors TVA : comptez 21 % de plus sur votre facture. Le nôtre, sur cette page, est celui d'ORES, de loin le plus répandu.",
+  },
+  {
+    question: 'Le tarif prosumer va-t-il encore augmenter ?',
+    answer:
+      "C'est possible : la CWaPE révise les coefficients chaque année, gestionnaire par gestionnaire. Aucune fin ni dégressivité n'est annoncée à ce jour, et nos estimations le supposent donc payé à taux plein sur toute la durée de vie de l'installation.",
+  },
+  {
+    question: 'Le tarif prosumer s’applique-t-il dans toute la Belgique ?',
+    answer:
+      "Non, il est propre à la Wallonie. Bruxelles compense autrement, par les certificats verts, et la Flandre par le tarif d'injection : ni l'une ni l'autre ne facture cette redevance de capacité.",
   },
 ];
+
 
 export const FINAL_CTA = {
   title: 'Le tarif prosumer est déjà intégré dans notre calcul',

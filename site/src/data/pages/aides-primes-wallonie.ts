@@ -209,7 +209,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Le tarif prosumer est-il obligatoire pour tout le monde ?',
     answer:
-      "Il s'applique à toute installation photovoltaïque raccordée au réseau en Wallonie : c'est la contribution à l'usage du réseau quand vous y injectez votre surplus et y puisez le soir. Son montant dépend de votre puissance installée, pas de ce que vous consommez.",
+      "Il s'applique à toute installation photovoltaïque raccordée au réseau en Wallonie : c'est la contribution à l'usage du réseau quand vous y injectez votre surplus et y puisez le soir. En tarif forfaitaire, son montant dépend de votre puissance installée, pas de ce que vous consommez : c'est ce qui le rend indolore pour les gros autoconsommateurs et coûteux pour les autres. Un tarif proportionnel, assis sur vos prélèvements réels, existe en alternative.",
   },
   {
     question: 'Ma commune propose-t-elle une aide spécifique ?',

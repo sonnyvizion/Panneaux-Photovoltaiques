@@ -13,7 +13,7 @@ import type { PageSeo } from '../seo';
  * schéma n'est pas livré, et le composant de bascule rend du TEXTE : c'est
  * volontaire et pas un pis-aller. Ce que le module doit faire comprendre, c'est
  * une règle de calcul (« 1 kWh injecté = 1 kWh déduit » contre « le surplus est
- * payé 3 à 5 ct »), et une règle de calcul se lit. L'illustration pourra venir
+ * payé 1 à 5 ct »), et une règle de calcul se lit. L'illustration pourra venir
  * s'ajouter au composant quand elle existera.
  */
 
@@ -54,7 +54,7 @@ export const TOGGLE_STATES: [ToggleState, ToggleState] = [
   {
     label: 'Depuis 2021',
     title: 'Le compteur digital sépare les deux flux',
-    highlight: 'Surplus payé 3 à 5 ct/kWh',
+    highlight: 'Surplus payé 1 à 5 ct/kWh',
     text: 'Le compteur digital mesure séparément ce que vous produisez et ce que vous consommez. Le surplus injecté vous est payé au tarif d’injection, tandis que l’électricité que vous puisez sur le réseau reste facturée au tarif normal.',
   },
 ];
@@ -153,7 +153,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Le tarif d’injection, ça représente combien par an ?',
     answer:
-      'Ça dépend de votre surplus de production injecté et du tarif du moment (3 à 5 centimes/kWh). Le simulateur donne une estimation sur votre profil de consommation.',
+      'Ça dépend de votre surplus de production injecté et du tarif du moment (1 à 5 centimes/kWh). Le simulateur donne une estimation sur votre profil de consommation.',
   },
   {
     question: 'Puis-je refuser le compteur digital ?',

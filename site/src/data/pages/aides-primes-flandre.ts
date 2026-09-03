@@ -31,14 +31,14 @@ import type { PageSeo } from '../seo';
 export const SEO: PageSeo = {
   title: 'Prime panneaux solaires Flandre 2026 | Belgreen',
   description:
-    'Plus aucune prime directe en Flandre depuis fin 2023. Ce qui reste en 2026 : le tarif d’injection de 3 à 5 ct/kWh, la TVA à 6 % et le prêt Mijn VerbouwLening.',
+    'Plus aucune prime directe en Flandre depuis fin 2023. Ce qui reste en 2026 : le tarif d’injection de 1 à 5 ct/kWh, la TVA à 6 % et le prêt Mijn VerbouwLening.',
 };
 
 export const HERO = {
   badge: 'Aides & Primes',
   title: 'Aides et primes pour panneaux solaires en Flandre en 2026',
   answer:
-    "En Flandre, il n'existe plus de prime directe depuis la fin de la prime Fluvius (fin 2023). L'avantage principal aujourd'hui est le tarif d'injection (3 à 5 centimes/kWh) et la TVA réduite à 6 %.",
+    "En Flandre, il n'existe plus de prime directe depuis la fin de la prime Fluvius (fin 2023). L'avantage principal aujourd'hui est le tarif d'injection (1 à 5 centimes/kWh) et la TVA réduite à 6 %.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Quartier résidentiel flamand avec plusieurs toitures équipées de panneaux solaires',
 } as const;
@@ -76,7 +76,7 @@ export const COMPARATOR_ROWS: ComparatorRow[] = [
     cells: [
       { text: 'Tarif prosumer : ~87 €/kWc par an, une charge' },
       { status: 'na' },
-      { text: 'Tarif d’injection : 3 à 5 ct/kWh, un revenu' },
+      { text: 'Tarif d’injection : 1 à 5 ct/kWh, un revenu' },
     ],
   },
   {
@@ -96,10 +96,15 @@ export const ESSENTIALS_COPY: SectionCopy = {
 };
 
 export const FIGURES: Figure[] = [
+  /* ⚠️ FOURCHETTE CORRIGÉE le 2026-09-03. La carte annonçait « 3-5 ct », un
+     plancher trois fois trop haut : le relevé de mai 2026 des contrats belges
+     va de 0,94 ct/kWh (Mega Zen Fixed) à 4,90 ct/kWh (Eneco, Energy Knights).
+     Un plancher optimiste est exactement ce que fait la concurrence, et le
+     visiteur le paie au moment de choisir son fournisseur. */
   {
     label: 'Tarif d’injection',
-    value: '3-5 ct',
-    note: 'par kWh d’électricité excédentaire injectée',
+    value: '1-5 ct',
+    note: 'par kWh injecté, selon le contrat du fournisseur',
     tone: 'lime',
   },
   {
@@ -183,14 +188,19 @@ export const FAQ: FaqItem[] = [
     open: true,
   },
   {
-    question: 'Le tarif d’injection, comment ça marche concrètement ?',
+    question: 'Le tarif d’injection en Flandre, ça rapporte combien par an ?',
     answer:
-      'Chaque kWh que vous injectez sur le réseau (l’électricité produite que vous ne consommez pas vous-même) est valorisé à un tarif de 3 à 5 centimes, contrairement à avant où le compteur tournait à l’envers et compensait à l’euro près.',
+      'Chaque kWh que vous injectez sur le réseau (l’électricité produite que vous ne consommez pas vous-même) est valorisé à un tarif de 1 à 5 centimes, contrairement à avant où le compteur tournait à l’envers et compensait à l’euro près.',
   },
   {
-    question: 'Mon installation est ancienne, ai-je encore droit à la prime de compensation ?',
+    question: 'Mes panneaux datent d’avant 2021, ai-je droit à la prime rétroactive ?',
     answer:
       'Non, plus aujourd’hui. La prime d’investissement rétroactive visait les installations mises en service entre 2006 et 2020, et devait être demandée au plus tard le 31 décembre 2025. Si vous pensez avoir un dossier en cours, c’est auprès de Fluvius qu’il se vérifie.',
+  },
+  {
+    question: 'La TVA à 6 % s’applique-t-elle à une maison de moins de 10 ans ?',
+    answer:
+      'Non. Le taux de 6 % suppose un logement occupé depuis plus de dix ans, à usage principalement privé, et une facture émise par un entrepreneur enregistré. En dessous de dix ans, l’installation est taxée à 21 %, sans exception pour le photovoltaïque.',
   },
   {
     question: 'Pourquoi la Flandre n’a-t-elle pas de certificats verts comme Bruxelles ?',

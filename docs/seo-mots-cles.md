@@ -31,17 +31,23 @@ Le mot-clé tapé n'est pas toujours celui du métier : la page dont le slug est
 |---|---|---|
 | Rentabilité & prix | 4 | ✅ complète |
 | Comprendre | 12 | ✅ complète, avec secondaires et longue traîne |
-| Aides & primes | 13 | ⚠️ partielle — 4 pages détaillées, 9 titres posés mais **recherche non restituée** |
+| Aides & primes | 12 | ✅ complète, avec secondaires et longue traîne (3 septembre 2026) |
 | Installation | 17 | ⚠️ titres posés, **recherche non restituée** |
 | Transverse (`/a-propos`) | 1 | ✅ complète |
 
 > ⚠️ **Pourquoi « non restituée ».** Les lots Aides et Installation ont été
 > traités par deux agents parallèles interrompus par la limite de session avant
-> qu'ils ne rendent leur rapport. Leur **travail** est en place et vérifié — les
-> titres et descriptions sont posés, dans les bornes, et le build passe — mais le
-> détail de leur recherche (secondaires, longue traîne, arbitrages) est perdu.
-> Une seconde passe sur ces deux piliers récupérerait cette matière ; elle ne
-> changerait pas nécessairement les titres, qui sont cohérents.
+> qu'ils ne rendent leur rapport. Leur **travail** est en place et vérifié : les
+> titres et descriptions sont posés, dans les bornes, et le build passe. Seul le
+> détail de leur recherche (secondaires, longue traîne, arbitrages) était perdu.
+>
+> **Le lot Aides a été repassé le 3 septembre 2026** et sa recherche est
+> ci-dessous. Enseignement de cette seconde passe : les titres n'ont pas bougé,
+> ils étaient justes. Ce que la recherche a rapporté, ce sont **quatre erreurs de
+> fond dans les réponses**, invisibles depuis les titres (voir la section
+> « Ce que la seconde passe a corrigé »). Le pilier comptait 12 pages, pas 13.
+>
+> Reste **Installation** (17 pages), au même régime.
 
 ---
 
@@ -130,6 +136,51 @@ le titre partout où c'est possible.
 | `/rentabilite-prix/amortissement` | amortissement panneaux solaires Belgique | retour sur investissement solaire, ROI | en combien d'années c'est remboursé, amortissement par région, le prosumer allonge-t-il le délai |
 | `/rentabilite-prix/autoconsommation` | autoconsommation solaire Belgique | taux d'autoconsommation, revente du surplus | comment augmenter son autoconsommation, que vaut le surplus injecté, faut-il une batterie |
 
+### Aides & primes (12 pages)
+
+Repassé le 3 septembre 2026. Deux constantes structurent tout le pilier : la
+requête tapée est presque toujours **régionale** (« prime panneaux solaires
+Wallonie », pas « prime panneaux solaires »), et le mot du visiteur n'est pas
+celui de l'administration (on tape « taxe sur les panneaux solaires », jamais
+« tarif prosumer capacitaire »).
+
+| URL | Principal | Secondaires | Longue traîne (alimente la FAQ) |
+|---|---|---|---|
+| `/aides-primes` | primes panneaux solaires Belgique | aides panneaux solaires 2026, subsides photovoltaïque Belgique | quelle aide selon ma région, peut-on cumuler les aides, primes versées avant ou après les travaux |
+| `/aides-primes/wallonie` | prime panneaux solaires Wallonie | aides photovoltaïque Wallonie 2026, Rénoprêt panneaux solaires | y a-t-il encore une prime en Wallonie, conditions et montant du Rénoprêt à 0 %, prime communale, les certificats verts sont-ils terminés |
+| `/aides-primes/wallonie/prosumer` | tarif prosumer Wallonie | **taxe panneaux solaires**, tarif prosumer ORES 2026 | comment réduire ou éviter le tarif prosumer, forfaitaire ou proportionnel, combien pour 5 kWc, le montant change-t-il selon le GRD |
+| `/aides-primes/wallonie/demarches` | démarches panneaux solaires Wallonie | déclaration ORES panneaux solaires, compteur communicant Wallonie | qui déclare, l'installateur ou moi, le contrôle RGIE est-il payant, que risque-t-on sans déclaration, combien de temps au total |
+| `/aides-primes/bruxelles` | certificats verts Bruxelles | Brugel certificats verts, prix d'un certificat vert 2026 | combien rapportent les certificats verts, pendant combien d'années, à qui les revendre |
+| `/aides-primes/bruxelles/reglementation` | RESCert PV | installateur certifié photovoltaïque Bruxelles, certificat SER | depuis quand le RESCert est obligatoire, que risque-t-on sans lui, les coefficients baissent-ils en 2026, et les installations déjà en service |
+| `/aides-primes/bruxelles/demarches` | démarches certificats verts Bruxelles | Green Meter Sibelga, encodage des index de production | Sibelga ou Brugel, qui fait quoi, à quelle fréquence déclarer, délai avant les premiers certificats |
+| `/aides-primes/flandre` | prime panneaux solaires Flandre | premie zonnepanelen 2026, Mijn VerbouwLening | existe-t-il encore une prime en Flandre, combien rapporte le tarif d'injection, TVA à 6 % sur une maison de moins de 10 ans |
+| `/aides-primes/flandre/compteur-inverse` | compteur qui tourne à l'envers Flandre | terugdraaiende teller, compteur digital Fluvius | mon compteur tourne encore à l'envers, est-ce normal, quand vais-je recevoir le digital, puis-je le refuser |
+| `/aides-primes/flandre/demarches` | démarches panneaux solaires Flandre | Mijn Fluvius déclaration, compteur digital obligatoire | comment demander le compteur digital, est-il payant, combien de temps prend la pose |
+| `/aides-primes/copropriete` | panneaux solaires en copropriété | toiture partie commune, assemblée générale panneaux solaires | quelle majorité en AG, comment répartir l'électricité produite, permis d'urbanisme, qui paie si tous ne participent pas |
+| `/aides-primes/entreprises` | panneaux solaires pour entreprises | déduction pour investissement photovoltaïque, TVA 21 % récupérable | une société a-t-elle droit à la TVA à 6 %, amortissement d'une installation, certificats verts pour professionnels |
+
+#### Ce que la seconde passe a corrigé
+
+La recherche ne sert pas qu'à écrire des titres : elle confronte les **réponses**
+aux sources. Quatre points, dont un chiffre faux sur six emplacements.
+
+| Point | Constat | Fait |
+|---|---|---|
+| **Tarif d'injection flamand** | Le site annonçait « 3 à 5 ct/kWh ». Le relevé de mai 2026 des contrats belges va de **0,94 ct** (Mega Zen Fixed) à **4,90 ct** (Eneco, Energy Knights) : le plancher était trois fois trop haut, sur six emplacements dont la description SEO | Corrigé en « 1 à 5 ct » partout, avec la source en commentaire |
+| **Tarif prosumer proportionnel** | Le site le mentionnait en six mots (« si votre profil s'y prête ») alors que c'est **l'alternative au forfait**, et le cœur de l'arbitrage client en attente | La FAQ prosumer le traite en question propre, avec sa condition (compteur communicant) et son profil (forte autoconsommation) |
+| **Écart entre gestionnaires de réseau** | La page donnait un seul coefficient, celui d'ORES. Les GRD wallons 2026 vont de **~79 €/kWc** (AIEG) à **~98 €/kWc** (AIESH), soit 24 % d'écart, hors TVA de 21 % | Question dédiée dans la FAQ. La constante `PROSUMER_RATE` n'est pas touchée : ORES reste le cas de loin le plus répandu |
+| **TVA à 6 %** | Annoncée sans condition sur la page Flandre, alors qu'elle suppose un **logement de plus de dix ans** ; en dessous, c'est 21 %, sans l'exception dont bénéficient les pompes à chaleur | Question ajoutée à la FAQ Flandre. La page Wallonie portait déjà la condition |
+
+#### Ce qui a résisté à la vérification
+
+`PROSUMER_RATE = 87` (ORES 2026 : 86,96 €), `CV_PER_MWH = 2,055` (taux Brugel
+depuis le 1ᵉʳ avril 2026 pour ≤ 5 kWc), `CV_PRICE = 77 €` (fourchette 65–90 €),
+`CERT_YEARS = 10`, `LOAN_MAX = 60 000 €` (Rénoprêt SWCS, 0 %, 30 ans), la fin de
+la prime rétroactive flamande au 31 décembre 2025, l'obligation RESCert au
+1ᵉʳ janvier 2026 et les coefficients bruxellois 2026 (inchangés ≤ 5 kWc, −11 %
+de 5 à 36, −45 % de 36 à 100, plus rien au-delà de 100). Aucun lien mort dans
+les douze pages.
+
 ### Transverse
 
 | URL | Principal | Pourquoi ce choix |
@@ -149,8 +200,9 @@ deux remontent sur la même requête, c'est `/a-propos` qui doit gagner.
 
 ## Ce qu'il reste à faire
 
-1. **Restituer la recherche** sur Aides & primes et Installation (30 pages) —
-   les titres sont posés, les secondaires et la longue traîne manquent.
+1. **Restituer la recherche** sur Installation (17 pages) : les titres sont
+   posés, les secondaires et la longue traîne manquent. Aides & primes est
+   fait (3 septembre 2026).
 2. **Reformuler les FAQ** à partir de la longue traîne. C'est le bloc qui porte
    le balisage `FAQPage` ; il est aujourd'hui écrit avant la recherche, pas
    d'après elle.
