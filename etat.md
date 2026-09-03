@@ -1,6 +1,6 @@
 # État du projet — où on en est
 
-> Mis à jour le 2 septembre 2026. Décrit **l'état réel du code**, pas l'intention.
+> Mis à jour le 3 septembre 2026. Décrit **l'état réel du code**, pas l'intention.
 > Quand ce document et un doc de cadrage divergent, c'est le code qui a raison —
 > et la divergence est signalée ici.
 
@@ -8,8 +8,8 @@
 
 Le front Astro est construit : 58 pages, un simulateur en parcours, un compte
 rendu refondu, un rapport imprimable et une recherche interne. **La démo est en
-ligne** (https://belgreen-demo.pages.dev), sans protection d'accès et en
-`noindex`.
+ligne et à jour** (https://belgreen-demo.pages.dev, redéployée le 3 septembre
+2026 depuis `main`), sans protection d'accès et en `noindex`.
 **Aucun formulaire n'envoie quoi que ce soit** — deux décisions client manquent.
 
 ---
@@ -22,7 +22,7 @@ ligne** (https://belgreen-demo.pages.dev), sans protection d'accès et en
 | Le simulateur (parcours de questions) | Fonctionnel, 6 étapes + 5 d'affinage |
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
-| Les calculs | 333 tests verts |
+| Les calculs | 334 tests verts |
 | La recherche interne | Loupe dans la nav, **47 pages indexées** |
 | Le build de production | 59 pages + `search-index.json`, ~40 Mo |
 
@@ -45,8 +45,9 @@ donnent l'arborescence, pas la réponse : une loupe ferme désormais l'îlot de 
 | `site/src/scripts/scrollLock.ts` | Verrou de défilement partagé et **nommé**, 6 tests |
 | `site/src/components/SearchOverlay.astro` | Le `<dialog>` et ses styles |
 
-**En ligne depuis le 28 août 2026** sur https://belgreen-demo.pages.dev (460
-fichiers). Code sur `design-systeme-astro`, doc de nav sur `main` (`e6f7296`).
+**En ligne depuis le 28 août 2026** sur https://belgreen-demo.pages.dev.
+⚠️ Le code de la recherche vivait alors sur `design-systeme-astro` ; il est
+**dans `main` depuis le 3 septembre 2026** (`e3f55ea`), comme tout le reste.
 
 Vérifié SUR LE SITE DÉPLOYÉ, pas seulement au build : les deux déclencheurs et
 le `<dialog>` sont dans le HTML livré, `search-index.json` répond avec ses 43
@@ -267,14 +268,24 @@ Deux gardes posés :
 Cloudflare et Netlify). **Première mise en ligne le 25 août 2026** sur
 https://belgreen-demo.pages.dev — projet Pages `belgreen-demo`, 421 fichiers.
 
+**Dernier déploiement : 3 septembre 2026**, 679 fichiers — la démo montre enfin
+les trois vues d'ensemble, `/a-propos`, `/realisations`, la couche SEO et les
+planches de la famille I. Les six jours précédents n'étaient jamais montés en
+ligne. Vérifié SUR L'URL DÉPLOYÉE : les six pages répondent en 200 avec leur H1
+réel, `/comprendre/onduleur` porte son `<dialog class="zoom">`, `sitemap.xml`
+liste 47 URL et **aucune** de `NOINDEX_PATHS`, `robots.txt` refuse tout et
+`/realisations` répond `x-robots-tag: noindex, nofollow`.
+
 ```sh
 cd site && npm run deploy
 ```
 
-⚠️ **IL FAUT UN JETON DANS L'ENVIRONNEMENT.** Wrangler n'a aucun identifiant
-stocké sur la machine (`~/Library/Preferences/.wrangler/config/` est vide) : il
-ouvre normalement une fenêtre d'authentification, ce qu'un terminal non
-interactif — un agent, un CI — ne peut pas faire. Il s'y arrête alors net :
+⚠️ **IL FAUT UNE IDENTITÉ.** Depuis le 2 septembre 2026 une session `wrangler
+login` est stockée dans `~/Library/Preferences/.wrangler/config/default.toml`,
+et le déploiement passe sans variable d'environnement — c'est elle qui a servi
+le 3 septembre. Le jour où elle expire, Wrangler voudra rouvrir une fenêtre
+d'authentification, ce qu'un terminal non interactif — un agent, un CI — ne peut
+pas faire. Il s'y arrête alors net :
 
 > In a non-interactive environment, it's necessary to set a
 > CLOUDFLARE_API_TOKEN environment variable for wrangler to work.
