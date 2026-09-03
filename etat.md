@@ -367,10 +367,17 @@ n°1 (« perf & SEO d'abord »).
 - Le **vrai domaine** en `PUBLIC_SITE_URL` : canoniques et sitemap pointent
   encore la démo.
 - Une **image sociale** 1200×630 : le hero de l'accueil sert de bouche-trou.
-- La recherche de mots-clés des piliers **Aides & primes** et **Installation**
-  n'a pas été restituée (agents interrompus) — les titres sont posés et vérifiés,
-  les secondaires et la longue traîne manquent. Voir `docs/seo-mots-cles.md`.
-- Les **FAQ** n'ont pas encore été reformulées sur la longue traîne.
+- ~~La recherche de mots-clés des piliers **Aides & primes** et
+  **Installation** n'a pas été restituée~~ — **faite le 3 septembre 2026**. Les
+  46 pages ont leur principal, leurs secondaires et leur longue traîne
+  (`docs/seo-mots-cles.md`). Enseignement de la passe : **les titres étaient
+  justes, les réponses ne l'étaient pas**. Neuf corrections de fond, dont un
+  chiffre faux sur six emplacements (le tarif d'injection flamand annoncé « 3 à
+  5 ct » quand le marché 2026 va de 0,94 à 4,90) et deux affirmations fausses
+  sur le permis d'urbanisme (carport et abri de jardin).
+- Les **FAQ** des deux piliers repassés ont été reformulées sur la longue
+  traîne ; celles de Comprendre et Rentabilité restent écrites avant la
+  recherche.
 - `npm run check` existe mais **n'est pas branché sur le build** : `astro check`
   n'avait jamais tourné et remonte **84 erreurs préexistantes** dans
   `src/scripts/` (`searchOverlay.ts`, `simulatorWidget.ts`, imports inutilisés
