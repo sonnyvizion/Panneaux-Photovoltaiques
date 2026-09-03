@@ -147,13 +147,18 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Puis-je vraiment poser mes panneaux moi-même légalement ?',
     answer:
-      'Oui pour la pose physique. Le raccordement électrique et le contrôle RGIE, eux, exigent un professionnel.',
+      "Oui. Le RGIE fixe une obligation de résultat sur l'installation, il ne désigne pas qui tient le tournevis : rien ne vous interdit de poser vos panneaux sur votre propre logement. Ce qui n'est pas négociable, c'est le contrôle de conformité par un organisme agréé par le SPF Économie avant toute mise en service, et la déclaration au gestionnaire de réseau. Sans ce rapport, pas de raccordement.",
     open: true,
   },
   {
     question: 'Que dois-je absolument faire faire par un professionnel ?',
     answer:
-      'Le raccordement au tableau électrique et le contrôle RGIE, obligatoires avant toute mise en service.',
+      'Le contrôle RGIE par un organisme agréé, obligatoire avant toute mise en service. Le raccordement au tableau, vous pouvez légalement le faire chez vous, mais c’est la partie où une erreur se paie le plus cher, et c’est elle que le contrôle examine en premier.',
+  },
+  {
+    question: 'En installant moi-même à Bruxelles, est-ce que je perds les certificats verts ?',
+    answer:
+      "Oui, et c'est le point qui change le calcul. Depuis le 1ᵉʳ janvier 2026, une installation bruxelloise de 5 kWc ou moins n'ouvre droit aux certificats verts que si elle porte un certificat RESCert PV, délivré par un installateur certifié. Une pose faite par vos soins ne peut pas l'obtenir : vous économisez la main-d'œuvre et vous perdez le seul vrai revenu du photovoltaïque à Bruxelles, pendant dix ans.",
   },
   {
     question: 'Que risque-t-on en cas de contrôle RGIE négatif ?',

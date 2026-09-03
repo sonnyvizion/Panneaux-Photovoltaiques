@@ -30,7 +30,7 @@ export const HERO = {
   badge: 'Installation',
   title: 'Comment bien choisir son installateur de panneaux solaires',
   answer:
-    'Un bon installateur photovoltaïque en Belgique est certifié (RESCERT ou équivalent régional), assuré en responsabilité civile professionnelle, et vous remet un devis détaillé avant travaux.',
+    'Un bon installateur photovoltaïque en Belgique est certifié RESCert PV, assuré en responsabilité civile professionnelle, et vous remet un devis détaillé avant travaux.',
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt: 'Installateur en équipement de sécurité posant un panneau solaire sur une toiture',
 } as const;
@@ -53,7 +53,7 @@ export const FIGURES: Figure[] = [];
 export const PHOTOS: PhotoCard[] = [
   {
     title: 'Certification',
-    text: 'RESCert ou équivalent régional selon votre zone : la garantie que l’installateur est reconnu par les autorités.',
+    text: 'RESCert PV, la même certification dans les trois régions : la garantie que l’installateur est reconnu par les autorités.',
     image: 'trouver-pro-carte-certification.jpg',
     alt: 'Installateur solaire équipé inspectant une toiture résidentielle avec panneaux',
   },
@@ -78,7 +78,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Les démarches sont incluses',
-    text: 'Un installateur sérieux prend en charge le RGIE, la déclaration GRD et, selon la région, le RESCert ou Sibelga.',
+    text: 'Un installateur sérieux prend en charge le RGIE, la déclaration au GRD et, selon la région, le certificat RESCert ou l’encodage Sibelga.',
   },
 ];
 
@@ -104,7 +104,7 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: 'Comment vérifier qu’un installateur est bien certifié ?',
-    text: 'Demandez le numéro de certification et vérifiez-le auprès de l’organisme régional compétent (RESCERT ou équivalent).',
+    text: 'Demandez son numéro RESCert PV et vérifiez-le auprès de l’organisme régional : c’est la même certification dans les trois régions.',
     accent: true,
   },
   {
@@ -117,7 +117,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'S’occupe-t-il de toutes les démarches ?',
-    text: 'Ça devrait être le cas pour un installateur sérieux : RGIE, déclaration GRD, et selon la région, RESCert ou Sibelga.',
+    text: 'Ça devrait être le cas pour un installateur sérieux : RGIE, déclaration au GRD, et selon la région, certificat RESCert ou encodage Sibelga.',
   },
 ];
 
@@ -125,7 +125,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Comment vérifier qu’un installateur est bien certifié ?',
     answer:
-      'Demandez son numéro de certification et vérifiez-le auprès de l’organisme régional compétent.',
+      "Demandez son numéro RESCert PV et vérifiez-le auprès de l'organisme régional. Attention, l'obligation n'est pas la même partout : en Wallonie, toute entreprise qui installe du photovoltaïque doit compter une personne certifiée depuis mars 2023 ; à Bruxelles, l'installateur doit vous remettre son certificat, et sans lui votre installation de 5 kWc ou moins n'ouvre plus droit aux certificats verts depuis janvier 2026. En Flandre, la certification n'est pas obligatoire pour le résidentiel : elle reste un signal de sérieux, pas une garantie légale.",
     open: true,
   },
   {
@@ -141,7 +141,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'L’installateur s’occupe-t-il de toutes les démarches administratives ?',
     answer:
-      'Chez un professionnel sérieux, oui : RGIE, déclaration au GRD, et selon la région RESCert ou Sibelga.',
+      'Chez un professionnel sérieux, oui : RGIE, déclaration au GRD, et selon la région le certificat RESCert ou l’encodage Sibelga.',
   },
 ];
 

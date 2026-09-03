@@ -32,7 +32,7 @@ Le mot-clé tapé n'est pas toujours celui du métier : la page dont le slug est
 | Rentabilité & prix | 4 | ✅ complète |
 | Comprendre | 12 | ✅ complète, avec secondaires et longue traîne |
 | Aides & primes | 12 | ✅ complète, avec secondaires et longue traîne (3 septembre 2026) |
-| Installation | 17 | ⚠️ titres posés, **recherche non restituée** |
+| Installation | 17 | ✅ complète, avec secondaires et longue traîne (3 septembre 2026) |
 | Transverse (`/a-propos`) | 1 | ✅ complète |
 
 > ⚠️ **Pourquoi « non restituée ».** Les lots Aides et Installation ont été
@@ -41,13 +41,12 @@ Le mot-clé tapé n'est pas toujours celui du métier : la page dont le slug est
 > titres et descriptions sont posés, dans les bornes, et le build passe. Seul le
 > détail de leur recherche (secondaires, longue traîne, arbitrages) était perdu.
 >
-> **Le lot Aides a été repassé le 3 septembre 2026** et sa recherche est
-> ci-dessous. Enseignement de cette seconde passe : les titres n'ont pas bougé,
+> **Les lots Aides et Installation ont été repassés le 3 septembre 2026** et
+> leur recherche est ci-dessous. Enseignement de cette seconde passe : les titres n'ont pas bougé,
 > ils étaient justes. Ce que la recherche a rapporté, ce sont **quatre erreurs de
 > fond dans les réponses**, invisibles depuis les titres (voir la section
-> « Ce que la seconde passe a corrigé »). Le pilier comptait 12 pages, pas 13.
->
-> Reste **Installation** (17 pages), au même régime.
+> « Ce que la seconde passe a corrigé »). Le pilier Aides comptait 12 pages,
+> pas 13 : la carte le disait faux.
 
 ---
 
@@ -181,6 +180,55 @@ la prime rétroactive flamande au 31 décembre 2025, l'obligation RESCert au
 de 5 à 36, −45 % de 36 à 100, plus rien au-delà de 100). Aucun lien mort dans
 les douze pages.
 
+### Installation (17 pages)
+
+Repassé le 3 septembre 2026. Le pilier se scinde en deux familles que la
+recherche sépare nettement : les pages de **dimensionnement** (kWc, nombre,
+dimensions, poids), où l'on tape un calcul, et les pages de **cas particulier**
+(balcon, carport, abri, camping-car, toit plat, BIPV), où l'on tape un objet.
+Les secondes ont moins de volume mais une intention beaucoup plus nette.
+
+| URL | Principal | Secondaires | Longue traîne (alimente la FAQ) |
+|---|---|---|---|
+| `/installation` | installation panneaux solaires Belgique | pose de panneaux photovoltaïques, déroulement d'un chantier solaire | combien de temps dure le chantier, faut-il refaire la toiture avant, faut-il un permis d'urbanisme |
+| `/installation/puissance` | kWc panneaux solaires | différence kWc et kWh, puissance à installer | combien de kWc pour ma maison, une installation plus puissante coûte-t-elle proportionnellement plus cher |
+| `/installation/nombre-de-panneaux` | combien de panneaux solaires pour une maison | nombre de panneaux 3 500 kWh, panneaux de 430 Wc | combien pour ma consommation, plus de panneaux est-ce toujours mieux, puis-je en ajouter plus tard |
+| `/installation/dimensions` | dimensions d'un panneau solaire | taille panneau photovoltaïque, surface de toiture nécessaire | ma toiture est petite combien de panneaux, ont-ils tous la même taille, faut-il un espace entre eux |
+| `/installation/poids` | poids des panneaux solaires | charge sur la toiture, kg par m² | faut-il renforcer la charpente, le poids pose-t-il problème sur un toit plat |
+| `/installation/fixation` | fixation des panneaux solaires | rails de fixation toiture, lestage toit plat | la fixation abîme-t-elle la toiture, laquelle dure le plus longtemps, peut-on démonter et remonter ailleurs |
+| `/installation/ombrage` | ombrage panneaux solaires | perte de rendement à l'ombre, micro-onduleur ombrage | un arbre qui ombrage le matin est-ce grave, peut-on élaguer légalement, les micro-onduleurs coûtent-ils plus cher |
+| `/installation/toit-plat` | panneaux solaires toit plat | lestage toiture plate, inclinaison optimale | le lestage abîme-t-il l'étanchéité, peut-on en mettre plus que sur un toit incliné |
+| `/installation/balcon` | **panneau solaire de balcon** | kit plug and play Belgique, kit solaire locataire | est-ce légal en Belgique, faut-il le déclarer au GRD, est-ce rentable, et si je déménage |
+| `/installation/carport` | carport solaire | abri de voiture photovoltaïque, carport et borne de recharge | faut-il un permis pour un carport, coûte-t-il plus cher qu'une toiture, peut-on y brancher une borne |
+| `/installation/abri-de-jardin` | panneaux solaires abri de jardin | panneaux sur garage, production détachée de la maison | faut-il un permis, combien de panneaux tiennent dessus, peut-on relier au compteur de la maison |
+| `/installation/bipv` | BIPV panneaux intégrés toiture | tuiles solaires, photovoltaïque intégré au bâti | le BIPV est-il plus cher, le rendement est-il moindre, est-ce obligatoire en zone protégée |
+| `/installation/camping-car` | panneau solaire camping-car | kit solaire van, batterie de service | quelle puissance pour un camping-car, mêmes panneaux que pour une maison, faut-il une batterie spécifique |
+| `/installation/pompe-a-chaleur` | panneaux solaires et pompe à chaleur | dimensionner le solaire pour une PAC, autoconsommation chauffage | faut-il surdimensionner, une PAC consomme-t-elle beaucoup, peut-on l'ajouter après coup |
+| `/installation/voiture-electrique` | recharger sa voiture électrique en solaire | borne et panneaux solaires, recharge en autoconsommation | faut-il plus de panneaux avec une voiture, peut-on recharger la nuit, faut-il une batterie domestique |
+| `/installation/soi-meme` | installer ses panneaux solaires soi-même | auto-installation photovoltaïque, contrôle RGIE | est-ce légal en Belgique, que doit faire un professionnel, **perd-on les certificats verts à Bruxelles**, combien économise-t-on vraiment |
+| `/installation/trouver-un-installateur` | installateur panneaux solaires | installateur certifié RESCert, comparer les devis solaires | comment vérifier une certification, quels signaux d'alarme, l'installateur fait-il les démarches |
+
+#### Ce que la seconde passe a corrigé
+
+| Point | Constat | Fait |
+|---|---|---|
+| **Permis pour un carport** | La page répondait « généralement oui, puisqu'il s'agit d'une construction nouvelle ». Faux en Wallonie : un carport est dispensé s'il coche **toutes** les conditions (40 m², 2,50 m sous corniche, 3,50 m au faîte, unique sur la propriété, en relation avec la voirie) | Réponse réécrite avec les seuils, et la réserve régionale |
+| **Permis pour un abri de jardin** | La page renvoyait aux « règles d'une installation au sol ». Ce n'en est pas une : des panneaux sur un abri **existant** sont dispensés comme sur tout bâtiment existant, et l'abri lui-même l'est jusqu'à 20 m² et 3,50 m, à un mètre de la limite | Les deux questions sont séparées et chiffrées |
+| **« RESCert ou équivalent régional »** | Il n'y a pas d'équivalent : RESCert PV est **la même** certification dans les trois régions, avec trois régimes d'obligation. Wallonie : obligatoire pour l'entreprise depuis mars 2023. Bruxelles : sans lui, plus de certificats verts depuis janvier 2026. Flandre : pas obligatoire en résidentiel | Les trois régimes sont écrits, sur la page installateur |
+| **Auto-installation à Bruxelles** | La page comparait des coûts sans dire qu'une pose par soi-même **interdit** les certificats verts bruxellois depuis janvier 2026, soit dix ans du seul vrai revenu de la région | Question dédiée. C'est l'argument le plus fort de la page, il en était absent |
+| **« Le raccordement exige un professionnel »** | Le RGIE fixe une obligation de résultat, il ne désigne pas l'exécutant. Ce qui est obligatoire, c'est le **contrôle par un organisme agréé** avant mise en service | Formulation corrigée, sans perdre le conseil de prudence |
+
+#### Ce qui a résisté à la vérification
+
+La légalité des kits plug & play depuis avril 2025, le plafond de 800 W,
+l'homologation Synergrid et l'obligation de déclarer au GRD **quelle que soit la
+puissance** (des sources secondaires prétendent la Flandre exemptée sous 800 W ;
+la position prudente de la page est la bonne). `WC_PER_PANEL = 430` et le repère
+« 10 panneaux pour 3 500 kWh ». `KWH_PER_KWC_YEAR = 900`, plancher de la
+fourchette belge (900 à 1 000) : le site annonce moins que ce qu'il produira,
+c'est le bon sens du chiffre. La dispense de permis pour des panneaux posés sur
+un bâtiment existant. Aucun lien mort dans les dix-sept pages.
+
 ### Transverse
 
 | URL | Principal | Pourquoi ce choix |
@@ -200,9 +248,9 @@ deux remontent sur la même requête, c'est `/a-propos` qui doit gagner.
 
 ## Ce qu'il reste à faire
 
-1. **Restituer la recherche** sur Installation (17 pages) : les titres sont
-   posés, les secondaires et la longue traîne manquent. Aides & primes est
-   fait (3 septembre 2026).
+1. ~~Restituer la recherche sur Aides & primes et Installation~~ — **fait le
+   3 septembre 2026**. Les 46 pages ont désormais leur principal, leurs
+   secondaires et leur longue traîne.
 2. **Reformuler les FAQ** à partir de la longue traîne. C'est le bloc qui porte
    le balisage `FAQPage` ; il est aujourd'hui écrit avant la recherche, pas
    d'après elle.

@@ -101,7 +101,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     question: 'Faut-il un permis pour un abri de jardin avec panneaux ?',
-    answer: 'Pas dans la plupart des cas résidentiels standards : les règles sont celles d’une installation au sol.',
+    answer: "Deux questions distinctes, et la réponse n'est pas la même. Les panneaux posés sur un abri qui existe déjà sont dispensés de permis au même titre que sur une maison : en Wallonie, la dispense vise tout bâtiment existant, garage et abri compris. L'abri lui-même, s'il reste à construire, est dispensé jusqu'à 20 m² au sol, 3,50 m de hauteur et à un mètre au moins de la limite de propriété. Un seul critère qui saute, un bien classé ou une zone protégée, et le permis redevient obligatoire. Bruxelles et la Flandre ont leurs propres listes de dispenses : c'est votre commune qui tranche.",
   },
   {
     question: 'Peut-on relier cette installation au compteur principal de la maison ?',

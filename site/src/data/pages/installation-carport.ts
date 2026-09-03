@@ -132,7 +132,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     question: 'Faut-il un permis pour construire un carport avec panneaux ?',
-    answer: 'Généralement oui, puisqu’il s’agit d’une construction nouvelle. À vérifier auprès de votre commune.',
+    answer: "Pas systématiquement, contrairement à ce qu'on lit souvent. En Wallonie, un carport est dispensé de permis s'il coche toutes les conditions à la fois : 40 m² au maximum, 2,50 m sous corniche et 3,50 m au faîte, un seul carport sur la propriété, et une relation directe avec la voirie. Les panneaux posés dessus ne changent rien à ce calcul, puisqu'une installation sur un bâtiment existant est elle-même dispensée. Un seul critère non respecté, et le permis redevient obligatoire : c'est votre commune qui tranche, et Bruxelles comme la Flandre ont leurs propres seuils.",
   },
 ];
 
