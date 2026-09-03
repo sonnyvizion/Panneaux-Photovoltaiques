@@ -14,6 +14,13 @@ On ne décore pas un pavé, on remplace le pavé. Le visiteur *fait* plutôt que
    le *featured snippet* (position zéro) et ce que le visiteur pressé veut tout de suite.
    Ne se replie jamais.
 2. **Module illustré ou interactif** — le visuel qui porte le sujet (voir `interactivite-seo.md`).
+   > ⚠️ **Une exception, la famille I (`SchemaPlate`).** Les planches schématiques ne
+   > se placent PAS ici mais **entre le point 3 et le point 4**, après « L'essentiel ».
+   > Motif : en tête de page elles doublonnaient avec « L'essentiel », qui redisait en
+   > mots ce qu'elles montrent — sur la page kWc, « on achète la hauteur, on consomme
+   > la surface » et « on achète des kWc, on consomme des kWh » se suivaient à 300 px.
+   > Contrepartie acceptée : un lecteur mobile pressé ne voit pas la planche.
+   > Les quatre pages concernées : Onduleur, Batterie, Puissance (kWc), Autoconsommation.
 3. **Essentiel scannable — visible.** Les points clés, en clair.
 4. **Accordéons — la profondeur.** Détails secondaires, cas particuliers, « pour aller plus loin ».
    On replie le long, jamais le cœur.

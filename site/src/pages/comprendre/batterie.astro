@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import LeadStatement from '../../components/LeadStatement.astro';
+import SchemaPlate from '../../components/SchemaPlate.astro';
 import Essentials from '../../components/Essentials.astro';
 import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
@@ -17,7 +18,7 @@ import TrendingUp from '../../assets/icons/batterie-domestique/trending-up.svg';
 import UserCheck from '../../assets/icons/batterie-domestique/user-check.svg';
 import {
   STACKED_ROWS, STACKED_ALT, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
-  HERO, LEAD, TOPICS, TOPICS_COPY,
+  HERO, LEAD, TOPICS, TOPICS_COPY, SCHEMA,
 } from '../../data/pages/comprendre-batterie';
 
 /**
@@ -35,6 +36,7 @@ import {
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} stacked={{ rows: STACKED_ROWS, image: listeImage, imageAlt: STACKED_ALT }} />
+  <SchemaPlate src={SCHEMA.src} alt={SCHEMA.alt} title={SCHEMA.title} caption={SCHEMA.caption} keys={[...SCHEMA.keys]} bridgeLabel={SCHEMA.bridgeLabel} cta={SCHEMA.cta} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [Coin, Battery, PlugOff, Plus][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur les batteries." tone="grey" id="faq-batterie" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

@@ -135,6 +135,39 @@ export const FAQ: FaqItem[] = [
   },
 ];
 
+/**
+ * La planche « la batterie déplace le surplus » — famille I, `SchemaPlate`.
+ *
+ * ⚠️ PLACEMENT : sous « L'essentiel », pas dans le créneau du module — règle de
+ * la famille I, voir l'en-tête de `SchemaPlate.astro`. La première ligne de
+ * `STACKED_ROWS` (« Stocker le surplus, pas le perdre ») disait déjà en mots ce
+ * que la planche montre ; les éloigner évite de lire deux fois la même idée.
+ *
+ * ⚠️ Elle reprend EXACTEMENT la journée type de la page Autoconsommation :
+ * même ligne de base, même cloche, même courbe de consommation. C'est ce qui
+ * fait qu'un lecteur venu de l'autre page reconnaît le dessin au lieu d'en
+ * apprendre un second. Deux planches, une seule figure.
+ *
+ * ⚠️ CE QUE LE DESSIN NE DOIT JAMAIS LAISSER CROIRE : qu'une batterie produit
+ * quelque chose. Elle DÉPLACE — la flèche part du surplus de midi et arrive sur
+ * la soirée, qui cesse d'être hachurée. C'est le malentendu commercial numéro
+ * un du sujet, et la seule raison d'être de cette planche.
+ */
+export const SCHEMA = {
+  src: '/schemas/batterie-journee-type.svg',
+  alt: "La même journée type : une flèche part du surplus de production de midi et rejoint la consommation du soir, qui passe du réseau au solaire stocké.",
+  title: 'Une batterie ne produit rien, elle déplace',
+  caption:
+    'Le surplus de midi, qui partait sur le réseau, est mis de côté puis rendu le soir, au moment où le foyer consomme le plus et où les panneaux ne produisent plus. La soirée cesse d’être achetée au réseau. Rien n’a été créé : la même énergie a simplement changé d’heure.',
+  keys: [
+    { swatch: 'grey', label: 'Le surplus de midi, qui part se stocker' },
+    { swatch: 'green', label: 'La soirée, désormais couverte par le stock' },
+    { swatch: 'hatch', label: 'Ce qui reste acheté au réseau, le matin' },
+  ],
+  bridgeLabel: 'Une batterie se justifie-t-elle chez vous ?',
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+} as const;
+
 export const FINAL_CTA = {
   title: "Batterie ou pas, le calcul se fait sur votre profil",
   text: "On chiffre les deux scénarios. Vous parlez directement à l'équipe qui installe.",

@@ -131,6 +131,40 @@ export const FAQ: FaqItem[] = [
   },
 ];
 
+/**
+ * La planche « string contre micro-onduleur » — famille I, `SchemaPlate`.
+ *
+ * ⚠️ PLACEMENT : sous « L'essentiel », pas dans le créneau du module — règle de
+ * la famille I, voir l'en-tête de `SchemaPlate.astro`. Ici le doublon était
+ * net : la planche démontre l'effet d'une ombre sur une file de panneaux, et
+ * les deux photos de « L'essentiel » le réexpliquaient en légende juste après.
+ *
+ * ⚠️ Le cahier ne prévoyait AUCUN module ici, et c'était l'erreur : la page
+ * tranchait entre deux câblages avec deux photos de boîtiers blancs. Or la
+ * différence n'est pas dans l'objet, elle est dans la façon dont les panneaux
+ * sont reliés — une photo ne la montrera jamais.
+ *
+ * ⚠️ CE QUE LE DESSIN DOIT FAIRE VOIR, c'est la CAUSE et pas seulement l'effet :
+ * à gauche un seul fil traverse les six panneaux, donc le plus faible impose son
+ * débit à toute la file ; à droite chaque panneau a sa propre boîte et sort
+ * seul. Montrer les panneaux éteints sans montrer le fil répéterait simplement
+ * ce que la bascule de la page Ombrage dit déjà.
+ */
+export const SCHEMA = {
+  src: '/schemas/onduleur-string-micro.svg',
+  alt: "Deux toitures identiques de six panneaux : à gauche un seul fil les traverse tous et rejoint un unique boîtier, tous les panneaux sont éteints ; à droite chaque panneau a son propre boîtier et un seul panneau est éteint.",
+  title: 'Un seul fil, ou un boîtier par panneau',
+  caption:
+    'À gauche, les six panneaux sont montés en file sur un seul fil : une ombre sur un seul d’entre eux fait chuter toute la file, parce que le plus faible impose son débit aux autres. À droite, chaque panneau a son propre convertisseur et travaille seul : l’ombre ne coûte que ce panneau-là.',
+  keys: [
+    { swatch: 'ink', label: 'Le câblage : un fil unique à gauche, un par panneau à droite' },
+    { swatch: 'green', label: 'Panneau qui produit normalement' },
+    { swatch: 'dim', label: 'Panneau dont la production s’effondre' },
+  ],
+  bridgeLabel: 'Votre toiture a-t-elle de l’ombre ?',
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+} as const;
+
 export const FINAL_CTA = {
   title: "Le bon onduleur dépend de votre toiture",
   text: "Notre équipe est certifiée Enphase : les micro-onduleurs, c'est notre spécialité.",

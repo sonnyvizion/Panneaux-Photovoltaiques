@@ -169,6 +169,41 @@ export const FAQ: FaqItem[] = [
   },
 ];
 
+/**
+ * La planche « journée type » — famille I, `SchemaPlate`.
+ *
+ * ⚠️ ELLE SUIT le curseur ET « L'essentiel » — c'est la règle de placement de
+ * la famille I, voir l'en-tête de `SchemaPlate.astro`. La page se lit donc :
+ * le curseur donne le RÉSULTAT (un taux, une répartition), « L'essentiel »
+ * donne l'écart de valeur entre un kWh consommé et un kWh injecté, et la
+ * planche vient expliquer POURQUOI ce taux plafonne — deux courbes qui ne se
+ * superposent pas.
+ *
+ * ⚠️ C'est ici que le déplacement se sent le plus, parce que le visiteur
+ * manipule un chiffre avant d'en avoir vu la cause. Contrepartie assumée : les
+ * trois blocs ne se répètent pas, chacun apporte une couche que les deux autres
+ * n'ont pas.
+ *
+ * ⚠️ Le dessin est vérifié, pas illustratif : l'intégration des deux courbes
+ * donne 38 % de la production consommée sur place, soit exactement la valeur
+ * que le reste de la page annonce. Si `SELF_CONSUMPTION_RATE` bouge un jour,
+ * la planche devra bouger avec — sinon la page se contredit à l'image.
+ */
+export const SCHEMA = {
+  src: '/schemas/journee-type.svg',
+  alt: "Sur une journée, la courbe de production forme une cloche centrée sur midi tandis que la consommation du foyer fait deux bosses, le matin et le soir ; les deux ne se recouvrent qu’en partie.",
+  title: 'Pourquoi les deux courbes se manquent',
+  caption:
+    'Vos panneaux produisent en cloche autour de midi. Votre foyer, lui, consomme surtout au lever et en soirée. L’autoconsommation n’est rien d’autre que la zone où les deux se recouvrent, et c’est parce qu’elles se manquent qu’un ménage plafonne naturellement autour de 30 à 40 %.',
+  keys: [
+    { swatch: 'green', label: 'Consommé sur place, au moment où c’est produit' },
+    { swatch: 'grey', label: 'Surplus, injecté sur le réseau' },
+    { swatch: 'hatch', label: 'Soutiré au réseau, faute de soleil' },
+  ],
+  bridgeLabel: 'Et chez vous, la journée ressemble à quoi ?',
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+} as const;
+
 export const FINAL_CTA = {
   title: 'En Wallonie particulièrement, chaque point d’autoconsommation compte',
   text: "Voyez l'impact sur votre cas précis. Vous parlez directement à l'équipe qui installe.",

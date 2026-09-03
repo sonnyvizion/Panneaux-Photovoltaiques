@@ -42,6 +42,7 @@
 | F | `TopicCards` | Grille de cartes-liens (2, 3 ou 4 colonnes) |
 | G | `PhotonFlow` | Schéma animé du trajet de l'énergie |
 | H | `StackedList` | **Liste empilée à média plein** — trois lignes à gauche, une seule photo à droite sur toute la hauteur |
+| I | `SchemaPlate` | **Planche schématique** — SVG muet à deux colonnes, texte à gauche, dessin à droite, loupe |
 
 ### Famille H — liste empilée à média plein (Figma 700:1813)
 
@@ -75,6 +76,41 @@ texte tombe sous 340px et chaque titre casse sur trois lignes — ce qui annule 
 rythme que le module existe pour créer.
 
 Zéro JavaScript.
+
+### Famille I — planche schématique
+
+Employée sur Onduleur, Batterie, Puissance (kWc) et Autoconsommation, pour les
+sujets dont le cœur est un mécanisme et non un objet : une topologie de câblage,
+deux courbes qui se manquent, une hauteur contre une aire.
+
+Quand la choisir plutôt que `FigureModule` : quand l'image est le **contenu** et
+non l'ambiance. La famille E pose sa photo en fond plein cadre, la voile de
+sombre et centre un panneau de verre par-dessus — une toiture y survit, un schéma
+s'y fait enterrer, le voile éteint son contraste et le panneau masque le tiers
+central, c'est-à-dire l'endroit où le dessin explique.
+
+⚠️ **Elle ne se place pas dans le créneau du module.** C'est la seule famille
+dans ce cas : elle passe **après « L'essentiel »**, avant la profondeur. Motif et
+contrepartie dans `pages-contenu.md`, sous le point 2 du gabarit. Ne pas la
+remonter sans en reparler.
+
+⚠️ **Les SVG ne contiennent aucun texte**, et c'est ce qui les rend utilisables :
+les moteurs ne lisent pas le texte d'une image, et le site existe en FR + NL. Une
+planche muette sert les deux langues ; les libellés et la légende des couleurs
+sont du HTML — lisibles, indexables, traduisibles (règle d'or #1).
+
+⚠️ **Une loupe, pas un ornement.** À mi-largeur, le câblage de la planche
+onduleur et la trame de points de la planche kWc passent sous le seuil de
+lisibilité, et sur mobile c'est pire. Le `<dialog>` natif rend le dessin à une
+largeur plancher de 1100px — on défile, c'est voulu — et apporte gratuitement le
+piège de focus, la fermeture par Échap et le retour du focus sur le déclencheur.
+
+⚠️ **Poids** : les planches sont générées, et une génération naïve sort des
+milliers de `<circle>` pour une trame de fond. Converties en `<pattern>`, elles
+passent de 126–165 Ko à 19–63 Ko. Vérifier ce point à chaque nouvelle planche.
+
+Le seul JavaScript est un écouteur unique posé sur le document, partagé par
+toutes les planches de la page.
 
 ## Verdicts sur les idées initiales
 

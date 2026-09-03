@@ -1,0 +1,403 @@
+---
+import Button from './Button.astro';
+import type { ContentLink } from '../data/content';
+
+/**
+ * Planche schématique — famille I du registre des modules.
+ *
+ * ⚠️ POURQUOI PAS `FigureModule`. La famille E pose son image en FOND plein
+ * cadre, la voile de sombre et centre un panneau de verre par-dessus. Une photo
+ * de toiture y survit — elle n'est qu'une ambiance. Un schéma s'y fait enterrer :
+ * le voile éteint son contraste et le panneau masque le tiers central, c'est-à-
+ * dire l'endroit où le dessin explique. D'où cette famille : l'image est le
+ * contenu, elle n'est plus un décor.
+ *
+ * ⚠️ ELLE NE SE PLACE PAS DANS LE CRÉNEAU DU MODULE, et c'est la SEULE famille
+ * dans ce cas. `pages-contenu.md` réserve la place juste après le chapeau au
+ * module — 31 pages sur 46 s'y tiennent, et l'en-tête de `FigureModule` en fait
+ * une promesse (« d'un sujet à l'autre, le lecteur retrouve le même objet au
+ * même endroit »). La famille I passe APRÈS « L'essentiel », avant la
+ * profondeur.
+ *
+ * Deux raisons, la première technique et la seconde éditoriale :
+ *
+ *  1. Posée en tête, la planche DOUBLONNAIT avec « L'essentiel », qui redisait
+ *     en mots ce qu'elle venait de montrer. Sur la page kWc, « on achète la
+ *     hauteur, on consomme la surface » (légende) et « on achète des kWc, on
+ *     consomme des kWh » (liste) se suivaient à 300 px d'intervalle. Même
+ *     collision sur Batterie (« stocker le surplus ») et sur Onduleur (l'ombrage).
+ *  2. Arbitrage client : la planche récompense la lecture plutôt qu'elle ne
+ *     l'ouvre.
+ *
+ * ⚠️ CE QUE ÇA COÛTE, et qui a été accepté en connaissance de cause : un lecteur
+ * mobile pressé ne verra pas la planche, et la promesse de position de la
+ * famille E ne vaut plus pour celle-ci. Ne pas « recorriger » vers le haut sans
+ * en reparler — la règle est écrite dans `pages-contenu.md` et dans le registre
+ * de `interactivite-seo.md`.
+ *
+ * ⚠️ DEUX COLONNES, ET LA PLANCHE NE FAIT PLUS TOUTE LA LARGEUR. Une première
+ * version l'étalait sur la pleine mesure, texte dessous : à 1240px de large, un
+ * dessin 16:9 prenait 700px de haut et coupait la page en deux. Le lecteur
+ * tombait sur une image seule, sans savoir ce qu'il devait y voir. Texte à
+ * gauche, dessin à droite : la consigne de lecture et le dessin sont dans le
+ * même écran, et la section pèse la moitié.
+ *
+ * ⚠️ ET DONC UNE LOUPE, qui n'est pas un ornement : à mi-largeur, le câblage de
+ * la planche onduleur et la trame de points de la planche kWc passent sous le
+ * seuil de lisibilité, et sur mobile c'est pire. Le `<dialog>` natif rend la
+ * planche à taille utile et apporte gratuitement le piège de focus, la fermeture
+ * par Échap et le retour du focus sur le déclencheur — le même choix que pour la
+ * recherche (voir `SearchOverlay.astro`).
+ *
+ * ⚠️ LES PLANCHES SONT DES SVG SANS AUCUN TEXTE, et c'est délibéré : les
+ * moteurs ne lisent pas le texte d'une image, et le site existe en FR + NL.
+ * Une planche muette sert les deux langues ; la légende, elle, est du texte
+ * HTML — lisible, indexable, traduisible (règle d'or #1).
+ *
+ * ⚠️ `<img>` et pas un import `astro:assets` : ces fichiers sont déjà des
+ * vectoriels optimisés (motifs `<pattern>` au lieu de milliers de cercles), le
+ * pipeline raster n'a rien à leur apporter et les transformerait en bitmap.
+ */
+interface Props {
+  /** Chemin public du SVG, sans texte incrusté. */
+  src: string;
+  /** Ce que le dessin montre — décrit le DESSIN, pas le sujet de la page. */
+  alt: string;
+  title: string;
+  /** Ce qu'il faut avoir compris en quittant la planche. Une à trois phrases. */
+  caption: string;
+  /** Les repères du dessin, nommés. Sans eux la planche reste muette. */
+  keys?: { swatch: 'green' | 'grey' | 'dim' | 'hatch' | 'ink'; label: string }[];
+  bridgeLabel?: string;
+  cta?: ContentLink;
+}
+
+const { src, alt, title, caption, keys, bridgeLabel, cta } = Astro.props;
+
+/* Un identifiant stable par planche : deux planches sur une même page
+   partageraient sinon le même `<dialog>`, et le second bouton ouvrirait le
+   premier dessin. */
+const id = `plate-${src.split('/').pop()?.replace(/\.svg$/, '') ?? 'schema'}`;
+---
+
+<section class="plate">
+  <div class="plate__inner">
+    <div class="plate__text">
+      <h2 class="plate__title">{title}</h2>
+      <p class="plate__caption">{caption}</p>
+
+      {keys && (
+        <ul class="plate__keys">
+          {keys.map((k) => (
+            <li class="plate__key">
+              <span class={`plate__swatch plate__swatch--${k.swatch}`} aria-hidden="true"></span>
+              {k.label}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {cta && (
+        <div class="plate__bridge">
+          {bridgeLabel && <p class="plate__bridge-label">{bridgeLabel}</p>}
+          <Button href={cta.href}>{cta.label}</Button>
+        </div>
+      )}
+    </div>
+
+    <figure class="plate__figure">
+      <img class="plate__image" src={src} alt={alt} width="2688" height="1520" loading="lazy" decoding="async" />
+
+      {/* Le bouton est DANS la figure, pas sous elle : il agit sur le dessin, et
+          à cette place il ne s'intercale pas dans la lecture du texte. */}
+      <button class="plate__zoom" type="button" data-plate-open={id} aria-label={`Agrandir le schéma : ${title}`}>
+        {/* ⚠️ Une loupe NUE, sans le « + » qu'elle portait : à 18px le signe se
+            réduisait à une tache et alourdissait un objet qui doit se faire
+            oublier. L'action est portée par l'`aria-label`, pas par le dessin. */}
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.5" />
+          <path d="M12.7 12.7L17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+      </button>
+    </figure>
+  </div>
+</section>
+
+<dialog class="zoom" id={id} aria-labelledby={`${id}-title`}>
+  <div class="zoom__bar">
+    <h2 class="zoom__title" id={`${id}-title`}>{title}</h2>
+    <button class="zoom__close" type="button" data-plate-close aria-label="Fermer l’agrandissement">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true">
+        <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+      </svg>
+    </button>
+  </div>
+
+  {/* ⚠️ Le dessin est rendu à une largeur PLANCHER de 1100px, et non ajusté au
+      dialogue : sur un téléphone, le mettre à la taille de l'écran reproduirait
+      exactement le problème que la loupe existe pour régler. On défile, c'est
+      voulu. */}
+  <div class="zoom__scroll">
+    <img class="zoom__image" src={src} alt={alt} width="2688" height="1520" loading="lazy" decoding="async" />
+  </div>
+</dialog>
+
+<style>
+  .plate {
+    padding: var(--section-padding-block) var(--container-padding);
+    background: var(--color-white-clear);
+  }
+
+  .plate__inner {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    display: grid;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  /* Deux colonnes seulement quand la colonne de texte garde une mesure lisible.
+     En dessous, empilé — et le texte reste devant : il dit quoi regarder. */
+  @media (min-width: 1024px) {
+    .plate__inner {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-4) var(--space-48);
+    }
+  }
+
+  .plate__text {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 56ch;
+  }
+
+  .plate__title {
+    margin: 0;
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    letter-spacing: var(--text-h3-tracking);
+    color: var(--color-text-primary);
+  }
+
+  .plate__caption {
+    margin: 0;
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line-height);
+    color: var(--color-text-secondary);
+  }
+
+  /* La légende des couleurs : sans elle, un aplat vert ne veut rien dire. */
+  .plate__keys {
+    display: grid;
+    gap: var(--space-12);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .plate__key {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    line-height: var(--text-body-sm-line-height);
+    color: var(--color-text-secondary);
+  }
+
+  .plate__swatch {
+    width: 18px;
+    height: 18px;
+    flex: none;
+    border: 1px solid var(--color-ink-900);
+    border-radius: 3px;
+  }
+  .plate__swatch--green { background: var(--color-main-green); }
+  .plate__swatch--grey { background: var(--color-shade-grey); }
+  /* ⚠️ Deux gris, pas un : `grey` est l'aplat de surplus des planches de
+     journée type, `dim` est le gris-vert d'un panneau dont la production
+     s'effondre. Les confondre rendrait le repère faux ET invisible. */
+  .plate__swatch--dim { background: var(--color-shade-strong); }
+  .plate__swatch--ink { background: var(--color-ink-900); }
+  /* Les hachures du dessin, reproduites au trait pour que le repère soit exact. */
+  .plate__swatch--hatch {
+    background:
+      repeating-linear-gradient(
+        -45deg,
+        var(--color-shade-strong) 0 2px,
+        var(--color-white-primary) 2px 6px
+      );
+  }
+
+  .plate__bridge {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3) var(--space-24);
+    margin-top: var(--space-12);
+  }
+
+  .plate__bridge-label {
+    margin: 0;
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    color: var(--color-text-primary);
+  }
+
+  /* Le dessin garde son fond clair d'origine : c'est une feuille, pas une photo. */
+  .plate__figure {
+    position: relative;
+    margin: 0;
+    background: var(--color-white-primary);
+    border: 1px solid var(--color-shade-grey);
+    border-radius: var(--radius-3);
+    overflow: hidden;
+  }
+
+  .plate__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ⚠️ UN OUTIL, PAS UN APPEL À L'ACTION. Une première version était une pastille
+     à filet noir portant le mot « Agrandir », qui virait au vert au survol : elle
+     pesait autant que le bouton « Estimer mon installation » posé juste à côté,
+     dans la colonne de texte. Or le vert est réservé aux surfaces d'action
+     (`design.md` §1) et il n'y a qu'un CTA principal par écran (règle d'or #2).
+     Ici : filet gris, icône en gris atténué, aucun aplat coloré. On la trouve
+     quand on la cherche, elle ne dispute rien au pont vers le simulateur. */
+  .plate__zoom {
+    position: absolute;
+    right: var(--space-3);
+    bottom: var(--space-3);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 40px : sous les 44px recommandés au tactile, le bouton flotterait sur le
+       dessin comme une pastille. 40 reste confortable au doigt et discret. */
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: 1px solid var(--color-shade-grey);
+    border-radius: 999px;
+    background: var(--color-white-primary);
+    color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+  }
+  .plate__zoom:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-shade-strong);
+  }
+  .plate__zoom:focus-visible {
+    outline: 2px solid var(--color-ink-900);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plate__zoom { transition: none; }
+  }
+
+  /* ------------------------------------------------------------------ loupe */
+
+  .zoom {
+    width: min(96vw, 1600px);
+    max-width: none;
+    height: min(92vh, 1000px);
+    max-height: none;
+    padding: 0;
+    border: 1px solid var(--color-shade-grey);
+    border-radius: var(--radius-3);
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+    overflow: hidden;
+  }
+  .zoom::backdrop { background: rgb(25 28 27 / 0.62); }
+
+  .zoom[open] {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .zoom__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-12) var(--space-3);
+    border-bottom: 1px solid var(--color-shade-grey);
+  }
+
+  .zoom__title {
+    margin: 0;
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .zoom__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border: 1px solid var(--color-shade-grey);
+    border-radius: 999px;
+    background: var(--color-white-primary);
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+  .zoom__close:hover { background: var(--color-shade-grey); }
+  .zoom__close:focus-visible {
+    outline: 2px solid var(--color-ink-900);
+    outline-offset: 2px;
+  }
+
+  .zoom__scroll {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .zoom__image {
+    display: block;
+    width: max(1100px, 100%);
+    height: auto;
+  }
+</style>
+
+<script>
+  /**
+   * ⚠️ UN SEUL écouteur pour toute la page, posé sur le document : chaque
+   * planche embarquerait sinon son propre script, et une page à deux planches
+   * paierait deux fois le même code. Le `<dialog>` natif fournit tout le reste —
+   * piège de focus, Échap, retour du focus sur le déclencheur.
+   */
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement | null;
+    if (!target) return;
+
+    const opener = target.closest<HTMLElement>('[data-plate-open]');
+    if (opener) {
+      const dialog = document.getElementById(opener.dataset.plateOpen ?? '');
+      if (dialog instanceof HTMLDialogElement) dialog.showModal();
+      return;
+    }
+
+    if (target.closest('[data-plate-close]')) {
+      target.closest('dialog')?.close();
+      return;
+    }
+
+    /* Clic hors du cadre : la cible est alors le `<dialog>` lui-même et jamais
+       son contenu. C'est le test qui distingue le fond du dessin. */
+    if (target instanceof HTMLDialogElement && target.classList.contains('zoom')) {
+      target.close();
+    }
+  });
+</script>

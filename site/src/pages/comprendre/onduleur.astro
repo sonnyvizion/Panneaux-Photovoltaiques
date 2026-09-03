@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import LeadStatement from '../../components/LeadStatement.astro';
+import SchemaPlate from '../../components/SchemaPlate.astro';
 import Essentials from '../../components/Essentials.astro';
 import TopicCards from '../../components/TopicCards.astro';
 import Faq from '../../components/Faq.astro';
@@ -15,7 +16,7 @@ import carteOnduleur from '../../assets/pages/4.3-onduleur-carte-string.webp';
 import carteMicroOnduleur from '../../assets/pages/onduleur-carte-micro.webp';
 import {
   PHOTOS, BRIDGES, ESSENTIALS_COPY, FACTS, FAQ, FIGURES, FINAL_CTA,
-  HERO, LEAD, TOPICS, TOPICS_COPY,
+  HERO, LEAD, TOPICS, TOPICS_COPY, SCHEMA,
 } from '../../data/pages/comprendre-onduleur';
 
 /**
@@ -33,6 +34,7 @@ import {
   <PageHero badge={HERO.badge} title={HERO.title} answer={HERO.answer} cta={HERO.cta} image={heroImage} imageAlt={HERO.imageAlt} />
   <LeadStatement text={LEAD.text} />
   <Essentials overline={ESSENTIALS_COPY.overline} title={ESSENTIALS_COPY.title} intro={ESSENTIALS_COPY.intro} figures={FIGURES} facts={FACTS} bridges={BRIDGES} photos={PHOTOS.map((p, i) => ({ ...p, src: [carteOnduleur, carteMicroOnduleur][i] }))} />
+  <SchemaPlate src={SCHEMA.src} alt={SCHEMA.alt} title={SCHEMA.title} caption={SCHEMA.caption} keys={[...SCHEMA.keys]} bridgeLabel={SCHEMA.bridgeLabel} cta={SCHEMA.cta} />
   <TopicCards overline={TOPICS_COPY.overline} title={TOPICS_COPY.title} intro={TOPICS_COPY.intro} items={TOPICS.map((t, i) => ({ ...t, icon: [ArrowsSplit, Clock, Bolt, MapPin][i] }))} />
   <Faq items={FAQ} overline="Avant de vous décider" intro="Les questions qu'on nous pose le plus souvent sur l'onduleur." tone="grey" id="faq-onduleur" />
   <FinalCta title={FINAL_CTA.title} text={FINAL_CTA.text} cta={FINAL_CTA.cta} tone="default" />

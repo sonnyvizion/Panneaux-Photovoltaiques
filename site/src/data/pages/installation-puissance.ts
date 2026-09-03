@@ -37,7 +37,12 @@ export const HERO = {
 
 export const LEAD = {
   text: 'kWc, kWh : deux unités qui se ressemblent mais ne mesurent pas la même chose. Voici la différence, en clair.',
-  note: 'La différence entre les deux, en une image.',
+  /* ⚠️ PAS DE NOTE ICI, et ne pas en remettre une. Elle disait « la différence
+     entre les deux, en une image » et annonçait la planche qui suivait
+     immédiatement. La planche est passée sous « L'essentiel » (famille I) : la
+     note promettait donc une image que le lecteur ne trouvait pas là où on la
+     lui annonçait. Même piège que sur la page Wallonie — une note doit annoncer
+     ce qui suit VRAIMENT. */
 } as const;
 
 export const MODULE = {
@@ -152,6 +157,39 @@ export const FAQ: FaqItem[] = [
       'Non. Le prix au watt-crête baisse quand la puissance augmente, parce qu’une partie du chantier est fixe.',
   },
 ];
+
+/**
+ * La planche kWc / kWh — famille I, `SchemaPlate`.
+ *
+ * ⚠️ Le `FigureModule` qui reprenait la photo du hero a été RETIRÉ, et la
+ * planche ne prend pas sa place : elle descend sous « L'essentiel », suivant la
+ * règle de la famille I. Le créneau du module reste donc VIDE sur cette page,
+ * et c'est délibéré — douze pages du site n'ont aucun module, et y remettre une
+ * photo décorative contredirait la règle d'or #5 (« interactif = accent, pas
+ * défaut », et le décoratif encore moins).
+ *
+ * ⚠️ Le doublon que le déplacement règle : « on achète la hauteur, on consomme
+ * la surface » (la légende ci-dessous) et « on achète des kWc, on consomme des
+ * kWh » (`STACKED_ROWS`) disaient la même phrase à 300 px d'intervalle.
+ *
+ * Le dessin porte les deux grandeurs sur la MÊME courbe — la flèche verticale
+ * est une hauteur (le kWc), la trame de points est une aire (le kWh). C'est ce
+ * qui règle la confusion la plus tenace du sujet : ce ne sont pas deux unités
+ * concurrentes, ce sont deux lectures d'une seule et même journée.
+ */
+export const SCHEMA = {
+  src: '/schemas/kwc-kwh.svg',
+  alt: "Courbe de production d’une journée : une flèche verticale mesure la hauteur du pic de midi, tandis que toute l’aire sous la courbe est remplie d’une trame de points.",
+  title: 'Une hauteur et une aire, sur la même journée',
+  caption:
+    'La flèche mesure la hauteur du pic : c’est le kWc, la puissance maximale atteinte dans des conditions de test. La surface sous la courbe, elle, est le kWh : tout ce qui a réellement été produit au fil des heures. On achète la hauteur, on consomme la surface.',
+  keys: [
+    { swatch: 'green', label: 'La hauteur du pic, c’est le kWc' },
+    { swatch: 'grey', label: 'L’aire sous la courbe, ce sont les kWh produits' },
+  ],
+  bridgeLabel: 'Quelle puissance vous faut-il ?',
+  cta: { label: 'Estimer mon installation', href: '/simulateur' },
+} as const;
 
 export const FINAL_CTA = {
   title: 'Quelle puissance vous faut-il vraiment ?',
