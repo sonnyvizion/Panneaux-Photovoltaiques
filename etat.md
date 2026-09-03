@@ -22,7 +22,7 @@ ligne et à jour** (https://belgreen-demo.pages.dev, redéployée le 3 septembre
 | Le simulateur (parcours de questions) | Fonctionnel, 6 étapes + 5 d'affinage |
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
-| Les calculs | 334 tests verts |
+| Les calculs | 342 tests verts |
 | La recherche interne | Loupe dans la nav, **47 pages indexées** |
 | Le build de production | 59 pages + `search-index.json`, ~40 Mo |
 
@@ -442,10 +442,22 @@ Tant qu'elles ne le sont pas, aucun de ces chiffres n'est un prix. »
   repli (même logique que `PUBLIC_INDEXABLE`). Canoniques, Open Graph et
   `sitemap.xml` sont en place ; il reste à poser le **vrai domaine** en variable
   d'environnement de production.
-- **Le parcours de questions n'a pas été retouché** : carrousel horizontal à
-  hauteur fixe, trois indicateurs de progression concurrents qui se
-  désynchronisent pendant le glissement. Problèmes réels, volontairement hors du
-  chantier « compte rendu ».
+- ~~**Le parcours de questions n'a pas été retouché**~~ — **repris le
+  3 septembre 2026.** Les deux défauts venaient du même choix : ne rien mettre à
+  jour tant que le rail n'est pas ARRÊTÉ. Le rang voyage avec la carte et était
+  donc juste tout de suite ; le compteur du pied de page et la barre attendaient
+  l'arrêt, d'où trois repères qui se contredisaient en plein glissement. Et la
+  hauteur du rail sautait **après** le geste, la question suivante arrivant
+  rognée pendant tout le glissement. `paintProgress` est maintenant appelé à
+  chaque évènement de défilement, et la hauteur est interpolée entre les deux
+  étapes voisines, transition CSS suspendue le temps du geste. Deux fonctions
+  pures (`stepPosition`, `interpolate`) et 8 tests.
+
+  ⚠️ **Reste à vérifier AU NAVIGATEUR**, avec un vrai doigt ou un vrai trackpad :
+  c'est exactement la classe de correction que les tests unitaires ne prouvent
+  pas (voir la leçon des quatre pièges de la recherche, plus haut). Le contrôle
+  fait ici s'arrête au mécanisme : la règle `[data-dragging]` survit au minifieur
+  et le script déployé la pose.
 
 ---
 
