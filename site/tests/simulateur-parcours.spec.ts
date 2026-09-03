@@ -42,6 +42,9 @@ async function sampleMidGesture(page: import('@playwright/test').Page) {
     const wizard = document.querySelector<HTMLElement>('[data-wizard="questions"]')!;
     const rail = wizard.querySelector<HTMLElement>('[data-wizard-rail]')!;
     const count = wizard.querySelector<HTMLElement>('[data-wizard-count]')!;
+    const segments = [...wizard.querySelectorAll<HTMLElement>('[data-wizard-seg]')].filter(
+      (seg) => !seg.closest('li')?.hidden,
+    );
     const cards = [...rail.querySelectorAll<HTMLElement>('.step:not([hidden]) .step__question')];
     const heights = cards.map((card) => card.getBoundingClientRect().height);
     const stepWidth = (rail.scrollWidth - rail.clientWidth) / (cards.length - 1);
@@ -59,6 +62,9 @@ async function sampleMidGesture(page: import('@playwright/test').Page) {
           before,
           fraction,
           count: count.textContent,
+          /* LE repère visible du pied de page depuis que le compteur en est
+             sorti : c'est lui qui doit suivre le doigt. */
+          current: segments.findIndex((seg) => seg.getAttribute('aria-current') === 'step') + 1,
           /* LE STYLE CALCULÉ, pas `style.height` : c'est ce que le visiteur voit. */
           railHeight: Number.parseFloat(getComputedStyle(rail).height),
           moving: rail.dataset.dragging !== undefined,
@@ -83,7 +89,35 @@ test.describe('le rail suit le doigt', () => {
        le pied de page disait encore « Question 1 sur 5 » alors que la carte à
        l'écran affichait déjà « 2/5 ». */
     expect(state!.moving).toBe(true);
+    /* La pastille, que le visiteur voit. */
+    expect(state!.current).toBe(2);
+    /* Et le libellé caché, que son lecteur d'écran lit. */
     expect(state!.count).toBe('Question 2 sur 5');
+  });
+
+  test('la position ne se lit plus DEUX FOIS à l’écran', async ({ page }) => {
+    await page.goto(OPEN);
+
+    /* Le rang vit contre la question : il reste visible, c'est lui qu'on garde. */
+    await expect(
+      page.locator(`${WIZARD} .step:not([hidden]) [data-step-index]`).first(),
+    ).toBeVisible();
+
+    /* Le compteur du pied de page disait la même chose à 300 pixels de là. Il
+       reste au DOM pour les technologies d'assistance — il porte « sur 5 », ce
+       qu'aucune pastille ne dit — mais il ne se lit plus deux fois à l'écran :
+       deux libellés pour une même position finissent par se contredire. */
+    await expect(page.locator(`${WIZARD} [data-wizard-count]`)).toHaveText('Question 1 sur 5');
+
+    /* ⚠️ On mesure l'AIRE OCCUPÉE, pas `toBeVisible()`. Playwright tient un
+       élément découpé par `clip-path` pour visible : sa boîte fait un pixel, mais
+       elle existe. Ce qui compte ici n'est pas le verdict de l'outil, c'est ce
+       que l'œil peut lire — et un pixel carré ne se lit pas. */
+    const area = await page.locator(`${WIZARD} [data-wizard-count]`).evaluate((node) => {
+      const box = node.getBoundingClientRect();
+      return box.width * box.height;
+    });
+    expect(area).toBeLessThan(10);
   });
 
   test('la hauteur du rail est INTERPOLÉE, elle ne saute pas', async ({ page }) => {
@@ -104,7 +138,7 @@ test.describe('le rail suit le doigt', () => {
     expect(state!.railHeight).toBeLessThan(high - 1);
   });
 
-  test('à l’arrêt, les trois repères disent la même chose', async ({ page }) => {
+  test('à l’arrêt, tous les repères disent la même chose', async ({ page }) => {
     await page.goto(OPEN);
     await sampleMidGesture(page);
     /* On attend que le rail se pose : le script rend alors la main à `fitRail`. */

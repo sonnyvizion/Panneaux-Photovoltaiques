@@ -59,7 +59,24 @@ const second = steps[1] ?? steps[0];
   </div>
 
   <div class="wizard__footer">
-    <p class="wizard__count" data-wizard-count>{progressLabel(0, steps.length, kind)}</p>
+    {/* ⚠️ LE COMPTEUR N'EST PLUS AFFICHÉ, et il n'est pas supprimé pour autant.
+        Il disait exactement ce que le rang de la carte dit déjà — « Question 3
+        sur 5 » à 300 pixels de « 3/5 » — et deux libellés pour une même position
+        ne se contrôlent pas l'un l'autre : ils se contredisent dès que l'un
+        prend du retard. C'est ce qui est arrivé, et ce que la recette navigateur
+        surveille désormais.
+
+        Ce qui reste : le RANG, textuel, contre la question, là où l'œil est
+        déjà ; la BARRE, graphique et cliquable, seul moyen de revenir en
+        arrière à la souris. Un rôle chacun.
+
+        Il reste dans le DOM parce qu'il porte la position en toutes lettres,
+        « sur 5 » compris, ce qu'aucune pastille ne dit. Et il n'est
+        VOLONTAIREMENT pas une zone `aria-live` : le script le réécrit à chaque
+        image du glissement, ce qui déverserait un torrent d'annonces. */}
+    <p class="wizard__count visually-hidden" data-wizard-count>
+      {progressLabel(0, steps.length, kind)}
+    </p>
 
     <ol class="wizard__bar">
       {steps.map((step, index) => (
@@ -160,12 +177,6 @@ const second = steps[1] ?? steps[0];
     gap: var(--space-3);
   }
 
-  .wizard__count {
-    color: var(--color-text-tertiary);
-    font-family: var(--text-body-sm-family);
-    font-size: var(--text-body-sm-size);
-    font-weight: var(--text-body-sm-weight);
-  }
 
   .wizard__bar {
     display: flex;
