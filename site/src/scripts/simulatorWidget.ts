@@ -704,10 +704,29 @@ export function initSimulator(root: ParentNode = document): void {
     const steps = liveSteps(w);
     const target = steps[index];
     if (!target) return;
+
+    const left = target.offsetLeft - steps[0].offsetLeft;
+
+    /**
+     * ⚠️ RAIL DÉJÀ EN PLACE : ON NE VERROUILLE PAS.
+     *
+     * Trouvé par la recette navigateur (`tests/simulateur-parcours.spec.ts`), et
+     * invisible autrement. Au chargement, `show()` appelle ce `scrollTo` avec une
+     * cible où le rail se trouve DÉJÀ : aucun défilement ne se produit, donc
+     * aucun `scroll` ni `scrollend` ne vient relâcher le verrou, et seul le
+     * minuteur de 600 ms y parvient. Pendant ces 600 premières millisecondes,
+     * `followRail` se taisait : un visiteur qui arrive et glisse tout de suite
+     * voyait le compteur et la hauteur figés, exactement le défaut qu'on vient
+     * de corriger.
+     *
+     * Il n'y a rien à protéger quand il n'y aura pas de défilement.
+     */
+    if (Math.abs(w.rail.scrollLeft - left) < 1) return;
+
     /* Le suivi du rail doit se taire pendant qu'on le pilote : sinon il conclut
        d'une position intermédiaire qu'on a changé d'étape. */
     holdRail();
-    w.rail.scrollTo({ left: target.offsetLeft - steps[0].offsetLeft, behavior });
+    w.rail.scrollTo({ left, behavior });
   };
 
   /**
