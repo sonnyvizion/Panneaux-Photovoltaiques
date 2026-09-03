@@ -389,6 +389,61 @@ et ce qui attend un arbitrage client. Le plus lourd : le modèle calcule une
 Wallonie **jamais amortie sur 25 ans**, quand toutes les sources belges annoncent
 6 à 13 ans. Tant que ce n'est pas tranché, **aucune page ne promet de délai**.
 
+## La recette navigateur (3 septembre 2026)
+
+`etat.md` portait la leçon depuis la passe recherche : sur une surface dont le
+comportement naît en JavaScript, il faut asserter le **style calculé** et envoyer
+de **vrais évènements**, jamais lire un attribut. La leçon était écrite, l'outil
+manquait.
+
+```sh
+cd site && npm run test:browser     # playwright test
+```
+
+| Pièce | Rôle |
+|---|---|
+| `site/playwright.config.ts` | Deux moteurs, **mobile d'abord** (WebKit, celui d'iOS Safari) |
+| `site/tests/simulateur-parcours.spec.ts` | 4 tests sur le parcours de questions |
+| `site/vitest.config.ts` | Sépare les deux harnais |
+
+**Deux harnais, deux périmètres.** Vitest ne prend que `src/**/*.test.ts` : sans
+cette restriction, son motif par défaut avalerait les specs Playwright, qui
+attendent un navigateur. La règle de rangement : une fonction pure suffit-elle à
+le prouver ? Vitest. Faut-il une mise en page, un défilement réel, un style
+calculé ? Playwright.
+
+**Elle tourne sur le site CONSTRUIT** (`astro preview`), pas sur le serveur de
+développement : le CSS de production passe au minifieur, qui a déjà fait
+disparaître un `backdrop-filter` dans ce projet.
+
+**Ce qu'elle a trouvé dès le premier lancement.** Au chargement, `show()` appelle
+`scrollTo` avec une cible où le rail se trouve DÉJÀ. Aucun défilement ne se
+produit, donc aucun `scroll` ni `scrollend` ne relâche le verrou `programmatic`,
+et seul le minuteur de 600 ms y parvient : pendant les 600 premières
+millisecondes de la page, tout geste du visiteur était ignoré. Le verrou n'est
+plus posé quand il n'y a rien à protéger.
+
+**Trois pièges de la recette elle-même**, écrits dans le fichier :
+
+1. **On ne peut pas poser le rail à mi-course et l'y laisser.** Il porte
+   `scroll-behavior: smooth` ET `scroll-snap-type: x mandatory` : écrire
+   `scrollLeft` **anime**. Une première version lisait le rail deux images après
+   l'écriture, il en était à 4 pixels du départ, et le test accusait le code
+   alors qu'il mesurait sa propre erreur. On échantillonne pendant l'animation.
+2. **`toBeVisible()` ne dit pas ce qu'on croit.** Playwright tient un élément
+   découpé par `clip-path` pour visible, sa boîte faisant un pixel. Pour prouver
+   qu'un libellé ne se lit plus, on mesure l'**aire occupée**.
+3. **Un test qui passe avant ET après ne prouve rien.** La correction a été
+   neutralisée pour contre-épreuve : les deux tests « pendant le geste »
+   échouent alors sur les deux moteurs, les deux tests « à l'arrêt » passent
+   toujours. Ce découpage est la preuve que la recette mesure la correction.
+
+⚠️ **Elle ne couvre que le parcours du simulateur.** La recherche interne, le
+compte rendu et le rapport restent vérifiés à la main. C'est le prochain terrain
+naturel de cette recette.
+
+---
+
 ## Ce qui bloque, et sur quoi
 
 ### Décisions client attendues
@@ -453,11 +508,16 @@ Tant qu'elles ne le sont pas, aucun de ces chiffres n'est un prix. »
   étapes voisines, transition CSS suspendue le temps du geste. Deux fonctions
   pures (`stepPosition`, `interpolate`) et 8 tests.
 
-  ⚠️ **Reste à vérifier AU NAVIGATEUR**, avec un vrai doigt ou un vrai trackpad :
-  c'est exactement la classe de correction que les tests unitaires ne prouvent
-  pas (voir la leçon des quatre pièges de la recherche, plus haut). Le contrôle
-  fait ici s'arrête au mécanisme : la règle `[data-dragging]` survit au minifieur
-  et le script déployé la pose.
+  ✅ **Vérifié au navigateur** : la recette Playwright existe désormais (voir
+  plus bas). Elle a trouvé un trou au passage — au chargement, le verrou
+  `programmatic` tenait 600 ms alors qu'aucun défilement n'allait avoir lieu, et
+  tout geste du visiteur était ignoré pendant ce temps.
+
+  La **redondance** a été traitée dans la foulée : « Question 3 sur 5 » en pied
+  de page disait ce que « 3/5 » disait déjà dans l'en-tête de la carte. Le
+  compteur sort de la vue (il reste au DOM pour les technologies d'assistance,
+  il porte le « sur 5 » qu'aucune pastille ne dit). Restent le rang, textuel,
+  contre la question, et la barre, graphique et cliquable.
 
 ---
 
