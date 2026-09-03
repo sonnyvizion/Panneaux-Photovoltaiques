@@ -128,6 +128,15 @@ const second = steps[1] ?? steps[0];
     scrollbar-width: none;
   }
 
+  /* ⚠️ PENDANT LE GESTE, PAS DE TRANSITION. Le script pose la hauteur du rail au
+     pixel en suivant le doigt (`followRail` dans `simulatorWidget.ts`) ; amortir
+     cette valeur-là ferait arriver le rail une demi-seconde après ce que le
+     visiteur voit. La transition reprend à l'arrêt, où elle sert vraiment : le
+     passage d'une question longue à une question courte. */
+  .wizard__rail[data-dragging] {
+    transition: none;
+  }
+
   .wizard__rail::-webkit-scrollbar {
     display: none;
   }

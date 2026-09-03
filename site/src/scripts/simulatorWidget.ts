@@ -1,4 +1,4 @@
-import { getProgressIndex } from './carouselProgress';
+import { getProgressIndex, interpolate, stepPosition } from './carouselProgress';
 import { collectPayback, renderPayback } from './paybackRender';
 import { reportHref } from './reportParams';
 import { chase, CHASE_DURATION } from './sliderCalculator';
@@ -735,7 +735,48 @@ export function initSimulator(root: ParentNode = document): void {
    * mesure se figeait donc sur elle-même et le rail ne bougeait jamais. La
    * carte, elle, garde sa hauteur naturelle.
    */
+  /**
+   * Les indicateurs, et RIEN d'autre : compteur, pastilles de la barre.
+   *
+   * ⚠️ Extrait de `syncWizard` parce qu'il faut pouvoir les repeindre PENDANT le
+   * geste. Ils n'étaient rafraîchis qu'à l'arrêt du rail (`scrollend`, ou 160 ms
+   * après le dernier évènement) : sur un glissement lent, la question 3 était à
+   * l'écran, son propre rang affichait « 3/5 », et le pied de page disait encore
+   * « Question 2 sur 5 ». Trois repères pour une même position, dont deux en
+   * retard — c'est ce désaccord qui faisait passer le parcours pour cassé.
+   *
+   * Ce qui reste à l'arrêt : `inert`, l'historique, le focus, l'état `step`.
+   * Repeindre un compteur pendant un geste est sans conséquence ; déplacer le
+   * focus ou empiler une entrée d'historique à chaque pixel n'en aurait que des
+   * mauvaises.
+   */
+  const paintProgress = (w: Wizard, index: number, total: number) => {
+    w.count.textContent = progressLabel(index, total, w.kind);
+
+    const visibleSegs = w.segments.filter((seg) => !seg.closest('li')?.hidden);
+    visibleSegs.forEach((seg, i) => {
+      seg.toggleAttribute('data-done', i < index);
+      if (i === index) seg.setAttribute('aria-current', 'step');
+      else seg.removeAttribute('aria-current');
+      /* On revient sur ses pas, on ne saute pas les questions à venir. */
+      seg.setAttribute('aria-disabled', String(i > index));
+    });
+  };
+
+  /* La hauteur de chaque carte du rail, dans l'ordre des étapes visibles. Mesuré
+     UNE FOIS au début du geste : lire `getBoundingClientRect` sur six cartes à
+     chaque évènement de défilement rendrait le glissement saccadé, pour une
+     valeur qui ne bouge pas pendant qu'on glisse. */
+  const cardHeights = (w: Wizard) =>
+    liveSteps(w).map(
+      (node) =>
+        node.querySelector<HTMLElement>('.step__question')?.getBoundingClientRect().height ?? 0,
+    );
+
   const fitRail = (w: Wizard) => {
+    /* Pendant un geste, la hauteur est pilotée au pixel par `followRail` : lui
+       imposer ici celle de l'étape active la ferait sauter en plein glissement. */
+    if (w.rail.dataset.dragging !== undefined) return;
     const active = liveSteps(w).find((node) => !node.hasAttribute('inert'));
     const card = active?.querySelector<HTMLElement>('.step__question');
     if (card) w.rail.style.height = `${Math.ceil(card.getBoundingClientRect().height)}px`;
@@ -771,16 +812,7 @@ export function initSimulator(root: ParentNode = document): void {
       node.querySelector('[data-step-total]')?.replaceChildren(String(total));
     });
 
-    w.count.textContent = progressLabel(index, total, w.kind);
-
-    const visibleSegs = w.segments.filter((seg) => !seg.closest('li')?.hidden);
-    visibleSegs.forEach((seg, i) => {
-      seg.toggleAttribute('data-done', i < index);
-      if (i === index) seg.setAttribute('aria-current', 'step');
-      else seg.removeAttribute('aria-current');
-      /* On revient sur ses pas, on ne saute pas les questions à venir. */
-      seg.setAttribute('aria-disabled', String(i > index));
-    });
+    paintProgress(w, index, total);
 
     w.prev.hidden = index === 0;
     const prevId = steps[index - 1]?.dataset.step;
@@ -966,6 +998,42 @@ export function initSimulator(root: ParentNode = document): void {
    */
   const followRail = (w: Wizard) => {
     let settle = 0;
+    /* Mesuré au premier évènement du geste, oublié à l'arrêt. */
+    let heights: number[] = [];
+
+    /**
+     * LE GESTE, EN DIRECT — indicateurs et hauteur, à chaque pixel.
+     *
+     * ⚠️ La hauteur du rail ne s'ajustait qu'à l'arrêt (`fitRail` dans
+     * `syncWizard`). Pendant tout le glissement, une question plus haute que la
+     * précédente arrivait donc ROGNÉE, puis le rail se détendait d'un coup une
+     * fois le doigt relevé. On interpole désormais entre la hauteur de l'étape
+     * qu'on quitte et celle qu'on rejoint, au prorata de la course.
+     *
+     * ⚠️ La transition CSS est suspendue le temps du geste (`data-dragging`) :
+     * elle est là pour amortir un CHANGEMENT d'étape, pas pour retarder une
+     * hauteur qui doit coller au doigt. Sans cela, le rail arrive toujours en
+     * retard d'une demi-seconde sur ce qu'on voit.
+     */
+    const live = () => {
+      if (w.root.hidden || programmatic) return;
+      const steps = liveSteps(w);
+      if (steps.length === 0) return;
+
+      if (w.rail.dataset.dragging === undefined) {
+        heights = cardHeights(w);
+        w.rail.dataset.dragging = '';
+      }
+
+      const position = stepPosition(
+        w.rail.scrollLeft,
+        w.rail.scrollWidth,
+        w.rail.clientWidth,
+        steps.length,
+      );
+      w.rail.style.height = `${Math.ceil(interpolate(heights, position))}px`;
+      paintProgress(w, Math.round(position), steps.length);
+    };
     const settled = () => {
       /**
        * ⚠️ TROIS GARDES, chacune pour un désaccord d'état déjà observé :
@@ -977,6 +1045,11 @@ export function initSimulator(root: ParentNode = document): void {
        * — pendant un défilement que nous pilotons, toute position intermédiaire
        *   est un état de passage, pas une décision du visiteur.
        */
+      /* Le geste est fini : la hauteur repasse sous la conduite de `fitRail`,
+         avec sa transition. */
+      delete w.rail.dataset.dragging;
+      heights = [];
+
       if (w.root.hidden || programmatic) return;
       if (indexOf(w, step) < 0) return;
 
@@ -996,6 +1069,7 @@ export function initSimulator(root: ParentNode = document): void {
     };
 
     w.rail.addEventListener('scroll', () => {
+      live();
       /* `scrollend` n'existe pas partout : on garde le minuteur en repli, et on
          l'annule quand l'évènement natif arrive. */
       clearTimeout(settle);

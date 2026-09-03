@@ -3,7 +3,9 @@ import {
   getNextSegment,
   getProgressIndex,
   getSegmentTarget,
+  interpolate,
   shouldYieldToPage,
+  stepPosition,
 } from './carouselProgress';
 
 describe('getNextSegment', () => {
@@ -84,5 +86,52 @@ describe('shouldYieldToPage', () => {
 
   it('tranche en faveur du rail quand les deux axes sont à égalité', () => {
     expect(shouldYieldToPage(100, 100)).toBe(false);
+  });
+});
+
+describe('stepPosition', () => {
+  /* Un rail de 6 questions à 1 000 px : la course utile vaut 5 000 px, donc une
+     question par millier de pixels. */
+  it('rend le rang exact quand le rail est calé sur une question', () => {
+    expect(stepPosition(0, 6000, 1000, 6)).toBe(0);
+    expect(stepPosition(2000, 6000, 1000, 6)).toBe(2);
+    expect(stepPosition(5000, 6000, 1000, 6)).toBe(5);
+  });
+
+  it('rend une position FRACTIONNAIRE en cours de geste', () => {
+    expect(stepPosition(1500, 6000, 1000, 6)).toBe(1.5);
+    expect(stepPosition(2250, 6000, 1000, 6)).toBe(2.25);
+  });
+
+  it('ne sort jamais de la course, même sur un rebond élastique', () => {
+    expect(stepPosition(-300, 6000, 1000, 6)).toBe(0);
+    expect(stepPosition(9999, 6000, 1000, 6)).toBe(5);
+  });
+
+  it('reste à zéro quand il n’y a rien à faire défiler', () => {
+    expect(stepPosition(0, 800, 1000, 6)).toBe(0);
+    expect(stepPosition(400, 1000, 1000, 1)).toBe(0);
+  });
+});
+
+describe('interpolate', () => {
+  it('rend la valeur du rang quand la position est entière', () => {
+    expect(interpolate([100, 300, 200], 0)).toBe(100);
+    expect(interpolate([100, 300, 200], 1)).toBe(300);
+  });
+
+  it('rend le point intermédiaire entre deux hauteurs', () => {
+    expect(interpolate([100, 300, 200], 0.5)).toBe(200);
+    expect(interpolate([100, 300, 200], 1.5)).toBe(250);
+  });
+
+  it('se cale sur les bords hors de la plage', () => {
+    expect(interpolate([100, 300], -1)).toBe(100);
+    expect(interpolate([100, 300], 5)).toBe(300);
+  });
+
+  it('supporte une liste vide ou unique sans casser le rail', () => {
+    expect(interpolate([], 0.5)).toBe(0);
+    expect(interpolate([250], 0.5)).toBe(250);
   });
 });
