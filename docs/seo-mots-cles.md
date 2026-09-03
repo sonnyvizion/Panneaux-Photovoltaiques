@@ -251,8 +251,19 @@ deux remontent sur la même requête, c'est `/a-propos` qui doit gagner.
 1. ~~Restituer la recherche sur Aides & primes et Installation~~ — **fait le
    3 septembre 2026**. Les 46 pages ont désormais leur principal, leurs
    secondaires et leur longue traîne.
-2. **Reformuler les FAQ** à partir de la longue traîne. C'est le bloc qui porte
-   le balisage `FAQPage` ; il est aujourd'hui écrit avant la recherche, pas
-   d'après elle.
+2. ~~Reformuler les FAQ à partir de la longue traîne~~ — **fait le 3 septembre
+   2026** pour les quatre piliers. 23 questions de longue traîne ont été
+   ajoutées à Comprendre et Rentabilité, là où la carte listait une formulation
+   que la page n'abordait nulle part : « combien d'années durent des panneaux »
+   (absente de la page Longévité), « onduleur ou micro-onduleur » (absente de la
+   page Onduleur, alors que son titre SEO la pose), « à quelle fréquence
+   nettoyer », « que vaut un kWh injecté », « pourquoi moins en hiver ».
+   Les chiffres y sont **interpolés** depuis `src/scripts/`, jamais recopiés :
+   l'écart été/hiver vient de `SUMMER_WINTER_RATIO`, le rapport de 8 entre un
+   kWh consommé et un kWh injecté se calcule d'`ELECTRICITY_PRICE` sur
+   `INJECTION_PRICE`.
+
+   ⚠️ Au passage : **« Creuser le sujet » reposait les questions de la FAQ sur
+   24 pages sur 46.** Corrigé, et la règle est écrite dans `pages-contenu.md`.
 3. **Brancher un export réel** dès que le site est indexé et que Search Console
    accumule des données — la colonne « Volume » est là pour ça.
