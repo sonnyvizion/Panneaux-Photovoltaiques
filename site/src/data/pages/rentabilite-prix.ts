@@ -201,6 +201,11 @@ export const FAQ: FaqItem[] = [
     answer:
       "La baisse des prix s'est nettement ralentie, et chaque année d'attente est une année de production non produite. Sur une installation qui dure 25 à 30 ans, l'économie espérée en attendant est presque toujours inférieure à ce que la même année aurait rapporté.",
   },
+  {
+    question: 'La TVA à 6 %, à quelles conditions ?',
+    answer:
+      'Le taux réduit suppose un logement occupé depuis plus de dix ans, à usage principalement privé, des travaux facturés par un entrepreneur enregistré, et une facture au consommateur final. En dessous de dix ans, l’installation est taxée à 21 %, sans l’exception dont bénéficient les pompes à chaleur. L’écart n’est pas anecdotique sur une installation complète.',
+  },
 ];
 
 export const FINAL_CTA = {

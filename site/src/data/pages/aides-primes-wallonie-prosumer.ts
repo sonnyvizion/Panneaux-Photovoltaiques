@@ -171,10 +171,6 @@ export const TOPICS: TopicCard[] = [
     title: 'Ce tarif est-il le même partout en Wallonie ?',
     text: 'Le principe est identique, mais le montant exact varie légèrement selon votre gestionnaire de réseau (ORES ou RESA).',
   },
-  {
-    title: 'Le tarif va-t-il encore augmenter ?',
-    text: 'Il est révisé chaque année par le régulateur wallon (CWaPE) : pas de garantie de stabilité sur le long terme.',
-  },
 ];
 
 export const FAQ: FaqItem[] = [

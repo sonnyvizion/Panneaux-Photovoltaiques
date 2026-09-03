@@ -102,17 +102,41 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions à poser avant de se lancer.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
 /* ⚠️ Une seule des trois entrées du cahier est rendue : les deux autres étaient
    « [À VALIDER — recherche complémentaire nécessaire] » et « [À VALIDER] », sans
    aucun contenu. Elles reviendront telles quelles dès validation. */
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Les certificats verts sont-ils accessibles aux professionnels ?',
-    text: "Oui à Bruxelles pour toute puissance ; en Wallonie, seulement au-delà de 10 kWc : la limite qui a mis fin au Solwatt résidentiel en 2014 ne s'applique pas aux plus grosses installations.",
+    title: 'Le régime des ménages, pour comparer',
+    text: 'TVA à 6 %, prêts régionaux, certificats verts : ce à quoi une société n’a pas droit.',
+    href: '/aides-primes',
     accent: true,
+  },
+  {
+    title: 'Le prix d’une installation',
+    text: 'Le coût au kWc, la base de tout calcul d’amortissement fiscal.',
+    href: '/rentabilite-prix',
+  },
+  {
+    title: 'Choisir qui installe',
+    text: 'Certification, assurance, garanties : les mêmes critères, avec des enjeux de responsabilité plus lourds.',
+    href: '/installation/trouver-un-installateur',
   },
 ];
 

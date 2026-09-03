@@ -74,22 +74,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions pratiques sur cette solution d’appoint.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Combien de panneaux tiennent sur un abri de jardin ?',
-    text: 'Ça dépend de sa taille, mais généralement quelques unités seulement, rarement plus de 4-6 panneaux.',
+    title: 'Le carport, l’autre structure porteuse',
+    text: 'Plus grand, souvent mieux orienté, et soumis à ses propres seuils de dispense.',
+    href: '/installation/carport',
     accent: true,
   },
   {
-    title: 'Faut-il un permis pour un abri avec panneaux ?',
-    text: 'Les mêmes règles générales s’appliquent que pour une installation au sol : pas de permis dans la plupart des cas résidentiels standards.',
+    title: 'Comment fixer sur une toiture légère',
+    text: 'Les trois systèmes de fixation et celui qui convient à une petite structure.',
+    href: '/installation/fixation',
   },
   {
-    title: 'Peut-on relier au compteur principal de la maison ?',
-    text: 'Oui, c’est même la configuration la plus courante.',
+    title: 'Ramener la production au compteur',
+    text: 'Le compteur communicant, ce qu’il mesure et ce qu’il déclare au réseau.',
+    href: '/comprendre/compteur-intelligent',
   },
 ];
 

@@ -129,6 +129,11 @@ export const FAQ: FaqItem[] = [
     answer:
       "Ça dépend de votre région et de la date de votre installation. Voir la page « Fin du compteur inversé » pour le détail en Flandre.",
   },
+  {
+    question: 'Le compteur intelligent est-il payant ?',
+    answer:
+      'Le remplacement lui-même n’est pas facturé au client lors de la mise en service d’une installation photovoltaïque : c’est le gestionnaire de réseau qui le pose. Ce qui change, ce n’est pas le prix du compteur, c’est la façon dont votre électricité est comptée ensuite.',
+  },
 ];
 
 export const FINAL_CTA = {

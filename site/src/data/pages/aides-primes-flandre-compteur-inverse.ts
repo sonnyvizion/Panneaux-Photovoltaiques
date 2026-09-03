@@ -132,10 +132,6 @@ export const TOPICS: TopicCard[] = [
     title: 'Le déploiement des compteurs digitaux, où ça en est ?',
     text: 'Fluvius vise une couverture complète d’ici 2029, à un rythme d’environ 30 000 installations par mois. Sans compteur digital, vous êtes probablement dans la file d’attente plutôt que dans une situation exceptionnelle.',
   },
-  {
-    title: 'Pouvait-on refuser le compteur digital ?',
-    text: 'Jusqu’au 1er janvier 2025, les propriétaires d’installations antérieures à 2021 pouvaient refuser et rester sur l’ancien système transitoire. Ce n’est plus possible depuis cette date.',
-  },
 ];
 
 export const FAQ: FaqItem[] = [

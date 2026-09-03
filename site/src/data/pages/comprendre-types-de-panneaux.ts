@@ -144,6 +144,16 @@ export const FAQ: FaqItem[] = [
     answer:
       'Techniquement possible mais rarement recommandé : mieux vaut une installation homogène pour simplifier le suivi et l’entretien.',
   },
+  {
+    question: 'Quel type choisir pour une petite toiture ?',
+    answer:
+      'Le monocristallin, sans hésiter. C’est la technologie qui produit le plus de watts par mètre carré : quand la surface est le facteur limitant, chaque mètre carré doit rendre le maximum. Le polycristallin ne se défend que sur des grandes surfaces où le prix au panneau prime sur la densité.',
+  },
+  {
+    question: 'Le panneau amorphe a-t-il un intérêt en résidentiel ?',
+    answer:
+      'Rarement. Sa production au mètre carré est nettement inférieure à celle du cristallin, ce qui lui demande beaucoup plus de surface pour la même puissance. Il garde un intérêt sur des supports souples ou de très grandes surfaces sans contrainte d’encombrement, pas sur une toiture de maison.',
+  },
 ];
 
 export const FINAL_CTA = {

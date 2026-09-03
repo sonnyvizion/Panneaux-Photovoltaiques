@@ -140,6 +140,16 @@ export const FAQ: FaqItem[] = [
     answer:
       "C’est subjectif : des solutions comme le BIPV existent pour qui privilégie l’intégration visuelle.",
   },
+  {
+    question: 'Et si je déménage avant d’avoir amorti l’installation ?',
+    answer:
+      'L’installation reste avec la maison et compte dans sa valeur : elle ne se perd pas, elle se revend avec le bien. Les garanties, elles, sont généralement transférables au nouveau propriétaire. Le vrai point d’attention est ailleurs : un projet de vente à court terme change le calcul, parce que la plus-value ne restitue pas mécaniquement ce que l’installation n’a pas encore économisé.',
+  },
+  {
+    question: 'Toutes les toitures conviennent-elles ?',
+    answer:
+      'Non, et c’est l’un des rares vrais obstacles. Une toiture très ombragée, orientée plein nord, en mauvais état, ou dont la charpente ne peut pas encaisser la charge, disqualifie ou reporte le projet. Une couverture à refaire dans les cinq ans se refait avant, jamais après : déposer puis reposer une installation coûte plus cher que de l’avoir posée au bon moment.',
+  },
 ];
 
 export const FINAL_CTA = {

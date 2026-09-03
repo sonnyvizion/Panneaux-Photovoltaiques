@@ -110,22 +110,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions fréquentes sur le solaire mobile.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Quelle puissance pour un camping-car ?',
-    text: 'Généralement entre 100 et 400 Wc selon l’usage (appoint ou autonomie complète), largement en dessous des puissances résidentielles.',
+    title: 'La batterie, pièce centrale en autonomie',
+    text: 'Capacité, durée de vie, technologies : ce qui vaut pour une maison éclaire le choix embarqué.',
+    href: '/comprendre/batterie',
     accent: true,
   },
   {
-    title: 'Peut-on utiliser les mêmes panneaux que pour une maison ?',
-    text: 'Techniquement possible mais pas optimal : les panneaux camping-car sont conçus pour être plus légers et résister aux vibrations de la route.',
+    title: 'L’autre installation sans toiture',
+    text: 'Le kit de balcon : même logique de petite puissance, cadre légal différent.',
+    href: '/installation/balcon',
   },
   {
-    title: 'Faut-il une batterie spécifique ?',
-    text: 'Oui, une batterie adaptée au cyclage fréquent (décharge/charge répétées), différente d’une batterie domestique classique.',
+    title: 'Ce que veut dire un panneau de 430 Wc',
+    text: 'Le kWc, le watt-crête, et pourquoi la puissance annoncée n’est pas celle qu’on récolte.',
+    href: '/installation/puissance',
   },
 ];
 

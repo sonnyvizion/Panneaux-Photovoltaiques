@@ -114,6 +114,11 @@ export const TOPICS: TopicCard[] = [
 
 export const FAQ: FaqItem[] = [
   {
+    question: 'Onduleur string ou micro-onduleurs, lequel choisir ?',
+    answer:
+      'Cela se décide sur votre toiture, pas sur le catalogue. Un onduleur string relie les panneaux en série : simple et moins cher, mais le plus faible de la chaîne tire les autres vers le bas. Les micro-onduleurs rendent chaque panneau indépendant : plus chers, ils s’imposent dès qu’il y a de l’ombre portée, deux pans d’orientations différentes, ou l’envie de suivre la production panneau par panneau.',
+  },
+  {
     question: "Que se passe-t-il si l’onduleur tombe en panne ?",
     answer:
       "L’installation cesse de produire de l’électricité utilisable jusqu’au remplacement : c’est la panne la plus fréquente sur une installation solaire, plus que les panneaux eux-mêmes.",
@@ -128,6 +133,11 @@ export const FAQ: FaqItem[] = [
     question: "Un onduleur fait-il du bruit ?",
     answer:
       "Un léger bruit de ventilation est normal sur certains modèles, à prendre en compte dans le choix de l’emplacement, en évitant une chambre adjacente.",
+  },
+  {
+    question: 'Où installe-t-on l’onduleur ?',
+    answer:
+      'Dans un local sec, frais et ventilé, généralement près du tableau électrique : la chaleur est son premier ennemi et raccourcit sa durée de vie. Les micro-onduleurs, eux, se fixent sous les panneaux et vivent donc sur le toit, conçus pour l’extérieur.',
   },
 ];
 

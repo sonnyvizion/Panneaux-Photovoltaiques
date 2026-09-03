@@ -87,22 +87,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions fréquentes sur cette combinaison.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Faut-il plus de panneaux si on a une voiture électrique ?',
-    text: 'Recommandé, une recharge régulière représentant une consommation électrique importante à couvrir au mieux par la production solaire.',
+    title: 'La borne de recharge à domicile',
+    text: 'Puissance, pilotage sur le surplus, raccordement : l’équipement qui fait le lien.',
+    href: '/comprendre/borne-de-recharge',
     accent: true,
   },
   {
-    title: 'Peut-on recharger la nuit avec des panneaux solaires ?',
-    text: 'Pas directement : sans batterie de stockage, l’électricité solaire n’est disponible qu’en journée ; la nuit, la recharge vient du réseau classique.',
+    title: 'Le surplus, et ce qu’il vaut',
+    text: 'Recharger en journée vaut mieux qu’injecter : voici l’écart, chiffré.',
+    href: '/rentabilite-prix/autoconsommation',
   },
   {
-    title: 'Une batterie domestique est-elle nécessaire ?',
-    text: 'Pas indispensable, mais elle permet de décaler l’usage de l’électricité solaire produite en journée vers une recharge nocturne.',
+    title: 'Stocker pour recharger le soir',
+    text: 'La batterie domestique, sa capacité utile et sa rentabilité réelle.',
+    href: '/comprendre/batterie',
   },
 ];
 

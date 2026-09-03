@@ -120,26 +120,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce qu’il faut savoir avant de se lancer soi-même.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Puis-je vraiment poser mes panneaux moi-même légalement ?',
-    text: 'Oui, la pose physique sur la toiture est autorisée : c’est le raccordement électrique et le contrôle qui nécessitent un professionnel.',
+    title: 'Ce qu’un installateur prend en charge',
+    text: 'Certification, assurance, devis, démarches : les critères de tri, et les signaux d’alarme.',
+    href: '/installation/trouver-un-installateur',
     accent: true,
   },
   {
-    title: 'Que dois-je absolument faire faire par un professionnel ?',
-    text: 'Le raccordement au tableau électrique et le contrôle RGIE, obligatoires avant toute mise en service, quel que soit qui a posé les panneaux.',
+    title: 'Le certificat qui conditionne les certificats verts',
+    text: 'À Bruxelles, sans RESCert PV, une installation de 5 kWc ou moins n’ouvre plus aucun droit.',
+    href: '/aides-primes/bruxelles/reglementation',
   },
   {
-    title: 'Que risque-t-on en cas de contrôle RGIE négatif ?',
-    text: 'Une non-conformité qui empêche la mise en service tant que les corrections nécessaires n’ont pas été faites par un professionnel.',
-  },
-  {
-    title: 'Ça fait vraiment économiser, au final ?',
-    text: 'Une partie du coût seulement, puisque le raccordement et le contrôle restent obligatoirement facturés : le gain porte surtout sur la main-d’œuvre de pose elle-même.',
+    title: 'Les démarches, dans l’ordre',
+    text: 'Compteur communicant, contrôle RGIE, déclaration au gestionnaire de réseau.',
+    href: '/aides-primes/wallonie/demarches',
   },
 ];
 

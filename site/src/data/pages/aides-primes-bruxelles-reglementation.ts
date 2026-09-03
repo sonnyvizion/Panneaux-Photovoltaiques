@@ -99,23 +99,31 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce que ça implique pour vous et votre installateur.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
 /* Développements de CETTE page, sans destination au sitemap : cartes inertes. */
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Qu’est-ce qu’un installateur certifié RESCert ?',
-    text: 'Un professionnel formé et accrédité pour délivrer ce certificat de conformité, reconnu par la région bruxelloise.',
+    title: 'Ce que les certificats verts rapportent',
+    text: 'Le taux d’octroi, le prix du certificat et le revenu annuel réel, calculateur à l’appui.',
+    href: '/aides-primes/bruxelles',
     accent: true,
   },
   {
-    title: 'Que risque-t-on sans RESCert ?',
-    text: "L'impossibilité d'obtenir des certificats verts, quelle que soit la qualité réelle de l'installation.",
+    title: 'Les démarches, dans l’ordre',
+    text: 'Certification, encodage des index sur Green Meter, octroi par Brugel quatre fois par an.',
+    href: '/aides-primes/bruxelles/demarches',
   },
   {
-    title: 'Ça change quoi pour les installations existantes ?',
-    text: 'La règle s’applique aux nouvelles installations à partir de 2026 : les installations déjà en service ne sont pas concernées rétroactivement.',
+    title: 'Vérifier qu’un installateur est certifié',
+    text: 'Le numéro RESCert, où le contrôler, et les signaux qui doivent alerter.',
+    href: '/installation/trouver-un-installateur',
   },
 ];
 

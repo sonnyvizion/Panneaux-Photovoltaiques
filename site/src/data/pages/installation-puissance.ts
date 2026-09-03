@@ -118,22 +118,30 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce que ça change concrètement pour votre projet.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Quelle est la différence entre kWc et kWh ?',
-    text: 'Le kWc est une capacité maximale mesurée en conditions de test standardisées (1000 W/m², 25 °C) ; le kWh est l’énergie que votre installation produit réellement, qui varie selon la météo, la saison et l’heure.',
+    title: 'Combien de panneaux ça représente',
+    text: 'Le passage du kWc au nombre de modules, selon leur puissance unitaire.',
+    href: '/installation/nombre-de-panneaux',
     accent: true,
   },
   {
-    title: 'Comment savoir combien de kWc me faut-il ?',
-    text: 'Ça dépend de votre consommation annuelle, de votre surface de toiture disponible et de son orientation : c’est exactement ce que calcule le simulateur.',
+    title: 'Ce que cette puissance produit',
+    text: 'Les kWh par kWc en Belgique, et ce que l’orientation y change.',
+    href: '/rentabilite-prix/rendement',
   },
   {
-    title: 'Le prix est-il proportionnel à la puissance ?',
-    text: 'Pas tout à fait : le prix par Wc diminue généralement à mesure que la puissance installée augmente (économies d’échelle).',
+    title: 'Ce que ça coûte',
+    text: 'Le prix au kWc, et pourquoi il baisse quand l’installation grandit.',
+    href: '/rentabilite-prix',
   },
 ];
 

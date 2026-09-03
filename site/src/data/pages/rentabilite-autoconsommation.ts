@@ -153,6 +153,11 @@ export const TOPICS: TopicCard[] = [
 
 export const FAQ: FaqItem[] = [
   {
+    question: 'Que vaut un kWh injecté, comparé à un kWh consommé sur place ?',
+    answer:
+      `Environ ${Math.round(ELECTRICITY_PRICE / INJECTION_PRICE)} fois moins. Un kWh que vous consommez vous évite d’en acheter un à ${ELECTRICITY_PRICE.toFixed(2).replace('.', ',')} € ; le même kWh injecté vous en rapporte ${Math.round(INJECTION_PRICE * 100)} centimes. Tout l’enjeu de l’autoconsommation tient dans cet écart : ce n’est pas produire plus qui paie, c’est consommer au bon moment.`,
+  },
+  {
     question: 'Quel est le taux moyen sans rien faire de spécial ?',
     answer: `Environ 30 à 40 % pour un foyer standard, la référence retenue sur ce site est ${Math.round(SELF_CONSUMPTION_RATE * 100)} %, le reste partant en surplus sur le réseau.`,
     open: true,
@@ -166,6 +171,11 @@ export const FAQ: FaqItem[] = [
     question: 'Dois-je changer mes habitudes pour en profiter ?',
     answer:
       'Ce n’est pas obligatoire, mais quelques ajustements simples, comme lancer l’électroménager en journée, augmentent sensiblement le taux sans effort majeur.',
+  },
+  {
+    question: 'Faut-il une batterie pour augmenter son autoconsommation ?',
+    answer:
+      'Ce n’est ni le seul levier, ni le premier. Décaler les gros consommateurs en journée, lave-linge, lave-vaisselle, chauffe-eau, recharge de la voiture, ne coûte rien et fait déjà remonter le taux. La batterie vient après, quand ces gestes sont épuisés : elle achète du décalage, et il faut que ce décalage rapporte plus qu’elle ne coûte.',
   },
 ];
 

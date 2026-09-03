@@ -139,6 +139,11 @@ export const FAQ: FaqItem[] = [
     answer:
       "Ça dépend des conditions du fabricant, à vérifier au moment de l’achat si c’est un critère important pour vous.",
   },
+  {
+    question: 'La main-d’œuvre est-elle couverte par la garantie ?',
+    answer:
+      'Pas automatiquement, et c’est la case que l’on oublie de lire. La garantie produit couvre le matériel, la garantie de performance couvre le rendement, mais le déplacement et la dépose-repose d’un panneau défectueux relèvent d’une garantie de pose, propre à l’installateur. Faites-la écrire au devis, avec sa durée.',
+  },
 ];
 
 export const FINAL_CTA = {

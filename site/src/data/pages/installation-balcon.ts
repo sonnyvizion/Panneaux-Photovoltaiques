@@ -121,26 +121,30 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce qu’il faut vérifier avant d’acheter un kit.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Un locataire peut-il vraiment installer des panneaux ?',
-    text: 'Oui, avec un kit plug & play homologué, mais mieux vaut vérifier auprès du propriétaire et, en copropriété, auprès de l’ACP avant de l’installer.',
+    title: 'Ce que valent 800 watts',
+    text: 'Le kWc, le watt-crête, et ce qu’une petite puissance couvre réellement d’une consommation.',
+    href: '/installation/puissance',
     accent: true,
   },
   {
-    title: 'Le kit plug & play est-il rentable ?',
-    text: 'Sur une petite échelle, oui, mais avec un retour sur investissement plus long qu’une installation complète, vu la puissance limitée.',
+    title: 'Le surplus, et ce qu’il devient',
+    text: 'Autoconsommer ou injecter : la différence de valeur, chiffrée.',
+    href: '/rentabilite-prix/autoconsommation',
   },
   {
-    title: 'Dois-je déclarer mon kit même s’il est petit ?',
-    text: 'Oui, la déclaration « nouvelle production d’énergie » au GRD est obligatoire quelle que soit la puissance, même minime.',
-  },
-  {
-    title: 'Que se passe-t-il si je déménage ?',
-    text: 'Le kit est démontable et transportable : c’est un de ses avantages par rapport à une installation fixe.',
+    title: 'Le compteur voit passer l’injection',
+    text: 'Ce que le compteur communicant mesure, et pourquoi la déclaration compte.',
+    href: '/comprendre/compteur-intelligent',
   },
 ];
 

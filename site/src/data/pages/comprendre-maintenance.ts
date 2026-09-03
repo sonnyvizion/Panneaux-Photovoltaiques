@@ -102,6 +102,11 @@ export const TOPICS: TopicCard[] = [
 
 export const FAQ: FaqItem[] = [
   {
+    question: 'À quelle fréquence faut-il nettoyer ses panneaux ?',
+    answer:
+      'En Belgique, beaucoup moins souvent qu’on ne le croit : la pluie fait l’essentiel du travail sur une toiture inclinée. Un contrôle visuel une fois par an suffit dans la plupart des cas. Le nettoyage devient utile en cas de salissure durable, fientes, mousses, poussières agricoles, ou sur un toit plat où l’eau stagne au lieu de ruisseler.',
+  },
+  {
     question: "Dois-je surveiller mes panneaux après une tempête ?",
     answer:
       "Un contrôle visuel rapide est une bonne précaution après un événement météo important, surtout en cas de grêle.",
@@ -116,6 +121,11 @@ export const FAQ: FaqItem[] = [
     question: "Combien coûte un entretien professionnel ?",
     answer:
       "Ça varie selon le prestataire et la fréquence choisie, à mettre en balance avec le faible besoin réel d’entretien du solaire.",
+  },
+  {
+    question: 'Comment savoir si mes panneaux fonctionnent bien ?',
+    answer:
+      'En comparant la production réelle à la production attendue, mois par mois. L’application de l’onduleur donne la première ; l’estimation faite avant l’installation donne la seconde. Un écart durable de plus de 10 %, hors variation météo, mérite un contrôle. Une chute brutale sur une seule journée ensoleillée, elle, désigne presque toujours l’onduleur.',
   },
 ];
 

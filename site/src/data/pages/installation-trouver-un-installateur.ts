@@ -98,26 +98,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'La grille de critères',
   title: 'Ce qui distingue un bon installateur',
-  intro: 'Quatre questions à poser avant de signer quoi que ce soit.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Comment vérifier qu’un installateur est bien certifié ?',
-    text: 'Demandez son numéro RESCert PV et vérifiez-le auprès de l’organisme régional : c’est la même certification dans les trois régions.',
+    title: 'Ce que la certification recouvre',
+    text: 'RESCert PV : obligatoire en Wallonie, décisif à Bruxelles, facultatif en Flandre.',
+    href: '/aides-primes/bruxelles/reglementation',
     accent: true,
   },
   {
-    title: 'Faut-il toujours comparer plusieurs devis ?',
-    text: 'C’est recommandé, mais assurez-vous de comparer des devis à puissance et qualité de matériel équivalentes, pas seulement le prix final.',
+    title: 'Les garanties à faire écrire au devis',
+    text: 'Panneaux, onduleur, main-d’œuvre : trois durées, et ce que la loi belge impose.',
+    href: '/comprendre/garanties',
   },
   {
-    title: 'Quels sont les signaux d’alarme ?',
-    text: 'Une pression commerciale forte pour signer immédiatement, un devis flou sans détail du matériel, ou l’absence d’assurance vérifiable.',
-  },
-  {
-    title: 'S’occupe-t-il de toutes les démarches ?',
-    text: 'Ça devrait être le cas pour un installateur sérieux : RGIE, déclaration au GRD, et selon la région, certificat RESCert ou encodage Sibelga.',
+    title: 'À quoi comparer les prix reçus',
+    text: 'Le prix au kWc en Belgique en 2026, pour savoir si un devis est dans le marché.',
+    href: '/rentabilite-prix',
   },
 ];
 

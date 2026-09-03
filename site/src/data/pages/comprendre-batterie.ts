@@ -133,6 +133,16 @@ export const FAQ: FaqItem[] = [
     answer:
       "Non pour une batterie fixe : depuis la révision RGIE de 2025, elle doit être posée par un installateur agréé. Seules les batteries plug-in certifiées Synergrid (C10/26) échappent à cette règle.",
   },
+  {
+    question: 'Quelle capacité de batterie choisir ?',
+    answer:
+      'La capacité utile se cale sur ce que vous consommez le soir et la nuit, pas sur ce que vous produisez. Une batterie surdimensionnée passe ses journées à moitié pleine et ne se rentabilise jamais : c’est la consommation du foyer après le coucher du soleil qui donne la bonne taille.',
+  },
+  {
+    question: 'Peut-on ajouter une batterie après coup ?',
+    answer:
+      'Oui, mais le montage n’est pas le même qu’une installation prévue dès le départ. Selon votre onduleur, il faut soit un modèle hybride capable de gérer le stockage, soit un second convertisseur dédié. À vérifier avant d’acheter : c’est le point qui fait varier la facture d’une installation à l’autre.',
+  },
 ];
 
 /**

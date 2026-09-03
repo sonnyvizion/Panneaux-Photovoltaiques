@@ -95,22 +95,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce qui détermine la durée de vie de la fixation.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'La fixation abîme-t-elle la toiture ?',
-    text: 'Sur un toit incliné, quelques tuiles sont temporairement déplacées au niveau des crochets puis remises en place : le reste n’est pas touché. Sur toit plat, le lestage évite tout perçage.',
+    title: 'Ce que la fixation fait porter à la toiture',
+    text: 'Le poids au mètre carré selon le système retenu, et le signe qu’une charpente ne suivra pas.',
+    href: '/installation/poids',
     accent: true,
   },
   {
-    title: 'Quelle fixation dure le plus longtemps ?',
-    text: 'Les systèmes sur rails/crochets et les systèmes lestés sont tous deux conçus pour durer aussi longtemps que les panneaux (25-30 ans), avec un entretien minimal.',
+    title: 'Fixer sans percer, sur un toit plat',
+    text: 'Le lestage, son inclinaison recréée et l’étanchéité qui reste intacte.',
+    href: '/installation/toit-plat',
   },
   {
-    title: 'Peut-on démonter et remonter une installation ailleurs ?',
-    text: 'Techniquement oui pour la plupart des systèmes de fixation, mais c’est une opération qui demande un professionnel et n’est pas toujours économiquement intéressante.',
+    title: 'Ce que couvre la garantie de pose',
+    text: 'Panneaux, onduleur, main-d’œuvre : trois garanties de durées différentes.',
+    href: '/comprendre/garanties',
   },
 ];
 

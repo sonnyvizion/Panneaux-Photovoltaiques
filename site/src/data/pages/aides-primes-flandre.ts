@@ -160,11 +160,6 @@ export const TOPICS_COPY: SectionCopy = {
 
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Pourquoi la Flandre n’a-t-elle pas de certificats verts ?',
-    text: 'La Flandre a opté pour le tarif d’injection comme unique mécanisme de valorisation du surplus, sans jamais introduire de certificats verts pour le résidentiel, contrairement à Bruxelles, qui les a conservés.',
-    accent: true,
-  },
-  {
     title: 'Le prêt MijnVerbouwLening, comment ça marche ?',
     /* ⚠️ La rédaction signale ce point comme non vérifié en profondeur. La
        phrase reste donc prudente et ne cite AUCUN taux ni montant. */

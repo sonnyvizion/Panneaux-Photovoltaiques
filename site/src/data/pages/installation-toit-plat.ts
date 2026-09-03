@@ -79,22 +79,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions spécifiques au toit plat.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Le lestage abîme-t-il l’étanchéité du toit ?',
-    text: 'Non, c’est justement l’intérêt du lestage : aucun perçage, la membrane d’étanchéité reste intacte.',
+    title: 'Le lestage, et les deux autres façons de fixer',
+    text: 'Bac lesté, rails sur crochets, intégration : trois systèmes, trois toitures, trois budgets.',
+    href: '/installation/fixation',
     accent: true,
   },
   {
-    title: 'Peut-on installer plus de panneaux sur un toit plat qu’incliné ?',
-    text: 'Pas nécessairement : l’espacement obligatoire entre rangées pour éviter les ombres portées réduit la densité effective par rapport à un toit incliné bien orienté.',
+    title: 'Ce que le lestage pèse sur la charpente',
+    text: 'La charge au mètre carré, et comment savoir si votre toiture l’encaisse.',
+    href: '/installation/poids',
   },
   {
-    title: 'Faut-il un accès spécifique pour l’entretien ?',
-    text: 'Un accès de toit plat classique suffit généralement, sans équipement particulier.',
+    title: 'Pourquoi les rangées s’espacent',
+    text: 'L’ombre qu’une rangée porte sur la suivante, et ce qu’elle coûte en production.',
+    href: '/installation/ombrage',
   },
 ];
 

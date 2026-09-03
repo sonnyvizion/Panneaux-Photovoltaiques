@@ -133,26 +133,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Le calcul, la revente et ce qui se passe au bout de dix ans.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Comment sont calculés mes certificats verts ?',
-    text: `Votre production réelle en MWh, multipliée par le coefficient régional (${formatCoefficient()} CV/MWh pour les installations ≤ 5 kWc). Une installation qui produit 4,5 MWh par an génère donc environ ${certsPerYear(CERT_DEFAULT).toFixed(1).replace('.', ',')} certificats annuels.`,
+    title: 'Toucher les certificats, étape par étape',
+    text: 'Certification, encodage des index sur Green Meter, octroi par Brugel.',
+    href: '/aides-primes/bruxelles/demarches',
     accent: true,
   },
   {
-    title: 'Comment revendre mes certificats verts ?',
-    text: 'Ils se revendent aux fournisseurs d’électricité, qui ont l’obligation légale d’en détenir un quota. Le prix varie selon le marché, entre 65 et 90 € par certificat.',
+    title: 'L’obligation qui conditionne tout',
+    text: 'Sans certificat RESCert PV, une installation de 5 kWc ou moins n’ouvre aucun droit depuis 2026.',
+    href: '/aides-primes/bruxelles/reglementation',
   },
   {
-    title: 'Le RESCert PV, qu’est-ce que c’est exactement ?',
-    text: 'Un certificat de conformité délivré par un installateur certifié, obligatoire depuis le 1er janvier 2026 pour toute nouvelle installation de 5 kWc ou moins à Bruxelles.',
-  },
-  {
-    title: `Que se passe-t-il après les ${CERT_YEARS} ans ?`,
-    text: 'Votre installation ne génère plus de nouveaux certificats. L’électricité produite reste la vôtre, mais l’avantage financier des CV s’arrête là.',
+    title: 'Ce que ça change au retour sur investissement',
+    text: 'Les certificats verts sont le premier poste de recettes bruxellois : voici leur poids réel.',
+    href: '/rentabilite-prix/amortissement',
   },
 ];
 

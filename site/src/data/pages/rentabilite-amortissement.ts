@@ -174,6 +174,11 @@ export const FAQ: FaqItem[] = [
     answer:
       'Ça accélère le retour sur investissement dans toutes les régions : chaque kWh autoconsommé « économise » un prix plus élevé.',
   },
+  {
+    question: 'Le tarif prosumer allonge-t-il le délai d’amortissement ?',
+    answer:
+      'En Wallonie, c’est la ligne la plus lourde du calcul, et de loin. Cette redevance annuelle se paie dès la mise en service, indépendamment de ce que vous économisez, et elle court sur toute la durée de vie de l’installation. Bruxelles et la Flandre ne la connaissent pas : c’est la principale raison pour laquelle un même toit ne s’amortit pas au même rythme selon la région.',
+  },
 ];
 
 export const FINAL_CTA = {

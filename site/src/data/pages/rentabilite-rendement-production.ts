@@ -1,6 +1,6 @@
 import type { Bridge, FaqItem, Fact, Figure, SectionCopy, TopicCard } from '../content';
 import type { PageSeo } from '../seo';
-import { KWH_PER_KWC_YEAR, POWER_DEFAULT, estimate, formatNumber } from '../../scripts/powerEstimate';
+import { SUMMER_WINTER_RATIO, KWH_PER_KWC_YEAR, POWER_DEFAULT, estimate, formatNumber } from '../../scripts/powerEstimate';
 
 /**
  * Page 3.2 — « Rendement & production » (`/rentabilite-prix/rendement`).
@@ -141,6 +141,16 @@ export const FAQ: FaqItem[] = [
     question: 'Puis-je suivre ma production en temps réel ?',
     answer:
       'Oui, la plupart des onduleurs modernes offrent un suivi via application, souvent inclus par l’installateur.',
+  },
+  {
+    question: 'Pourquoi produit-on beaucoup moins en hiver ?',
+    answer:
+      `Parce que le soleil est plus bas et les jours plus courts : le meilleur mois de l’année produit environ ${SUMMER_WINTER_RATIO.toFixed(1).replace('.', ',')} fois ce que produit le pire. Ce n’est pas un défaut de l’installation, c’est la saisonnalité belge, et elle est déjà comprise dans la moyenne annuelle de ${KWH_PER_KWC_YEAR} kWh par kWc que nous utilisons.`,
+  },
+  {
+    question: 'La région change-t-elle la production ?',
+    answer:
+      'Très peu. L’écart d’ensoleillement entre la côte et l’est du pays existe, mais il se compte en quelques pour cent, sans commune mesure avec l’effet de l’orientation, de l’inclinaison ou d’une ombre portée. Nos estimations retiennent donc une valeur nationale. Ce qui change vraiment d’une région à l’autre, ce sont les aides et le sort du surplus, pas le soleil.',
   },
 ];
 

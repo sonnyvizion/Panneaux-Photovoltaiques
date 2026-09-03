@@ -114,26 +114,30 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions qu’on se pose une fois le calcul fait.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Plus de panneaux, c’est toujours mieux ?',
-    text: 'Non : au-delà de votre consommation réelle plus une marge raisonnable, les panneaux supplémentaires produisent un surplus faiblement valorisé (tarif d’injection ou prosumer selon la région), donc moins rentable.',
+    title: 'La puissance, l’autre façon de compter',
+    text: 'Le kWc dit ce que le nombre de panneaux ne dit pas : deux installations de 10 panneaux peuvent différer d’un tiers.',
+    href: '/installation/puissance',
     accent: true,
   },
   {
-    title: 'Puis-je ajouter des panneaux plus tard ?',
-    text: 'Techniquement oui, mais ça implique une nouvelle déclaration et parfois un changement d’onduleur si la puissance totale dépasse sa capacité.',
+    title: 'La surface que ça demande',
+    text: 'Dimensions d’un module, espacements, et ce que votre pan de toiture accueille.',
+    href: '/installation/dimensions',
   },
   {
-    title: 'Le nombre change-t-il selon la marque ?',
-    text: 'Oui, un panneau haute puissance (500 Wc et plus) atteint la même puissance totale avec moins d’unités, ce qui peut compter sur une petite toiture.',
-  },
-  {
-    title: 'Faut-il toujours viser sa consommation exacte ?',
-    text: 'Pas nécessairement : une installation légèrement surdimensionnée peut avoir du sens si vous prévoyez une pompe à chaleur ou une voiture électrique.',
+    title: 'Ce que ça produit sur l’année',
+    text: 'Les kWh attendus en Belgique, mois par mois, pour une puissance donnée.',
+    href: '/rentabilite-prix/rendement',
   },
 ];
 

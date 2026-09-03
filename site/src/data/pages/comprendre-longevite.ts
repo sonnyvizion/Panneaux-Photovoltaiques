@@ -94,6 +94,11 @@ export const TOPICS: TopicCard[] = [
 
 export const FAQ: FaqItem[] = [
   {
+    question: 'Combien d’années durent des panneaux solaires ?',
+    answer:
+      'Entre 25 et 30 ans en production utile, et souvent davantage : un panneau ne s’arrête pas net, il perd lentement en rendement. C’est cette lente décroissance, pas une panne, qui fixe la fin de vie utile. L’onduleur, lui, se remplace au moins une fois sur cette durée.',
+  },
+  {
     question: "Les panneaux garantissent-ils leur rendement dans le temps ?",
     answer:
       "Les fabricants proposent généralement une garantie de performance distincte de la garantie produit. Voir la page Garanties pour le détail.",
@@ -108,6 +113,11 @@ export const FAQ: FaqItem[] = [
     question: "La durée de vie justifie-t-elle l’investissement ?",
     answer:
       "Une installation produit 25 à 30 ans, mais le délai de retour ne se résume pas à une moyenne : il dépend de votre région et de votre taux d’autoconsommation, et en Wallonie la charge prosumer l’allonge nettement. Le détail est en page Amortissement.",
+  },
+  {
+    question: 'Le climat belge use-t-il les panneaux plus vite ?',
+    answer:
+      'Non, plutôt l’inverse. La chaleur est le principal facteur de vieillissement d’un module, et le climat belge est tempéré : nos panneaux vieillissent mieux que sous un climat méditerranéen. Pluie, gel et grêle sont couverts par les normes que respectent les modules vendus en Europe.',
   },
 ];
 

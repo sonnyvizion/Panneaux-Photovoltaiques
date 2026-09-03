@@ -101,22 +101,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions avant de se lancer dans un carport solaire.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Un carport coûte-t-il plus cher qu’une installation en toiture ?',
-    text: 'Oui généralement, car il faut construire la structure porteuse en plus des panneaux eux-mêmes.',
+    title: 'Recharger la voiture avec ce que produit le carport',
+    text: 'L’intérêt du montage : le véhicule se recharge là où il stationne.',
+    href: '/installation/voiture-electrique',
     accent: true,
   },
   {
-    title: 'Peut-on combiner carport solaire et borne de recharge ?',
-    text: 'Oui, c’est même l’un des cas d’usage les plus cohérents : voir la page dédiée « Voiture électrique ».',
+    title: 'La borne, son installation et son pilotage',
+    text: 'Ce qu’il faut prévoir côté équipement pour absorber le surplus.',
+    href: '/comprendre/borne-de-recharge',
   },
   {
-    title: 'Faut-il un permis pour construire un carport avec panneaux ?',
-    text: 'Généralement oui, un carport étant une construction nouvelle plutôt qu’un ajout sur une structure existante, à vérifier auprès de votre commune.',
+    title: 'L’autre structure de jardin',
+    text: 'Abri de jardin : mêmes questions de permis et de raccordement, autres seuils.',
+    href: '/installation/abri-de-jardin',
   },
 ];
 

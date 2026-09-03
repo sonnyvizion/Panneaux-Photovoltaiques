@@ -100,22 +100,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce qu’il faut anticiper si vous avez ou prévoyez une PAC.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Faut-il surdimensionner l’installation solaire ?',
-    text: 'C’est souvent pertinent, une PAC étant un des postes de consommation électrique les plus importants du foyer : une puissance solaire plus généreuse maximise l’autoconsommation.',
+    title: 'Consommer sa production plutôt que l’injecter',
+    text: 'La PAC est le meilleur levier d’autoconsommation : voici ce que ça change au bilan.',
+    href: '/rentabilite-prix/autoconsommation',
     accent: true,
   },
   {
-    title: 'Une pompe à chaleur consomme-t-elle beaucoup ?',
-    text: 'Oui, c’est généralement le poste de consommation électrique le plus important d’une maison équipée, d’où l’intérêt de la coupler au solaire.',
+    title: 'Dimensionner l’installation',
+    text: 'Combien de kWc quand un poste de chauffage s’ajoute à la consommation.',
+    href: '/installation/puissance',
   },
   {
-    title: 'Peut-on ajouter une PAC après coup ?',
-    text: 'Oui, mais l’autoconsommation sera moins optimisée qu’avec un dimensionnement pensé dès le départ.',
+    title: 'Faut-il une batterie en plus',
+    text: 'Le stockage et la PAC visent le même problème : le décalage entre production et besoin.',
+    href: '/comprendre/batterie',
   },
 ];
 

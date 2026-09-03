@@ -118,22 +118,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions qu’on se pose sur l’espace disponible.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Ma toiture est petite, combien de panneaux puis-je installer ?',
-    text: 'Ça dépend de la surface utile réelle une fois les obstacles retirés (cheminée, fenêtre de toit, zones d’ombre), souvent moins que la surface totale du toit.',
+    title: 'Combien il en faut, pas seulement combien il en tient',
+    text: 'Le calcul part de votre consommation, la surface ne fait que le plafonner.',
+    href: '/installation/nombre-de-panneaux',
     accent: true,
   },
   {
-    title: 'Les panneaux ont-ils tous la même taille ?',
-    text: 'Non, ça varie selon le fabricant et la puissance du panneau : les modèles haute puissance sont parfois légèrement plus grands.',
+    title: 'Le kWc, l’unité qui compte vraiment',
+    text: 'Deux panneaux de même taille peuvent ne pas avoir la même puissance.',
+    href: '/installation/puissance',
   },
   {
-    title: 'Faut-il laisser de l’espace entre les panneaux ?',
-    text: 'Sur un toit incliné classique, très peu. Sur un toit plat ou au sol, l’espacement entre rangées devient nécessaire pour éviter les ombres portées.',
+    title: 'Ce que la surface pèse sur la toiture',
+    text: 'Une fois la surface connue, la question suivante est la charge.',
+    href: '/installation/poids',
   },
 ];
 

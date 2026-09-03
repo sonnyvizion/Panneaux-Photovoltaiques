@@ -120,6 +120,11 @@ export const FAQ: FaqItem[] = [
     answer:
       "La plupart des bornes domestiques sont compatibles avec les standards de charge courants, à vérifier selon le modèle de véhicule.",
   },
+  {
+    question: 'Une borne, ou une simple prise domestique ?',
+    answer:
+      'La prise domestique dépanne, elle ne recharge pas. Elle délivre une puissance faible, sur des heures, et n’est pas conçue pour un appel de courant prolongé, ce qui pose un vrai enjeu de sécurité sur une installation ancienne. Une borne recharge plus vite, se protège correctement, et surtout se pilote : c’est elle qui permet de ne consommer que votre surplus solaire.',
+  },
 ];
 
 export const FINAL_CTA = {

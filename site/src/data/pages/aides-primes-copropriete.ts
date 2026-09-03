@@ -112,26 +112,30 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions pratiques avant l’assemblée générale.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Qui décide : l’unanimité ou une majorité suffit ?',
-    text: 'Ça dépend du règlement de copropriété et du type de décision (installation simple vs modification structurelle), à vérifier avec le syndic.',
+    title: 'Le régime d’aides de votre région',
+    text: 'Wallonie, Bruxelles, Flandre : trois cadres différents, qui s’appliquent aussi à l’immeuble.',
+    href: '/aides-primes',
     accent: true,
   },
   {
-    title: 'Comment répartir l’électricité produite ?',
-    text: 'Plusieurs modèles existent, du partage égal à une répartition selon la participation financière de chacun, à définir en amont dans le règlement.',
+    title: 'La pose sur toiture plate',
+    text: 'Le cas le plus fréquent en immeuble : lestage, espacement des rangées, étanchéité.',
+    href: '/installation/toit-plat',
   },
   {
-    title: 'Faut-il un permis d’urbanisme en copropriété ?',
-    text: "Les mêmes règles qu'ailleurs s'appliquent : pas de permis si l'aspect extérieur visible depuis la rue n'est pas modifié.",
-  },
-  {
-    title: 'Qui paie si tous les copropriétaires ne participent pas ?',
-    text: "Seuls les copropriétaires participants financent l'installation et se partagent l'électricité produite, typiquement.",
+    title: 'Ce que la toiture peut porter',
+    text: 'La charge au mètre carré, et comment savoir si la structure l’encaisse.',
+    href: '/installation/poids',
   },
 ];
 

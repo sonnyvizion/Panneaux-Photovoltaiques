@@ -181,6 +181,16 @@ export const FAQ: FaqItem[] = [
     answer:
       'Temporairement si elle recouvre les panneaux, mais l’inclinaison et la surface lisse favorisent en général un glissement naturel assez rapide.',
   },
+  {
+    question: 'Les panneaux produisent-ils par temps couvert ?',
+    answer:
+      'Oui, moins, mais ils produisent. Un panneau capte aussi la lumière diffuse, celle qui traverse les nuages : c’est ce qui rend le photovoltaïque viable en Belgique, où le ciel est couvert une bonne partie de l’année. Les rendements annoncés sur ce site sont des moyennes annuelles, ciel belge compris, pas des performances de plein soleil.',
+  },
+  {
+    question: 'Produisent-ils quelque chose la nuit ?',
+    answer:
+      'Non, rien. Sans lumière, pas d’effet photovoltaïque : la nuit, votre électricité vient du réseau, ou d’une batterie si vous en avez une. C’est précisément ce décalage entre le moment où l’on produit et celui où l’on consomme qui décide de la rentabilité d’une installation.',
+  },
 ];
 
 export const FINAL_CTA = {

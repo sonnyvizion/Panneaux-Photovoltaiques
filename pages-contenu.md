@@ -25,6 +25,19 @@ On ne décore pas un pavé, on remplace le pavé. Le visiteur *fait* plutôt que
 4. **Accordéons — la profondeur.** Détails secondaires, cas particuliers, « pour aller plus loin ».
    On replie le long, jamais le cœur.
 5. **FAQ en accordéon** + balisage `FAQPage`. Format question/réponse, scannable, longue traîne.
+> ⚠️ **Les points 4 et 5 ne posent JAMAIS la même question.** Au 3 septembre
+> 2026, ils la posaient sur **24 pages sur 46** : « Creuser le sujet » reprenait
+> mot pour mot les questions de la FAQ, trois cents pixels plus haut. Le visiteur
+> lisait deux fois la même réponse, et Google recevait deux fois la même question
+> dont une seule balisée.
+>
+> La règle qui les sépare : **une question qu'on tape va en FAQ** (c'est elle qui
+> porte `FAQPage`, c'est elle qui vise la longue traîne) ; **« Creuser le sujet »
+> développe un SUJET**, titré en affirmation, ou renvoie vers la page qui le
+> traite (`TopicCard.href`, variante employée sur `/aides-primes` et
+> `/a-propos`). Un titre de `TOPICS` qui se termine par un point d'interrogation
+> est le signe qu'on est en train de refaire le doublon.
+
 6. **Ponts vers le simulateur** — au milieu ET en bas, **contextualisés** au sujet de la page
    (« vous, ça coûterait combien ? → Estimez votre installation »), jamais un CTA générique.
    Chaque pont transmet les query params pertinents (région + paramètre de la page). Voir section

@@ -88,22 +88,30 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Ce qu’il faut peser avant de choisir le BIPV.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS — meme motif que sur les quatorze pages
+ * traitees le 2026-09-03 : ce bloc reposait les questions de la FAQ, trois
+ * cents pixels plus haut. Voir `pages-contenu.md` §4 et §5.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Le BIPV est-il vraiment plus cher ?',
-    text: 'Oui, généralement, parce qu’il remplace un matériau de toiture en plus de produire de l’électricité : le coût intègre les deux fonctions.',
+    title: 'Les technologies de panneaux',
+    text: 'Monocristallin, bifacial, amorphe : ce qui distingue les modules avant même leur intégration.',
+    href: '/comprendre/types-de-panneaux',
     accent: true,
   },
   {
-    title: 'Le rendement est-il le même ?',
-    text: 'Globalement comparable à orientation égale, même si certaines solutions BIPV ont un rendement légèrement inférieur aux panneaux classiques les plus performants.',
+    title: 'Poser sur la toiture, ou dedans',
+    text: 'Les trois systèmes de fixation, dont l’intégration au bâti.',
+    href: '/installation/fixation',
   },
   {
-    title: 'Le BIPV est-il obligatoire en zone protégée ?',
-    text: 'Pas systématiquement obligatoire, mais souvent recommandé ou exigé par les autorités locales pour préserver l’aspect du bâti.',
+    title: 'Le prix d’une installation classique',
+    text: 'Le coût au kWc en 2026, la référence à laquelle comparer un devis BIPV.',
+    href: '/rentabilite-prix',
   },
 ];
 

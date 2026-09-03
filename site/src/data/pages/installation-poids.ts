@@ -93,22 +93,38 @@ export const BRIDGES: Bridge[] = [
 export const TOPICS_COPY: SectionCopy = {
   overline: 'Pour aller plus loin',
   title: 'Creuser le sujet',
-  intro: 'Les questions qu’on nous pose sur la solidité du toit.',
+  intro: 'Les pages qui prolongent le sujet.',
 };
 
+/*
+ * « Creuser le sujet » en CARTES-LIENS, pas en questions.
+ *
+ * ⚠️ Ce bloc REPOSAIT MOT POUR MOT les questions de la FAQ, trois cents pixels
+ * plus haut : le visiteur lisait deux fois la meme reponse et la page servait
+ * la meme question deux fois a Google, dont une seule balisee. Le gabarit
+ * (`pages-contenu.md` §4) veut ici « details secondaires, cas particuliers,
+ * pour aller plus loin » — pas un doublon de la §5.
+ *
+ * La variante retenue est celle d'`a-propos.ts` : un titre en affirmation, ce
+ * que la page voisine repond, et son `href`. Aucun contenu invente, et le
+ * maillage interne y gagne.
+ */
 export const TOPICS: TopicCard[] = [
   {
-    title: 'Ma toiture doit-elle être renforcée avant l’installation ?',
-    text: 'Rarement pour une charpente en bon état : c’est surtout un sujet pour les toitures anciennes ou déjà fragilisées.',
+    title: 'Comment les panneaux tiennent au toit',
+    text: 'Crochets, rails, lestage : le système de fixation décide de la façon dont la charge se répartit.',
+    href: '/installation/fixation',
     accent: true,
   },
   {
-    title: 'Le poids est-il un problème pour un toit plat ?',
-    text: 'Un peu plus qu’en toiture inclinée à cause du système de lestage, mais ça reste dans les capacités standards de la plupart des toits plats résidentiels.',
+    title: 'Le cas du toit plat',
+    text: 'Pas de perçage, mais du lest : une charge très différente de celle d’un toit incliné.',
+    href: '/installation/toit-plat',
   },
   {
-    title: 'Comment savoir si ma charpente peut supporter des panneaux ?',
-    text: 'Une vérification visuelle par un professionnel suffit dans la grande majorité des cas : une étude structurelle poussée n’est nécessaire que pour les cas douteux.',
+    title: 'La surface que ça occupe',
+    text: 'Dimensions d’un panneau, espacements, et ce que votre pan de toiture peut accueillir.',
+    href: '/installation/dimensions',
   },
 ];
 
