@@ -91,7 +91,7 @@ export const ASIDE: string[] = [
 export const FACTS: Fact[] = [
   {
     title: 'Le tarif prosumer flamand',
-    text: 'Supprimé à la même date : les deux mécanismes étaient liés. C’est une différence majeure avec la Wallonie, qui a gardé le sien.',
+    text: 'Supprimé à la même date : les deux mécanismes étaient liés, l’un compensait ce que l’autre ne facturait pas. La Wallonie a fait le même chemin trois ans plus tard, en 2024.',
   },
   {
     title: 'Refuser le compteur digital',
@@ -126,7 +126,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Que devient le tarif prosumer flamand ?',
-    text: 'Il a été supprimé à la même date, les deux mécanismes étant liés. C’est une différence importante avec la Wallonie, qui a gardé un tarif prosumer actif.',
+    text: 'Il a été supprimé à la même date, les deux mécanismes étant liés : le tarif prosumer compensait les coûts de réseau que le compteur inversé ne facturait pas. Sans compteur inversé, il n’avait plus d’objet. La Wallonie a suivi la même logique en 2024 pour ses nouvelles installations.',
   },
   {
     title: 'Le déploiement des compteurs digitaux, où ça en est ?',

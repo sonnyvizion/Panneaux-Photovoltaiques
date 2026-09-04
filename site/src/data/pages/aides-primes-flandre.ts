@@ -74,7 +74,11 @@ export const COMPARATOR_ROWS: ComparatorRow[] = [
   {
     label: 'Tarif spécifique',
     cells: [
-      { text: 'Tarif prosumer : ~87 €/kWc par an, une charge' },
+      /* ⚠️ La Wallonie ne porte plus de charge pour une installation neuve :
+         le forfait prosumer ne s'applique qu'aux installations d'avant 2024
+         (voir `savings.ts`). Les deux régions valorisent désormais leur surplus
+         de la même façon, et cette ligne le dit. */
+      { text: 'Tarif d’injection, comme en Flandre depuis 2024' },
       { status: 'na' },
       { text: 'Tarif d’injection : 1 à 5 ct/kWh, un revenu' },
     ],
@@ -135,7 +139,7 @@ export const FACTS: Fact[] = [
   },
   {
     title: 'Pas de tarif prosumer',
-    text: 'Contrairement à la Wallonie, la Flandre l’a supprimé en même temps que le compteur inversé.',
+    text: 'La Flandre l’a supprimé en 2021, avec le compteur inversé. La Wallonie a suivi le même chemin en 2024 pour les nouvelles installations : sur ce point les deux régions se rejoignent.',
   },
 ];
 
