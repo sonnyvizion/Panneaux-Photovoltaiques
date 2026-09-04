@@ -22,7 +22,7 @@ ligne et à jour** (https://belgreen-demo.pages.dev, redéployée le 3 septembre
 | Le simulateur (parcours de questions) | Fonctionnel, 6 étapes + 5 d'affinage |
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
-| Les calculs | 348 tests verts |
+| Les calculs | 350 tests verts |
 | La recherche interne | Loupe dans la nav, **47 pages indexées** |
 | Le build de production | 59 pages + `search-index.json`, ~40 Mo |
 
@@ -502,8 +502,52 @@ Ads / Meta, décalés au démarrage des campagnes. La couture est prête dans
 |---|---|---|
 | **Service d'e-mail** (Brevo ou Resend) | L'envoi de tous les formulaires | `funnel.md` |
 | **Moteur d'impression PDF** | La fabrication du rapport | ce doc |
-| **`PROSUMER_RATE`** — 87 €/kWc/an | Le verdict wallon | voir ci-dessous |
+| ~~**`PROSUMER_RATE`** — 87 €/kWc/an~~ | ~~Le verdict wallon~~ | **résolu le 2026-09-04** |
 | Numéro de téléphone, mentions légales | `PHONE` est un placeholder, `/confidentialite` est un lien mort | `CLAUDE.md` |
+
+### Le tarif prosumer — **tranché le 4 septembre 2026**
+
+Le client a demandé de modéliser le tarif proportionnel. En lisant la note
+explicative de la CWaPE (mise à jour du 23/06/2025), la réponse s'est révélée
+plus simple et plus radicale : **le forfait ne s'applique pas du tout à une
+installation posée aujourd'hui.**
+
+- **§2** — le tarif prosumer est facturé « lorsque les coûts de réseau sont
+  établis sur la base des prélèvements annuels **nets** ». C'est la contrepartie
+  du compteur qui tourne à l'envers.
+- **§4.4** — depuis le 01/01/2024, un prosumer sans compensation voit toute sa
+  facture établie sur ses prélèvements **bruts**, et ce sont précisément les
+  installations mises en service à partir de cette date.
+- **§7** — depuis la même date, toute nouvelle installation ≤ 10 kVA reçoit
+  systématiquement un compteur communicant.
+
+Le modèle cumulait la logique **brute** côté économies et le forfait de la
+logique **nette** côté charges. Les deux ne vont jamais ensemble. Le soupçon de
+double compte, formulé ici le 2 septembre, était juste.
+
+| Cas médian, 6 kWc, Wallonie | Avant | Après |
+|---|---|---|
+| Charge annuelle | 522 € | **0 €** |
+| Amortissement | jamais sur 25 ans | **10 ans** |
+| Bilan à 25 ans | −3 168 € | **+11 037 €** |
+
+Les 10 ans tombent dans la fourchette de 6 à 13 ans du marché, et un test
+verrouille cette fourchette. **Wallonie et Flandre sont désormais identiques
+dans le modèle** — c'est la réalité réglementaire depuis 2024, et un test le dit.
+
+⚠️ **`PROSUMER_RATE` n'est pas supprimé** : le forfait reste dû par les
+installations d'avant 2024, dont la compensation court jusqu'en 2030. La page
+`/aides-primes/wallonie/prosumer` a été refondue pour répondre à « qui le paie
+encore » au lieu de « combien ça coûte » — elle garde son mot-clé, très demandé,
+et répond à la question que le lecteur se pose vraiment.
+
+⚠️ **Le « seuil de bascule wallon » a perdu son sujet.** Il valait 45 % et deux
+pages l'affichaient comme l'objectif à atteindre ; il n'existait que par le
+forfait, et il est tombé à quelques pour cent. Retiré des deux pages, remplacé
+sur « Autoconsommation » par le rapport entre un kWh gardé et un kWh injecté
+(× 8), qui est dérivé des constantes et dit la même chose en mieux.
+
+<details><summary>L'arbitrage tel qu'il était posé</summary>
 
 ### Le tarif prosumer — à trancher
 
@@ -529,6 +573,8 @@ Deux points à valider :
 
 `design.md` le dit déjà des constantes en général : « à valider par le client.
 Tant qu'elles ne le sont pas, aucun de ces chiffres n'est un prix. »
+
+</details>
 
 ### Dette technique connue
 

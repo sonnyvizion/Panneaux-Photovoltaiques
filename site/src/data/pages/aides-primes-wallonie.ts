@@ -60,7 +60,7 @@ import type { PageSeo } from '../seo';
  */
 export const SEO: PageSeo = {
   title: 'Prime panneaux solaires Wallonie 2026 | Belgreen',
-  description: `Plus de prime directe ni de certificats verts en Wallonie. Ce qui reste en 2026 : le Rénoprêt à 0 % jusqu'à ${formatEuro(LOAN_MAX)}, la TVA à 6 % et le tarif prosumer.`,
+  description: `Plus de prime directe en Wallonie, mais le Rénoprêt à 0 % jusqu'à ${formatEuro(LOAN_MAX)}, la TVA à 6 %, et un tarif prosumer qui ne s'applique plus depuis 2024.`,
 };
 
 /* Le taux d'autoconsommation vient de `savings.ts` : deux pages du site
@@ -72,7 +72,7 @@ export const HERO = {
   badge: 'Aides & Primes',
   title: 'Aides et primes pour panneaux solaires en Wallonie en 2026',
   answer:
-    "En 2026, il n'existe plus de prime directe ni de certificats verts pour une installation photovoltaïque résidentielle en Wallonie. Les aides restantes sont indirectes : un prêt à taux 0 %, une TVA réduite, et un tarif prosumer qui est une charge, pas une aide.",
+    "En 2026, il n'existe plus de prime directe ni de certificats verts pour une installation photovoltaïque résidentielle en Wallonie. Les aides restantes sont indirectes : un prêt à taux 0 % et une TVA réduite à 6 %. Bonne nouvelle en revanche sur le tarif prosumer, souvent cité comme repoussoir : il ne s'applique pas aux installations posées depuis 2024.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Vue aérienne, à la lumière du soir, d’une maison wallonne en briques rouges bordant un champ, dont le versant de toiture en tuiles porte une rangée de panneaux solaires noirs',
@@ -122,7 +122,12 @@ export const FIGURES: Figure[] = [
      montants de front à toutes les tailles) et « ~87 €/kWc » débordait de sa
      carte à 390px, là où « ~87 € » tient. La maquette écrit « €/kWe » — c'est
      le kilowatt-CRÊTE, kWc, comme partout ailleurs sur le site. */
-  { label: 'Tarif prosumer', value: `~${PROSUMER_RATE} €`, note: 'par kWc, à votre charge', tone: 'ink' },
+  {
+    label: 'Tarif prosumer',
+    value: 'Non dû',
+    note: 'pour une installation posée depuis 2024 : facturation sur les prélèvements réels',
+    tone: 'ink',
+  },
 ];
 
 export const FACTS: Fact[] = [

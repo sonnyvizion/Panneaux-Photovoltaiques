@@ -6,7 +6,6 @@ import {
   HORIZON_YEARS,
   INJECTION_PRICE,
   SELF_CONSUMPTION_RATE,
-  breakEvenLabel,
 } from '../../scripts/savings';
 
 /**
@@ -15,8 +14,6 @@ import {
  * deux appellent `breakEvenLabel` — une révision du prix du kWh les déplace
  * ensemble.
  */
-const BREAK_EVEN = breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '45 %';
-
 /**
  * Page 3.4 — « Autoconsommation & revente » (`/rentabilite-prix/autoconsommation`).
  *
@@ -87,12 +84,20 @@ export const FIGURES: Figure[] = [
     note: 'par kWh injecté en Flandre ; variable selon la région',
     tone: 'grey',
   },
-  /* ⚠️ Remplace l'ancienne carte « Taux moyen — 30 à 40 % », qui décrivait une
-     moyenne sans conséquence. Le seuil, lui, dit ce qui bascule. */
+  /**
+   * ⚠️ Cette carte a porté deux chiffres avant celui-ci, et les deux ont été
+   * retirés pour la même raison : ils ne disaient rien au lecteur. D'abord un
+   * « taux moyen de 30 à 40 % », une moyenne sans conséquence ; puis le « seuil
+   * critique wallon » de 45 %, qui n'existait que par le forfait prosumer et
+   * qui, ce forfait retiré (2026-09-04), est tombé à quelques pour cent.
+   *
+   * Le rapport entre les deux prix, lui, est la grandeur qui décide vraiment :
+   * il est DÉRIVÉ des constantes, donc toujours juste, et il tient en un mot.
+   */
   {
-    label: 'Seuil critique en Wallonie',
-    value: BREAK_EVEN,
-    note: `d’autoconsommation : le point où l’installation redevient rentable sur ses ${HORIZON_YEARS} ans`,
+    label: 'Un kWh gardé vaut',
+    value: `× ${Math.round(ELECTRICITY_PRICE / INJECTION_PRICE)}`,
+    note: 'un kWh injecté : c’est tout l’enjeu de l’autoconsommation',
     tone: 'ink',
   },
 ];
@@ -139,15 +144,15 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'Que devient mon surplus selon ma région ?',
-    text: `En Wallonie, il part sur le réseau sans compensation directe au-delà du tarif prosumer ; en Flandre, il est valorisé au tarif d’injection ; à Bruxelles, il génère des certificats verts.`,
+    text: `En Wallonie comme en Flandre, il est racheté au tarif d’injection, de l’ordre de quelques centimes le kWh. À Bruxelles, il compte dans la production qui génère des certificats verts. Dans les trois cas, un kWh injecté vaut bien moins qu’un kWh consommé sur place.`,
   },
   {
     title: 'Faut-il viser 100 % d’autoconsommation ?',
     text: 'Pas nécessairement : au-delà d’un certain point, ça demanderait une installation sous-dimensionnée par rapport à votre toiture, ou un investissement en stockage pas toujours rentable.',
   },
   {
-    title: `Ce seuil de ${BREAK_EVEN} est-il le même partout ?`,
-    text: 'Non. C’est spécifiquement le repère wallon, où le tarif prosumer, une charge fixe, rend l’autoconsommation déterminante. À Bruxelles et en Flandre, la rentabilité reste positive même à autoconsommation standard, grâce aux certificats verts et au tarif d’injection.',
+    title: 'L’écart entre régions est-il encore déterminant ?',
+    text: 'Non, et depuis 2024 l’écart entre régions s’est resserré : la Wallonie et la Flandre traitent le surplus de la même manière. Ce qui reste vrai partout, c’est que l’autoconsommation est le levier le plus rentable dont vous disposiez, parce qu’un kWh consommé sur place vaut huit fois un kWh injecté.',
   },
 ];
 

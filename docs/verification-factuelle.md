@@ -26,9 +26,52 @@
 | **Pourquoi c'est faux** | Moyenne retirée le 2026-08-18. Elle reposait sur la compensation du surplus wallon, **supprimée en 2024**. `savings.test.ts` verrouille l'inverse : `paybackYear(6 kWc, wallonie)` retourne `null` — jamais amorti sur 25 ans à autoconsommation standard. |
 | **Fait** | Retiré de `rentabilite-prix.ts`. Les deux occurrences de `comprendre-longevite.ts` sont traitées dans la passe du pilier Comprendre. |
 
-### ⚠️ Le verdict wallon est un **outlier** face à tout le marché belge
+### ✅ Le verdict wallon était un **outlier** — **résolu le 2026-09-04**
 
-C'est le point le plus lourd du document.
+> **C'était le point le plus lourd du document, et ce n'était pas un arbitrage
+> commercial : c'était une erreur de modèle.** Le client a demandé de « modéliser
+> le tarif proportionnel ». En allant lire la source, la réponse s'est révélée
+> plus simple et plus radicale : **le tarif prosumer ne s'applique pas du tout à
+> une installation posée aujourd'hui.**
+>
+> Note explicative de la CWaPE, mise à jour du 23/06/2025 :
+>
+> - **§2** — le tarif prosumer est facturé « lorsque les coûts de réseau qui leur
+>   sont facturés sont établis sur la base de leurs prélèvements annuels **nets** ».
+>   C'est la contrepartie du compteur qui tourne à l'envers.
+> - **§4.4** — « À partir du 1ᵉʳ janvier 2024, un prosumer qui ne bénéficie pas du
+>   principe de compensation verra l'ensemble de sa facture établi sur la base de
+>   ses prélèvements **bruts** », et ces prosumers sont « ceux dont l'installation
+>   est mise en service à partir du 1ᵉʳ janvier 2024 ».
+> - **§7** — depuis la même date, toute nouvelle installation ≤ 10 kVA est
+>   systématiquement équipée d'un compteur communicant.
+>
+> Facturé sur ses prélèvements bruts, le visiteur ne bénéficie d'aucune
+> compensation : **il n'y a rien à compenser, et le forfait n'a plus d'objet.**
+>
+> **Ce que faisait le modèle** : il cumulait la logique BRUTE côté économies
+> (seuls les kWh autoconsommés font gagner) et le forfait de la logique NETTE
+> côté charges. Les deux ne vont jamais ensemble. `etat.md` soupçonnait ce double
+> compte depuis le 2 septembre ; la CWaPE le confirme.
+>
+> **Effet sur le cas médian (6 kWc, Wallonie)** :
+>
+> | | Avant | Après |
+> |---|---|---|
+> | Charge annuelle | 522 € | **0 €** |
+> | Amortissement | jamais sur 25 ans | **10 ans** |
+> | Bilan à 25 ans | −3 168 € | **+11 037 €** |
+>
+> Les 10 ans tombent dans la fourchette de 6 à 13 ans annoncée par le marché : le
+> site n'est plus l'outlier, sans être devenu optimiste pour autant. Un test
+> verrouille cette fourchette.
+>
+> ⚠️ **`PROSUMER_RATE` n'est pas supprimé** : le forfait existe toujours pour les
+> installations d'avant 2024, dont la compensation court jusqu'en 2030. C'est le
+> sujet de `/aides-primes/wallonie/prosumer`, refondue pour répondre à « qui le
+> paie encore » plutôt qu'à « combien ça coûte ».
+
+<details><summary>Le constat d'origine, pour mémoire</summary>
 
 | Source | Amortissement annoncé |
 |---|---|
@@ -54,6 +97,12 @@ peut-être trop pessimiste. Les deux ne peuvent pas être vrais.
 > wallons — soit on modélise le tarif prosumer proportionnel, et le verdict
 > change du tout au tout. **Tant que ce n'est pas tranché, aucune page ne doit
 > promettre de délai d'amortissement.**
+
+**Réponse du client (2026-09-03)** : option B. **Ce qui a été trouvé en
+l'appliquant** : ni l'une ni l'autre des deux options n'était la bonne lecture,
+le forfait ne s'appliquant tout simplement pas. Voir ci-dessus.
+
+</details>
 
 ### ✅ `ELECTRICITY_PRICE = 0.32` €/kWh — conforme
 

@@ -64,7 +64,7 @@ le titre partout où c'est possible.
 | `/rentabilite-prix/autoconsommation` | Autoconsommation solaire en Belgique \| Belgreen | 47 | |
 | `/aides-primes` | Primes panneaux solaires Belgique 2026 \| Belgreen | 49 | |
 | `/aides-primes/wallonie` | Prime panneaux solaires Wallonie 2026 \| Belgreen | 48 | |
-| `/aides-primes/wallonie/prosumer` | Tarif prosumer Wallonie 2026 : calcul et montant \| Belgreen | 59 | |
+| `/aides-primes/wallonie/prosumer` | Tarif prosumer Wallonie : qui le paie encore ? \| Belgreen | 57 | |
 | `/aides-primes/wallonie/demarches` | Démarches panneaux solaires Wallonie 2026 \| Belgreen | 52 | |
 | `/aides-primes/bruxelles` | Certificats verts Bruxelles 2026 : le calcul \| Belgreen | 55 | |
 | `/aides-primes/bruxelles/reglementation` | RESCert PV à Bruxelles : l'obligation 2026 \| Belgreen | 53 | |

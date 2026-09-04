@@ -31,8 +31,17 @@ const roiLabel = (region: Region) => {
   return years === null ? `plus de ${HORIZON_YEARS} ans` : `${years} ans`;
 };
 
-/** Le seuil de bascule wallon — le MÊME que celui de la page 3.4, par construction. */
-export const BREAK_EVEN = breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '45 %';
+/**
+ * Le seuil de bascule wallon — le MÊME que celui de la page 3.4, par construction.
+ *
+ * ⚠️ IL A PERDU SON SUJET le 2026-09-04. Il valait 45 % tant qu'un forfait
+ * prosumer de 522 €/an pesait sur le bilan : atteindre ce taux était alors la
+ * condition de la rentabilité, et c'était un vrai message. Le forfait ne
+ * s'applique pas à une installation posée aujourd'hui (voir `savings.ts`), et le
+ * seuil est tombé à quelques pour cent — c'est-à-dire à un chiffre qui ne dit
+ * plus rien au lecteur. Il n'est donc PLUS AFFICHÉ comme un objectif.
+ */
+export const BREAK_EVEN = breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' }) ?? '5 %';
 
 /** Le meilleur cas régional, à forte autoconsommation — la borne basse du hero. */
 const BEST_CASE = paybackYear(POWER_DEFAULT, { region: 'bruxelles', rate: 0.7 });
@@ -40,12 +49,13 @@ const BEST_CASE = paybackYear(POWER_DEFAULT, { region: 'bruxelles', rate: 0.7 })
 /**
  * Métadonnées de tête de page — contraintes dans `data/seo.ts`, vérifiées au build.
  *
- * ⚠️ LA DESCRIPTION NE PROMET AUCUN DÉLAI. C'est délibéré, et c'est le sujet même
- * de la réécriture du 2026-08-18 : les pages concurrentes belges annoncent toutes
- * « 6 à 9 ans » ou « 7 à 10 ans », le modèle de ce site calcule une Wallonie
- * jamais amortie sur son horizon de `HORIZON_YEARS` à autoconsommation standard.
- * Écrire un chiffre ici pour s'aligner sur la concurrence serait promettre dans
- * Google l'inverse de ce que la page démontre trois lignes plus bas.
+ * ⚠️ LA DESCRIPTION NE PROMET TOUJOURS AUCUN DÉLAI, mais plus pour la même
+ * raison. Jusqu'au 2026-09-04 c'était parce que le modèle calculait une Wallonie
+ * jamais amortie et qu'annoncer « 6 à 9 ans » aurait contredit la page. Depuis
+ * la correction du forfait prosumer, les trois régions s'amortissent dans
+ * l'horizon — et le délai reste hors de la description parce qu'il dépend
+ * massivement de l'autoconsommation, qui est justement le sujet de la page.
+ * Un chiffre unique dans Google promettrait une précision que le calcul n'a pas.
  */
 export const SEO: PageSeo = {
   title: 'Amortissement des panneaux solaires en Belgique | Belgreen',
@@ -56,7 +66,7 @@ export const SEO: PageSeo = {
 export const HERO = {
   badge: 'Rentabilité & Prix',
   title: 'Amortissement solaire : en combien de temps l’installation est-elle rentabilisée ?',
-  answer: `Le retour sur investissement varie fortement selon votre région et surtout selon votre taux d’autoconsommation : de ${BEST_CASE} ans à Bruxelles à plusieurs dizaines d’années en Wallonie sans optimisation. Le facteur qui pèse le plus n’est pas votre budget, c’est combien vous consommez vous-même de votre propre production.`,
+  answer: `Le retour sur investissement dépend surtout de votre taux d’autoconsommation, et ensuite de votre région : comptez ${BEST_CASE} ans à Bruxelles, où les certificats verts portent la production entière, et de l’ordre de ${roiLabel('wallonie')} en Wallonie comme en Flandre sans rien optimiser. Le facteur qui pèse le plus n’est pas votre budget, c’est combien vous consommez vous-même de votre propre production.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Maison individuelle dont la toiture est entièrement couverte de panneaux solaires, vue de trois quarts',
@@ -103,15 +113,15 @@ export const FIGURES: Figure[] = [
   {
     label: 'Wallonie',
     value: roiLabel('wallonie'),
-    note: 'sans optimisation : le tarif prosumer absorbe l’essentiel du bénéfice',
+    note: 'au taux d’autoconsommation de référence, sans rien optimiser',
     tone: 'ink',
   },
 ];
 
 export const FACTS: Fact[] = [
   {
-    title: `Le seuil wallon : ${BREAK_EVEN}`,
-    text: `Autour de ${BREAK_EVEN} d’autoconsommation, le bilan sur ${HORIZON_YEARS} ans redevient positif. En dessous, l’installation coûte plus qu’elle ne rapporte sur sa durée de vie.`,
+    title: 'L’autoconsommation décide, pas la région',
+    text: `Entre une autoconsommation faible et une autoconsommation soignée, le délai varie du simple au double sur le même toit. L’écart entre régions, lui, tient à un seul mécanisme : les certificats verts bruxellois. Wallonie et Flandre sont désormais logées à la même enseigne.`,
   },
   {
     title: 'Ce n’est pas le budget qui décide',
@@ -146,7 +156,7 @@ export const TOPICS: TopicCard[] = [
   },
   {
     title: 'La région où j’habite influence-t-elle mon ROI ?',
-    text: 'Énormément : les certificats verts bruxellois accélèrent nettement le retour sur investissement, le tarif d’injection flamand le porte à un rythme intermédiaire, et le tarif prosumer wallon, une charge fixe sans lien avec votre consommation, exige une autoconsommation plus poussée pour rester rentable sur la durée de vie de l’installation.',
+    text: 'Beaucoup, mais moins qu’on ne le croit depuis 2024 : les certificats verts bruxellois accélèrent nettement le retour sur investissement, tandis que la Wallonie et la Flandre valorisent désormais leur surplus de la même façon, au tarif d’injection. Ce qui creuse vraiment l’écart entre deux installations d’une même région, c’est l’autoconsommation.',
   },
   {
     title: 'Quel est le seuil à connaître en Wallonie ?',
@@ -175,9 +185,9 @@ export const FAQ: FaqItem[] = [
       'Ça accélère le retour sur investissement dans toutes les régions : chaque kWh autoconsommé « économise » un prix plus élevé.',
   },
   {
-    question: 'Le tarif prosumer allonge-t-il le délai d’amortissement ?',
+    question: 'Le tarif prosumer allonge-t-il mon délai d’amortissement ?',
     answer:
-      'En Wallonie, c’est la ligne la plus lourde du calcul, et de loin. Cette redevance annuelle se paie dès la mise en service, indépendamment de ce que vous économisez, et elle court sur toute la durée de vie de l’installation. Bruxelles et la Flandre ne la connaissent pas : c’est la principale raison pour laquelle un même toit ne s’amortit pas au même rythme selon la région.',
+      'Pas pour une installation posée aujourd’hui. Le tarif prosumer est la contrepartie du compteur qui tourne à l’envers : il compense les coûts de réseau qu’une facturation sur les prélèvements nets ne couvrait pas. Or depuis le 1ᵉʳ janvier 2024, une nouvelle installation wallonne reçoit un compteur communicant et sa facture est établie sur ses prélèvements bruts, sans compensation. Il n’y a donc plus rien à compenser, et le forfait ne s’applique pas. Il reste dû par les installations mises en service avant 2024, qui bénéficient encore de la compensation jusqu’en 2030.',
   },
 ];
 

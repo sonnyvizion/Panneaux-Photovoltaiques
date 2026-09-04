@@ -33,10 +33,15 @@ describe('paybackGeometry', () => {
     }
   });
 
-  /* En Wallonie, le tarif prosumer empêche l'amortissement sur 25 ans : il n'y a
-     alors pas de bénéfice à colorier, et pas de point de croisement. */
+  /**
+   * Le cas « jamais amorti » existe toujours, mais il ne vient plus d'une
+   * RÉGION : depuis la correction du 2026-09-04, les trois s'amortissent au taux
+   * de référence. Il vient d'une autoconsommation nulle — tout part au réseau,
+   * payé au tarif d'injection, ce qui ne rembourse pas l'installation sur
+   * 25 ans. Le rendu doit tenir ce cas sans dessiner d'aire ni de croisement.
+   */
   it('n’affiche ni aire ni croisement quand l’amortissement n’arrive jamais', () => {
-    const g = paybackGeometry(POWER_DEFAULT, { region: 'wallonie' });
+    const g = paybackGeometry(POWER_DEFAULT, { region: 'wallonie', rate: 0 });
     expect(g.payback).toBeNull();
     expect(g.benefit).toBe('');
     expect(g.crossX).toBeNull();

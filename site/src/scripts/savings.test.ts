@@ -28,37 +28,68 @@ const REGIONS: Region[] = ['wallonie', 'bruxelles', 'flandre'];
  * Wallonie-aides) ; le modèle, lui, dit ce qu'il calcule.
  */
 describe('ce que le modèle calcule vraiment', () => {
-  /* ⚠️ Au taux de référence, une installation wallonne ne se rembourse PAS sur
-     l'horizon de 25 ans : la charge prosumer absorbe l'essentiel des économies,
-     et le surplus n'est plus compensé qu'au tarif d'injection. C'est le
-     résultat, pas un bug — la page doit pouvoir le dire. */
-  it('ne trouve pas d’amortissement wallon sur l’horizon, au taux de référence', () => {
-    expect(paybackYear(POWER_DEFAULT, { region: 'wallonie' })).toBeNull();
-  });
-
-  it('en trouve un dès que l’autoconsommation monte fortement', () => {
-    const roi = paybackYear(POWER_DEFAULT, { region: 'wallonie', rate: 0.7 });
+  /**
+   * ⚠️ CORRECTION DU 2026-09-04, sur la note explicative de la CWaPE
+   * (« Tarif prosumer », mise à jour du 23/06/2025). Ces tests affirmaient
+   * l'inverse, et le commentaire d'alors disait « c'est le résultat, pas un
+   * bug ». C'ÉTAIT un bug, et la source le tranche en trois phrases :
+   *
+   *  §2  — le tarif prosumer est facturé « lorsque les coûts de réseau qui leur
+   *        sont facturés sont établis sur la base de leurs prélèvements annuels
+   *        NETS » ;
+   *  §4.4 — depuis le 01/01/2024, un prosumer sans compensation voit
+   *        « l'ensemble de sa facture établi sur la base de ses prélèvements
+   *        BRUTS » ;
+   *  §7  — depuis le 01/01/2024, toute nouvelle installation ≤ 10 kVA reçoit
+   *        systématiquement un compteur communicant.
+   *
+   * Une installation posée aujourd'hui est donc facturée sur ses prélèvements
+   * bruts. Il n'y a plus rien à compenser, et le tarif prosumer NE S'APPLIQUE
+   * PAS. Le modèle facturait 87 €/kWc/an à un public qui ne les paiera jamais.
+   */
+  it('amortit une installation wallonne dans l’horizon, au taux de référence', () => {
+    const roi = paybackYear(POWER_DEFAULT, { region: 'wallonie' });
     expect(roi).not.toBeNull();
     expect(roi!).toBeLessThanOrEqual(HORIZON_YEARS);
   });
 
-  /* L'ordre a changé avec la correction : la Wallonie n'est plus « légèrement »
-     derrière Bruxelles, elle est DERNIÈRE, loin derrière la Flandre — elle
-     supporte la même valorisation du surplus, plus une charge annuelle. */
-  it('classe désormais Bruxelles, puis la Flandre, puis la Wallonie', () => {
-    const roi = (region: Region) =>
-      paybackYear(POWER_DEFAULT, { region, rate: 0.7 })!;
+  /* Contrôle de vraisemblance face au marché : les sources belges annoncent 6 à
+     13 ans. On ne vise pas leur chiffre — on vérifie qu'on n'est plus l'outlier
+     que le modèle produisait, sans devenir optimiste pour autant. */
+  it('tombe dans la fourchette annoncée par le marché belge', () => {
+    const roi = paybackYear(POWER_DEFAULT, { region: 'wallonie' })!;
+    expect(roi).toBeGreaterThanOrEqual(6);
+    expect(roi).toBeLessThanOrEqual(15);
+  });
+
+  it('n’impute plus AUCUNE charge annuelle à la Wallonie', () => {
+    expect(yearSavings(POWER_DEFAULT, { region: 'wallonie' }).charge).toBe(0);
+  });
+
+  /* Bruxelles garde une longueur d'avance : ses certificats verts portent sur
+     la production TOTALE pendant dix ans, là où les deux autres régions ne
+     valorisent que le surplus injecté. */
+  it('place Bruxelles devant, les deux autres régions à égalité', () => {
+    const roi = (region: Region) => paybackYear(POWER_DEFAULT, { region, rate: 0.7 })!;
     expect(roi('bruxelles')).toBeLessThan(roi('flandre'));
-    expect(roi('flandre')).toBeLessThan(roi('wallonie'));
+    expect(roi('wallonie')).toBe(roi('flandre'));
   });
 
   /* Le tarif prosumer est ce qui creuse l'écart : sans lui, la Wallonie et la
      Flandre seraient identiques, puisqu'elles valorisent le surplus pareil. */
-  it('impute tout l’écart Wallonie/Flandre à la seule charge prosumer', () => {
+  /**
+   * ⚠️ WALLONIE ET FLANDRE SONT DÉSORMAIS IDENTIQUES dans le modèle, et ce
+   * n'est pas un raccourci : depuis 2024 les deux régions facturent une
+   * nouvelle installation sur ses prélèvements bruts et rachètent le surplus au
+   * tarif d'injection du marché. Ce qui les séparait dans ce fichier était une
+   * charge que la Wallonie ne prélève pas sur ce public.
+   *
+   * Si un jour elles divergent à nouveau, c'est ce test qui le dira.
+   */
+  it('aligne la Wallonie sur la Flandre, faute de charge qui les sépare', () => {
     const wal = yearSavings(POWER_DEFAULT, { region: 'wallonie' });
     const vl = yearSavings(POWER_DEFAULT, { region: 'flandre' });
-    expect(wal.direct + wal.surplus).toBeCloseTo(vl.direct + vl.surplus);
-    expect(vl.net - wal.net).toBeCloseTo(wal.charge);
+    expect(wal.net).toBeCloseTo(vl.net);
   });
 
   /* Le taux de référence est celui du tarif prosumer wallon (CWaPE), et la page
@@ -85,10 +116,14 @@ describe('yearSavings', () => {
     }
   });
 
-  it('décompte la charge régionale, en Wallonie seulement', () => {
-    expect(yearSavings(POWER_DEFAULT, { region: 'wallonie' }).charge).toBeGreaterThan(0);
-    expect(yearSavings(POWER_DEFAULT, { region: 'bruxelles' }).charge).toBe(0);
-    expect(yearSavings(POWER_DEFAULT, { region: 'flandre' }).charge).toBe(0);
+  /* Plus AUCUNE région ne porte de charge annuelle : la Wallonie était la seule,
+     et le tarif prosumer ne s'applique pas à une installation posée aujourd'hui
+     (voir la note de `RULES.wallonie` dans `savings.ts`). Le champ reste dans le
+     modèle : le jour où une région réintroduit une redevance, il l'accueille. */
+  it('ne décompte plus de charge annuelle dans aucune région', () => {
+    for (const region of REGIONS) {
+      expect(yearSavings(POWER_DEFAULT, { region }).charge).toBe(0);
+    }
   });
 
   it('ne produit jamais de NaN, quel que soit le taux', () => {
@@ -148,24 +183,16 @@ describe('cumulativeSavings et paybackYear', () => {
   });
 
   /**
-   * ⚠️ Le prix de l'électricité est LA constante décisive côté wallon, bien
-   * avant le prix de l'installation : à 0,28 € l'amortissement n'existait pas du
-   * tout, à 0,32 € il tombe à 39 ans, et il passe sous l'horizon dès que
-   * l'autoconsommation monte.
-   *
-   * Ce test fige la FORME du constat, pas le chiffre : la Wallonie dépasse
-   * l'horizon au taux de référence, mais reste amortissable sur une vie plus
-   * longue. Si une révision du prix fait basculer l'un ou l'autre, il faut le
-   * voir — et réécrire les textes en conséquence.
+   * ⚠️ RÉÉCRIT LE 2026-09-04. Ce test figeait « la Wallonie dépasse l'horizon »,
+   * et son commentaire demandait qu'on le voie si ça basculait. Ça a basculé :
+   * la charge qui produisait ce constat n'existe pas pour le public du site.
    */
-  it('garde l’amortissement wallon au-delà de l’horizon au taux de référence', () => {
-    expect(paybackYear(POWER_DEFAULT, { region: 'wallonie' })).toBeNull();
-    expect(paybackYear(POWER_DEFAULT, { region: 'wallonie', years: 60 })).not.toBeNull();
+  it('amortit la Wallonie dans l’horizon, au taux de référence', () => {
+    const roi = paybackYear(POWER_DEFAULT, { region: 'wallonie' });
+    expect(roi).not.toBeNull();
+    expect(roi!).toBeLessThan(HORIZON_YEARS);
   });
 
-  /* ⚠️ Vérifié sur BRUXELLES et la FLANDRE seulement. En Wallonie le gain à 25
-     ans est NÉGATIF au taux de référence — c'est précisément ce que la
-     correction a révélé, et ce qu'il ne faut pas masquer par un test complaisant. */
   it('reste rentable sur l’horizon hors Wallonie, pour toute la gamme', () => {
     for (const region of ['bruxelles', 'flandre'] as Region[]) {
       for (const kwc of [POWER_MIN, POWER_DEFAULT, POWER_MAX]) {
@@ -174,8 +201,11 @@ describe('cumulativeSavings et paybackYear', () => {
     }
   });
 
-  it('sort un gain négatif en Wallonie au taux de référence', () => {
-    expect(netGain(POWER_DEFAULT, { region: 'wallonie' })).toBeLessThan(0);
+  /* Le contraire exact de ce que ce fichier affirmait la veille. Le gain wallon
+     à 25 ans passe d'environ −3 200 € à plus de 11 000 €, et l'écart tient
+     entièrement au forfait prosumer qu'on facturait à tort. */
+  it('sort un gain nettement positif en Wallonie au taux de référence', () => {
+    expect(netGain(POWER_DEFAULT, { region: 'wallonie' })).toBeGreaterThan(0);
   });
 });
 
@@ -188,8 +218,20 @@ describe('cumulativeSavings et paybackYear', () => {
  * dit bien ce que les textes racontent.
  */
 describe('seuil de rentabilité', () => {
-  it('situe le seuil wallon autour de 45 %, comme l’annoncent les deux pages', () => {
-    expect(breakEvenLabel(POWER_DEFAULT, { region: 'wallonie' })).toBe('45 %');
+  /**
+   * ⚠️ CE SEUIL A PERDU SON SUJET, le 2026-09-04. Il valait 45 % en Wallonie et
+   * les pages « Amortissement » et « Autoconsommation » l'affichaient comme LE
+   * chiffre wallon à battre. Il n'existait que parce qu'on facturait un forfait
+   * prosumer de 522 €/an : sans lui, l'installation est bénéficiaire dès une
+   * autoconsommation dérisoire, et le seuil tombe à quelques pour cent.
+   *
+   * On garde `breakEvenRate` : c'est une grandeur juste, elle sert encore à dire
+   * « à partir de quand ça vaut le coup », et elle redeviendra intéressante si
+   * une région réintroduit une redevance. Ce sont les TEXTES qui changent.
+   */
+  it('tombe très bas en Wallonie, faute de charge à couvrir', () => {
+    const seuil = breakEvenRate(POWER_DEFAULT, { region: 'wallonie' })!;
+    expect(seuil).toBeLessThan(15);
   });
 
   it('n’en trouve aucun à Bruxelles, rentable dès le premier point', () => {
@@ -203,12 +245,18 @@ describe('seuil de rentabilité', () => {
     expect(netGain(POWER_DEFAULT, { region: 'wallonie', rate: (seuil - 1) / 100 })).toBeLessThan(0);
   });
 
-  /* Le texte de 3.4 affirme que le seuil est SPÉCIFIQUEMENT wallon : ailleurs la
-     rentabilité tient déjà au taux standard. */
-  it('confirme que le seuil est propre à la Wallonie', () => {
-    for (const region of ['bruxelles', 'flandre'] as Region[]) {
+  /* Il n'est plus « propre à la Wallonie » : la Flandre a exactement le même,
+     puisque les deux régions sont désormais traitées à l'identique. */
+  it('vaut le même en Wallonie et en Flandre', () => {
+    expect(breakEvenRate(POWER_DEFAULT, { region: 'wallonie' })).toBe(
+      breakEvenRate(POWER_DEFAULT, { region: 'flandre' }),
+    );
+  });
+
+  /* Au taux de référence du site, les TROIS régions sont largement au-dessus. */
+  it('laisse les trois régions bénéficiaires au taux de référence', () => {
+    for (const region of REGIONS) {
       expect(netGain(POWER_DEFAULT, { region, rate: SELF_CONSUMPTION_RATE })).toBeGreaterThan(0);
     }
-    expect(netGain(POWER_DEFAULT, { region: 'wallonie', rate: SELF_CONSUMPTION_RATE })).toBeLessThan(0);
   });
 });

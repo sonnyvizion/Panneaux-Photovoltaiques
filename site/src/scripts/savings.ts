@@ -131,9 +131,55 @@ const RULES: Record<Region, RegionRules> = {
   wallonie: {
     label: 'Wallonie',
     /* Tarif d'injection, comme en Flandre — et NON le prix d'achat : le compteur
-       inversé n'existe plus. La charge prosumer vient s'y ajouter, elle. */
+       inversé n'existe plus. */
     surplusValue: (surplus) => surplus * INJECTION_PRICE,
-    annualCharge: (kwc) => kwc * PROSUMER_RATE,
+    /**
+     * ═════════════════════════════════════════════════════════════════════
+     * ⚠️ AUCUNE CHARGE. Le tarif prosumer NE S'APPLIQUE PAS à une installation
+     * posée aujourd'hui — corrigé le 2026-09-04, et c'est la correction la plus
+     * lourde de l'histoire de ce fichier.
+     * ═════════════════════════════════════════════════════════════════════
+     *
+     * Ce que dit la CWaPE (« Note explicative – tarif prosumer », mise à jour du
+     * 23/06/2025), en trois points qui s'enchaînent :
+     *
+     *  §2   Le tarif prosumer est facturé « lorsque les coûts de réseau qui leur
+     *       sont facturés sont établis sur la base de leurs prélèvements annuels
+     *       NETS ». C'est une contrepartie du compteur qui tourne à l'envers :
+     *       le réseau facture moins qu'il ne sert, le forfait rétablit l'équilibre.
+     *
+     *  §4.4 « À partir du 1er janvier 2024, un prosumer qui ne bénéficie pas du
+     *       principe de compensation verra l'ensemble de sa facture établi sur la
+     *       base de ses prélèvements BRUTS, sans application du principe du
+     *       maximum à facturer. » Et ces prosumers sont « ceux dont l'installation
+     *       est mise en service à partir du 1er janvier 2024 ».
+     *
+     *  §7   Depuis le 01/01/2024, toute nouvelle installation ≤ 10 kVA est
+     *       systématiquement équipée d'un compteur communicant.
+     *
+     * Facturé sur ses prélèvements bruts, le visiteur ne bénéficie d'aucune
+     * compensation : il n'y a donc RIEN à compenser, et le forfait n'a plus
+     * d'objet. Il paie déjà les coûts de réseau dans le prix de chaque kWh qu'il
+     * continue d'acheter — c'est exactement ce que modélise `direct`, qui ne
+     * compte que les kWh autoconsommés au prix de détail complet.
+     *
+     * ⚠️ CE QUE FAISAIT LE MODÈLE, ET POURQUOI C'ÉTAIT INCOHÉRENT. Il cumulait
+     * la logique BRUTE côté économies (seuls les kWh autoconsommés font gagner)
+     * et le forfait de la logique NETTE côté charges. Les deux ne vont jamais
+     * ensemble : soit le compteur compense et le forfait se justifie, soit il ne
+     * compense pas et le forfait n'existe pas. `etat.md` soupçonnait ce double
+     * compte depuis le 2 septembre ; la note de la CWaPE le confirme.
+     *
+     * Effet : 87 €/kWc/an disparaissent, soit 522 € par an sur le cas médian de
+     * 6 kWc — c'est ce seul poste qui rendait « toute la Wallonie non rentable »
+     * et faisait du site un outlier face à un marché qui annonce 6 à 13 ans.
+     *
+     * ⚠️ `PROSUMER_RATE` N'EST PAS SUPPRIMÉ pour autant : le forfait existe
+     * toujours, pour les installations d'AVANT 2024 et pour celles qui n'ont pas
+     * de compteur double flux. C'est le sujet de la page
+     * `/aides-primes/wallonie/prosumer`, qui le calcule pour elles.
+     */
+    annualCharge: () => 0,
   },
   bruxelles: {
     label: 'Bruxelles',

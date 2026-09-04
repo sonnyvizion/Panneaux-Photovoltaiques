@@ -8,7 +8,6 @@ import type {
 } from '../content';
 import type { PageSeo } from '../seo';
 import { PROSUMER_DEFAULT, PROSUMER_RATE, yearlyCost } from '../../scripts/calculators/prosumer';
-import { SELF_CONSUMPTION_RATE } from '../../scripts/savings';
 import { formatEuro } from '../../scripts/format';
 
 /**
@@ -46,11 +45,6 @@ import { formatEuro } from '../../scripts/format';
  *     CHARGE doit dire où lire ce qu'elle change sur la rentabilité.
  */
 
-/* Le taux d'autoconsommation vient de `savings.ts` : la page « Aides Wallonie »
-   affiche le même, une seule source le porte. */
-const percent = (ratio: number) =>
-  new Intl.NumberFormat('fr-BE', { maximumFractionDigits: 2 }).format(ratio * 100) + ' %';
-
 /**
  * Ce que Google lit en tête de page — contraintes vérifiées au build
  * (`data/seo.ts`).
@@ -59,19 +53,30 @@ const percent = (ratio: number) =>
  * le même chiffre que le module et que la réponse-clé, et une révision du
  * coefficient CWaPE le corrigera aux trois endroits à la fois.
  */
+/**
+ * ⚠️ PAGE REFONDUE LE 2026-09-04, sur la note explicative de la CWaPE
+ * (mise à jour du 23/06/2025). Elle répondait « combien ça coûte » à un lecteur
+ * dont l'installation, si elle est neuve, ne le paiera jamais.
+ *
+ * La CWaPE, §2 : le tarif prosumer est facturé « lorsque les coûts de réseau
+ * sont établis sur la base des prélèvements annuels NETS ». §4.4 : depuis le
+ * 01/01/2024, un prosumer sans compensation est facturé sur ses prélèvements
+ * BRUTS. §7 : depuis la même date, toute nouvelle installation ≤ 10 kVA reçoit
+ * un compteur communicant.
+ *
+ * La page garde donc son mot-clé, qui est très demandé, mais répond à la
+ * question que le lecteur se pose vraiment : « est-ce que je vais le payer ? »
+ * Le calculateur reste : il sert aux installations d'avant 2024, qui le paient.
+ */
 export const SEO: PageSeo = {
-  title: 'Tarif prosumer Wallonie 2026 : calcul et montant | Belgreen',
-  description: `Environ ${PROSUMER_RATE} €/kWc par an, soit ${formatEuro(
-    Math.round(yearlyCost(PROSUMER_DEFAULT)),
-  )} pour ${PROSUMER_DEFAULT} kWc. Calculez ce que le tarif prosumer coûte vraiment selon votre puissance installée.`,
+  title: 'Tarif prosumer Wallonie : qui le paie encore ? | Belgreen',
+  description: `Une installation posée aujourd’hui ne paie pas le tarif prosumer : elle est facturée sur ses prélèvements bruts. Ce qui reste dû, et par qui, en 2026.`,
 };
 
 export const HERO = {
   badge: 'Aides & Primes',
-  title: 'Le tarif prosumer en Wallonie : combien ça coûte réellement ?',
-  answer: `Le tarif prosumer est une redevance annuelle d'environ ${PROSUMER_RATE} €/kWc (~${formatEuro(
-    Math.round(yearlyCost(PROSUMER_DEFAULT)),
-  )}/an pour une installation de ${PROSUMER_DEFAULT} kWc chez ORES), entièrement à charge du propriétaire depuis 2024.`,
+  title: 'Le tarif prosumer en Wallonie : qui le paie encore ?',
+  answer: `Si votre installation est mise en service depuis le 1ᵉʳ janvier 2024, vous ne payez pas le tarif prosumer : votre facture est établie sur l’électricité réellement prélevée sur le réseau, et il n’y a donc rien à compenser. Le forfait, d’environ ${PROSUMER_RATE} €/kWc par an, reste dû par les installations antérieures, qui bénéficient encore de la compensation jusqu’en 2030.`,
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     'Vue aérienne d’un quartier résidentiel wallon dont plusieurs toitures portent des panneaux solaires',
@@ -114,12 +119,17 @@ export const FIGURES: Figure[] = [
     tone: 'lime',
   },
   {
-    label: 'Autoconsommation retenue',
-    value: percent(SELF_CONSUMPTION_RATE),
-    note: 'moyenne appliquée au calcul',
+    label: 'Concernées',
+    value: 'Avant 2024',
+    note: 'les installations mises en service depuis ne le paient pas',
     tone: 'grey',
   },
-  { label: 'Facturation', value: 'Annuelle', note: 'par ORES ou RESA', tone: 'ink' },
+  {
+    label: 'Compensation',
+    value: "Jusqu'en 2030",
+    note: 'terme du compteur qui tourne à l’envers pour les installations d’avant 2024',
+    tone: 'ink',
+  },
 ];
 
 export const FACTS: Fact[] = [
@@ -128,8 +138,8 @@ export const FACTS: Fact[] = [
     text: "La plus petite valeur entre la puissance des panneaux et celle de l'onduleur.",
   },
   {
-    title: 'À votre charge',
-    text: 'Entièrement, depuis 2024 : le tarif n’est plus compensé par la Région.',
+    title: 'Ce qu’il compense, et pourquoi il disparaît',
+    text: 'Il compense les coûts de réseau qu’un compteur qui tourne à l’envers ne facturait pas. Sans compensation, le réseau facture ce que vous prélevez vraiment : il n’y a plus rien à rattraper.',
   },
 ];
 
@@ -177,18 +187,18 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Le tarif prosumer, est-ce la « taxe sur les panneaux solaires » ?',
     answer:
-      "C'est le nom que lui donne l'usage, et il n'est pas tout à fait faux : c'est une redevance annuelle due dès la mise en service, que vous injectiez beaucoup ou peu. Elle ne paie pas l'électricité mais l'usage du réseau, dont votre installation se sert comme d'un tampon quand elle produit plus que vous ne consommez.",
+      "C'est le nom que lui donne l'usage, et il induit en erreur deux fois. Ce n'est pas une taxe mais une facturation de l'usage du réseau ; et depuis 2024 elle ne frappe plus les nouvelles installations, qui paient simplement le réseau sur ce qu'elles y prélèvent. Le mot reste pourtant dans toutes les conversations, et beaucoup de propriétaires renoncent à des panneaux à cause d'une redevance qu'ils ne paieraient pas.",
   },
   {
     question: 'Comment réduire, voire éviter, le tarif prosumer ?',
     answer:
-      "Il ne s'évite pas, il se réduit. Deux leviers : consommer votre production au moment où elle arrive (lave-linge et lave-vaisselle en journée, chauffe-eau ou voiture pilotés sur le surplus), ce qui abaisse la part de réseau que vous payez sans rien changer au forfait ; et vérifier si le tarif proportionnel est plus avantageux pour votre profil.",
+      "Si votre installation date d'avant 2024, deux leviers : demander un compteur double flux, qui vous fait passer à la facturation sur prélèvements réels, en sachant qu'un plafond garantit que vous ne paierez jamais plus qu'au forfait ; et consommer votre production au moment où elle arrive. Si votre installation est plus récente, la question ne se pose pas : vous ne le payez pas.",
     open: true,
   },
   {
-    question: 'Forfait ou tarif proportionnel : lequel choisir ?',
+    question: 'Forfait ou facturation sur les prélèvements réels ?',
     answer:
-      "Le forfait, dit capacitaire, se calcule sur la puissance installée, sans regarder ce que vous injectez réellement. Le tarif proportionnel se calcule sur les kilowattheures effectivement prélevés au réseau, et devient intéressant quand vous autoconsommez beaucoup, typiquement avec une batterie ou une pompe à chaleur. Il suppose un compteur communicant capable de mesurer les deux sens. Le choix se demande à votre gestionnaire de réseau et se compare sur une année complète.",
+      "Le forfait, dit capacitaire, s'applique à qui n'a pas de compteur mesurant séparément le prélèvement et l'injection : il se calcule sur la puissance installée. Avec un tel compteur, ce sont les tarifs de distribution ordinaires qui s'appliquent aux kilowattheures réellement prélevés, et le forfait disparaît. La CWaPE retient 40,26 % d'autoconsommation comme point d'équilibre : au-dessus, la facturation réelle vous coûte moins ; en dessous, un plafond vous ramène au montant du forfait. Vous ne pouvez donc pas y perdre.",
   },
   {
     question: 'Le montant change-t-il selon mon gestionnaire de réseau ?',
@@ -203,7 +213,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Le tarif prosumer s’applique-t-il dans toute la Belgique ?',
     answer:
-      "Non, il est propre à la Wallonie. Bruxelles compense autrement, par les certificats verts, et la Flandre par le tarif d'injection : ni l'une ni l'autre ne facture cette redevance de capacité.",
+      "Non, il est propre à la Wallonie, et il y est en voie d'extinction : il ne concerne plus que les installations d'avant 2024, dont la compensation s'arrête fin 2030. Bruxelles compense autrement, par les certificats verts, et la Flandre a supprimé son compteur inversé dès 2021.",
   },
 ];
 
