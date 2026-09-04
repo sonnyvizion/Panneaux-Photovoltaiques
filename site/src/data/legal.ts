@@ -53,8 +53,14 @@ export const ENTITY = {
   address: MISSING,
   /** Adresse de contact. Obligatoire, toujours attendue. */
   email: MISSING,
-  /** Assujettissement TVA : à confirmer, le numéro serait BE0669738181. */
-  vatNumber: MISSING,
+  /**
+   * Numéro de TVA, confirmé par le client le 2026-09-04.
+   *
+   * ⚠️ C'est le numéro d'entreprise préfixé de `BE` et écrit SANS points : le
+   * numéro BCE se présente en 0669.738.181, le numéro de TVA en BE0669738181.
+   * Les deux désignent la même entreprise et ne s'écrivent pas pareil.
+   */
+  vatNumber: 'BE0669738181',
 } as const;
 
 /**
