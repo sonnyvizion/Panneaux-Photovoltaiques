@@ -132,7 +132,21 @@ pilier par pilier dans la passe en cours. Grandeurs concernées :
 | MijnVerbouwLening | `redaction-flandre-aides-2026.md` : « détail non vérifié en profondeur » |
 | Volet fiscal entreprises | Page `hidden: true` dans `site.ts` — non publiée pour cette raison |
 
-### ⏳ Durée de vie de l'onduleur vs positionnement Enphase
+### ✅ Durée de vie de l'onduleur vs positionnement Enphase — **tranché**
+
+> **Décision client du 2026-09-03** : micro-onduleurs Enphase garantis **25 ans**.
+> Appliqué le 2026-09-04, non pas en remplaçant « 10 à 15 » par « 25 » partout —
+> un onduleur central dure bel et bien 10 à 15 ans — mais en **distinguant les
+> deux technologies** sur les quatre pages concernées (Longévité, Onduleur,
+> Garanties, Fonctionnement). La page Longévité porte désormais deux cartes au
+> lieu d'une. L'objection devient l'argument : avec des micro-onduleurs, la ligne
+> « remplacement à mi-vie » disparaît du budget.
+>
+> ⚠️ **Ne pas confondre avec la garantie produit du PANNEAU** (10 à 15 ans, page
+> Garanties), qui dépend du fabricant réellement posé et reste **attendue**. Un
+> garde-fou est écrit au-dessus de la ligne concernée.
+
+<details><summary>L'écart d'origine, pour mémoire</summary>
 
 `comprendre-longevite.ts` annonce un onduleur à **10–15 ans**, « le composant le
 plus souvent remplacé ». Or `comprendre-onduleur.ts:122` vend la certification
@@ -143,7 +157,9 @@ le client ne vend pas.
 
 > **Décision client** : distinguer explicitement onduleur central (10–15 ans) et
 > micro-onduleur Enphase (garanti 25 ans), ce qui transforme une objection en
-> argument commercial.
+> argument commercial. **C'est ce qui a été fait.**
+
+</details>
 
 ---
 
@@ -202,12 +218,37 @@ Même page : l'obligation est présentée comme uniforme (« nécessaire pour to
 installation »). Elle est acquise à Bruxelles pour tout producteur, mais en
 Wallonie le compteur ne devient obligatoire qu'au passage au régime proportionnel.
 
-### ⏳ `GRID_CO2_G_PER_KWH = 170` — source non datée
+### ✅ `GRID_CO2_G_PER_KWH = 170` — **source datée le 2026-09-04**
+
+Le facteur de référence belge est publié chaque année par l'**AIB** (Association
+of Issuing Bodies), qui calcule le mix résiduel européen — et non par Elia, que
+le code citait sans année parce que la donnée n'y était pas.
+
+| | |
+|---|---|
+| **Source** | AIB, mix résiduel belge, **année 2025** |
+| **Valeur** | **171,01 g CO₂/kWh** |
+| **Reprise par** | [ENGIE Belgique](https://business.engie.be/fr/faq/contrat/emissions-co2/) |
+
+⚠️ Deux facteurs coexistent et ne mesurent pas la même chose : le mix **résiduel**
+(171 g), qui retire la production renouvelable déjà vendue sous garantie
+d'origine, et le facteur en **cycle de vie** du mix constaté (~131 g en 2025).
+Le premier est le bon ici : il représente l'électricité que le visiteur cesse
+d'acheter au réseau, pas la moyenne théorique du pays.
+
+La constante reste à **170**. L'arrondi vers le bas est délibéré : il fait
+annoncer un peu moins de CO₂ évité que le chiffre officiel, seul sens dans lequel
+une approximation est défendable. À revérifier chaque année, l'AIB republiant en
+milieu d'année.
+
+<details><summary>Le constat d'origine, pour mémoire</summary>
 
 `scripts/co2.ts` porte encore « source : Elia, [année] », non renseignée, alors
 que `simulateur.md` impose de citer source et année. À dater d'autant plus que le
 mix belge bouge avec la sortie du nucléaire. **Constante du modèle : signalée,
 pas touchée.**
+
+</details>
 
 ### Manques de contenu qui coûtent un featured snippet
 

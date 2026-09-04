@@ -12,6 +12,7 @@ import Footer from '../components/Footer.astro';
 import heroImage from '../assets/hero/hero.webp';
 import logo from '../assets/brand/Belgreen-logo.webp';
 import { breadcrumbFor, isNoindex, normalizePath, resolveSeo } from '../data/seo';
+import { PHONE } from '../data/site';
 
 interface Props {
   /**
@@ -100,6 +101,12 @@ const organization = {
   name: 'Belgreen',
   url: site.href,
   logo: new URL(logo.src, site).href,
+  /* Le numéro réel est arrivé le 2026-09-03. Il reste sous `Organization` et
+     non `LocalBusiness` : ce dernier attend une adresse postale, encore
+     manquante, et un `LocalBusiness` sans `address` est justement le genre de
+     données structurées incomplètes que Google recoupe et retient contre le
+     site. Le jour où l'adresse arrive, les deux entrent ensemble. */
+  telephone: PHONE.href.replace('tel:', ''),
   areaServed: { '@type': 'Country', name: 'Belgique' },
 };
 

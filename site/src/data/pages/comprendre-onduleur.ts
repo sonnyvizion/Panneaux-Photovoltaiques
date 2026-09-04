@@ -21,7 +21,7 @@ import type { PageSeo } from '../seo';
 export const SEO: PageSeo = {
   title: 'Onduleur solaire : string ou micro-onduleur ? | Belgreen',
   description:
-    'L’onduleur rend utilisable le courant des panneaux. Rôle, durée de vie de 10 à 15 ans, et le seul cas où le micro-onduleur vaut son surcoût : l’ombrage.',
+    'L’onduleur rend utilisable le courant des panneaux. String ou micro-onduleur : durée de vie, garanties de 10 à 25 ans, et quand le surcoût se justifie.',
 };
 
 export const HERO = {
@@ -69,7 +69,7 @@ export const PHOTOS: PhotoCard[] = [
 ];
 
 export const FACTS: Fact[] = [
-  { title: "Le premier à remplacer", text: "10 à 15 ans, contre 25 à 30 pour les panneaux : un remplacement à mi-vie est à budgétiser dès le départ." },
+  { title: "Le premier à remplacer, sauf en micro", text: "Un onduleur central tient 10 à 15 ans contre 25 à 30 pour les panneaux : le remplacement à mi-vie se budgétise dès le départ. Les micro-onduleurs que nous posons sont garantis 25 ans, ce qui supprime cette ligne du calcul." },
   { title: "Où l’installer", text: "Dans un local ventilé et si possible frais, à distance raisonnable des panneaux : l’éloignement coûte en pertes et en câblage." },
 ];
 
@@ -95,12 +95,12 @@ export const TOPICS_COPY: SectionCopy = {
 export const TOPICS: TopicCard[] = [
   {
     title: "Onduleur string ou micro-onduleur, lequel choisir ?",
-    text: "L’onduleur string convient à la plupart des toitures sans ombrage significatif ; le micro-onduleur se justifie surtout en présence de sources d’ombrage partielles difficiles à éviter.",
+    text: "L’onduleur string convient à la plupart des toitures sans ombrage significatif. Le micro-onduleur s’impose dès qu’il y a de l’ombre portée ou deux pans d’orientations différentes, et il apporte autre chose que du rendement : une garantie de 25 ans, quand un onduleur central se remplace vers la quinzième année.",
     accent: true,
   },
   {
     title: "Combien de temps dure un onduleur ?",
-    text: "Généralement 10 à 15 ans, sensiblement moins que les panneaux eux-mêmes (25-30 ans) : un remplacement à mi-vie de l’installation est à anticiper dans le budget.",
+    text: "Cela dépend de sa technologie. Un onduleur central tient 10 à 15 ans, sensiblement moins que les panneaux (25 à 30 ans) : son remplacement à mi-vie s’anticipe dans le budget. Les micro-onduleurs que nous posons sont garantis 25 ans, et cette ligne disparaît du calcul.",
   },
   {
     title: "L’onduleur consomme-t-il de l’électricité ?",
@@ -127,7 +127,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Le remplacement de l’onduleur est-il coûteux ?",
     answer:
-      "C’est une dépense à prévoir sur la durée de vie de l’installation, à budgétiser dès le départ plutôt que de découvrir la surprise 10 à 15 ans plus tard.",
+      "Sur une installation à onduleur central, oui : c’est une dépense à budgétiser dès le départ plutôt que de la découvrir vers la quinzième année. Avec des micro-onduleurs garantis 25 ans, la question ne se pose pas sur la durée de vie de l’installation, et c’est un point à comparer entre deux devis dont les prix se tiennent.",
   },
   {
     question: "Un onduleur fait-il du bruit ?",

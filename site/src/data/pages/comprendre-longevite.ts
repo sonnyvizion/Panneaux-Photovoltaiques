@@ -19,14 +19,14 @@ import type { PageSeo } from '../seo';
 export const SEO: PageSeo = {
   title: 'Durée de vie des panneaux solaires : 25 à 30 ans | Belgreen',
   description:
-    'Un panneau produit 25 à 30 ans en perdant environ 0,5 % de rendement par an ; l’onduleur tient 10 à 15 ans. La durée de vie, composant par composant.',
+    'Un panneau produit 25 à 30 ans en perdant 0,5 % par an. L’onduleur string tient 10 à 15 ans, le micro-onduleur est garanti 25 ans.',
 };
 
 export const HERO = {
   badge: 'Comprendre',
   title: "Quelle est la durée de vie des panneaux solaires ?",
   answer:
-    "Un panneau solaire a une durée de vie de 25 à 30 ans, avec une dégradation progressive et lente de sa capacité de production, environ 0,5 % par an. L’onduleur, lui, dure généralement moins longtemps : 10 à 15 ans.",
+    "Un panneau solaire a une durée de vie de 25 à 30 ans, avec une dégradation progressive et lente de sa capacité de production, environ 0,5 % par an. L’onduleur, lui, dépend de sa technologie : un onduleur central tient 10 à 15 ans, là où les micro-onduleurs que nous posons sont garantis 25 ans, soit la durée de vie des panneaux eux-mêmes.",
   cta: { label: 'Estimer mon installation', href: '/simulateur' },
   imageAlt:
     "Vue aérienne, à la lumière du soir, d’une maison en briques dont les deux pans de toiture sont couverts de panneaux solaires",
@@ -44,7 +44,13 @@ export const ESSENTIALS_COPY: SectionCopy = {
 
 export const FIGURES: Figure[] = [
   { label: "Panneaux", value: "25-30 ans", note: "dégradation lente, environ 0,5 % par an", tone: 'lime' },
-  { label: "Onduleur", value: "10-15 ans", note: "le composant le plus souvent remplacé en cours de route", tone: 'grey' },
+  /* ⚠️ DEUX TECHNOLOGIES, DEUX DURÉES, et la carte disait la première comme si
+     elle valait pour les deux. Le client est installateur certifié Enphase,
+     dont les micro-onduleurs sont garantis 25 ans : la page dont le sujet EST
+     la durée de vie décrivait donc un produit qu'il ne pose pas. Confirmé par
+     le client le 2026-09-03. */
+  { label: "Onduleur central", value: "10-15 ans", note: "le composant le plus souvent remplacé en cours de route", tone: 'grey' },
+  { label: "Micro-onduleur", value: "25 ans", note: "garanti aussi longtemps que les panneaux : aucun remplacement à mi-vie", tone: 'lime' },
   { label: "Fixation", value: "25-30 ans", note: "conçue pour durer autant que les panneaux", tone: 'ink' },
 ];
 

@@ -168,7 +168,7 @@ export const FAQ: FaqItem[] = [
   {
     question: 'Un panneau solaire peut-il tomber en panne ?',
     answer:
-      'Rarement le panneau lui-même (pas de pièce mobile), plus souvent l’onduleur, qui a une durée de vie plus courte, 10 à 15 ans en général.',
+      'Rarement le panneau lui-même : il n’a aucune pièce mobile. C’est plus souvent l’onduleur, dont la durée de vie dépend de la technologie : 10 à 15 ans pour un onduleur central, 25 ans de garantie pour les micro-onduleurs que nous posons.',
     open: true,
   },
   {

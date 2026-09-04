@@ -72,6 +72,11 @@ export const FIGURES: Figure[] = [];
 export const TABLE: EssentialsTable = {
   head: ['Type de garantie', 'Couvre quoi', 'Durée typique'],
   rows: [
+    /* ⚠️ CETTE LIGNE PARLE DU PANNEAU, pas de l'onduleur — ne pas la « corriger »
+       à 25 ans en passant. La garantie produit du panneau dépend du fabricant
+       réellement posé, information encore attendue du client (voir
+       `docs/verification-factuelle.md`). La garantie de l'onduleur, elle, a été
+       distinguée le 2026-09-04 : central 5 à 12 ans, micro-onduleur 25 ans. */
     ['Garantie produit', 'Défauts de fabrication du panneau', '10 à 15 ans'],
     ['Garantie de performance', 'Rendement minimum garanti dans le temps', 'Jusqu’à 25 ans'],
     ['Garantie légale', 'S’applique à tout achat en Belgique', 'Selon le droit commun'],
@@ -132,7 +137,7 @@ export const FAQ: FaqItem[] = [
   {
     question: "Et l’onduleur ?",
     answer:
-      "Généralement une garantie plus courte, cohérente avec sa durée de vie de 10 à 15 ans.",
+      "Cela dépend de la technologie, et l'écart est important. Un onduleur central est généralement garanti de 5 à 12 ans, cohérent avec sa durée de vie de 10 à 15 ans : son remplacement se budgétise. Les micro-onduleurs que nous posons, eux, sont garantis 25 ans, soit la durée de vie des panneaux.",
   },
   {
     question: "La garantie est-elle transférable en cas de revente ?",

@@ -57,10 +57,16 @@ export interface NavPillar extends NavLink {
   ramp?: NavLink;
 }
 
-/** ⚠️ Placeholder — numéro réel à fournir par le client (CLAUDE.md « À compléter »). */
+/**
+ * Le numéro réel, fourni par le client le 2026-09-03.
+ *
+ * ⚠️ `label` en format national (c'est ainsi qu'un Belge le lit et le dicte),
+ * `href` en E.164 (c'est le seul format qu'un téléphone compose sans se
+ * tromper depuis l'étranger, et celui qu'attend `schema.org`).
+ */
 export const PHONE = {
-  label: '+32 2 XXX XX XX',
-  href: 'tel:+322XXXXXXX',
+  label: '02 219 45 37',
+  href: 'tel:+3222194537',
 } as const;
 
 /**

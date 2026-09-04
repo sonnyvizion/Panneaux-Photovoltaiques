@@ -23,9 +23,23 @@ import { POWER_DEFAULT, POWER_MAX, POWER_MIN, estimate } from './powerEstimate';
  * deux chiffres ne pourront plus diverger.
  * ═══════════════════════════════════════════════════════════════════════════
  *
- * ⚠️ CONSTANTE À VALIDER (CLAUDE.md § « À compléter »). `simulateur.md` impose
- * de citer la source et l'année dans le bloc « Hypothèses de calcul » :
- * « Facteur d'émission CO₂ du réseau belge : ~170 g/kWh (source : Elia, [année]) ».
+ * ✅ SOURCE DATÉE, obtenue le 2026-09-04 à la demande du client. Le facteur de
+ * référence belge est publié chaque année par l'**AIB** (Association of Issuing
+ * Bodies), qui calcule le mix résiduel européen — et non par Elia, que le
+ * commentaire précédent citait sans année parce que la donnée n'y était pas.
+ *
+ *   AIB, mix résiduel belge, année 2025 : **171,01 g CO₂/kWh**
+ *   Repris tel quel par ENGIE Belgique :
+ *   https://business.engie.be/fr/faq/contrat/emissions-co2/
+ *
+ * ⚠️ Deux facteurs coexistent et ne mesurent pas la même chose : le mix
+ * RÉSIDUEL de l'AIB (171 g), qui retire la production renouvelable déjà vendue
+ * sous garantie d'origine, et le facteur en analyse de CYCLE DE VIE du mix
+ * belge constaté (~131 g en 2025). Le premier est le bon ici : il représente
+ * l'électricité que le visiteur cesse d'acheter au réseau, pas la moyenne
+ * théorique du pays.
+ *
+ * ⚠️ À revérifier chaque année, l'AIB republiant en milieu d'année.
  *
  * ⚠️ Ne JAMAIS surgonfler ce chiffre. `simulateur.md` en fait une consigne
  * explicite : un visiteur qui se fait corriger par un ami informé perd confiance
@@ -34,9 +48,11 @@ import { POWER_DEFAULT, POWER_MAX, POWER_MIN, estimate } from './powerEstimate';
  */
 
 /**
- * Facteur d'émission moyen du réseau électrique belge, en grammes de CO₂ par
- * kWh. ⚠️ À réactualiser sur les données publiques d'Elia, mises à jour
- * annuellement.
+ * Facteur d'émission du réseau électrique belge, en grammes de CO₂ par kWh.
+ *
+ * 170 et non 171,01 : l'arrondi vers le BAS est délibéré. Il fait annoncer au
+ * site un peu moins de CO₂ évité que le chiffre officiel, ce qui est le seul
+ * sens dans lequel une approximation est défendable ici.
  */
 export const GRID_CO2_G_PER_KWH = 170;
 
