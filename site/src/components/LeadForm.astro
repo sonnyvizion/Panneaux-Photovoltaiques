@@ -53,6 +53,28 @@ const asksStatut = variant !== 'rapport';
     </div>
   )}
 
+  {/*
+    ⚠️ CHAMP PIÈGE — il ne doit JAMAIS être rempli par un humain.
+
+    Invisible, hors du parcours de tabulation, ignoré des lecteurs d'écran, et
+    `autocomplete="off"` pour que le navigateur ne le remplisse pas tout seul.
+    Un robot qui remplit tout le formulaire le remplit aussi : sa demande est
+    alors refusée par le serveur (`validateLead`).
+
+    C'est la défense anti-spam la moins chère, et la seule qui ne coûte rien au
+    visiteur : ni script tiers à charger, ni image à déchiffrer, ni consentement
+    à demander. Si le spam passe malgré tout, Cloudflare Turnstile s'ajoutera
+    par-dessus, sans rien retirer d'ici.
+
+    ⚠️ `hidden` NE SUFFIRAIT PAS : certains robots ignorent les champs masqués,
+    et surtout un `display: none` est le premier signal qu'ils cherchent. On le
+    sort du cadre, il reste dans le flux du formulaire.
+  */}
+  <div class="lead__trap" aria-hidden="true">
+    <label for="lead-site">Ne remplissez pas ce champ</label>
+    <input id="lead-site" name="site" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
   <div class="lead__field">
     <label class="lead__label" for="lead-email">Adresse e-mail</label>
     <input class="lead__input" id="lead-email" name="email" type="email" autocomplete="email" required />
@@ -196,6 +218,16 @@ const asksStatut = variant !== 'rapport';
 </script>
 
 <style>
+  /* Voir la note du champ piège dans le balisage : hors cadre, jamais masqué. */
+  .lead__trap {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   .lead {
     display: flex;
     flex-direction: column;

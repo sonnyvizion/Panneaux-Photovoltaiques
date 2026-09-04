@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { buildPayload, submitLead } from './leadSubmit';
 
 /* Les mêmes paires qu'un `FormData` produirait, sans avoir besoin d'un DOM. */
@@ -56,11 +56,39 @@ describe('la demande envoyée au serveur', () => {
 });
 
 describe('l’envoi ne ment jamais sur son issue', () => {
-  /* ⚠️ Aucun endpoint n'est configuré tant que l'hébergeur n'est pas choisi.
-     Répondre « sent » ici afficherait un remerciement sans qu'aucun e-mail ne
-     parte — le prospect serait perdu, et personne ne s'en apercevrait. */
-  it('dit « non configuré » plutôt que « envoyé » quand l’endpoint manque', async () => {
-    const payload = buildPayload(formWith({}), 'rapport', '', 'https://x.be', '/rapport');
-    await expect(submitLead(payload)).resolves.toBe('unconfigured');
+  const payload = () => buildPayload(formWith({}), 'rapport', '', 'https://x.be', '/rapport');
+
+  /**
+   * ⚠️ 503 SIGNIFIE « PAS ENCORE ARMÉ », pas « en panne ». La fonction serveur
+   * répond ainsi tant que la clé Brevo n'est pas posée. Traduire cela en
+   * « envoyé » afficherait un remerciement sans qu'aucun courriel ne parte : le
+   * prospect serait perdu, et personne ne s'en apercevrait avant des semaines.
+   * Le traduire en « erreur » inviterait à réessayer en vain.
+   */
+  it('dit « non configuré » quand le serveur n’est pas encore armé', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('{}', { status: 503 }));
+
+    await expect(submitLead(payload())).resolves.toBe('unconfigured');
+    fetchSpy.mockRestore();
+  });
+
+  it('dit « envoyé » quand le serveur a bien pris la demande', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValue(new Response('{"ok":true}', { status: 200 }));
+
+    await expect(submitLead(payload())).resolves.toBe('sent');
+    fetchSpy.mockRestore();
+  });
+
+  it('dit « erreur » sur un refus, et ne lève jamais', async () => {
+    const fetchSpy = vi
+      .spyOn(globalThis, 'fetch')
+      .mockRejectedValue(new Error('réseau coupé'));
+
+    await expect(submitLead(payload())).resolves.toBe('error');
+    fetchSpy.mockRestore();
   });
 });

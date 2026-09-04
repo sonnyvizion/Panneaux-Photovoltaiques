@@ -132,7 +132,7 @@ sera branché au build le jour où le compteur sera à zéro.
 | `PUBLIC_SITE_URL` | Domaine des canoniques, de l'Open Graph et du `sitemap.xml`. Défaut : la démo |
 | `PUBLIC_INDEXABLE` | `true` autorise l'indexation. Défaut : **non**, on bloque |
 | `PUBLIC_PLAUSIBLE_DOMAIN` | Active la mesure d'audience. **Absente = aucun script tiers servi** |
-| `PUBLIC_LEAD_ENDPOINT` | Point d'envoi des formulaires. Vide = le formulaire le dit au visiteur |
+| `PUBLIC_LEAD_ENDPOINT` | Point d'envoi des formulaires. Défaut : `/api/lead`, la fonction du dépôt |
 
 ⚠️ Les trois premières ont le même parti pris : **le défaut est le plus
 prudent**. Une démo qui s'indexe, ou qui envoie ses visites dans les chiffres de
@@ -146,3 +146,28 @@ PUBLIC_INDEXABLE=true \
 PUBLIC_PLAUSIBLE_DOMAIN=panneaux-photovoltaiques.be \
 npm run deploy
 ```
+
+## Armer l'envoi des demandes
+
+Le point d'envoi (`functions/api/lead.ts`) est **déjà déployé**. Il répond
+`503 { configured: false }` tant que ces trois secrets ne sont pas posés dans le
+projet Cloudflare Pages, et le site affiche alors « l'envoi n'est pas actif » —
+jamais un faux remerciement.
+
+| Secret | Valeur |
+|---|---|
+| `BREVO_API_KEY` | Clé d'API Brevo (Paramètres → Clés d'API SMTP & API) |
+| `LEAD_TO` | Adresse de l'équipe, qui reçoit les demandes |
+| `LEAD_FROM_EMAIL` | Expéditeur, sur un **domaine vérifié chez Brevo** |
+| `LEAD_FROM_NAME` | Facultatif, « Belgreen » par défaut |
+
+```sh
+npx wrangler pages secret put BREVO_API_KEY --project-name=belgreen-demo
+```
+
+⚠️ **Rien à redéployer** une fois les secrets posés : la fonction les lit à
+chaque requête. L'envoi s'arme tout seul.
+
+⚠️ **L'expéditeur doit être un domaine vérifié chez Brevo.** Une adresse non
+vérifiée fait accepter l'appel d'API puis jeter le message en silence — la panne
+la plus longue à diagnostiquer, parce que tout paraît fonctionner.

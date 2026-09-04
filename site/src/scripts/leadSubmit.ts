@@ -19,25 +19,33 @@
  * ouvre, attend `data-report-ready`, imprime, joint, envoie.
  */
 
-/** L'adresse du point d'envoi. Vide tant que l'hébergeur n'est pas choisi. */
-export const LEAD_ENDPOINT = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
+/**
+ * L'adresse du point d'envoi.
+ *
+ * ⚠️ `/api/lead` PAR DÉFAUT depuis le 2026-09-04 : c'est la fonction Cloudflare
+ * Pages du dépôt (`functions/api/lead.ts`), servie par le même domaine que les
+ * pages. Elle existe donc toujours, et il n'y a plus rien à configurer côté
+ * navigateur — la variable ne sert qu'à la détourner (recette, autre
+ * hébergeur).
+ *
+ * ⚠️ Ce défaut est SANS RISQUE parce que la fonction répond `503
+ * { configured: false }` tant que la clé Brevo n'est pas posée, ce que
+ * `submitLead` traduit par « pas encore actif ». Le visiteur lit la même phrase
+ * honnête qu'avant tout branchement, et le jour où la clé arrive, l'envoi
+ * fonctionne sans qu'une ligne soit redéployée.
+ */
+export const LEAD_ENDPOINT = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '/api/lead';
 
 import { track } from './analytics';
 
 export type LeadState = 'idle' | 'sending' | 'sent' | 'error' | 'unconfigured';
 
-export interface LeadPayload {
-  /** `devis` · `etude` · `rapport` — ce que le visiteur demande. */
-  variant: string;
-  /** Les champs saisis. */
-  fields: Record<string, string>;
-  /** Les réponses du simulateur, telles qu'elles voyagent dans les URLs. */
-  answers: string;
-  /** L'adresse de la page à imprimer pour produire le PDF. */
-  document: string;
-  /** La page d'où part la demande — utile pour l'attribution. */
-  source: string;
-}
+/* ⚠️ LE CONTRAT VIT DANS `leadMail.ts`, et il n'est pas recopié ici : c'est le
+   MÊME objet que la fonction serveur consomme. Deux définitions auraient divergé
+   au premier champ ajouté, et la divergence ne se serait vue qu'en production,
+   sur une demande perdue. */
+import type { LeadPayload } from './leadMail';
+export type { LeadPayload };
 
 /**
  * ⚠️ Prend des PAIRES, pas un `<form>`. Un `FormData` en est déjà un itérable,
@@ -84,6 +92,14 @@ export async function submitLead(payload: LeadPayload): Promise<LeadState> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    /**
+     * ⚠️ 503 N'EST PAS UNE PANNE. La fonction serveur répond ainsi tant que la
+     * clé Brevo n'est pas posée : le point d'envoi existe, il n'est pas encore
+     * armé. Le visiteur lit alors la même phrase honnête qu'avant tout
+     * branchement, au lieu d'un échec qui l'inviterait à réessayer en vain.
+     */
+    if (response.status === 503) return 'unconfigured';
+
     if (response.ok) {
       /* ⚠️ L'ÉVÉNEMENT PART À LA RÉUSSITE, PAS À LA TENTATIVE. Compter les
          soumissions qui échouent gonflerait le taux de conversion exactement
