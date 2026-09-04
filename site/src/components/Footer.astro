@@ -1,6 +1,14 @@
 ---
 import Logo from './Logo.astro';
-import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES, publishedLinks } from '../data/site';
+import { PILLARS, UTILITY_LINKS, LEGAL_LINKS, LOCALES, isListed, publishedLinks } from '../data/site';
+
+/* ⚠️ Les trois listes transverses passent par `isListed`, comme les piliers.
+   Elles ne le faisaient pas : /blog, /faq et /nl partaient en 404 depuis chaque
+   page du site. La règle du projet est « absent = non publié » — encore
+   fallait-il l'appliquer ici. */
+const utilities = UTILITY_LINKS.filter(isListed);
+const legals = LEGAL_LINKS.filter(isListed);
+const locales = LOCALES.filter(isListed);
 
 const year = new Date().getFullYear();
 
@@ -49,7 +57,7 @@ const columns = PILLARS.map((pillar) => ({
 
     <nav class="footer__utility" aria-label="Liens transverses">
       <ul class="footer__utility-list">
-        {UTILITY_LINKS.map((link) => (
+        {utilities.map((link) => (
           <li><a class="footer__link" href={link.href}>{link.label}</a></li>
         ))}
       </ul>
@@ -58,15 +66,18 @@ const columns = PILLARS.map((pillar) => ({
     <div class="footer__legal">
       <p class="footer__copyright">
         © {year} Belgreen
-        {LEGAL_LINKS.map((link) => (
+        {legals.map((link) => (
           <>
             <span aria-hidden="true"> · </span>
             <a class="footer__link" href={link.href}>{link.label}</a>
           </>
         ))}
       </p>
+      {/* Un sélecteur d'une seule langue ne sélectionne rien : il disparaît
+          jusqu'à ce que le néerlandais existe. */}
+      {locales.length > 1 && (
       <ul class="footer__locales">
-        {LOCALES.map((locale, index) => (
+        {locales.map((locale, index) => (
           <li>
             <a
               class={`footer__link ${index === 0 ? 'is-active' : ''}`}
@@ -78,6 +89,7 @@ const columns = PILLARS.map((pillar) => ({
           </li>
         ))}
       </ul>
+      )}
     </div>
   </div>
 </footer>

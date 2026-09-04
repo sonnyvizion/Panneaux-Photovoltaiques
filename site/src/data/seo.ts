@@ -67,6 +67,21 @@ export const MANUAL_SEO: Readonly<Record<string, PageSeo>> = {
     description:
       'Parlez directement à l’équipe qui installera vos panneaux : pas d’intermédiaire, pas de revente de vos données à des installateurs partenaires.',
   },
+  '/mentions-legales': {
+    title: 'Mentions légales | Belgreen',
+    description:
+      'Éditeur du site, numéro d’entreprise, hébergement, propriété intellectuelle et droit applicable : les informations légales imposées par le droit belge.',
+  },
+  '/confidentialite': {
+    title: 'Politique de confidentialité | Belgreen',
+    description:
+      'Ce que nous collectons, pourquoi, combien de temps nous le gardons. Vos coordonnées ne sont ni vendues ni transmises à des installateurs partenaires.',
+  },
+  '/cookies': {
+    title: 'Cookies | Belgreen',
+    description:
+      'Ce site ne dépose aucun cookie. Seule votre région est retenue par votre navigateur, sur votre appareil, pour ne pas vous la redemander à chaque page.',
+  },
   '/realisations': {
     title: 'Nos chantiers photovoltaïques | Belgreen',
     description:
@@ -250,6 +265,41 @@ const DESCRIPTION_MAX = 160;
  * l'est aussi, et en dessous de 110 on laisse à Google de la place qu'il
  * remplira avec un morceau de page choisi par lui.
  */
+/**
+ * Tout lien que la navigation RENDT doit mener quelque part.
+ *
+ * ⚠️ Écrit le 2026-09-04, après avoir trouvé **six liens morts servis sur
+ * chacune des 62 pages** : les trois pages légales (qui n'existaient pas
+ * encore), `/blog`, `/faq`, et `/nl` — ce dernier trois fois par page, en-tête,
+ * pied et panneau mobile. Le drapeau `published` de `site.ts` existait pour
+ * exactement ça, mais les trois listes transverses (`UTILITY_LINKS`,
+ * `LEGAL_LINKS`, `LOCALES`) ne passaient pas par le filtre au rendu.
+ *
+ * Le contrôle est fait ici, sur les DONNÉES, plutôt qu'en rampant sur le HTML
+ * construit : il échoue au build, avant le déploiement, et il nomme le lien
+ * fautif. Un 404 servi sur toutes les pages d'un site qu'on s'apprête à faire
+ * indexer est le genre d'erreur qui se paie en positions.
+ *
+ * ⚠️ Ce qu'il ne peut PAS voir : un composant qui rendrait une liste sans la
+ * filtrer. C'est ce qui s'était produit. La contre-mesure est ailleurs — les
+ * trois listes passent désormais par `isListed`, comme les piliers.
+ */
+export function assertNavTargets(links: { label: string; href: string; published?: boolean }[]): void {
+  const known = new Set(allSeoPaths());
+  const problems = links
+    .filter((link) => link.published && link.href.startsWith('/'))
+    .filter((link) => !known.has(normalizePath(link.href)))
+    .map((link) => `« ${link.label} » → ${link.href} n'est pas une page connue.`);
+
+  if (problems.length > 0) {
+    throw new Error(
+      `Navigation : ${problems.length} lien(s) publié(s) sans page.\n  ` +
+        problems.join('\n  ') +
+        `\n\nSoit la page manque, soit le lien ne doit pas porter \`published: true\`.`,
+    );
+  }
+}
+
 export function assertSeoCoverage(): void {
   const problems: string[] = [];
 

@@ -85,8 +85,18 @@ export const REGIONS: RegionOption[] = [
   { label: 'Flandre', value: 'flandre' },
 ];
 
+/**
+ * ⚠️ `published` S'APPLIQUE ICI AUSSI. Le néerlandais est au périmètre v1
+ * (`CLAUDE.md`) mais rien n'existe encore : `/nl` renvoyait un 404 depuis
+ * chaque page du site, trois fois par page — en-tête et pied. La règle
+ * « absent = non publié » vaut pour cette liste comme pour les piliers ; il
+ * manquait seulement de la faire passer par le filtre au rendu.
+ *
+ * Le sélecteur entier disparaît tant qu'il ne reste qu'une langue : proposer un
+ * choix qui n'en est pas un est pire que ne rien proposer.
+ */
 export const LOCALES: NavLink[] = [
-  { label: 'FR', href: '/' },
+  { label: 'FR', href: '/', published: true },
   { label: 'NL', href: '/nl' },
 ];
 
@@ -324,22 +334,28 @@ export function publishedGroups(pillar: NavPillar): NavGroup[] {
  * existe et se visite, elle ne se LISTE pas. C'est la route attrape-tout, qui
  * filtre sur `published` seul, qui décide de ce qui doit exister.
  */
-function isListed(link: NavLink): boolean {
+export function isListed(link: NavLink): boolean {
   return Boolean(link.published) && !link.hidden;
 }
 
 /** Liens transverses de la rangée basse du footer. */
+/* ⚠️ Blog et FAQ n'ont PAS de page. Ils restent déclarés, sans `published`, pour
+   que leur place dans la navigation soit décidée d'avance le jour où ils
+   existent — mais ils ne se rendent plus. */
 export const UTILITY_LINKS: NavLink[] = [
-  { label: 'Simulateur', href: '/simulateur' },
-  { label: 'À propos', href: '/a-propos' },
-  { label: 'Avis & réalisations', href: '/realisations' },
+  { label: 'Simulateur', href: '/simulateur', published: true },
+  { label: 'À propos', href: '/a-propos', published: true },
+  { label: 'Avis & réalisations', href: '/realisations', published: true },
   { label: 'Blog', href: '/blog' },
   { label: 'FAQ', href: '/faq' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Contact', href: '/contact', published: true },
 ];
 
+/* Les trois pages existent depuis le 2026-09-04. Elles restent en `noindex`
+   jusqu'à la signature du client, ce qui est un réglage distinct : elles se
+   lient, elles ne s'indexent pas. */
 export const LEGAL_LINKS: NavLink[] = [
-  { label: 'Mentions légales', href: '/mentions-legales' },
-  { label: 'Confidentialité', href: '/confidentialite' },
-  { label: 'Cookies', href: '/cookies' },
+  { label: 'Mentions légales', href: '/mentions-legales', published: true },
+  { label: 'Confidentialité', href: '/confidentialite', published: true },
+  { label: 'Cookies', href: '/cookies', published: true },
 ];

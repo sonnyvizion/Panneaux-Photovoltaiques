@@ -1,0 +1,210 @@
+---
+import Section from './Section.astro';
+import type { LegalPage } from '../data/legal';
+
+/**
+ * Le gabarit des trois pages légales.
+ *
+ * ⚠️ UNE COLONNE, PAS LE GABARIT DE CONTENU. Les pages de contenu du site sont
+ * bâties pour être scannées : réponse visible, module, accordéons, FAQ balisée.
+ * Une page légale se lit dans l'ordre, ou se cite. Elle n'a donc ni module ni
+ * repli : tout est ouvert, tout est copiable, et les titres portent une ancre
+ * pour qu'on puisse renvoyer vers un article précis.
+ *
+ * ⚠️ CE QUI MANQUE S'AFFICHE. Une valeur `null` devient un marqueur visible,
+ * pas une ligne effacée : le trou doit se voir à la relecture du client, et il
+ * ne doit surtout pas se combler tout seul en disparaissant.
+ */
+interface Props {
+  page: LegalPage;
+  updated: string;
+}
+
+const { page, updated } = Astro.props;
+
+const slug = (title: string) =>
+  title
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+---
+
+<Section>
+  <article class="legal">
+    <header class="legal__head">
+      <h1>{page.h1}</h1>
+      <p class="legal__intro">{page.intro}</p>
+      <p class="legal__updated">Dernière mise à jour : {updated}</p>
+    </header>
+
+    {page.blocks.map((block) => (
+      <section class="legal__block" id={slug(block.title)}>
+        <h2>{block.title}</h2>
+
+        {block.body?.map((paragraph) => <p>{paragraph}</p>)}
+
+        {block.facts && (
+          <dl class="legal__facts">
+            {block.facts.map((fact) => (
+              <div>
+                <dt>{fact.label}</dt>
+                <dd>
+                  {fact.value === null ? (
+                    <span class="legal__missing">à fournir par le client</span>
+                  ) : (
+                    fact.value
+                  )}
+                  {fact.note && <span class="legal__note">{fact.note}</span>}
+                </dd>
+              </div>
+            ))}
+          </dl>
+        )}
+
+        {block.list && (
+          <ul class="legal__list">
+            {block.list.map((item) => <li>{item}</li>)}
+          </ul>
+        )}
+      </section>
+    ))}
+  </article>
+</Section>
+
+<style>
+  .legal {
+    max-width: 42rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+
+  .legal__head {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  h1 {
+    font-family: var(--text-h1-family);
+    font-size: var(--text-h1-size);
+    font-weight: var(--text-h1-weight);
+    line-height: var(--text-h1-line-height);
+    letter-spacing: var(--text-h1-tracking);
+    color: var(--color-text-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .legal__intro {
+    font-family: var(--text-body-lg-family);
+    font-size: var(--text-body-lg-size);
+    line-height: var(--text-body-lg-line-height);
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .legal__updated {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-body-sm-size);
+    color: var(--color-text-muted);
+    margin: 0;
+  }
+
+  .legal__block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    /* Un filet plutôt qu'une carte : ces blocs se suivent, ils ne se comparent
+       pas. Voir la note de `pages-contenu.md` sur ce que coûte une carte posée
+       partout. */
+    border-top: 1px solid var(--color-shade-grey);
+    padding-top: var(--space-5);
+  }
+
+  h2 {
+    font-family: var(--text-h3-family);
+    font-size: var(--text-h3-size);
+    font-weight: var(--text-h3-weight);
+    line-height: var(--text-h3-line-height);
+    color: var(--color-text-primary);
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p {
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line-height);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .legal__facts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    margin: 0;
+  }
+
+  .legal__facts div {
+    display: grid;
+    grid-template-columns: minmax(0, 14rem) minmax(0, 1fr);
+    gap: var(--space-1) var(--space-4);
+    align-items: baseline;
+  }
+
+  @media (max-width: 639px) {
+    .legal__facts div {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  dt {
+    font-family: var(--text-body-sm-family);
+    font-size: var(--text-body-sm-size);
+    color: var(--color-text-tertiary);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    color: var(--color-text-primary);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .legal__note {
+    font-size: var(--text-body-sm-size);
+    color: var(--color-text-tertiary);
+  }
+
+  /* ⚠️ Visible, et pas discret. C'est un trou dans un document qui engage
+     juridiquement : il doit sauter aux yeux du relecteur. */
+  .legal__missing {
+    font-family: var(--font-family-mono);
+    font-size: var(--text-body-sm-size);
+    color: var(--color-text-primary);
+    background: var(--color-highlight-primary);
+    padding: 0 var(--space-1);
+  }
+
+  .legal__list {
+    margin: 0;
+    padding-left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  li {
+    font-family: var(--text-body-family);
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line-height);
+    color: var(--color-text-secondary);
+  }
+</style>

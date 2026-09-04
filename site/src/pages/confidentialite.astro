@@ -1,0 +1,15 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import LegalPage from '../components/LegalPage.astro';
+import { PRIVACY } from '../data/legal';
+
+/**
+ * ⚠️ GABARIT EN ATTENTE DE VALIDATION ET DE SIGNATURE (client, 2026-09-03).
+ * La page est en `noindex` jusque-là : voir `NOT_INDEXED` dans
+ * `data/searchSources.ts`. Le contenu vit dans `data/legal.ts`.
+ */
+---
+
+<BaseLayout>
+  <LegalPage page={PRIVACY} updated="4 septembre 2026" />
+</BaseLayout>

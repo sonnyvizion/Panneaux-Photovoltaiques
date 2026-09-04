@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
-import { NOINDEX_PATHS, allSeoPaths, assertSeoCoverage } from '../data/seo';
+import { NOINDEX_PATHS, allSeoPaths, assertNavTargets, assertSeoCoverage } from '../data/seo';
+import { LEGAL_LINKS, LOCALES, UTILITY_LINKS } from '../data/site';
 
 /**
  * Le sitemap, dérivé du registre des métadonnées.
@@ -25,6 +26,9 @@ export const GET: APIRoute = ({ site }) => {
   /* Le garde-fou vit ici, comme `assertNoDrift` vit dans `search-index.json.ts` :
      c'est l'endpoint qui inventorie le site, donc celui qui constate les trous. */
   assertSeoCoverage();
+  /* Les trois listes transverses du pied de page et de l'en-tête. Les piliers,
+     eux, sont déjà filtrés par `publishedGroups` à leur rendu. */
+  assertNavTargets([...UTILITY_LINKS, ...LEGAL_LINKS, ...LOCALES]);
 
   if (!site) {
     throw new Error(

@@ -137,6 +137,13 @@ export const NOT_INDEXED: Readonly<Record<string, string>> = {
      `src/data/realisations.ts`). */
   '/realisations': 'Gabarit rédigé, chantiers non livrés — fiches vides, en noindex.',
   '/contact': 'Placeholder de Phase 1, en noindex — « Page en cours de rédaction ».',
+  /* ⚠️ Les trois pages légales sont RÉDIGÉES mais pas encore validées ni signées
+     par le client (elles portent des marqueurs « à fournir » : adresse, e-mail,
+     TVA). Indexer un document qui engage juridiquement avant sa signature serait
+     le publier à sa place. Ces trois lignes sautent le jour de la validation. */
+  '/mentions-legales': 'Gabarit rédigé, en attente de validation et de signature du client.',
+  '/confidentialite': 'Gabarit rédigé, en attente de validation et de signature du client.',
+  '/cookies': 'Gabarit rédigé, en attente de validation et de signature du client.',
 };
 
 /**

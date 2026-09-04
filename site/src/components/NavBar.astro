@@ -5,6 +5,7 @@ import {
   PHONE,
   REGIONS,
   LOCALES,
+  isListed,
   PRIMARY_CTA,
   PILLARS,
   HOME_LINK,
@@ -33,6 +34,10 @@ const isActive = (href: string) =>
   href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
 
 const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pillar) }));
+
+/* Voir la note de `Footer.astro` : la liste des langues passe par le même filtre
+   que les piliers, faute de quoi `/nl` part en 404 depuis chaque page. */
+const locales = LOCALES.filter(isListed);
 ---
 
 <header
@@ -95,8 +100,10 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
         </span>
       </label>
 
+      {/* Même règle qu'au pied de page : pas de choix à une seule option. */}
+      {locales.length > 1 && (
       <ul class="header__locales">
-      {LOCALES.map((locale, index) => (
+      {locales.map((locale, index) => (
         <li>
           <a
             class={`header__utility-item ${index === 0 ? 'is-active' : ''}`}
@@ -108,6 +115,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
           </li>
         ))}
       </ul>
+      )}
     </div>
   </div>
   </div>
@@ -497,8 +505,11 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
           </svg>
         </label>
 
+        {/* Troisième rendu des langues, celui du panneau mobile — et le seul que
+            le premier passage avait manqué. Même filtre que les deux autres. */}
+        {locales.length > 1 && (
         <ul class="header__panel-locales">
-          {LOCALES.map((locale, index) => (
+          {locales.map((locale, index) => (
             <li>
               <a
                 class:list={['header__panel-locale', { 'is-active': index === 0 }]}
@@ -510,6 +521,7 @@ const pillars = PILLARS.map((pillar) => ({ ...pillar, groups: publishedGroups(pi
             </li>
           ))}
         </ul>
+        )}
       </div>
     </div>
   </div>
