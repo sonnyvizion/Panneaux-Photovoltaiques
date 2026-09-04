@@ -22,6 +22,8 @@
 /** L'adresse du point d'envoi. Vide tant que l'hébergeur n'est pas choisi. */
 export const LEAD_ENDPOINT = import.meta.env.PUBLIC_LEAD_ENDPOINT ?? '';
 
+import { track } from './analytics';
+
 export type LeadState = 'idle' | 'sending' | 'sent' | 'error' | 'unconfigured';
 
 export interface LeadPayload {
@@ -82,7 +84,18 @@ export async function submitLead(payload: LeadPayload): Promise<LeadState> {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
-    return response.ok ? 'sent' : 'error';
+    if (response.ok) {
+      /* ⚠️ L'ÉVÉNEMENT PART À LA RÉUSSITE, PAS À LA TENTATIVE. Compter les
+         soumissions qui échouent gonflerait le taux de conversion exactement
+         dans les moments où le site marche le moins bien : on croirait le
+         formulaire performant le jour où il est cassé. Sans point d'envoi
+         configuré, la fonction est déjà sortie plus haut, donc rien ne part. */
+      track(payload.variant === 'rapport' ? 'pdf_requested' : 'quote_form_submitted', {
+        source: payload.source,
+      });
+      return 'sent';
+    }
+    return 'error';
   } catch {
     /* Réseau coupé, endpoint injoignable, CORS refusé : du point de vue du
        visiteur c'est la même chose — sa demande n'est pas partie. */

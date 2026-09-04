@@ -22,7 +22,7 @@ ligne et à jour** (https://belgreen-demo.pages.dev, redéployée le 3 septembre
 | Le simulateur (parcours de questions) | Fonctionnel, 6 étapes + 5 d'affinage |
 | Le compte rendu | **Refondu** — voir plus bas |
 | Le rapport (document PDF) | Gabarit complet, imprimable, vérifié |
-| Les calculs | 342 tests verts |
+| Les calculs | 348 tests verts |
 | La recherche interne | Loupe dans la nav, **47 pages indexées** |
 | Le build de production | 59 pages + `search-index.json`, ~40 Mo |
 
@@ -103,10 +103,11 @@ suit ce drapeau.
 
 **Dette connue**
 
-- **Mesure non câblée.** Aucun analytics n'est installé (voir `stack.md`). Le point de
-  branchement est prévu dans `render()` de `searchOverlay.ts` : le jour où Plausible
-  arrive, envoyer un événement par requête et surtout par **requête sans résultat** —
-  c'est le détecteur de trous de contenu le moins cher du projet.
+- ~~**Mesure non câblée.**~~ **Faite le 4 septembre 2026.** Plausible, sans
+  cookie, avec les six événements de `funnel.md` — dont `search_no_results`, qui
+  part depuis le point de branchement que ce paragraphe annonçait. Seul l'échec
+  est mesuré : une recherche qui aboutit n'apprend rien, une recherche vide nomme
+  un contenu qu'on n'a pas écrit. Voir « La mesure d'audience » plus bas.
 - **NL non traité.** L'index est mono-langue. À la bascule FR/NL il en faudra un par
   langue (`/nl/search-index.json`) — le générateur est à paramétrer, pas à réécrire.
 - **Pas de tolérance aux fautes de frappe.** Le préfixe et une table de synonymes du
@@ -441,6 +442,55 @@ plus posé quand il n'y a rien à protéger.
 ⚠️ **Elle ne couvre que le parcours du simulateur.** La recherche interne, le
 compte rendu et le rapport restent vérifiés à la main. C'est le prochain terrain
 naturel de cette recette.
+
+---
+
+## La mesure d'audience (4 septembre 2026)
+
+Le client demandait pourquoi le site ne posait pas de cookies, en avançant que
+Search Console allait de toute façon en imposer. **Search Console n'en pose
+aucun** : la propriété se vérifie par DNS, fichier ou balise `meta`, et l'outil
+mesure ce qui se passe dans les résultats Google, pas sur le site.
+
+Ce qui est en place, sans cookie et sans bandeau :
+
+| Pièce | Rôle |
+|---|---|
+| `src/scripts/analytics.ts` | Le seul fichier qui connaisse Plausible. Liste d'événements **fermée** |
+| `BaseLayout.astro` | Chargement conditionné à `PUBLIC_PLAUSIBLE_DOMAIN` |
+| `tests/mesure-audience.spec.ts` | 5 cas navigateur × 2 moteurs |
+
+**Les six événements** viennent de `funnel.md`, qui les avait nommés d'avance :
+`simulator_started`, `simulator_step` (avec le rang), `simulator_completed`,
+`quote_form_submitted`, `pdf_requested`, `region_selected`, `search_no_results`.
+C'est `simulator_step` qui répond à « où ça bloque » : sans lui il ne resterait
+qu'un taux de complétion global, qui dit qu'on perd des gens sans dire où.
+
+**Trois pièges, écrits dans le code :**
+
+1. **`simulator_started` ne part que sur une navigation VOULUE.** `show()` est
+   aussi appelé au chargement et au retour navigateur : compter ces cas ferait
+   démarrer le parcours à chaque arrivée sur `/simulateur`, y compris chez qui
+   repart aussitôt, et le taux de complétion s'effondrerait sans qu'aucun
+   visiteur n'ait rien changé. Un test navigateur verrouille ce point.
+2. **L'événement de formulaire part à la RÉUSSITE, pas à la tentative.** Compter
+   les envois qui échouent gonflerait le taux de conversion exactement les jours
+   où le site marche le moins bien.
+3. **Plausible n'accepte que des chaînes en propriété.** Un nombre passé tel quel
+   est refusé côté serveur, sans erreur : l'événement arrive sans sa propriété et
+   le rapport est vide. `track()` convertit.
+
+⚠️ **La démo n'envoie rien** (pas de variable, donc pas de script) : nos propres
+relectures n'entrent pas dans les chiffres de production.
+
+⚠️ **Les propriétés personnalisées ne sont pas dans l'offre d'entrée de
+Plausible.** Si l'abonnement ne les couvre pas, `simulator_step` devra se replier
+sur des noms d'événements distincts par étape. Seul point qui peut coûter.
+
+⚠️ **Ce qui n'est PAS fait** : le bandeau de consentement et les balises Google
+Ads / Meta, décalés au démarrage des campagnes. La couture est prête dans
+`analytics.ts` : un `consent.ts` portera l'état, et le blocage devra être **réel**
+— une balise chargée « en attendant le clic » a déjà déposé ses cookies.
 
 ---
 

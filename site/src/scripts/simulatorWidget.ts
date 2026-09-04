@@ -1,4 +1,5 @@
 import { getProgressIndex, interpolate, stepPosition } from './carouselProgress';
+import { track } from './analytics';
 import { collectPayback, renderPayback } from './paybackRender';
 import { reportHref } from './reportParams';
 import { chase, CHASE_DURATION } from './sliderCalculator';
@@ -668,6 +669,9 @@ export function initSimulator(root: ParentNode = document): void {
    * mettre le compteur à jour, sans rien signaler. D'où le « ça remarche, puis
    * ça rebloque ». Le minuteur garantit qu'il retombe dans tous les cas.
    */
+  /* Une seule fois par visite : voir la note dans `show()`. */
+  let simulatorStarted = false;
+
   let programmatic = false;
   let release = 0;
   const holdRail = () => {
@@ -889,6 +893,39 @@ export function initSimulator(root: ParentNode = document): void {
 
     const onResult = step === RESULT_STEP;
     const inRefine = isRefineStep(step);
+
+    /**
+     * LA MESURE DU PARCOURS — trois événements, et un seul sert vraiment.
+     *
+     * `simulator_step` porte le rang atteint : c'est LUI qui répond à « où ça
+     * bloque », en donnant la courbe d'abandon question par question. Les deux
+     * autres bornent le taux de complétion.
+     *
+     * ⚠️ `simulator_started` ne part QUE sur une navigation voulue (`push`).
+     * `show()` est aussi appelé au chargement de la page et au retour
+     * navigateur : compter ces cas ferait démarrer le parcours à chaque
+     * arrivée sur `/simulateur`, y compris chez qui repart aussitôt, et le taux
+     * de complétion s'effondrerait sans qu'aucun visiteur n'ait rien changé.
+     *
+     * ⚠️ Le rang, pas le libellé de la question. Les libellés se réécrivent au
+     * fil des passes éditoriales, et l'historique deviendrait illisible.
+     */
+    if (push && !simulatorStarted) {
+      simulatorStarted = true;
+      track('simulator_started');
+    }
+
+    if (onResult) {
+      track('simulator_completed');
+    } else {
+      const w = wizardOf(step);
+      const rank = indexOf(w, step) + 1;
+      if (rank > 0) {
+        track('simulator_step', {
+          etape: `${w.kind === 'affinage' ? 'affinage-' : ''}${rank}`,
+        });
+      }
+    }
 
     /* Le décor de la page suit la vue : photo et verre pour les questions, fond
        uni pour le compte rendu (voir le commentaire dans `SimulatorPanels`). */

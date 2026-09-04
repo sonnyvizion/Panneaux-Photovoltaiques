@@ -124,3 +124,25 @@ imports inutilisés dans les tests). Aucune ne vient de la couche SEO.
 Les brancher sur le build aurait bloqué tout déploiement derrière un chantier de
 dette qui n'a rien à voir. Le script existe donc pour être lancé sciemment ; il
 sera branché au build le jour où le compteur sera à zéro.
+
+## Variables d'environnement
+
+| Variable | Effet |
+|---|---|
+| `PUBLIC_SITE_URL` | Domaine des canoniques, de l'Open Graph et du `sitemap.xml`. Défaut : la démo |
+| `PUBLIC_INDEXABLE` | `true` autorise l'indexation. Défaut : **non**, on bloque |
+| `PUBLIC_PLAUSIBLE_DOMAIN` | Active la mesure d'audience. **Absente = aucun script tiers servi** |
+| `PUBLIC_LEAD_ENDPOINT` | Point d'envoi des formulaires. Vide = le formulaire le dit au visiteur |
+
+⚠️ Les trois premières ont le même parti pris : **le défaut est le plus
+prudent**. Une démo qui s'indexe, ou qui envoie ses visites dans les chiffres de
+production, sont deux erreurs qu'on ne découvre que trop tard.
+
+Mise en ligne d'une production :
+
+```sh
+PUBLIC_SITE_URL=https://panneaux-photovoltaiques.be \
+PUBLIC_INDEXABLE=true \
+PUBLIC_PLAUSIBLE_DOMAIN=panneaux-photovoltaiques.be \
+npm run deploy
+```

@@ -1,4 +1,5 @@
 import { hasEstimateIntent, search, type SearchEntry, type SearchResult } from './search';
+import { track } from './analytics';
 import { lock, unlock } from './scrollLock';
 import { getSmoothScroll } from './smoothScroll';
 
@@ -155,10 +156,23 @@ function render(query: string): void {
   setActive(found.length > 0 ? 0 : -1);
   announce(found.length, trimmed);
 
-  /* Point de branchement de la mesure, volontairement inerte pour l'instant :
-     aucun analytics n'est installé (voir stack.md). Le jour où Plausible
-     arrive, c'est ICI que se pose l'événement — et surtout le cas
-     `found.length === 0`, qui désigne les trous de contenu. */
+  /**
+   * ⚠️ ON NE MESURE QUE L'ÉCHEC, et c'est délibéré. Une recherche qui aboutit
+   * n'apprend rien qu'on ne sache déjà : la page existe. Une recherche SANS
+   * RÉSULTAT nomme un contenu que le visiteur attendait et qu'on n'a pas
+   * écrit. C'est le détecteur de trous de contenu le moins cher du projet.
+   *
+   * ⚠️ Le seuil de trois caractères évite de compter les frappes en cours :
+   * sans lui, « p », « pa », « pan » remonteraient tous comme des échecs, et
+   * le rapport ne dirait plus rien.
+   *
+   * La requête part avec l'événement, sans quoi il ne resterait qu'un compteur
+   * d'échecs sans le mot cherché — inexploitable. C'est écrit dans
+   * `/confidentialite`.
+   */
+  if (found.length === 0 && trimmed.length >= 3) {
+    track('search_no_results', { requete: trimmed });
+  }
 }
 
 function onKeydown(event: KeyboardEvent): void {

@@ -44,9 +44,29 @@ par défaut. Décision réversible si le dev a une forte préférence React.
 - URLs localisées + balises **`hreflang`** FR/NL.
 - Briques interactives communes ; seules les chaînes sont traduites.
 
-## Analytics
-- Privilégier **léger** : Plausible ou Umami (respectueux perf + RGPD).
-- GTM/GA4 seulement si le client l'exige (attention au poids sur les Core Web Vitals).
+## Analytics — **tranché le 4 septembre 2026 : Plausible**
+
+Décision client, après une question sur les cookies. Trois choses valent d'être
+retenues, parce qu'elles reviendront :
+
+- **Search Console ne pose aucun cookie** et n'en exige aucun. La propriété se
+  vérifie par DNS, fichier ou balise `meta`, et l'outil mesure ce qui se passe
+  dans les résultats Google, pas sur le site. C'était la prémisse de la question,
+  et elle était fausse.
+- **Plausible ne pose pas de cookie non plus.** Donc pas de bandeau, donc on
+  mesure **100 %** des visiteurs — là où un bandeau ne laisse mesurer que ceux
+  qui acceptent. Sur un site dont l'objet est de trouver où le parcours casse,
+  une mesure partielle est une mesure biaisée. ~1 Ko contre ~90 Ko pour GA4.
+- **La publicité, elle, imposera des cookies.** Google Ads et Meta sont prévus
+  sans calendrier. Le bandeau et les balises arriveront **au démarrage des
+  campagnes**, pas avant : sans campagne, il n'y a aucune conversion à attribuer.
+
+Câblage : `src/scripts/analytics.ts` (seul fichier qui connaît l'outil),
+chargement conditionné à `PUBLIC_PLAUSIBLE_DOMAIN` dans `BaseLayout.astro`.
+Sans la variable, aucun script tiers n'est servi — la démo ne pollue pas les
+chiffres de production.
+
+## Garde-fou
 
 ## Garde-fou
 Chaque ajout (lib, script, tag) se mesure en JS envoyé. La règle d'or n°1 du `CLAUDE.md`

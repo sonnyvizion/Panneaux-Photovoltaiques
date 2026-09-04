@@ -171,7 +171,7 @@ export const PRIVACY: LegalPage = {
     {
       title: 'Ce que nous collectons',
       body: [
-        'Rien du tout tant que vous vous contentez de lire. Le site ne vous suit pas de page en page et ne dépose aucun cookie.',
+        'Aucune donnée personnelle tant que vous vous contentez de lire. Le site ne dépose aucun cookie et ne vous suit pas d’un site à l’autre. Une mesure d’audience anonyme compte les pages vues et quelques étapes du parcours, sans jamais vous identifier : elle est décrite sur la page Cookies.',
         'Quand vous envoyez une demande de devis, une demande d’étude ou une demande de rapport, nous recevons ce que vous avez saisi dans le formulaire, ainsi que les réponses que vous avez données au simulateur.',
       ],
       list: [
@@ -203,7 +203,9 @@ export const PRIVACY: LegalPage = {
     {
       title: 'Qui d’autre y a accès',
       body: [
-        'Un seul prestataire intervient : Brevo, service d’envoi d’e-mails établi en France, donc dans l’Union européenne. Il agit comme sous-traitant, sur nos seules instructions, pour acheminer les messages. Il n’utilise pas vos données pour son propre compte.',
+        'Deux prestataires interviennent, tous deux dans l’Union européenne et tous deux comme sous-traitants, sur nos seules instructions. Brevo, service d’envoi d’e-mails établi en France, achemine les messages. Plausible mesure l’audience du site sans cookie ni identifiant : il ne reçoit aucune de vos coordonnées.',
+        'Une précision sur la mesure : quand une recherche interne ne donne aucun résultat, les mots cherchés nous sont transmis, sans rien qui permette de savoir qui les a tapés. C’est ainsi que nous repérons les sujets que vous attendiez et que nous n’avons pas encore écrits.',
+        'Ni l’un ni l’autre n’utilise vos données pour son propre compte.',
         'Aucune donnée n’est transférée hors de l’Union européenne. Aucune donnée n’est cédée, vendue ou communiquée à des tiers commerciaux.',
       ],
     },
@@ -257,9 +259,17 @@ export const COOKIES: LegalPage = {
       ],
     },
     {
+      title: 'Comment nous mesurons l’audience, alors',
+      body: [
+        'Avec Plausible, un outil européen conçu pour compter sans identifier. Il enregistre les pages vues, le site d’où vous venez, le type d’appareil et le pays. Il ne pose aucun cookie, ne crée aucun identifiant qui vous suivrait d’une visite à l’autre, et ne vous reconnaît pas d’un site à l’autre.',
+        'Nous y suivons aussi quelques étapes du parcours : le lancement du simulateur, la question atteinte, l’envoi d’une demande, et les recherches internes restées sans résultat. Ces mesures sont agrégées : elles disent combien de visiteurs abandonnent à la troisième question, jamais qui.',
+        'C’est précisément parce que cet outil n’identifie personne que la loi ne conditionne pas son usage à votre consentement, et que vous n’avez pas de bandeau à écarter en arrivant.',
+      ],
+    },
+    {
       title: 'Si cela change',
       body: [
-        'Aucun outil de mesure d’audience n’est installé à ce jour. Si nous en ajoutons un, cette page sera mise à jour avant sa mise en service, et votre consentement vous sera demandé s’il est requis.',
+        'Des campagnes publicitaires sont envisagées. Les outils de mesure publicitaire, eux, déposent des cookies : le jour où ils seront installés, cette page sera mise à jour avant leur mise en service, un bandeau vous demandera votre accord, et rien ne sera déposé tant que vous ne l’aurez pas donné.',
       ],
     },
   ],

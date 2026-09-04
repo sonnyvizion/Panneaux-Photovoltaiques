@@ -6,6 +6,8 @@
  * connaît déjà la région.
  */
 
+import { track } from './analytics';
+
 /** Les trois régions belges — le simulateur ne sait rien calculer d'autre. */
 export const VALID_REGIONS = ['wallonie', 'bruxelles', 'flandre'] as const;
 export type Region = (typeof VALID_REGIONS)[number];
@@ -89,6 +91,12 @@ export function readStoredRegion(): Region | null {
  * visiteur ait tapé 1000.
  */
 export function writeStoredRegion(region: Region): void {
+  /* La région choisie renseigne autant sur l'audience que sur le parcours : les
+     trois régimes régionaux n'ont ni les mêmes aides ni la même rentabilité, et
+     savoir d'où viennent les visiteurs dit dans quelle région le contenu
+     travaille vraiment. */
+  track('region_selected', { region });
+
   try {
     localStorage.setItem(STORAGE_KEY, region);
   } catch {

@@ -69,6 +69,17 @@ const canonical = new URL(path, site);
 const seo = resolveSeo(path);
 const title = seo?.title ?? titleProp ?? 'Belgreen';
 const description = seo?.description ?? descriptionProp;
+
+/**
+ * La mesure d'audience — Plausible, sans cookie (voir `scripts/analytics.ts`).
+ *
+ * ⚠️ CONDITIONNÉE À UNE VARIABLE, comme `PUBLIC_SITE_URL` et
+ * `PUBLIC_INDEXABLE`. Sans elle, aucun script tiers n'est servi — et c'est
+ * exactement ce qu'on veut sur la démo : nos propres relectures ne doivent pas
+ * entrer dans les chiffres de production. Le défaut est donc « on ne mesure
+ * pas », jamais l'inverse.
+ */
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
 const noindex = noindexProp || isNoindex(path);
 const crumbs = breadcrumbFor(path);
 
@@ -148,6 +159,12 @@ const breadcrumb = crumbs.length > 0 && {
 		<script type="application/ld+json" set:html={JSON.stringify(organization)} is:inline />
 		{breadcrumb && (
 			<script type="application/ld+json" set:html={JSON.stringify(breadcrumb)} is:inline />
+		)}
+		{/* ⚠️ `defer` ET `is:inline` : `defer` pour que la mesure ne retarde jamais
+		    le rendu (règle d'or n°1), `is:inline` pour qu'Astro n'essaie pas de
+		    regrouper un script tiers dans son propre bundle. */}
+		{plausibleDomain && (
+			<script defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js" is:inline />
 		)}
 	</head>
 	<body>
